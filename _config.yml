@@ -10,5 +10,6 @@ github_username:  misterblue
 
 # Build settings
 markdown: kramdown
-highlighter: false
+#highlighter: false
+highlighter: pygments
 encoding: utf-8
