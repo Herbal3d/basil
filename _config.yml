@@ -1,0 +1,14 @@
+# Site settings
+title: Basil
+email: basil@misterblue.com
+description: > # this means to ignore newlines until "baseurl:"
+    Basil 3d viewer
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://misterblue.github.io/basil" # the base hostname & protocol for your site
+twitter_username: misterblue
+github_username:  misterblue
+
+# Build settings
+markdown: kramdown
+highlighter: false
+encoding: utf-8
