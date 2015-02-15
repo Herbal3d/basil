@@ -12,7 +12,7 @@
     {% else %}
         <li>
     {% endif %}
-    <a href="{{ navTab.url }}">{{ navTab.label }}</a>
+    <a href="{{ navTab.url | prepend(site.baseurl) }}">{{ navTab.label }}</a>
     </li>
 {% endfor %}
 </ul>
