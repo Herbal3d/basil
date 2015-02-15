@@ -1,0 +1,18 @@
+<!-- Create a <ul><li>menu</li>...</ul> structure from
+       "_data/mainNav.yml". The css in _sass/_layout-basil.scss"
+       will turn the list into whatever it wants.
+   Note that a page that is 'on' a tab should have a Front Matter
+       of 'navigation: tabName'.
+-->
+
+<ul class="tabrow">
+{% for navTab in site.data.mainNav %}
+    {% if navTab.name == page.navigation %}
+        <li class="selected">
+    {% else %}
+        <li>
+    {% endif %}
+    <a href="{{ navTab.url }}">{{ navTab.label }}</a>
+    </li>
+{% endfor %}
+</ul>
