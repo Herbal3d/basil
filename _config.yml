@@ -6,11 +6,11 @@ description: > # this means to ignore newlines until "baseurl:"
 
 # The Github mapping of URL and BaseURL is different than the default Jekyll server
 #    Use the following for GitHub
-baseurl: "/basil" # the subpath of your site, e.g. /blog/
-url: "http://misterblue.github.io" # the base hostname & protocol for your site
+# baseurl: "/basil" # the subpath of your site, e.g. /blog/
+# url: "http://misterblue.github.io" # the base hostname & protocol for your site
 #    Use the following for local jekyll serving
-# baseurl: "" # the subpath of your site, e.g. /blog/
-# url: "http://misterblue.github.io/basil" # the base hostname & protocol for your site
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://misterblue.github.io/basil" # the base hostname & protocol for your site
 
 twitter_username: misterblue
 github_username:  misterblue
