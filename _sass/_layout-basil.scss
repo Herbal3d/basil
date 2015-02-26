@@ -74,10 +74,10 @@
 }
 
 .tabrow li.selected {
-  background: #$MENU_BACKGROUND_ACCENT;
-  color: #$MENU_TEXT;
+  background: $MENU_BACKGROUND_ACCENT;
+  color: $MENU_TEXT;
   z-index: 2;
-  border-top-color: #$MENU_LINE;
+  border-top-color: $MENU_LINE;
 }
 
 .tabrow:before {
