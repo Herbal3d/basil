@@ -3,8 +3,6 @@ layout: default
 navigation: home
 ---
 
-<div class="home">
-
 The Basil project is a system of 3D object discovery, manipulation, and display.
 It contains many modules to accomplish this:
 
@@ -31,22 +29,19 @@ dynamic linking features and to make the initial viewer widely available.
 BR initially uses WebGL although there is no reason it couldn't be implemented
 in different languages and specialized for specific platforms.
 
-  <!--
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-
-        <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
-      </li>
-    {% endfor %}
-  </ul>
-  -->
+//   <ul class="post-list">
+//    {% for post in site.posts %}
+//      <li>
+//        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+//
+//        <h2>
+//          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+//        </h2>
+//      </li>
+//    {% endfor %}
+//  </ul>
 
   <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 
-</div>
 <!-- vim: ts=2 sw=2 ai et spell
 -->
