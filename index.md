@@ -29,7 +29,7 @@ dynamic linking features and to make the initial viewer widely available.
 BR initially uses WebGL although there is no reason it couldn't be implemented
 in different languages and specialized for specific platforms.
 
-<!--
+{% comment %}
   <ul class="post-list">
     {% for post in site.posts %}
       <li>
@@ -41,7 +41,7 @@ in different languages and specialized for specific platforms.
       </li>
     {% endfor %}
   </ul>
--->
+{% endcomment %}
 
   <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 
