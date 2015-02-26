@@ -10,6 +10,7 @@ Its purpose is to organized accessors, converters, cachers, and rendering
 hardware and software to present a view of the 3D objects.
 
 The 'view' process is imagined to be:
+
 * the observer is at a location and looking in a direction
   (a view camera has a location and a direction);
 * the world is queried as to what can be seen from here in that direction;

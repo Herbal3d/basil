@@ -12,7 +12,7 @@ url: "http://misterblue.github.io" # the base hostname & protocol for your site
 # baseurl: "" # the subpath of your site, e.g. /blog/
 # url: "http://misterblue.github.io/basil" # the base hostname & protocol for your site
 
-twitter_username: misterblue
+# twitter_username: misterblue
 github_username:  misterblue
 
 # Build settings
