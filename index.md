@@ -4,6 +4,7 @@ navigation: home
 ---
 
 <div class="home">
+
 The Basil project is a system of 3D object discovery, manipulation, and display.
 It contains many modules to accomplish this:
 

@@ -8,6 +8,22 @@
 - name: architecture
   label: Architecture
   url: "/architecture/"
+  submenu: 
+    - name: overview
+      label: Overview
+      url: "/architecture/"
+
+    - name: worldManager
+      label: World Manager
+      url: "/architecture/WorldManager.html"
+
+    - name: sessionManager
+      label: Session Manager
+      url: "/architecture/SessionManager.html"
+
+    - name: renderer
+      label: Renderer
+      url: "/architecture/Renderer.html"
 
 - name: progress
   label: Progress

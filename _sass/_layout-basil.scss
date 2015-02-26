@@ -8,6 +8,8 @@
 
     // Positioning context for the mobile navigation icon
     position: relative;
+
+    background: $TITLE_BACKGROUND_COLOR;
 }
 
 .site-title {
@@ -19,7 +21,7 @@
 
     &,
     &:visited {
-        color: $grey-color-dark;
+        color: $TITLE_TEXT_COLOR;
     }
 }
 
@@ -72,10 +74,10 @@
 }
 
 .tabrow li.selected {
-  background: #FFF;
-  color: #333;
+  background: #$MENU_BACKGROUND_ACCENT;
+  color: #$MENU_TEXT;
   z-index: 2;
-  border-top-color: #FFF;
+  border-top-color: #$MENU_LINE;
 }
 
 .tabrow:before {
@@ -102,14 +104,14 @@
   left: -7px;
   border-top-right-radius: 6px;
   border-width: 1px 1px 0px 0px;
-  box-shadow: 2px 0px 0 #ECECEC;
+  box-shadow: 2px 0px 0 #FFF;
 }
 
 .tabrow li:after {
   right: -7px;
   border-top-left-radius: 6px;
   border-width: 1px 0px 0px 1px;
-  box-shadow: -2px 0px 0 #ECECEC;
+  box-shadow: -2px 0px 0 #FFF;
 }
 
 .tabrow li.selected:before {
