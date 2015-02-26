@@ -82,14 +82,14 @@ The initial implementation is in JavaScript but that is not required.
 Future module implementations can be in any programming language as long as
 the API interfaces are kept.
 
-ref-worldManager: /architecture/WorldManager.html
-ref-renderer: /architecture/Renderer.html
-ref-userInterfaceManager: /architecture/UserInterfaceManager.html
-ref-sessionManager: /architecture/SessionManager.html
-ref-useCaseAugmentedReality): /architecture/UseCases.html#Augmented%20Reality
-ref-useCaseVWGoggles): /architecture/UseCases.html#Virtual%20World%20Goggles
-ref-useCaseVWBrowser): /architecture/UseCases.html#Virtual%20World%20Browser
-ref-useCaseMultipleVW:  /architecture/UseCases.html#Multiple%20VIrtual%20Worlds
+[ref-worldManager]: /architecture/WorldManager.html
+[ref-renderer]: /architecture/Renderer.html
+[ref-userInterfaceManager]: /architecture/UserInterfaceManager.html
+[ref-sessionManager]: /architecture/SessionManager.html
+[[ref-useCaseAugmentedReality]: /architecture/UseCases.html#Augmented%20Reality
+[ref-useCaseVWGoggles]: /architecture/UseCases.html#Virtual%20World%20Goggles
+[ref-useCaseVWBrowser]: /architecture/UseCases.html#Virtual%20World%20Browser
+[ref-useCaseMultipleVW]:  /architecture/UseCases.html#Multiple%20VIrtual%20Worlds
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->
