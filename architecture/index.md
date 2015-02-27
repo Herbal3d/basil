@@ -26,31 +26,31 @@ The 'view' process is imagined to be:
   information and object servers to fill the viewed space.
 
 Within Basil, the process of querying the world and collecting the servers
-is handled by the [World Manager][ref-worldManager].
-The [World Manager][ref-worldManager] queries for object sources,
+is handled by the {{ ref-worldManager }}
+The {{ ref-worldManager }} queries for object sources,
 finds and loads the adaptors to convert the sources objects to the
-[Basil Renderer][ref-renderer] APIs, and then manages this collection
+{{ ref-renderer }} APIs, and then manages this collection
 of connections as the view camera moves in the world space.
 
 If the view is being created for a person, the person interacts with
-the view though a [User Interface Manager][ref-userInterfaceManager]
+the view though a {{ ref-userInterfaceManager }}
 which, talking to the renderer, displays interaction objects in the view
-and communicates those interactions to the [World Manager][ref-worldManager]
+and communicates those interactions to the {{ ref-worldManager }}
 or, possibly to one of the object server connectors.
 
-There is additionally the [Session Manager][ref-sessionManager] which handles
+There is additionally the {{ ref-sessionManager }} which handles
 the communication and state between all the parts for a particular individual
-session. The [Session Manager][ref-sessionManager] handles the configuration
+session. The {{ ref-sessionManager }} handles the configuration
 parameters for the session and all the modules that make up the session.
 
-Refer to the [Use Cases][ref-useCases] for descriptions of how this new model
+Refer to the {{ ref-useCases }} for descriptions of how this new model
 works for different uses.
 The use cases described include
-[augmented reality goggles][ref-useCaseAugmentedReality],
-[virtual world 3d goggles][ref-useCaseVWGoggles],
-[3d views of virtual worlds in browsers][ref-useCaseVWBrowser],
+augmented reality goggles,
+virtual world 3d goggles,
+3d views of virtual worlds in browsers,
 and 
-[a merged 3d view into multiple virtual worlds][ref-useCaseMultipleVW].
+a merged 3d view into multiple virtual worlds.
 
 ## Block Diagram
 
@@ -82,15 +82,6 @@ functionality and doesn't embed specific additional functions into the renderer.
 The initial implementation is in JavaScript but that is not required.
 Future module implementations can be in any programming language as long as
 the API interfaces are kept.
-
-[ref-worldManager]: /architecture/WorldManager.html
-[ref-renderer]: /architecture/Renderer.html
-[ref-userInterfaceManager]: /architecture/UserInterfaceManager.html
-[ref-sessionManager]: /architecture/SessionManager.html
-[ref-useCaseAugmentedReality]: /architecture/UseCases.html#Augmented%20Reality
-[ref-useCaseVWGoggles]: /architecture/UseCases.html#Virtual%20World%20Goggles
-[ref-useCaseVWBrowser]: /architecture/UseCases.html#Virtual%20World%20Browser
-[ref-useCaseMultipleVW]:  /architecture/UseCases.html#Multiple%20VIrtual%20Worlds
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->

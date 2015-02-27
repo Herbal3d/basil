@@ -1,0 +1,25 @@
+{% comment %}
+References to other pages in the site. Used to give consistant
+naming to pages and handle the oddness with base addressing because of
+how github handles project pages.
+{% endcomment %}
+
+{% capture ref-worldManager %}
+    [World Manager]({{ site.baseurl }}/architecture/WorldManager.html)
+{% endcapture %}
+
+{% capture ref-renderer %}
+    [Renderer]({{ site.baseurl }}/architecture/Renderer.html)
+{% endcapture %}
+
+{% capture ref-userInterfaceManager %}
+    [InterfaceManager]({{ site.baseurl }}/architecture/UserInterfaceManager.html)
+{% endcapture %}
+
+{% capture ref-sessionManager %}
+    [SessionManager]({{ site.baseurl }}/architecture/SessionManager.html)
+{% endcapture %}
+
+{% capture ref-useCases %}
+    [Use Cases]({{ site.baseurl }}/architecture/UseCases.html)
+{% endcapture %}
