@@ -39,12 +39,11 @@ $ACCENT_COLOR: $color-complement-1;
 $BACKGROUND_COLOR: #FFF3FF; // even lighter than color-complement-1
 $TEXT_COLOR: #000;
 $LINK_COLOR: $color-complement-0;
-$VISITED_COLOR: $color-complement-2;
 $TITLE_BACKGROUND_COLOR: $color-primary-0;
 $TITLE_TEXT_COLOR: $color-primary-4;
 
-$MENU_BACKGROUND: $color-primary-4;
-$MENU_BACKGROUND_ACCENT: $color-primary-3;
+$MENU_BACKGROUND: $color-primary-1;
+$MENU_BACKGROUND_ACCENT: $color-primary-2;
 $MENU_LINE: $color-complement-4;
 $MENU_TEXT: $color-complement-1;
 
@@ -52,7 +51,6 @@ $BLOG_BACKGROUND_COLOR: #6060a0;
 $BLOG_TEXT_COLOR: $TEXT_COLOR;
 $BLOG_ACCENT_COLOR: $ACCENT_COLOR;
 $BLOG_LINK_COLOR: $LINK_COLOR;
-$BLOG_VISITED_COLOR: $VISITED_COLOR;
 $BLOG_TITLE_BACKGROUND_COLOR: $BLOG_BACKGROUND_COLOR;
 $BLOG_TITLE_TEXT_COLOR: $BLOG_TEXT_COLOR;
 

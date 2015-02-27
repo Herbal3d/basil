@@ -2,7 +2,7 @@
  * Site header
  */
 .site-header {
-    border-top: 5px solid $grey-color-dark;
+    border-top: 6px solid $grey-color-dark; // bar across top of page
     border-bottom: 1px solid $grey-color-light;
     min-height: 56px;
 
@@ -19,11 +19,6 @@
     letter-spacing: -1px;
     margin-bottom: 0;
     float: left;
-
-    &,
-    &:visited {
-        color: $TITLE_TEXT_COLOR;
-    }
 }
 
 /*
@@ -41,7 +36,7 @@
   text-align: center;
   list-style: none;
   // margin: 50px 0 20px;
-  margin: 50px 0 5px;
+  margin: 15px 0 0;
   padding: 0;
   line-height: 35px;
   height: 37px;
@@ -71,7 +66,7 @@
 }
 
 .tabrow a {
-  color: $LINK_COLOR;
+  color: $MENU_TEXT;
   text-decoration: none;
 }
 
@@ -123,8 +118,6 @@
 .tabrow li.selected:after {
   box-shadow: -2px 0px 0 #FFF;
 }
-
-
 
 .site-nav {
     float: right;
@@ -259,8 +252,6 @@
     }
 }
 
-
-
 /**
  * Page content
  */
@@ -290,8 +281,6 @@
     display: block;
     font-size: 24px;
 }
-
-
 
 /**
  * Posts
