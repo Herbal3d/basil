@@ -11,7 +11,7 @@ navigation: architecture
 
 ## Augmented Reality
 
-## Multiple VIrtual Worlds
+## Multiple Virtual Worlds
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->
