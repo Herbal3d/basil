@@ -1,0 +1,160 @@
+/*
+ * The following makes tabs across the top of the page.
+ * Taken from http://css-tricks.com/better-tabs-with-round-out-borders/
+ * Expects navigation elements looking like:
+ *   <ul class="tabrow">
+ *       <li>Menu1</li>
+ *       <li>Menu2</li>
+ *       <li class="selected">Menu3</li>
+ *       <li>Menu4</li>
+ *   </ul>
+ */
+.tabrow {
+  text-align: center;
+  list-style: none;
+  // margin: 50px 0 20px;
+  margin: 15px 0 0;
+  padding: 0;
+  line-height: 35px;
+  height: 37px;
+  overflow: hidden;
+  font-size: 12px;
+  font-family: $FONT_FAMILY;
+  position: relative;
+}
+
+.tabrow li {
+  border: 1px solid $MENU_LINE;
+  background: $MENU_BACKGROUND;
+  background: -o-linear-gradient(top, $MENU_BACKGROUND_ACCENT 50%, $MENU_BACKGROUND 100%);
+  background: -ms-linear-gradient(top, $MENU_BACKGROUND_ACCENT 50%, $MENU_BACKGROUND 100%);
+  background: -moz-linear-gradient(top, $MENU_BACKGROUND_ACCENT 50%, $MENU_BACKGROUND 100%);
+  background: -webkit-linear-gradient(top, $MENU_BACKGROUND_ACCENT 50%, $MENU_BACKGROUND 100%);
+  background: linear-gradient(top, $MENU_BACKGROUND_ACCENT 50%, $MENU_BACKGROUND  100%);
+  display: inline-block;
+  position:relative;
+  z-index: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #FFF;
+  // text-shadow: 0 1px #FFF;
+  margin: 0 -5px;
+  padding: 0 30px;
+}
+
+.tabrow a {
+  color: $MENU_TEXT;
+  text-decoration: none;
+}
+
+.tabrow li.selected {
+  background: $MENU_BACKGROUND_ACCENT;
+  color: $MENU_TEXT;
+  z-index: 2;
+  border-top-color: $MENU_LINE;
+}
+
+.tabrow:before {
+  position: absolute;
+  content: " ";
+  width: 100%;
+  top: 0;
+  left: 0;
+  border-top: 1px solid #AAA;
+  z-index: 1;
+}
+
+.tabrow li:before,
+.tabrow li:after {
+  border: 1px solid #AAA;
+  position: absolute;
+  top: -1px;
+  width: 6px;
+  height: 6px;
+  content: " ";
+}
+
+.tabrow li:before  {
+  left: -7px;
+  border-top-right-radius: 6px;
+  border-width: 1px 1px 0px 0px;
+  box-shadow: 2px 0px 0 #FFF;
+}
+
+.tabrow li:after {
+  right: -7px;
+  border-top-left-radius: 6px;
+  border-width: 1px 0px 0px 1px;
+  box-shadow: -2px 0px 0 #FFF;
+}
+
+.tabrow li.selected:before {
+  box-shadow: 2px 0px 0 #FFF;
+}
+
+.tabrow li.selected:after {
+  box-shadow: -2px 0px 0 #FFF;
+}
+
+.site-nav {
+    float: right;
+    line-height: 56px;
+
+    .menu-icon {
+        display: none;
+    }
+
+    .page-link {
+        color: $text-color;
+        line-height: $base-line-height;
+
+        // Gaps between nav items, but not on the first one
+        &:not(:first-child) {
+            margin-left: 20px;
+        }
+    }
+
+    @include media-query($on-palm) {
+        position: absolute;
+        top: 9px;
+        right: 30px;
+        background-color: $background-color;
+        border: 1px solid $grey-color-light;
+        border-radius: 5px;
+        text-align: right;
+
+        .menu-icon {
+            display: block;
+            float: right;
+            width: 36px;
+            height: 26px;
+            line-height: 0;
+            padding-top: 10px;
+            text-align: center;
+
+            > svg {
+                width: 18px;
+                height: 15px;
+
+                path {
+                    fill: $grey-color-dark;
+                }
+            }
+        }
+
+        .trigger {
+            clear: both;
+            display: none;
+        }
+
+        &:hover .trigger {
+            display: block;
+            padding-bottom: 5px;
+        }
+
+        .page-link {
+            display: block;
+            padding: 5px 10px;
+        }
+    }
+}
