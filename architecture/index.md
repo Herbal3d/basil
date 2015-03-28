@@ -81,7 +81,7 @@ and where they run (some computer, different computer, same address space, ...)
 is not defined so many operational configurations are possible -- it depends on
 what is best for the specific function provided by the module.
 
-Basil tries to keep functionality separate preferring to defined single function
+Basil tries to keep functionality separate preferring to define single function
 modules that communicate through an API rather than conflating functionality into
 one module. Thought should always be given to where new functionality should be
 added. For instance, animation functionality is often added to a renderer because
