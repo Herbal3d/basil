@@ -26,35 +26,31 @@ The 'view' process is imagined to be:
   information and object servers to fill the viewed space.
 
 Within Basil, the process of querying the world and collecting the servers
-is handled by the
-[World Manager][ref-worldManager]
-The
-[World Manager][ref-worldManager]
-queries for object sources,
+is handled by the [Session Manager].
+The [Session Manager] queries for object sources,
 finds and loads the adaptors to convert the sources objects to the
-[Renderer][ref-renderer]
-APIs, and then manages this collection
+[Renderer] APIs, and then manages this collection
 of connections as the view camera moves in the world space.
 
 If the view is being created for a person, the person interacts with
 the view though a
-[User Interface Manager][ref-userInterfaceManager]
+[User Interface Manager]
 which, talking to the renderer, displays interaction objects in the view
 and communicates those interactions to the
-[World Manager][ref-worldManager]
+[Session Manager]
 or, possibly to one of the object server connectors.
 
 There is additionally the
-[Session Manager][ref-sessionManager]
+[Session Manager]
 which handles
 the communication and state between all the parts for a particular individual
 session. The
-{{ ref-sessionManager }}
+[SessionManager]
 handles the configuration
 parameters for the session and all the modules that make up the session.
 
 Refer to the
-[Use Cases][ref-useCases]
+[Use Cases]
 for descriptions of how this new model
 works for different uses.
 The use cases described include
@@ -95,11 +91,11 @@ The initial implementation is in JavaScript but that is not required.
 Future module implementations can be in any programming language as long as
 the API interfaces are kept.
 
-[ref-worldManager]: {{ "/architecture/WorldManager.html" | prepend: site.baseurl }}
-[ref-renderer]: {{ "/architecture/Renderer.html" | prepend: site.baseurl }}
-[ref-userInterfaceManager]: {{ "/architecture/UserInterfaceManager.html" | prepend: site.baseurl }}
-[ref-sessionManager]: {{ "/architecture/SessionManager.html" | prepend: site.baseurl }}
-[ref-useCases]: {{ "/architecture/UseCases.html" | prepend: site.baseurl }}
+[Sessionmanager]: {{ "/architecture/SessionManager.html" | prepend: site.baseurl }}
+[Renderer]: {{ "/architecture/Renderer.html" | prepend: site.baseurl }}
+[UserInterfaceManager]: {{ "/architecture/UserInterfaceManager.html" | prepend: site.baseurl }}
+[SessionManager]: {{ "/architecture/SessionManager.html" | prepend: site.baseurl }}
+[UseCases]: {{ "/architecture/UseCases.html" | prepend: site.baseurl }}
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->
