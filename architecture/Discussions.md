@@ -40,7 +40,7 @@ objects being displayed. For instance, a low level-of-detail version of an objec
 may be used if an object is far away from the view as opposed to a high level-of-detail
 version if that object is up close.
 
-[Renderer]: {{ "/architecture/Renderer.html" | prepend(site.baseurl) }}
+[Renderer]: {{ "/architecture/Renderer.html" | prepend: site.baseurl }}
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->
