@@ -18,7 +18,7 @@ connect to the Renderer and instruct the Renderer on the coordinates
 of objects that are defined as meshes, textures, and shaders. The Renderer
 handles the job of efficiently displaying the objects in the view.
 
-A {{ ref-userInterface }} can connect to the Renderer and present controls
+A [UserInterfaceManager] can connect to the Renderer and present controls
 to the user and otherwise manage the appearance and management of
 the 3D view.
 
@@ -48,6 +48,8 @@ rendering synchronization feature, it includes the ability to add
 code that can be tied to the rendering times.
 This feature is either presented as a high performance API or the
 ability to dynamically load code into the Renderer.
+
+[UserInterfaceManager]: {{ "/architecture/UserInterfaceManager.html" | prepend: site.baseurl }}
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->
