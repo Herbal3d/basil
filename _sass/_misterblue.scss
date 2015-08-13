@@ -1,10 +1,11 @@
 .mb-oldcomment {
-    background-color: #e0e0e0;
+    color: $BLOG_TEXT_COLOR;
+    background-color: $BLOG_BACKGROUND_COLOR;
     margin-left: 15px;
     padding-bottom: 10px;
 }
 .mb-oldcommant author {
-    color: #fe5454;
+    color: $BLOG_ACCENT_COLOR;
     font-weight: heavy;
 }
 .mb-oldcommant date {
