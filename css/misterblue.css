@@ -1,0 +1,46 @@
+.mb-oldcomment {
+    background-color: #e0e0e0;
+    margin-left: 15px;
+    padding-bottom: 10px;
+}
+.mb-oldcommant author {
+    color: #fe5454;
+    font-weight: heavy;
+}
+.mb-oldcommant date {
+}
+.mb-content-footer {
+    font-size: smaller;
+    float: right;
+}
+
+.mb-booknav {
+    font-size: larger;
+    font-weight: heavy;
+}
+.mb-bookTable {
+    border-collapse: collapse;
+    border: 1px solid #c0c0c0;
+    width: 100%;
+}
+.mb-bookTable td {
+    border: 1px solid #c0c0c0;
+}
+td.mb-bookCover {
+    width: 20%;
+    text-align: center;
+    padding: 5px 0 5px 0;
+}
+td.mb-bookDescription {
+    width: 80%;
+    align: top;
+}
+.mb-bookTitle {
+    font-weight: heavy;
+    font-size: +1;
+}
+.mb-bookAuthor {
+    font-size: -1;
+}
+.mb-bookComment {
+}

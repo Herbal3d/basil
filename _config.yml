@@ -15,8 +15,16 @@ url: "http://misterblue.github.io" # the base hostname & protocol for your site
 # twitter_username: misterblue
 github_username:  misterblue
 
-# Build settings
-markdown: kramdown
-#highlighter: false
+# Set this to your UA-# value, or '' to disable the block completely
+gaaccount: 'UA-63061357-1'
+
+permalink: /:year/:year-:month-:day-:title
+
 highlighter: pygments
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
+encoding: utf-8
+
+exclude: ['README.md', 'LICENSE']
 encoding: utf-8

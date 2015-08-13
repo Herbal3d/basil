@@ -1,0 +1,36 @@
+---
+layout: post
+# 'status' is the main flag of where the post will appear.
+# status is 'draft' or 'publish'
+# if status is 'publish', post will apprear in blog roll.
+status: draft
+title: ADD-A-TITLE
+author:
+  display_name: Misterblue
+  login: Misterblue
+  email: misterblue-blog@misterblue.com
+  url: http://misterblue.com
+author_login: Misterblue
+author_email: misterblue-blog@misterblue.com
+author_url: http://misterblue.com
+date: 2015-05-23 11:22:20   # SET DATE
+# categories: Basil, Progress, Release
+categories:
+- Basil
+# commentable:
+# comments:
+# - id: 100   # unused number
+#   author: AUTHOR-HANDLE
+#   author_email: AUTHOR-EMAIL
+#   author_url:
+#   date: 2004-10-09 09:22:40  # SET DATE
+#   content: COMENT TEXT
+# - id: 101
+#   author: Misterblue
+#   author_email: misterblue-mt@misterblue.com
+#   author_url: http://www.misterblue.com
+#   date: 2004-10-10 07:23:13
+#   content: >-
+#     COMMENT TEXT
+---
+POST

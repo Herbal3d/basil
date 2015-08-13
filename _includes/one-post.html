@@ -1,0 +1,52 @@
+{% assign thepost = include.thepost %}
+{% assign thecontent = include.thecontent %}
+{% assign ownpage = include.ownpage %}
+
+<div class="article">
+    <div class="well">
+        <h1><a href="{{ site.baseurl}}{{ thepost.url }}">{{ thepost.date | date: "%b %-d, %Y" }} - {{ thepost.title }}</a></h1>
+        <div class="content">
+            {{ thecontent }}
+
+            {% assign commentClass = "" %}
+            {% if ownpage == "yes" %}
+                {% assign commentClass = "" %}
+                {% if thepost.comments %}
+                    <hr>
+                    <h3>Comments:</h3>
+                    {% for comment in thepost.comments %}
+                        <div class="mb-oldcomment" {{ commentClass }} >
+                            <span class="author">{{ comment.author }}</span>
+                            ( <span class="date">{{ comment.date }}</span> ):
+                            {{ comment.content }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if thepost.commentable %}
+                {% endif %}
+            {% else %}
+                {% assign commentClass = 'class="blindtoggle"' %}
+            {% endif %}
+
+            <div class="mb-content-footer">
+                {{ thepost.author.display_name }}, {{ thepost.date }}
+                {% if thepost.categories %}
+                    {% assign first = "first" %}
+                    {% for cat in thepost.categories %}
+                        {% if site.data.categories.display-categories contains cat %}
+                            {% if first == "first" %}
+                                ,
+                            {% else %}
+                                /
+                            {% endif %}
+                            {{ site.data.categories.categories[cat].label }}
+                            {% assign first = "second" %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>

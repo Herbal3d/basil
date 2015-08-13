@@ -1,0 +1,11 @@
+<h1>Links</h1>
+<ul>
+  {% for linkRef in site.data.sidebar-links %}
+    <li><a href="{{ linkRef.url }}"
+      {% if linkRef.hoverText != "" %}
+        alt="{{ linkRef.hoverText }}"
+      {% endif %}
+      >{{ linkRef.label }}</a>
+    </li>
+  {% endfor %}
+</ul>
