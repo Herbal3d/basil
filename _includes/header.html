@@ -5,40 +5,58 @@
     <meta charset="UTF-8">
     <title>{{ site.name }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ site.baseurl }}/css/main.css" rel="stylesheet">
     <script src="{{ site.baseurl }}/js/jquery.min.js"></script>
     <script src="{{ site.baseurl }}/js/bootstrap.min.js"></script>
-    <script src="{{ site.baseurl }}/js/misterblue.js"></script>
+    <script src="{{ site.baseurl }}/js/basil.js"></script>
+    <link href="{{ site.baseurl }}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ site.baseurl }}/css/main.css" rel="stylesheet">
     {% include analytics.html %}
 </head>
 
 <body>
 
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.name }}</a>
-              </div>
-              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    {% for navTab in site.data.mainNav %}
-                        {% if navTab.name == rss %}
-                            <li class="active visible-xs-block">
-                        {% else %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.name }}</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {% for navTab in site.data.mainNav %}
+                    {% if navTab.submenu %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                                    role="button" aria-haspopup="true" aria-expanded="false">
+                                   {{ navTab.label }} 
+                                    <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for dropTab in navTab.submenu %}
+                                    <li>
+                                        <a href="{{ dropTab.url | prepend: site.baseurl }}">
+                                                {{ dropTab.label }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% else %}
+                        {% if navTab.name == page.navigation %}
                             <li class="active">
+                        {% else %}
+                            <li>
                         {% endif %}
                         <a href="{{ navTab.url | prepend: site.baseurl }}">{{ navTab.label }}</a>
                         </li>
-                    {% endfor %}
-                </ul>
-              </div>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

@@ -35,5 +35,8 @@
 
 - name: about
   label: About
-  url: "/about/"
+  url: "/About.html"
 
+- name: rss
+  labal: RSS
+  url: "/feed.xml"

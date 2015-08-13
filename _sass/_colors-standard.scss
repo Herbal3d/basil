@@ -36,16 +36,16 @@ $FONT_SIZE_VERYSMALL: 8px;
 
 $ACCENT_COLOR: $color-complement-1;
 
-$BACKGROUND_COLOR: #ffffef; // even lighter than $color-secondary-2-1;
-$TEXT_COLOR: #000;
-$LINK_COLOR: $color-complement-0;
-$TITLE_BACKGROUND_COLOR: $color-primary-0;
+$BACKGROUND_COLOR: $color-primary-2;
+$TEXT_COLOR: $color-primary-3;
+$LINK_COLOR: $color-primary-4;
+$TITLE_BACKGROUND_COLOR: $color-primary-1;
 $TITLE_TEXT_COLOR: $color-primary-4;
 
-$MENU_BACKGROUND: $color-primary-1;
-$MENU_BACKGROUND_ACCENT: $color-primary-2;
-$MENU_LINE: $color-complement-4;
-$MENU_TEXT: $color-complement-1;
+$MENU_BACKGROUND: $color-secondary-1-1;
+$MENU_TEXT: $color-secondary-1-0;
+$MENU_BACKGROUND_ACTIVE: $color-secondary-1-1;
+$MENU_TEXT_ACTIVE: $color-secondary-1-1;
 
 $BLOG_BACKGROUND_COLOR: #6060a0;
 $BLOG_TEXT_COLOR: $TEXT_COLOR;

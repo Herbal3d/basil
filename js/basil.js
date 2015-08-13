@@ -1,6 +1,6 @@
 // Copyright 2015 Misterblue
 
 // Make an element appear and disappear
-$(document).click(function() {
+$('.clickable').on('click.basil', function() {
     $(".blindtoggle").toggle("blind");
 });
