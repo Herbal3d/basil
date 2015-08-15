@@ -54,7 +54,7 @@ renderer with a external, remotable API and the framework for multiple
 object sources to connect to it and display and interact with 3D objects.
 
 Related projects are:
-* [Pesto]: A session manager to control the many sources connected to Basil
+* [Presto]: A session manager to control the many sources connected to Basil
 * [Loc-Loc]: A universal space server registration and lookup service
 * [Ragu]: [OpenSimulator] space server
 
