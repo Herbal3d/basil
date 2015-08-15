@@ -44,7 +44,8 @@ body {
 }
 
 .well {
-    background-color: $MENU_BACKGROUND;
+    color: $BLOG_TEXT_COLOR;
+    background-color: $BLOG_BACKGROUND_COLOR;
 }
 
 .well h1 {
