@@ -33,16 +33,21 @@ struct objectPositionInfo {
 }
 
 service Basil {
+    // Describe an object to Basil for later display or manipulation
+    // This associates an ID with a block of asset information that can be 
+    //   later displayed or operated on.
     void IdentifyDisplayableObject {
         1: required objectIdentifier id,
+        1: required compactIdentifier idc,
         2: aaBoundingBox aabb,
         3: assetInformation assetInfo
     },
 
-    void DisplayObject {
+    // Update a property of an object
+    void UpdateObjectProperty {
         1: required compactIdentifier idc,
-        2: required objectIdentifier displayableObject,
-        3: objectPositionInfo pos
+        2: required propertyName prop,
+        3: required propertyValue propValue
     },
 
     void UpdateObjectPosition {
