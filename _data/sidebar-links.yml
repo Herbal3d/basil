@@ -1,0 +1,23 @@
+# Sidebar list of interesting links
+# 'label' is displayed text in the 'a' anchor.
+# 'hoverText" is the 'alt' and, of course, 'url' is the target
+
+- name: OpenSimulator
+  label: OpenSimulator
+  hoverText: Virtual world simulator similar to SecondLife(r)
+  url: http://opensimulator.org/
+
+- name: Pesto
+  label: Pesto
+  hoverText: Basil viewer session manager
+  url: http://misterblue.github.io/pesto/
+
+- name: Ragu
+  label: Ragu
+  hoverText: OpenSimulator space manager for Basil
+  url: http://misterblue.github.io/ragu/
+
+- name: loc-loc
+  label: loc-loc
+  hoverText: Space server lookup service
+  url: http://misterblue.github.io/loc-loc/

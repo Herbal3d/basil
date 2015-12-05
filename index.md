@@ -12,10 +12,10 @@ The Basil viewer is surrounded by several other components:
 
 * Basil Viewer to display 3D objects.
   This is an X11-like render client specialized for 3D objects;
-* [Presto] session manager manages connections to virtual worlds.
+* [Pesto] session manager manages connections to virtual worlds.
   It finds and instantiates connection modules to virtual world or augmented reality object sources;
 * [Loc-Loc] is a univeral space server registration and lookup service.
-* [Ragu] connectes the Basil viewer to an [OpenSimulator] world to display
+* [Ragu] connects the Basil viewer to an [OpenSimulator] world to display
   the objects and avatars from there.
 
 Added to these modules are connection modules which connect the viewer
@@ -37,8 +37,8 @@ This way, modules can have different implementations, can be distributed
   {% endfor %}
 
 [OpenSimulator]: http://opensimulator.org/
-[Presto]:  http://misterblue.github.io/presto/
+[Pesto]:  http://misterblue.github.io/pesto/
 [Loc-Loc]: http://misterblue.github.io/loc-loc/
 [Ragu]: http://misterblue.github.io/ragu/
-<!-- vim: ts=2 sw=2 ai et spell
+<!-- vim: ts=2 sw=2 ai et nospell
 -->
