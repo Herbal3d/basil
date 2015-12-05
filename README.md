@@ -54,7 +54,7 @@ renderer with a external, remotable API and the framework for multiple
 object sources to connect to it and display and interact with 3D objects.
 
 Related projects are:
-* [Presto]: A session manager to control the many sources connected to Basil
+* [Pesto]: A session manager to control the many sources connected to Basil
 * [Loc-Loc]: A universal space server registration and lookup service
 * [Ragu]: [OpenSimulator] space server
 
@@ -64,6 +64,6 @@ Related projects are:
 [GearVR]: http://www.samsung.com/global/microsite/gearvr/
 [High Fidelity]: http://highfidelity.io/
 [X Window System]: http://en.wikipedia.org/wiki/X_Window_System
-[Presto]:  http://misterblue.github.io/presto/
+[Pesto]:  http://misterblue.github.io/pesto/
 [Loc-Loc]: http://misterblue.github.io/loc-loc/
 [Ragu]: http://misterblue.github.io/ragu/
