@@ -7,9 +7,9 @@ layout: default
 There are many separate components in a complete Basil system.
 This is a list of potential component names all with a herbal theme.
 
-* ~~Basil~~
-* ~~Pesto~~
-* ~~Ragu~~
+* ~~Basil~~: main browser
+* ~~Pesto~~: session manager
+* ~~Ragu~~: OpenSimulator space manager
 * Algelica
 * Boldo
 * Borage
