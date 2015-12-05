@@ -45,12 +45,11 @@ There is additionally the
 which handles
 the communication and state between all the parts for a particular individual
 session. The
-[SessionManager]
+[Session Manager]
 handles the configuration
 parameters for the session and all the modules that make up the session.
 
-Refer to the
-[Use Cases]
+Refer to the [Use Cases]
 for descriptions of how this new model
 works for different uses.
 The use cases described include
@@ -91,11 +90,10 @@ The initial implementation is in JavaScript but that is not required.
 Future module implementations can be in any programming language as long as
 the API interfaces are kept.
 
-[Sessionmanager]: {{ "/architecture/SessionManager.html" | prepend: site.baseurl }}
 [Renderer]: {{ "/architecture/Renderer.html" | prepend: site.baseurl }}
-[UserInterfaceManager]: {{ "/architecture/UserInterfaceManager.html" | prepend: site.baseurl }}
-[SessionManager]: {{ "/architecture/SessionManager.html" | prepend: site.baseurl }}
-[UseCases]: {{ "/architecture/UseCases.html" | prepend: site.baseurl }}
+[User Interface Manager]: {{ "/architecture/UserInterfaceManager.html" | prepend: site.baseurl }}
+[Session Manager]: {{ "/architecture/SessionManager.html" | prepend: site.baseurl }}
+[Use Cases]: {{ "/architecture/UseCases.html" | prepend: site.baseurl }}
 
 <!-- vim: ts=2 sw=2 ai et spell
 -->
