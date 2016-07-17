@@ -7,8 +7,8 @@ Basil is a 3D object viewer. That sounds like a thousand other projects
 doesn't it?
 Well, Basil is different in that its architecture is like an X11 server.
 
-Basil's archtecture is an attempt to build a virtual world and
-augemented reality viewer where an [OpenSimulator] avatar can stand
+Basil's architecture is an attempt to build a virtual world and
+augmented reality viewer where an [OpenSimulator] avatar can stand
 next to a [High Fidelity] avatar. And even interact.
 
 For a person to look into a virtual world, there needs to be some device and
@@ -54,6 +54,7 @@ renderer with a external, remotable API and the framework for multiple
 object sources to connect to it and display and interact with 3D objects.
 
 Related projects are:
+
 * [Pesto]: A session manager to control the many sources connected to Basil
 * [Loc-Loc]: A universal space server registration and lookup service
 * [Ragu]: [OpenSimulator] space server

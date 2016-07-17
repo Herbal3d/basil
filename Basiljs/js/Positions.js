@@ -50,9 +50,6 @@ function InitPositions() {
 	GP.refPos = GP.refMatrix.getPosition();
 	GP.refRot = new THREE.Quaternion().setFromRotationMatrix(GP.refMatrix.getBasis());
 }
-function lPosFromgPos() {
-	
-}
 
 // Return a transform matrix passed GPS latitude and longitude strings
 function gPositionFromGPS(latlong) {
@@ -67,7 +64,7 @@ function gPosFromlPos(pos) {
 	
 }
 
-// Given a position on the Earth, return a reference matrix with surface rotation.
+// Given a position on the Earth, return a rotation matrix with surface rotation.
 // The rotation Z points away from the center of the earth and X points in the
 //    direction of the north pole.
 function computeLocalReferenceFrame(pos) {
