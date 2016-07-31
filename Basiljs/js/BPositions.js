@@ -34,39 +34,61 @@
 //    floats.
 // Because of limitations in display accuracy and the usual use of flat,
 //    zero based coordinates, every object is assigned a local position ("lPos")
-//    which is the gPos converted using a local reference global position ("refPos")
-//    and a reference frame rotation ("refRot"). These are often combined into a
-//    reference transform matrix ("refMatix"). The refRot is often computed to be
+//    which is the gPos converted using a local reference global transform ("GP.refLoc").
+//    The rotation of the reference is often computed to be
 //    tangential to the global sphere thus giving the local coordinates similarity
 //    to standing on the Earth.
 
-// Sometimes the refPos has to change due to camera movement or whatever. This
+// Sometimes the refLoc has to change due to camera movement or whatever. This
 //    requires all objects to be passed over an their lPos to be recomputed from
 //    their gPos.
 
+// An object to hold a transform or whatever is holding a position/rotation.
+function Loc() = {
+    this.location = new THREE.Matix4();
+};
+
+Loc.prototype.trans = function() {
+	return this.location;
+};
+
+Loc.prototype.pos = function() {
+    return this.location.getPosition();
+};
+
+// Return a quatenion of the rotation held in this location
+Loc.prototype.rot = function() {
+	return new THREE.Quaternion().setFromRotationMatrix(this.location.getBasis());
+};
+
+Loc.prototype.setTrans = function(aTrans) {
+    this.location.copy(aTrans);
+};
+
+// =====================================================
+
 function InitPositions() {
+    GP.refLoc = new Loc();
 	// Start at Disneyland
-	GP.refMatrix = gPositionFromGPS("33.8120962,-117.9211629,17z");
-	GP.refPos = GP.refMatrix.getPosition();
-	GP.refRot = new THREE.Quaternion().setFromRotationMatrix(GP.refMatrix.getBasis());
-}
+    GP.refLoc.setTrans(gPositionFromGPS("33.8120962,-117.9211629,17z"));
+};
 
 // Return a transform matrix passed GPS latitude and longitude strings
 function gPositionFromGPS(latlong) {
-}
+};
 
-// Convert a global position into a local position given GP.refMatrix.
+// Convert a global position into a local position given GP.refLoc.
 function lPosFromgPos(pos) {
-}
+};
 
-// Convert a local position into a global position given GP.refMatrix
+// Convert a local position into a global position given GP.refLoc
 function gPosFromlPos(pos) {
 	
-}
+};
 
 // Given a position on the Earth, return a rotation matrix with surface rotation.
 // The rotation Z points away from the center of the earth and X points in the
 //    direction of the north pole.
 function computeLocalReferenceFrame(pos) {
 	
-}
+};
