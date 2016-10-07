@@ -44,8 +44,8 @@
 //    their gPos.
 
 // An object to hold a transform or whatever is holding a position/rotation.
-function Loc() = {
-    this.location = new THREE.Matix4();
+function Loc() {
+    this.location = new THREE.Matrix4();
 };
 
 Loc.prototype.trans = function() {
@@ -70,11 +70,12 @@ Loc.prototype.setTrans = function(aTrans) {
 function InitPositions() {
     GP.refLoc = new Loc();
 	// Start at Disneyland
-    GP.refLoc.setTrans(gPositionFromGPS("33.8120962,-117.9211629,17z"));
+    GP.refLoc.setTrans(gPositionFromLatLong("33.8120962", "-117.9211629,17z"));
 };
 
-// Return a transform matrix passed GPS latitude and longitude strings
-function gPositionFromGPS(latlong) {
+// Return a transform matrix passed latitude and longitude strings
+function gPositionFromLatLong(lat, long) {
+    return new THREE.Matrix4(); // TODO: put some real code here
 };
 
 // Convert a global position into a local position given GP.refLoc.
