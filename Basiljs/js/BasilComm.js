@@ -29,12 +29,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function BasilComm() {
+var BasilComm = BasilComm || {};
+
+BasilComm.Init = function() {
 };
 
-BasilComm.prototype.Init = function() {
+BasilComm.Start = function() {
 };
 
-BasilComm.prototype.Start = function() {
+BasilComm.Connect = function(spaceManagerURL) {
 };
 

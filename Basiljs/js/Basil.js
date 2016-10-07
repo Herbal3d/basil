@@ -30,25 +30,26 @@
  */
 
 // Global parameters and variables. "GP.variable"
-var GP = {};
+var GP = GP || {};
 
 // Do environment initialization (loading scripts, initializing graphics, ...)
 // Returns a promise that is resolved when everything is initialized.
 function BasilInit() {
-    // Scene positions are initialized in GP
-    InitPositions();
 
     // Initialize the graphics underpinnings.
     // This gets threejs setup and ready to go
-    GP.Graphics = new BasilGraphics();
-    GP.Graphics.Init();
+    GP.Display = BasilGraphics;
+    GP.Display.Init();
 
     // Initialize the communication stuff.
-    GP.Comm = new BasilComm();
+    GP.Comm = BasilComm;
     GP.Comm.Init();
+
+    // Scene positions are initialized in GP
+    InitPositions();
 }
 
 function BasilStart() {
-    GP.Graphics.Start();
+    GP.Display.Start();
     GP.Comm.Start();
 }

@@ -29,29 +29,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function BasilGraphics() {
+var BasilGraphics = BasilGraphics || { };
+
+BasilGraphics.Init = function() {
+	BasilGraphics.scene = new THREE.Scene();
+
+	BasilGraphics.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+	BasilGraphics.camera.position.z = 1000;
+
+	BasilGraphics.renderer = new THREE.WebGLRenderer();
+	BasilGraphics.renderer.setSize( window.innerWidth, window.innerHeight );
+
+	document.body.appendChild( BasilGraphics.renderer.domElement );
 };
 
-BasilGraphics.prototype.Init = function() {
-	GP.scene = new THREE.Scene();
-
-	GP.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-	GP.camera.position.z = 1000;
-
-	GP.renderer = new THREE.WebGLRenderer();
-	GP.renderer.setSize( window.innerWidth, window.innerHeight );
-
-	document.body.appendChild( renderer.domElement );
-};
-
-BasilGraphics.prototype.Start = function() {
+BasilGraphics.Start = function() {
 	function render() {
 		requestAnimationFrame(render);
-		DoAnimations();
-		GP.renderer.render(GP.scene, GP.camera);
+		BasilGraphics.DoAnimations();
+		BasilGraphics.renderer.render(BasilGraphics.scene, BasilGraphics.camera);
 	}
 	render();
 };
 
-BasilGraphics.prototype.DoAnimations = function() {
+BasilGraphics.DoAnimations = function() {
 };
