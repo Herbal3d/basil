@@ -32,22 +32,11 @@
 var BasilComm = BasilComm || {};
 
 BasilComm.Init = function() {
-    BasilComm.transports = {};
-    BasilComm.protocols = {};
-    BasilComm.clients = {};
 };
 
 BasilComm.Start = function() {
 };
 
 BasilComm.Connect = function(spaceManagerURL, interface) {
-    var transport = = new Thrift.Transport(spaceManagerURL);
-    BasilComm.transports[spaceManagerURL] = transport;
-
-    var protocol = new Thrift.Protocol(transport);
-    BasilComm.protocols[spaceManagerURL] = protocol;
-
-    var client = new interface(protocol);
-    BasilComm.clients[spaceManagerURL] = client;
 };
 
