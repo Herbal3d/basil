@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016, Robert Adams
+ * Copyright (c) 2017, Robert Adams
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,25 +31,25 @@
 
 // Global parameters and variables. "GP.variable"
 var GP = GP || {};
+DebugLog('Basil.js: in.');
 
-// Do environment initialization (loading scripts, initializing graphics, ...)
-// Returns a promise that is resolved when everything is initialized.
-function BasilInit() {
+// populate globals with configuration parameters
+GP = require('../config.json');
+GP.Ready = false;
 
-    // Initialize the graphics underpinnings.
-    // This gets threejs setup and ready to go
-    GP.Display = BasilGraphics;
-    GP.Display.Init();
+DebugLog('Basil.js: after config setup. GP.webglComment=' + GP.webglComment);
 
-    // Initialize the communication stuff.
-    GP.Comm = BasilComm;
-    GP.Comm.Init();
+GP.comm = require('BasilComm');
+GP.display = require('BasilGraphics');
+GP.coords = require('BasilCoordinates');
 
-    // Scene positions are initialized in GP
-    InitPositions();
-}
+DebugLog('Basiljs: after requires');
 
-function BasilStart() {
-    GP.Display.Start();
-    GP.Comm.Start();
-}
+// called when the page is completely loaded
+GP.BasilStart = function() {
+    GP.display.Init(document.getElementById(GP.page.webGLcontainerId));
+
+    GP.display.Start();
+    GP.comm.Start();
+};
+

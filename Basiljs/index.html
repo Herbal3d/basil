@@ -3,25 +3,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Basil</title>
-<link rel="stylesheet" href="css/Basiljs.css" type="text/css"/>
+<link rel="stylesheet" href="Basiljs.css" type="text/css"/>
 
 <script type="text/javascript" src="jslibs/jquery-3.1.0.min.js"></script>
 <script type="text/javascript" src="jslibs/three-dev-20170106.min.js"></script>
 <!-- <script type="text/javascript" src="jslibs/three-r83.min.js"></script> -->
 
-<script type="text/javascript" src="js/Basil.js"></script>
-<script type="text/javascript" src="js/BasilGraphics.js"></script>
-<script type="text/javascript" src="js/BasilComm.js"></script>
-<script type="text/javascript" src="js/BPositions.js"></script>
+<script type="text/javascript" src="js/BasilDebug.js"></script>
+<script type="text/wreq" src="js/Basil.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function() {
-	BasilInit();
-	BasilStart();
-});
+    DebugLog('READY: GP.webglcomment=' + GP.webglComment);
+    // GP.BasilStart();
 </script>
 </head>
 <body id="BasilBody">
+<div id="webGLcontainer"></div>
 <div id="DEBUGG"></div>
 </body>
 </html>

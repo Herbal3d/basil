@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016, Robert Adams
+ * Copyright (c) 2017, Robert Adams
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var BasilComm = BasilComm || {};
+modules.export = (function() {
+    return operations;
+})();
 
-BasilComm.Init = function() {
-};
-
-BasilComm.Start = function() {
-};
-
-BasilComm.Connect = function(spaceManagerURL, interface) {
+var operations = {
+    'Init': function() {
+    },
+    'Start': function() {
+    },
+    'Connect': function(spaceManagerURL, interface) {
+    },
+    'noComma': 0
 };
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016, Robert Adams
+ * Copyright (c) 2017, Robert Adams
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,29 +67,31 @@ Loc.prototype.setTrans = function(aTrans) {
 
 // =====================================================
 
-function InitPositions() {
+module.exports = (function() {
     GP.refLoc = new Loc();
 	// Start at Disneyland
     GP.refLoc.setTrans(gPositionFromLatLong("33.8120962", "-117.9211629,17z"));
-};
 
-// Return a transform matrix passed latitude and longitude strings
-function gPositionFromLatLong(lat, long) {
-    return new THREE.Matrix4(); // TODO: put some real code here
-};
+    return operations;
+})();
 
-// Convert a global position into a local position given GP.refLoc.
-function lPosFromgPos(pos) {
-};
+var operations = {
+    // Return a transform matrix passed latitude and longitude strings
+    'gPositionFromLatLong': function(lat, long) {
+        return new THREE.Matrix4(); // TODO: put some real code here
+    },
 
-// Convert a local position into a global position given GP.refLoc
-function gPosFromlPos(pos) {
-	
-};
+    // Convert a global position into a local position given GP.refLoc.
+    'lPosFromgPos': function(pos) {
+    },
 
-// Given a position on the Earth, return a rotation matrix with surface rotation.
-// The rotation Z points away from the center of the earth and X points in the
-//    direction of the north pole.
-function computeLocalReferenceFrame(pos) {
-	
+    // Convert a local position into a global position given GP.refLoc
+    'gPosFromlPos': function(pos) {
+    },
+
+    // Given a position on the Earth, return a rotation matrix with surface rotation.
+    // The rotation Z points away from the center of the earth and X points in the
+    //    direction of the north pole.
+    'computeLocalReferenceFrame': function(pos) {
+    }
 };
