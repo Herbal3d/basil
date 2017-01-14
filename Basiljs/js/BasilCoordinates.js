@@ -43,55 +43,58 @@
 //    requires all objects to be passed over an their lPos to be recomputed from
 //    their gPos.
 
-// An object to hold a transform or whatever is holding a position/rotation.
-function Loc() {
-    this.location = new THREE.Matrix4();
-};
-
-Loc.prototype.trans = function() {
-	return this.location;
-};
-
-Loc.prototype.pos = function() {
-    return this.location.getPosition();
-};
-
-// Return a quatenion of the rotation held in this location
-Loc.prototype.rot = function() {
-	return new THREE.Quaternion().setFromRotationMatrix(this.location.getBasis());
-};
-
-Loc.prototype.setTrans = function(aTrans) {
-    this.location.copy(aTrans);
-};
-
 // =====================================================
 
-module.exports = (function() {
+define(['threejs'], function(THREE) {
+    // An object to hold a transform or whatever is holding a position/rotation.
+    function Loc() {
+        this.location = new THREE.Matrix4();
+    };
+
+    Loc.prototype.trans = function() {
+        return this.location;
+    };
+
+    Loc.prototype.pos = function() {
+        return this.location.getPosition();
+    };
+
+    // Return a quatenion of the rotation held in this location
+    Loc.prototype.rot = function() {
+        return new THREE.Quaternion().setFromRotationMatrix(this.location.getBasis());
+    };
+
+    Loc.prototype.setTrans = function(aTrans) {
+        this.location.copy(aTrans);
+    };
+
+    var operations = {
+
+        // Return a transform matrix passed latitude and longitude strings
+        'gPositionFromLatLong': function(lat, long) {
+            return new THREE.Matrix4(); // TODO: put some real code here
+        },
+
+        // Convert a global position into a local position given GP.refLoc.
+        'lPosFromgPos': function(pos) {
+        },
+
+        // Convert a local position into a global position given GP.refLoc
+        'gPosFromlPos': function(pos) {
+        },
+
+        // Given a position on the Earth, return a rotation matrix with surface rotation.
+        // The rotation Z points away from the center of the earth and X points in the
+        //    direction of the north pole.
+        'computeLocalReferenceFrame': function(pos) {
+        }
+    };
+
     GP.refLoc = new Loc();
 	// Start at Disneyland
-    GP.refLoc.setTrans(gPositionFromLatLong("33.8120962", "-117.9211629,17z"));
+    GP.refLoc.setTrans(operations.gPositionFromLatLong("33.8120962", "-117.9211629,17z"));
 
     return operations;
-})();
 
-var operations = {
-    // Return a transform matrix passed latitude and longitude strings
-    'gPositionFromLatLong': function(lat, long) {
-        return new THREE.Matrix4(); // TODO: put some real code here
-    },
+});
 
-    // Convert a global position into a local position given GP.refLoc.
-    'lPosFromgPos': function(pos) {
-    },
-
-    // Convert a local position into a global position given GP.refLoc
-    'gPosFromlPos': function(pos) {
-    },
-
-    // Given a position on the Earth, return a rotation matrix with surface rotation.
-    // The rotation Z points away from the center of the earth and X points in the
-    //    direction of the north pole.
-    'computeLocalReferenceFrame': function(pos) {
-    }
-};

@@ -31,25 +31,45 @@
 
 // Global parameters and variables. "GP.variable"
 var GP = GP || {};
-DebugLog('Basil.js: in.');
 
-// populate globals with configuration parameters
-GP = require('../config.json');
-GP.Ready = false;
+requirejs.config({
+    "baseUrl": "",
+    "paths": {
+        "config": "config",
+        "jquery": "jslibs/jquery-3.1.0.min",
+        "threejs": "jslibs/three-dev-20170106",
+        "BasilComm": "js/BasilComm",
+        "BasilGraphics": "js/BasilGraphics",
+        "BasilCoordinates": "js/BasilCoordinates"
+    },
+    "shim": {
+        
+    }
+});
 
-DebugLog('Basil.js: after config setup. GP.webglComment=' + GP.webglComment);
+require(['config', 'jquery', 'threejs', 'BasilComm', 'BasilGraphics', 'BasilCoordinates'],
+    function(config, $, THREE, bComm, bDisplay, bCoord) {
+        GP = config;
+        GP.Ready = false;
 
-GP.comm = require('BasilComm');
-GP.display = require('BasilGraphics');
-GP.coords = require('BasilCoordinates');
+        GP.bComm = bComm;
+        GP.bDisplay = bDisplay;
+        GP.bCoord = bCoord;
 
-DebugLog('Basiljs: after requires');
+        bDisplay.Init(document.getElementById(GP.page.webGLcontainerId));
+        bDisplay.Start();
+        bComm.Start();
+    }
+);
 
-// called when the page is completely loaded
-GP.BasilStart = function() {
-    GP.display.Init(document.getElementById(GP.page.webGLcontainerId));
-
-    GP.display.Start();
-    GP.comm.Start();
+// Adds a text line to a div and scroll the area
+var DebugLogLines = 20;
+function DebugLog(msg) {
+    if ($('#DEBUGG')) {
+        $('#DEBUGG').append('<div>' + msg + '</div>');
+        if ($('#DEBUGG').children().length > DebugLogLines) {
+            $('#DEBUGG').children('div:first').remove();
+            
+        }
+    }
 };
-

@@ -29,9 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-modules.export = (function() {
+define([], function() {
     return operations;
-})();
+});
 
 var operations = {
     'Init': function() {
