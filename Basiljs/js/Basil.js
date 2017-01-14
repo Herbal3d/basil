@@ -56,7 +56,9 @@ require(['config', 'jquery', 'threejs', 'BasilComm', 'BasilGraphics', 'BasilCoor
         GP.display = bDisplay;
         GP.coord = bCoord;
 
-        bDisplay.Init(document.getElementById(GP.page.webGLcontainerId));
+        var container = document.getElementById(GP.config.page.webGLcontainerId);
+        var canvas = document.getElementById(GP.config.page.webGLcanvasId);
+        bDisplay.Init(container, canvas);
         bDisplay.Start();
         bComm.Start();
     }

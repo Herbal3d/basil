@@ -1,13 +1,17 @@
-// configuration
+// Configuration
+// This is called by RequireJS and expects a parameters map returned.
+//     Do any processing needed and just return a data structure.
+// Note: colors may be specified as strings (a number as a string) or numbers.
 define(
     {
-        'pageComment': 'Parameters for the main display page',
+        // Parameters for the main display page
         'page': {
             'webGLcontainerId': 'webGLcontainer',
+            'webGLcanvasId': 'webGLcanvas',
             'noComma': 0
         },
 
-        'webglComment': 'Parameters for the webgl environment',
+        // Parameters for the webgl environment
         'webgl': {
             'camera': {
                 'initialCameraPosition': [ 200, 50, 200 ],
@@ -21,7 +25,7 @@ define(
                     'intensity': 0.5,
                     'noComma': 0
                 },
-                'directionalComment': 'placeholder for the eventual sun system',
+                // placeholder for the eventual sun system
                 'directional': {
                     'color': '0xeeeeee',
                     'position': [ 1000, 1000, 1000 ],
@@ -38,7 +42,9 @@ define(
             },
             'renderer': {
                 'params': {
-                    'antialias': true
+                    'antialias': true,
+                    'alphs': true,      // there are alpha textures in the scene
+                    'logarithmicDepthBuffer': false
                 },
                 'clearColor': '0x222222',
                 'shadows': {

@@ -1,0 +1,80 @@
+@font-global-family: Veranda,Arial,Helvetica,sans-serif;
+@font-global-size: 12px;
+
+@color-global-color: #baaf0b;
+@color-global-bg: #369e09;
+
+@color-dialog-color: #baaf08;
+@color-dialog-bg: #86af0a;
+@dialog-opacity: 0.5;
+
+@color-debug-color: #e4da1e;
+@color-debug-bg: #4d6600;
+@debug-opacity: 0.5;
+
+// overlay dialog box definition for mixins
+.defn-dialog {
+    margin: 1em;
+    padding: 1em;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    color: @color-dialog-color;
+    background: @color-dialog-bg;
+    opacity: @dialog-opacity;
+
+}
+
+body {
+    font-family: @font-global-family;
+    font-size: @font-global-size;
+    color: @color-global-color;
+    background: @color-global-bg;
+    padding: 0px;
+    margin: 0px;
+}
+
+#pageLayout {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 98%;
+    height: 98%;
+    padding: 0px;
+    margin: 0px;
+}
+
+#webGLcontainer {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 5px;
+}
+
+#webGLcanvas {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 5px;
+}
+
+#controls {
+    position: absolute;
+    right: 0%;
+    bottom: 0%;
+    width: 40%;
+    height: 30em;
+    .defn-dialog;
+}
+
+
+#DEBUGG {
+    position: absolute;
+    left: 0%;
+    bottom: 0%;
+    width: 50%;
+    height: 30em;
+    .defn-dialog;
+    color: @color-debug-color;
+    background: @color-debug-bg;
+    opacity: @debug-opacity;
+}
