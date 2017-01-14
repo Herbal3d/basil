@@ -49,12 +49,12 @@ requirejs.config({
 
 require(['config', 'jquery', 'threejs', 'BasilComm', 'BasilGraphics', 'BasilCoordinates'],
     function(config, $, THREE, bComm, bDisplay, bCoord) {
-        GP = config;
+        GP.config = config;
         GP.Ready = false;
 
-        GP.bComm = bComm;
-        GP.bDisplay = bDisplay;
-        GP.bCoord = bCoord;
+        GP.comm = bComm;
+        GP.display = bDisplay;
+        GP.coord = bCoord;
 
         bDisplay.Init(document.getElementById(GP.page.webGLcontainerId));
         bDisplay.Start();

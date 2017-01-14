@@ -42,42 +42,42 @@ define(['threejs'], function(THREE) {
 
                 GR.scene = new THREE.Scene();
 
-                GR.camera = new THREE.PerspectiveCamera( 75, container.innerWidth / container.innerHeight, 1, GP.webgl.camera.initialViewDistance );
+                GR.camera = new THREE.PerspectiveCamera( 75, container.innerWidth / container.innerHeight, 1, GP.config.webgl.camera.initialViewDistance );
                 GR.camera.up = new THREE.Vector3(0, 1, 0);
-                GR.camera.position.fromArray(GP.webgl.camera.initialCameraPosition);
+                GR.camera.position.fromArray(GP.config.webgl.camera.initialCameraPosition);
                 var lookAt = new THREE.Vector3;
-                lookAt.fromArray(GP.webgl.camera.initialCameraLookAt);
+                lookAt.fromArray(GP.config.webgl.camera.initialCameraLookAt);
                 GR.camera.lookAt(lookAt);
                 GR.scene.add(GR.camera);
 
-                if (GP.webgl.lights) {
-                    if (GP.webgl.lights.ambient) {
-                        var ambient = new THREE.AmbientLight(GP.webgl.lights.ambient.color,
-                                                            GP.webgl.lights.ambient.intensity);
+                if (GP.config.webgl.lights) {
+                    if (GP.config.webgl.lights.ambient) {
+                        var ambient = new THREE.AmbientLight(GP.config.webgl.lights.ambient.color,
+                                                            GP.config.webgl.lights.ambient.intensity);
                         GR.scene.add(ambient);
                     }
-                    if (GP.webgl.lights.directional) {
-                        var directional = new THREE.DirectionalLight(GP.webgl.lights.directional.color,
-                                                            GP.webgl.lights.directional.intensity);
-                        directional.position.fromArray(GP.webgl.lights.directional.position).normalize();
+                    if (GP.config.webgl.lights.directional) {
+                        var directional = new THREE.DirectionalLight(GP.config.webgl.lights.directional.color,
+                                                            GP.config.webgl.lights.directional.intensity);
+                        directional.position.fromArray(GP.config.webgl.lights.directional.position).normalize();
                         GR.directionalLight = directional;
-                        if (GP.webgl.lights.directional.shadows) {
+                        if (GP.config.webgl.lights.directional.shadows) {
                             directional.castShadow = true;
-                            directional.shadow.bias = GP.webgl.lights.directional.shadows.bias;
-                            directional.shadow.mapSize.width = GP.webgl.lights.directional.shadows.mapWidth;
-                            directional.shadow.mapSize.height = GP.webgl.lights.directional.shadows.mapHeight;
+                            directional.shadow.bias = GP.config.webgl.lights.directional.shadows.bias;
+                            directional.shadow.mapSize.width = GP.config.webgl.lights.directional.shadows.mapWidth;
+                            directional.shadow.mapSize.height = GP.config.webgl.lights.directional.shadows.mapHeight;
                         }
                         GR.scene.add(directional);
                     }
                 }
 
-                GR.renderer = new THREE.WebGLRenderer(GP.webgl.renderer.params);
-                if (GP.webgl.renderer.clearColor) {
-                    GR.renderer.setClearColor(GP.webgl.renderer.clearColor);
+                GR.renderer = new THREE.WebGLRenderer(GP.config.webgl.renderer.params);
+                if (GP.config.webgl.renderer.clearColor) {
+                    GR.renderer.setClearColor(GP.config.webgl.renderer.clearColor);
                 }
                 GR.renderer.setSize( container.offsetWidth, container.offsetWidth );
 
-                if (GP.webgl.renderer.shadows) {
+                if (GP.config.webgl.renderer.shadows) {
                     GR.renderer.shadowMap.enabled = true;
                     GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
                 }
