@@ -61,6 +61,15 @@ require(['config', 'jquery', 'threejs', 'Comm', 'Graphics', 'Coordinates', 'Cont
         var container = document.getElementById(GP.config.page.webGLcontainerId);
         var canvas = document.getElementById(GP.config.page.webGLcanvasId);
         pDisplay.Init(container, canvas);
+
+        // Whether debug output window is displayed can be set in the configuration file
+        if (GP.config.page.showDebug) {
+            GP.controls.ShowDebug(GP.config.page.showDebug);
+        }
+        else {
+            GP.controls.ShowDebug(false);
+        }
+
         pDisplay.Start();
         pComm.Start();
     }

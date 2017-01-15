@@ -37,6 +37,16 @@ define(['jquery'], function($) {
         },
         'Start': function() {
         },
+        'ShowDebug': function(onOff) {
+            if (onOff) {
+                var showMS = GP.config.page.DebugShowMS ? GP.config.page.DebugShowMS : 800;
+                $('#DEBUGG').show(showMS);
+            }
+            else {
+                var hideMS = GP.config.page.DebugHideMS ? GP.config.page.DebugHideMS : 400;
+                $('#DEBUGG').hide(hideMS);
+            }
+        },
         'noComma': 0
     };
 });

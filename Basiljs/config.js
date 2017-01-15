@@ -8,6 +8,7 @@ define(
         'page': {
             'webGLcontainerId': 'webGLcontainer',
             'webGLcanvasId': 'webGLcanvas',
+            'showDebug': true,
             'noComma': 0
         },
 
