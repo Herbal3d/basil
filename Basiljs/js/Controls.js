@@ -29,14 +29,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- // Adds a text line to a div and scroll the area
- var DebugLogLines = 20;
- function DebugLog(msg) {
-    if ($('#DEBUGG')) {
-        $('#DEBUGG').append('<div>' + msg + '</div>');
-        if ($('#DEBUGG').children().length > DebugLogLines) {
-            $('#DEBUGG').children('div:first').remove();
-            
-        }
-    }
- };
+define(['jquery'], function($) {
+    return op;
+
+    var op = {
+        'Init': function() {
+        },
+        'Start': function() {
+        },
+        'noComma': 0
+    };
+});
+
+

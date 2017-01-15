@@ -38,29 +38,31 @@ requirejs.config({
         "config": "config",
         "jquery": "jslibs/jquery-3.1.0.min",
         "threejs": "jslibs/three-dev-20170106",
-        "BasilComm": "js/BasilComm",
-        "BasilGraphics": "js/BasilGraphics",
-        "BasilCoordinates": "js/BasilCoordinates"
+        "Comm": "js/Comm",
+        "Graphics": "js/Graphics",
+        "Coordinates": "js/Coordinates",
+        "Controls": "js/Controls"
     },
     "shim": {
         
     }
 });
 
-require(['config', 'jquery', 'threejs', 'BasilComm', 'BasilGraphics', 'BasilCoordinates'],
-    function(config, $, THREE, bComm, bDisplay, bCoord) {
+require(['config', 'jquery', 'threejs', 'Comm', 'Graphics', 'Coordinates', 'Controls'],
+    function(config, $, THREE, pComm, pDisplay, pCoord, pControls) {
         GP.config = config;
         GP.Ready = false;
 
-        GP.comm = bComm;
-        GP.display = bDisplay;
-        GP.coord = bCoord;
+        GP.comm = pComm;
+        GP.display = pDisplay;
+        GP.coord = pCoord;
+        GP.controls = pControls;
 
         var container = document.getElementById(GP.config.page.webGLcontainerId);
         var canvas = document.getElementById(GP.config.page.webGLcanvasId);
-        bDisplay.Init(container, canvas);
-        bDisplay.Start();
-        bComm.Start();
+        pDisplay.Init(container, canvas);
+        pDisplay.Start();
+        pComm.Start();
     }
 );
 
