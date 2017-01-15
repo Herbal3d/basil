@@ -17,10 +17,16 @@
     <div id="webGLcontainer">
         <canvas id="webGLcanvas"></canvas>
     </div>
-    <div id="controls"></div>
-        <button class="button" id="ButtonLoad">Load</button>
-        <input type="text" class="textInput" id="ToLoadText">./gltf/testtest02.gltf</button>
-        <button class="button" id="ButtonShowDebug">Show Debug</button>
+    <div id="controls">
+        <button type="button" class="button" id="ButtonLoad">Load</button>
+        <!-- http://stackoverflow.com/questions/1962041/jquery-dynamically-update-other-option-in-select -->
+        <select>
+            <option value="./gltf/testtest02.gltf" selected/>testtest02</option>
+            <option value="./gltf/testtest88.gltf">testtest88</option>
+            <option value="./gltf/testtest11.gltf">testtest11</option>
+        </select>
+        <button type="button" class="button" id="ButtonShowDebug">Show Debug</button>
+    </div>
     <div id="DEBUGG"></div>
 </div>
 </body>

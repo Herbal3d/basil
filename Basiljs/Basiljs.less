@@ -4,9 +4,13 @@
 @color-global-color: #baaf0b;
 @color-global-bg: #369e09;
 
-@color-dialog-color: #baaf08;
+@color-dialog-color: #f0e8af;
 @color-dialog-bg: #86af0a;
-@dialog-opacity: 0.5;
+@dialog-opacity: 0.8;
+
+@color-dialog-accent: #b8af0b;
+@color-dialog-button-color: @color-dialog-color;
+@color-dialog-button-bg: #4dc41a;
 
 @color-debug-color: #e4da1e;
 @color-debug-bg: #4d6600;
@@ -21,7 +25,31 @@
     color: @color-dialog-color;
     background: @color-dialog-bg;
     opacity: @dialog-opacity;
+}
 
+.defn-button {
+    display: inline;
+    margin: 2px;
+    padding: 0px;
+    text-align: center;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    color: @color-dialog-button-color;
+    background: @color-dialog-button-bg;
+    border: 2px;
+    border-color: @color-dialog-accent;
+    opacity: 100;
+}
+
+.button-sm {
+    .defn-button;
+    font-size: smaller;
+}
+
+.button {
+    .defn-button;
+    width: 10em;
+    height: 2em;
 }
 
 body {

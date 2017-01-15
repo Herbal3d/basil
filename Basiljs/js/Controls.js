@@ -43,7 +43,6 @@ define(['jquery'], function($) {
         'Start': function() {
         },
         'OnShowDebugButton': function() {
-            DebugLog('Controls: OnShowDebugButton');
             var isOn = $('#DEBUGG').is(':visible');
             op.ShowDebug(!isOn);
         },

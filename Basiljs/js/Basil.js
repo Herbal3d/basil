@@ -62,6 +62,7 @@ require(['config', 'jquery', 'threejs'], function(config, $, THREE) {
         var container = document.getElementById(GP.config.page.webGLcontainerId);
         var canvas = document.getElementById(GP.config.page.webGLcanvasId);
         pDisplay.Init(container, canvas);
+        pControls.Init();
 
         // Whether debug output window is displayed can be set in the configuration file
         if (GP.config.page.showDebug) {
