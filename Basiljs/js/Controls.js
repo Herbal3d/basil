@@ -30,12 +30,22 @@
  */
 
 define(['jquery'], function($) {
-    return op;
-
     var op = {
         'Init': function() {
+            if ($('#ButtonLoad')) {
+                $('#ButtonLoad').click(op.OnLoadButton);
+            }
+            if ($('#ButtonShowDebug')) {
+                $('#ButtonShowDebug').click(op.OnShowDebugButton);
+            }
+            
         },
         'Start': function() {
+        },
+        'OnShowDebugButton': function() {
+            DebugLog('Controls: OnShowDebugButton');
+            var isOn = $('#DEBUGG').is(':visible');
+            op.ShowDebug(!isOn);
         },
         'ShowDebug': function(onOff) {
             if (onOff) {
@@ -47,8 +57,20 @@ define(['jquery'], function($) {
                 $('#DEBUGG').hide(hideMS);
             }
         },
+        'OnLoadButton': function() {
+            DebugLog('Controls: OnLoadButton');
+        },
+        'DoLoad': function(url) {
+            // clear out any existing stuff
+            // TODO:
+            // load the new thing
+            // TODO:
+        },
         'noComma': 0
     };
+
+    return op;
+
 });
 
 

@@ -33,86 +33,85 @@
 var GR = GR || {};
 
 define(['threejs'], function(THREE) {
-        var operations = {
-            'Init': function(container, canvas) {
-                GP.GR = GR;
-                GR.op = operations;
+    var operations = {
+        'Init': function(container, canvas) {
+            GP.GR = GR;
+            GR.op = operations;
 
-                GR.container = container;
-                GR.canvas = canvas;
+            GR.container = container;
+            GR.canvas = canvas;
 
-                GR.scene = new THREE.Scene();
+            GR.scene = new THREE.Scene();
 
-                // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
-                GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, GP.config.webgl.camera.initialViewDistance );
-                GR.camera.up = new THREE.Vector3(0, 1, 0);
-                GR.camera.position.fromArray(GP.config.webgl.camera.initialCameraPosition);
-                var lookAt = new THREE.Vector3;
-                lookAt.fromArray(GP.config.webgl.camera.initialCameraLookAt);
-                GR.camera.lookAt(lookAt);
-                GR.scene.add(GR.camera);
+            // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
+            GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, GP.config.webgl.camera.initialViewDistance );
+            GR.camera.up = new THREE.Vector3(0, 1, 0);
+            GR.camera.position.fromArray(GP.config.webgl.camera.initialCameraPosition);
+            var lookAt = new THREE.Vector3;
+            lookAt.fromArray(GP.config.webgl.camera.initialCameraLookAt);
+            GR.camera.lookAt(lookAt);
+            GR.scene.add(GR.camera);
 
-                if (GP.config.webgl.lights) {
-                    if (GP.config.webgl.lights.ambient) {
-                        var ambient = new THREE.AmbientLight(0 + GP.config.webgl.lights.ambient.color,
-                                                            GP.config.webgl.lights.ambient.intensity);
-                        GR.scene.add(ambient);
+            if (GP.config.webgl.lights) {
+                if (GP.config.webgl.lights.ambient) {
+                    var ambient = new THREE.AmbientLight(0 + GP.config.webgl.lights.ambient.color,
+                                                        GP.config.webgl.lights.ambient.intensity);
+                    GR.scene.add(ambient);
+                }
+                if (GP.config.webgl.lights.directional) {
+                    var directional = new THREE.DirectionalLight(0 + GP.config.webgl.lights.directional.color,
+                                                        GP.config.webgl.lights.directional.intensity);
+                    directional.position.fromArray(GP.config.webgl.lights.directional.position).normalize();
+                    GR.directionalLight = directional;
+                    if (GP.config.webgl.lights.directional.shadows) {
+                        directional.castShadow = true;
+                        directional.shadow.bias = GP.config.webgl.lights.directional.shadows.bias;
+                        directional.shadow.mapSize.width = GP.config.webgl.lights.directional.shadows.mapWidth;
+                        directional.shadow.mapSize.height = GP.config.webgl.lights.directional.shadows.mapHeight;
                     }
-                    if (GP.config.webgl.lights.directional) {
-                        var directional = new THREE.DirectionalLight(0 + GP.config.webgl.lights.directional.color,
-                                                            GP.config.webgl.lights.directional.intensity);
-                        directional.position.fromArray(GP.config.webgl.lights.directional.position).normalize();
-                        GR.directionalLight = directional;
-                        if (GP.config.webgl.lights.directional.shadows) {
-                            directional.castShadow = true;
-                            directional.shadow.bias = GP.config.webgl.lights.directional.shadows.bias;
-                            directional.shadow.mapSize.width = GP.config.webgl.lights.directional.shadows.mapWidth;
-                            directional.shadow.mapSize.height = GP.config.webgl.lights.directional.shadows.mapHeight;
-                        }
-                        GR.scene.add(directional);
-                    }
+                    GR.scene.add(directional);
                 }
+            }
 
-                var rendererParams = GP.config.webgl.renderer.params;
-                rendererParams.canvas = canvas;
-                GR.renderer = new THREE.WebGLRenderer(rendererParams);
-                if (GP.config.webgl.renderer.clearColor) {
-                    GR.renderer.setClearColor(0 + GP.config.webgl.renderer.clearColor);
-                }
-                GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+            var rendererParams = GP.config.webgl.renderer.params;
+            rendererParams.canvas = canvas;
+            GR.renderer = new THREE.WebGLRenderer(rendererParams);
+            if (GP.config.webgl.renderer.clearColor) {
+                GR.renderer.setClearColor(0 + GP.config.webgl.renderer.clearColor);
+            }
+            GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-                if (GP.config.webgl.renderer.shadows) {
-                    GR.renderer.shadowMap.enabled = true;
-                    GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
-                }
+            if (GP.config.webgl.renderer.shadows) {
+                GR.renderer.shadowMap.enabled = true;
+                GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
+            }
 
-                container.addEventListener('resize', GR.op.OnContainerResize, false);
-            },
-            'Start': function() {
-                var keepRendering = function() {
-                    requestAnimationFrame(keepRendering);
-                    GR.op.DoRender();
-                };
-                keepRendering();
-            },
-            // Do per-frame updates and then render the frame
-            'DoRender': function() {
-                if (GR.cameraControl) {
-                    GR.cameraControl.update();
-                }
-                // TODO: insert animation updates (shouldn't this be done before render time?)
-                GR.renderer.render(GR.scene, GR.camera);
-            },
-            'OnContainerResize': function() {
-                GR.camera.aspect = GR.canvas.clientWidth / GR.canvas.clientHeight;
-                GR.camera.updateProjectionMatrix();
+            container.addEventListener('resize', GR.op.OnContainerResize, false);
+        },
+        'Start': function() {
+            var keepRendering = function() {
+                requestAnimationFrame(keepRendering);
+                GR.op.DoRender();
+            };
+            keepRendering();
+        },
+        // Do per-frame updates and then render the frame
+        'DoRender': function() {
+            if (GR.cameraControl) {
+                GR.cameraControl.update();
+            }
+            // TODO: insert animation updates (shouldn't this be done before render time?)
+            GR.renderer.render(GR.scene, GR.camera);
+        },
+        'OnContainerResize': function() {
+            GR.camera.aspect = GR.canvas.clientWidth / GR.canvas.clientHeight;
+            GR.camera.updateProjectionMatrix();
 
-                renderer.setSize( GR.canvas.clientWidth, GR.canvas.clientHeight );
-            },
-            'noComma': 0
-        };
+            renderer.setSize( GR.canvas.clientWidth, GR.canvas.clientHeight );
+        },
+        'noComma': 0
+    };
 
-        return operations;
-    }
-);
+    return operations;
+});
 

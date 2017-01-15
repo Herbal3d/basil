@@ -48,10 +48,11 @@ requirejs.config({
     }
 });
 
-require(['config', 'jquery', 'threejs', 'Comm', 'Graphics', 'Coordinates', 'Controls'],
-    function(config, $, THREE, pComm, pDisplay, pCoord, pControls) {
-        GP.config = config;
-        GP.Ready = false;
+require(['config', 'jquery', 'threejs'], function(config, $, THREE) {
+    GP.config = config;
+    GP.Ready = false;
+
+    require(['Comm', 'Graphics', 'Coordinates', 'Controls'], function(pComm, pDisplay, pCoord, pControls) {
 
         GP.comm = pComm;
         GP.display = pDisplay;
@@ -64,16 +65,17 @@ require(['config', 'jquery', 'threejs', 'Comm', 'Graphics', 'Coordinates', 'Cont
 
         // Whether debug output window is displayed can be set in the configuration file
         if (GP.config.page.showDebug) {
-            GP.controls.ShowDebug(GP.config.page.showDebug);
+            pControls.ShowDebug(GP.config.page.showDebug);
         }
         else {
-            GP.controls.ShowDebug(false);
+            pControls.ShowDebug(false);
         }
 
         pDisplay.Start();
         pComm.Start();
-    }
-);
+        GP.Ready = true;
+    });
+});
 
 // Adds a text line to a div and scroll the area
 var DebugLogLines = 20;

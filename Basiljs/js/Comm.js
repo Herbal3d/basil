@@ -30,16 +30,16 @@
  */
 
 define([], function() {
-    return operations;
-});
+    var op = {
+        'Init': function() {
+        },
+        'Start': function() {
+        },
+        'Connect': function(spaceManagerURL, interface) {
+        },
+        'noComma': 0
+    };
 
-var operations = {
-    'Init': function() {
-    },
-    'Start': function() {
-    },
-    'Connect': function(spaceManagerURL, interface) {
-    },
-    'noComma': 0
-};
+    return op;
+});
 
