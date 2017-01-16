@@ -6,15 +6,15 @@
 
 @color-dialog-color: #f0e8af;
 @color-dialog-bg: #86af0a;
-@dialog-opacity: 0.8;
+@dialog-opacity: 0.5;
 
 @color-dialog-accent: #b8af0b;
 @color-dialog-button-color: @color-dialog-color;
 @color-dialog-button-bg: #4dc41a;
 
-@color-debug-color: #e4da1e;
+@color-debug-color: #f0e84f;
 @color-debug-bg: #4d6600;
-@debug-opacity: 0.5;
+@debug-opacity: 0.4;
 
 // overlay dialog box definition for mixins
 .defn-dialog {
@@ -105,4 +105,8 @@ body {
     color: @color-debug-color;
     background: @color-debug-bg;
     opacity: @debug-opacity;
+}
+
+.errorMsg {
+    color: #ff2020;
 }

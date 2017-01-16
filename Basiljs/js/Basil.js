@@ -33,18 +33,33 @@
 var GP = GP || {};
 
 requirejs.config({
-    "baseUrl": "",
-    "paths": {
-        "config": "config",
-        "jquery": "jslibs/jquery-3.1.0.min",
-        "threejs": "jslibs/three-dev-20170106",
-        "Comm": "js/Comm",
-        "Graphics": "js/Graphics",
-        "Coordinates": "js/Coordinates",
-        "Controls": "js/Controls"
+    'baseUrl': "",
+    'paths': {
+        'config': 'config',
+        'jquery': 'jslibs/jquery-3.1.0.min',
+
+        // see https://github.com/mrdoob/three.js/issues/9602
+        'threejs': 'jslibs/threejs-wrapper',
+        'real-threejs': 'jslibs/three-dev-20170106',
+        'orbitControl': 'jslibs/OrbitControls',
+
+        'GLTFLoader': 'jslibs/GLTFLoader',
+        'Comm': 'js/Comm',
+        'Graphics': 'js/Graphics',
+        'Coordinates': 'js/Coordinates',
+        'Controls': 'js/Controls'
+
     },
-    "shim": {
-        
+    'shim': {
+        'threejs': {
+            'exports': 'THREE'
+        },
+        'orbitControl': {
+            'deps': ['threejs']
+        },
+        'GLTFLoader': {
+            'deps': ['threejs']
+        }
     }
 });
 
@@ -81,11 +96,23 @@ require(['config', 'jquery', 'threejs'], function(config, $, THREE) {
 // Adds a text line to a div and scroll the area
 var DebugLogLines = 20;
 function DebugLog(msg) {
+    LogMessage(msg, undefined);
+}
+
+function ReportError(msg) {
+    LogMessage(msg, 'errorMsg');
+};
+
+function LogMessage(msg, classs) {
     if ($('#DEBUGG')) {
-        $('#DEBUGG').append('<div>' + msg + '</div>');
+        if (classs)
+            $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
+        else
+            $('#DEBUGG').append('<div>' + msg + '</div>');
         if ($('#DEBUGG').children().length > DebugLogLines) {
             $('#DEBUGG').children('div:first').remove();
             
         }
     }
 };
+

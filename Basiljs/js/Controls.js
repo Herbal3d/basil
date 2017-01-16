@@ -29,7 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-define(['jquery'], function($) {
+define(['jquery'], function( $ ) {
     var op = {
         'Init': function() {
             if ($('#ButtonLoad')) {
@@ -57,13 +57,14 @@ define(['jquery'], function($) {
             }
         },
         'OnLoadButton': function() {
-            DebugLog('Controls: OnLoadButton');
+            var url = $('#SelectGltf').val();
+            DebugLog('Controls: OnLoadButton: loading ' + url);
+            op.DoLoad(url);
         },
         'DoLoad': function(url) {
-            // clear out any existing stuff
-            // TODO:
-            // load the new thing
-            // TODO:
+            GP.display.ClearScene();
+            GP.display.LoadGltf(url);
+            GP.display.Start(); // ClearScene possibly shuts down rendering
         },
         'noComma': 0
     };
