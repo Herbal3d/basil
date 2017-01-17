@@ -38,6 +38,9 @@ define(['jquery'], function( $ ) {
             if ($('#ButtonShowDebug')) {
                 $('#ButtonShowDebug').click(op.OnShowDebugButton);
             }
+            if ($('#ButtonAddTestObject')) {
+                $('#ButtonAddTestObject').click(op.OnAddTestObject);
+            }
             
         },
         'Start': function() {
@@ -63,8 +66,23 @@ define(['jquery'], function( $ ) {
         },
         'DoLoad': function(url) {
             GP.display.ClearScene();
-            GP.display.LoadGltf(url);
-            GP.display.Start(); // ClearScene possibly shuts down rendering
+            GP.display.LoadGltf(url, function() {
+
+                // DEBUG DEBUG -- initially point camera at one of the objects in the scene
+                var aPlace = GP.GR.scene.children[0].position;
+                // var cameraPlace = aPlace;
+                var cameraPlace = new THREE.Vector3( aPlace.x + 40, aPlace.y + 40, aPlace.z + 40);
+                // cameraPlace = cameraPlace.add(new THREE.Vector3(100,100,100));
+                GP.GR.camera.position = cameraPlace;
+                GP.display.PointCameraAt(aPlace);
+                DebugLog('Control: placing camera at ' + cameraPlace.toArray() + ' looking at ' + aPlace.toArray());
+
+                GP.display.Start(); // ClearScene possibly shuts down rendering
+            });
+        },
+        'OnAddTestObject': function() {
+            DebugLog('Controls: OnAddTestObject');
+            GP.display.AddTestObject();
         },
         'noComma': 0
     };

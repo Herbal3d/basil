@@ -23,7 +23,7 @@ define(
             'lights': {
                 'ambient': {
                     'color': '0x222222',
-                    'intensity': 0.5,
+                    'intensity': 0.9,
                     'noComma': 0
                 },
                 // placeholder for the eventual sun system

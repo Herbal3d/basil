@@ -50,7 +50,7 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
             rendererParams.canvas = canvas;
             GR.renderer = new THREE.WebGLRenderer(rendererParams);
             if (GP.config.webgl.renderer.clearColor) {
-                GR.renderer.setClearColor(0 + GP.config.webgl.renderer.clearColor);
+                GR.renderer.setClearColor(Number(GP.config.webgl.renderer.clearColor));
             }
             GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
@@ -59,6 +59,7 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
                 GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
             }
 
+            op.InitializeCameraControl(GR.scene, GR.container);
             container.addEventListener('resize', op.OnContainerResize, false);
         },
         'Start': function() {
@@ -79,7 +80,7 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
                 GR.cameraControl.update();
             }
             // TODO: insert animation updates (shouldn't this be done before render time?)
-            if (GP.Ready && GR.scene) {
+            if (GP.Ready && GR.scene && GR.camera) {
                 GR.renderer.render(GR.scene, GR.camera);
             }
         },
@@ -107,31 +108,22 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
             // GR.scene = undefined;
         },
         // Load the passed gltf file into the scene
-        'LoadGltf': function(url) {
+        'LoadGltf': function(url, loaded) {
             try {
                 var loader = new THREE.GLTFLoader;
                 loader.load(url, function(gltf) {
                     var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
-                    op.FixGLTFLoadProblem(theScene);
                     theScene.updateMatrixWorld(true);
                     // For the moment, we're ignoring camera and lights from gltf
-                    op.InitializeCameraAndLights(theScene, GR.canvas);
                     GR.scene = theScene;
+                    op.InitializeCameraAndLights(theScene, GR.canvas);
+                    op.InitializeCameraControl(theScene, GR.container);
                     DebugLog('Graphics: Loaded GLTF scene');
+                    loaded();
                 });
             }
             catch (e) {
                 ReportError('Failed reading GLTF file: ' + e);
-            }
-        },
-        // GLTFLoader has a problem (20170120) of turning off matrix calculation
-        // This sets 'matrixAutoUpdate' to 'true' for this an all decendents
-        'FixGLTFLoadProblem': function(objectWithChildren) {
-            objectWithChildren.matrixAutoUpdate = true;
-            if (objectWithChildren.children) {
-                for (var ii=0; ii<objectWithChildren.children.length; ii++) {
-                    op.FixGLTFLoadProblem(objectWithChildren.children[ii]);
-                }
             }
         },
         // Given a scene and optional gltf info, create a new scene
@@ -146,13 +138,13 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
 
             if (GP.config.webgl.lights) {
                 if (GP.config.webgl.lights.ambient) {
-                    var ambient = new THREE.AmbientLight(0 + GP.config.webgl.lights.ambient.color,
-                                                        GP.config.webgl.lights.ambient.intensity);
+                    var ambient = new THREE.AmbientLight(Number(GP.config.webgl.lights.ambient.color),
+                                                        Number(GP.config.webgl.lights.ambient.intensity));
                     theScene.add(ambient);
                 }
                 if (GP.config.webgl.lights.directional) {
-                    var directional = new THREE.DirectionalLight(0 + GP.config.webgl.lights.directional.color,
-                                                        GP.config.webgl.lights.directional.intensity);
+                    var directional = new THREE.DirectionalLight(Number(GP.config.webgl.lights.directional.color),
+                                                        Number(GP.config.webgl.lights.directional.intensity));
                     directional.position.fromArray(GP.config.webgl.lights.directional.position).normalize();
                     GR.directionalLight = directional;
                     if (GP.config.webgl.lights.directional.shadows) {
@@ -164,6 +156,38 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
                     theScene.add(directional);
                 }
             }
+        },
+        // Add camera control to the scene.
+        'InitializeCameraControl': function(theScene, container) {
+            GR.controls = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
+        },
+        // Point the camera at a place. Takes either an array or a Vector3.
+        'PointCameraAt': function(pos) {
+            var look = new THREE.Vector3;
+            if (pos.isVector3) {
+                look = pos;
+            }
+            else {
+                if (pos.isArray()) {
+                    look.fromArray(pos);
+                }
+            }
+            if (GR.controls) {
+                GR.controls.target = look;
+                GR.controls.update();
+            }
+            else {
+                GR.camera.lookAt(look);
+            }
+        },
+        // Add a test object to the scene
+        'AddTestObject': function() {
+            var geometry = new THREE.BoxGeometry( 1, 2, 3);
+            var material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
+            var cube = new THREE.Mesh(geometry, material);
+            cube.position.fromArray(GP.config.webgl.camera.initialCameraLookAt);
+            GR.scene.add(cube);
+            DebugLog('Graphics: added test cube at ' + GP.config.webgl.camera.initialCameraLookAt);
         },
         'noComma': 0
     };
