@@ -40,7 +40,7 @@ requirejs.config({
 
         // see https://github.com/mrdoob/three.js/issues/9602
         'threejs': 'jslibs/threejs-wrapper',
-        'real-threejs': 'jslibs/three-dev-20170106',
+        'real-threejs': 'jslibs/three-dev-20170117.min',
         'orbitControl': 'jslibs/OrbitControls',
 
         'GLTFLoader': 'jslibs/GLTFLoader',
