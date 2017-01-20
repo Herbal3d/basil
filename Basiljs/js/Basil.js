@@ -38,12 +38,13 @@ requirejs.config({
         'config': 'config',
         'jquery': 'jslibs/jquery-3.1.0.min',
 
-        // see https://github.com/mrdoob/three.js/issues/9602
+        // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
         'threejs': 'jslibs/threejs-wrapper',
         'real-threejs': 'jslibs/three-dev-20170117.min',
         'orbitControl': 'jslibs/OrbitControls',
-
+        'stats': 'jslibs/stats.min',
         'GLTFLoader': 'jslibs/GLTFLoader',
+
         'Comm': 'js/Comm',
         'Graphics': 'js/Graphics',
         'Coordinates': 'js/Coordinates',
@@ -55,6 +56,9 @@ requirejs.config({
             'exports': 'THREE'
         },
         'orbitControl': {
+            'deps': ['threejs']
+        },
+        'stats': {
             'deps': ['threejs']
         },
         'GLTFLoader': {
@@ -79,14 +83,6 @@ require(['config', 'jquery', 'threejs'], function(config, $, THREE) {
         pDisplay.Init(container, canvas);
         pControls.Init();
 
-        // Whether debug output window is displayed can be set in the configuration file
-        if (GP.config.page.showDebug) {
-            pControls.ShowDebug(GP.config.page.showDebug);
-        }
-        else {
-            pControls.ShowDebug(false);
-        }
-
         pDisplay.Start();
         pComm.Start();
         GP.Ready = true;
@@ -109,6 +105,7 @@ function LogMessage(msg, classs) {
             $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
         else
             $('#DEBUGG').append('<div>' + msg + '</div>');
+
         if ($('#DEBUGG').children().length > DebugLogLines) {
             $('#DEBUGG').children('div:first').remove();
             

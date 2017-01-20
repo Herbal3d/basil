@@ -35,9 +35,18 @@ define(['jquery'], function( $ ) {
             if ($('#ButtonLoad')) {
                 $('#ButtonLoad').click(op.OnLoadButton);
             }
+
+            // Whether debug output window is displayed can be set in the configuration file
+            if (GP.config.page.showDebug) {
+               op.ShowDebug(GP.config.page.showDebug);
+            }
+            else {
+               op.ShowDebug(false);
+            }
             if ($('#ButtonShowDebug')) {
                 $('#ButtonShowDebug').click(op.OnShowDebugButton);
             }
+
             if ($('#ButtonAddTestObject')) {
                 $('#ButtonAddTestObject').click(op.OnAddTestObject);
             }
