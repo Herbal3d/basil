@@ -32,7 +32,7 @@
 // holds the graphics context for this threejs instance
 var GR = GR || {};
 
-define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
+define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats) {
     var op = {
         'Init': function(container, canvas) {
             GP.GR = GR;
@@ -61,6 +61,14 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
 
             op.InitializeCameraControl(GR.scene, GR.container);
             container.addEventListener('resize', op.OnContainerResize, false);
+
+            if (GP.config.page.showStats) {
+                GR.stats = stats();
+                GR.stats.showPanel(0);  // FPS
+                // GR.stats.showPanel(1);  // MS rendering
+                // GR.stats.showPanel(2);  // MB allocated mem
+                container.appendChild(GR.stats.dom);
+            }
         },
         'Start': function() {
             if (!GR.runLoopIdentifier) {
@@ -76,11 +84,18 @@ define(['threejs', 'orbitControl', 'GLTFLoader'], function(THREE) {
         },
         // Do per-frame updates and then render the frame
         'DoRender': function() {
-            if (GR.cameraControl) {
-                GR.cameraControl.update();
-            }
-            // TODO: insert animation updates (shouldn't this be done before render time?)
             if (GP.Ready && GR.scene && GR.camera) {
+                if (GR.stats) {
+                    GR.stats.begin();
+                }
+                if (GR.cameraControl) {
+                    GR.cameraControl.update();
+                }
+                // TODO: insert animation updates (shouldn't this be done before render time?)
+                if (GR.stats) {
+                    GR.stats.end();
+                    GR.stats.update();
+                }
                 GR.renderer.render(GR.scene, GR.camera);
             }
         },

@@ -9,6 +9,7 @@ define(
             'webGLcontainerId': 'webGLcontainer',
             'webGLcanvasId': 'webGLcanvas',
             'showDebug': true,
+            'showStats': true,
             'noComma': 0
         },
 

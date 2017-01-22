@@ -29,6 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
 define(['jquery'], function( $ ) {
     var op = {
         'Init': function() {
