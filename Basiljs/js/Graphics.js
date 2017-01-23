@@ -63,10 +63,16 @@ define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats
             container.addEventListener('resize', op.OnContainerResize, false);
 
             if (GP.config.page.showStats) {
-                GR.stats = stats();
-                GR.stats.showPanel(0);  // FPS
-                // GR.stats.showPanel(1);  // MS rendering
-                // GR.stats.showPanel(2);  // MB allocated mem
+                var stat = stats();
+                stat.showPanel(0);  // FPS
+                // stat.showPanel(1);  // MS rendering
+                // stat.showPanel(2);  // MB allocated mem
+                stat.dom.style.position = 'absolute';
+                stat.dom.style.top = '0%';
+                stat.dom.style.right = '0%';
+                stat.dom.style.margin = '10px';
+                stat.dom.style.zIndex = 100;
+                GR.stats = stat;
                 container.appendChild(GR.stats.dom);
             }
         },
@@ -91,6 +97,7 @@ define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats
                 if (GR.cameraControl) {
                     GR.cameraControl.update();
                 }
+                GP.controls.PerFrameUpdate();
                 // TODO: insert animation updates (shouldn't this be done before render time?)
                 if (GR.stats) {
                     GR.stats.end();
@@ -144,11 +151,20 @@ define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats
         // Given a scene and optional gltf info, create a new scene
         'InitializeCameraAndLights': function(theScene, canvas) {
             GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, GP.config.webgl.camera.initialViewDistance );
-            GR.camera.up = new THREE.Vector3(0, 1, 0);
+            // GR.camera.up = new THREE.Vector3(0, 1, 0);
             GR.camera.position.fromArray(GP.config.webgl.camera.initialCameraPosition);
             var lookAt = new THREE.Vector3;
             lookAt.fromArray(GP.config.webgl.camera.initialCameraLookAt);
             GR.camera.lookAt(lookAt);
+            if (GP.config.webgl.camera.addCameraHelper) {
+                GR.cameraHelper = new THREE.CameraHelper(GR.camera);
+                theScene.add(GR.cameraHelper);
+            }
+            if (GP.config.webgl.camera.addAxisHelper) {
+                var helperSize = GP.config.webgl.camera.axisHelperSize || 5;
+                GR.axisHelper = new THREE.AxisHelper(Number(helperSize));
+                theScene.add(GR.axisHelper);
+            }
             theScene.add(GR.camera);
 
             if (GP.config.webgl.lights) {
@@ -176,6 +192,12 @@ define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats
         'InitializeCameraControl': function(theScene, container) {
             GR.controls = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
         },
+        'GetCameraPosition': function() {
+            return GR.camera.position;
+        },
+        'SetCameraPosition': function(pos) {
+            GR.camera.position = pos;
+        },
         // Point the camera at a place. Takes either an array or a Vector3.
         'PointCameraAt': function(pos) {
             var look = new THREE.Vector3;
@@ -193,6 +215,10 @@ define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats
             }
             else {
                 GR.camera.lookAt(look);
+            }
+            // Move axis helper to where the camera is looking
+            if (GR.axisHelper) {
+                GR.axisHelper.geometry.translate(look.x, look.y, look.z);
             }
         },
         // Add a test object to the scene

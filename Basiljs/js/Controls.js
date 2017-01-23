@@ -29,6 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// holds the controls context for this threejs instance
+var CO = CO || {};
+
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
 define(['jquery'], function( $ ) {
     var op = {
@@ -55,6 +58,18 @@ define(['jquery'], function( $ ) {
         },
         'Start': function() {
         },
+        // Called by graphics section for each frame
+        'PerFrameUpdate': function() {
+            if (CO.cntlCameraPosition) {
+                var camPos = GP.GR.GetCameraPosition();
+                if (CO.lastCameraPosition) {
+                    if (camPos != CO.lastCameraPosition) {
+                        CO.cntlCameraPosition.Update(camPos);
+                    }
+                }
+                CO.lastCameraPosition = camPos;
+            }
+        },
         'OnShowDebugButton': function() {
             var isOn = $('#DEBUGG').is(':visible');
             op.ShowDebug(!isOn);
@@ -80,12 +95,11 @@ define(['jquery'], function( $ ) {
 
                 // DEBUG DEBUG -- initially point camera at one of the objects in the scene
                 var aPlace = GP.GR.scene.children[0].position;
-                // var cameraPlace = aPlace;
                 var cameraPlace = new THREE.Vector3( aPlace.x + 40, aPlace.y + 40, aPlace.z + 40);
                 // cameraPlace = cameraPlace.add(new THREE.Vector3(100,100,100));
-                GP.GR.camera.position = cameraPlace;
+                GP.display.SetCameraPosition(cameraPlace);
                 GP.display.PointCameraAt(aPlace);
-                DebugLog('Control: placing camera at ' + cameraPlace.toArray() + ' looking at ' + aPlace.toArray());
+                DebugLog('Control: placing camera at <' + cameraPlace.toArray() + '> looking at <' + aPlace.toArray() + '>');
 
                 GP.display.Start(); // ClearScene possibly shuts down rendering
             });

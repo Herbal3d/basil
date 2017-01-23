@@ -19,6 +19,9 @@ define(
                 'initialCameraPosition': [ 200, 50, 200 ],
                 'initialViewDistance': 1000,
                 'initialCameraLookAt': [ 128, 30, 128 ],
+                'addCameraHelper': false,
+                'addAxisHelper': true,
+                'axisHelperSize': 20,
                 'noComma': 0
             },
             'lights': {
