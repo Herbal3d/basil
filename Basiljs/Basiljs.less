@@ -1,3 +1,6 @@
+// 'Less' CSS defintions for Basil test page.
+
+// The one place for font and color definitions
 @font-global-family: Veranda,Arial,Helvetica,sans-serif;
 @font-global-size: 12px;
 
@@ -6,6 +9,7 @@
 
 @color-dialog-color: #f0e8af;
 @color-dialog-bg: #86af0a;
+@color-group-bg: #769f0a;
 @dialog-opacity: 0.8;
 
 @color-dialog-accent: #b8af0b;
@@ -27,17 +31,30 @@
     opacity: @dialog-opacity;
 }
 
+// A block area within a dialog
+.defn-dialogBlock {
+    display: block;
+    border: 2px solid @color-dialog-accent;
+    background: @color-group-bg;
+    margin: 4px;
+    padding: 4px;
+}
+
+// The class used to mark a <div> group as a displayed group in a dialog
+.dialog-group {
+    .defn-dialogBlock;
+}
+
 .defn-button {
     display: inline;
-    margin: 2px;
-    padding: 0px;
+    margin: 4px;
+    padding: 2px;
     text-align: center;
+    border: 3px solid @color-dialog-accent;
     border-radius: 5px;
     -moz-border-radius: 5px;
     color: @color-dialog-button-color;
     background: @color-dialog-button-bg;
-    border: 2px;
-    border-color: @color-dialog-accent;
     opacity: 100;
 }
 
@@ -46,9 +63,10 @@
     font-size: smaller;
 }
 
+// Class for a button appearing in the dialog
 .button {
     .defn-button;
-    width: 10em;
+    width: 7em;
     height: 2em;
 }
 
@@ -61,6 +79,8 @@ body {
     margin: 0px;
 }
 
+// The layout for the whole page.
+// The width is smaller as Chrome seems to make scroll bars if it's 100%.
 #pageLayout {
     position: absolute;
     top: 0%;
@@ -71,6 +91,7 @@ body {
     margin: 0px;
 }
 
+// The container that contains the canvas.
 #webGLcontainer {
     width: 100%;
     height: 100%;
@@ -78,6 +99,7 @@ body {
     margin: 5px;
 }
 
+// The canvas that is passed to ThreeJS
 #webGLcanvas {
     width: 100%;
     height: 100%;
@@ -85,6 +107,7 @@ body {
     margin: 5px;
 }
 
+// An overlay area for controls
 #controls {
     position: absolute;
     right: 0%;
@@ -93,8 +116,18 @@ body {
     height: 30em;
     .defn-dialog;
 }
+.coordDisplay {
+    display: inline;
+    margin: 1px;
+    border: 1px groove @color-dialog-accent;
+}
+.coordEntry {
+    display: inline;
+    margin: 1px;
+    background: @color-dialog-button-bg;
+}
 
-
+// Overlay area for debug and error messages
 #DEBUGG {
     position: absolute;
     left: 0%;
@@ -107,6 +140,8 @@ body {
     opacity: @debug-opacity;
 }
 
+// Class added to a reported error message in the DEBUGG area
 .errorMsg {
     color: #ff2020;
+    font-weight: heavy;
 }

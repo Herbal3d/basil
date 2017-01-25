@@ -7,46 +7,57 @@
   background: #86af0a;
   opacity: 0.8;
 }
+.defn-dialogBlock {
+  display: block;
+  border: 2px solid #b8af0b;
+  background: #769f0a;
+  margin: 4px;
+  padding: 4px;
+}
+.dialog-group {
+  display: block;
+  border: 2px solid #b8af0b;
+  background: #769f0a;
+  margin: 4px;
+  padding: 4px;
+}
 .defn-button {
   display: inline;
-  margin: 2px;
-  padding: 0px;
+  margin: 4px;
+  padding: 2px;
   text-align: center;
+  border: 3px solid #b8af0b;
   border-radius: 5px;
   -moz-border-radius: 5px;
   color: #f0e8af;
   background: #4dc41a;
-  border: 2px;
-  border-color: #b8af0b;
   opacity: 100;
 }
 .button-sm {
   display: inline;
-  margin: 2px;
-  padding: 0px;
+  margin: 4px;
+  padding: 2px;
   text-align: center;
+  border: 3px solid #b8af0b;
   border-radius: 5px;
   -moz-border-radius: 5px;
   color: #f0e8af;
   background: #4dc41a;
-  border: 2px;
-  border-color: #b8af0b;
   opacity: 100;
   font-size: smaller;
 }
 .button {
   display: inline;
-  margin: 2px;
-  padding: 0px;
+  margin: 4px;
+  padding: 2px;
   text-align: center;
+  border: 3px solid #b8af0b;
   border-radius: 5px;
   -moz-border-radius: 5px;
   color: #f0e8af;
   background: #4dc41a;
-  border: 2px;
-  border-color: #b8af0b;
   opacity: 100;
-  width: 10em;
+  width: 7em;
   height: 2em;
 }
 body {
@@ -92,6 +103,16 @@ body {
   background: #86af0a;
   opacity: 0.8;
 }
+.coordDisplay {
+  display: inline;
+  margin: 1px;
+  border: 1px groove #b8af0b;
+}
+.coordEntry {
+  display: inline;
+  margin: 1px;
+  background: #4dc41a;
+}
 #DEBUGG {
   position: absolute;
   left: 0%;
@@ -111,4 +132,5 @@ body {
 }
 .errorMsg {
   color: #ff2020;
+  font-weight: heavy;
 }

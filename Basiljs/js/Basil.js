@@ -89,6 +89,7 @@ require(['config', 'jquery', 'threejs'], function(config, $, THREE) {
     });
 });
 
+// Global debug information printout.
 // Adds a text line to a div and scroll the area
 var DebugLogLines = 20;
 function DebugLog(msg) {

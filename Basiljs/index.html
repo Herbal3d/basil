@@ -18,22 +18,36 @@
         <canvas id="webGLcanvas"></canvas>
     </div>
     <div id="controls">
-        <button type="button" class="button" id="ButtonLoad">Load</button>
-        <!-- http://stackoverflow.com/questions/1962041/jquery-dynamically-update-other-option-in-select -->
-        <select id="SelectGltf">
-            <option value="./gltf/testtest02.gltf" selected/>testtest02</option>
-            <option value="./gltf/testtest88.gltf">testtest88</option>
-            <option value="./gltf/testtest00.gltf">testtest00</option>
-            <option value="./gltf/testtest10.gltf">testtest10</option>
-            <option value="./gltf/testtest01.gltf">testtest01</option>
-            <option value="./gltf/testtest11.gltf">testtest11</option>
-            <option value="./gltf/testtest12.gltf">testtest12</option>
-            <option value="./gltf/testtest20.gltf">testtest20</option>
-            <option value="./gltf/testtest21.gltf">testtest21</option>
-            <option value="./gltf/testtest22.gltf">testtest22</option>
-        </select>
-        <button type="button" class="button" id="ButtonAddTestObject">Add Object</button>
-        <button type="button" class="button" id="ButtonShowDebug">Show Debug</button>
+        <div class="dialog-group">
+            <!-- http://stackoverflow.com/questions/1962041/jquery-dynamically-update-other-option-in-select -->
+            <select id="SelectGltf">
+                <option value="./gltf/testtest02.gltf" selected/>testtest02</option>
+                <option value="./gltf/testtest88.gltf">testtest88</option>
+                <option value="./gltf/testtest00.gltf">testtest00</option>
+                <option value="./gltf/testtest10.gltf">testtest10</option>
+                <option value="./gltf/testtest01.gltf">testtest01</option>
+                <option value="./gltf/testtest11.gltf">testtest11</option>
+                <option value="./gltf/testtest12.gltf">testtest12</option>
+                <option value="./gltf/testtest20.gltf">testtest20</option>
+                <option value="./gltf/testtest21.gltf">testtest21</option>
+                <option value="./gltf/testtest22.gltf">testtest22</option>
+            </select>
+            <button type="button" class="button" id="ButtonLoad">Load</button>
+        </div>
+        <div class="dialog-group">
+            <button type="button" class="button" id="ButtonAddTestObject">Add Object</button>
+            <button type="button" class="button" id="ButtonShowDebug">Show Debug</button>
+        </div>
+        <div class="dialog-group">
+            <label>Camera Position
+                <div id="CameraPosition" class="coordDisplay"></div>
+            </label>
+            <label>Selected Object
+                <div id="SelectedObjectInfo" class="dialog-group">
+                    <label>Position: <div b-info="position" class="coordDisplay"></div></label>
+                </div>
+            </label>
+        </div>
     </div>
     <div id="DEBUGG"></div>
 </div>
