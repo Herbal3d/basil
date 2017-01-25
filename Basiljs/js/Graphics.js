@@ -32,7 +32,7 @@
 // holds the graphics context for this threejs instance
 var GR = GR || {};
 
-define(['threejs', 'stats', 'orbitControl', 'GLTFLoader'], function(THREE, stats) {
+define(['threejs', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'], function(THREE, stats, Eventing) {
     var op = {
         'Init': function(container, canvas) {
             GP.GR = GR;

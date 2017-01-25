@@ -48,7 +48,9 @@ requirejs.config({
         'Comm': 'js/Comm',
         'Graphics': 'js/Graphics',
         'Coordinates': 'js/Coordinates',
-        'Controls': 'js/Controls'
+        'Controls': 'js/Controls',
+        'UIControls': 'js/UIControls',
+        'Eventing': 'js/Eventing'
 
     },
     'shim': {

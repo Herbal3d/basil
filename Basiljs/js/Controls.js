@@ -33,7 +33,7 @@
 var CO = CO || {};
 
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
-define(['jquery'], function( $ ) {
+define(['jquery', 'UIControls', 'Eventing'], function( $ , UIControls, Eventing) {
     var op = {
         'Init': function() {
             if ($('#ButtonLoad')) {
@@ -54,7 +54,7 @@ define(['jquery'], function( $ ) {
             if ($('#ButtonAddTestObject')) {
                 $('#ButtonAddTestObject').click(op.OnAddTestObject);
             }
-            CO.cameraCoord = new UI_Coord('#CameraPosition');
+            CO.cameraCoord = new UIControls.UI_Coord('#CameraPosition');
             
         },
         'Start': function() {
@@ -111,49 +111,6 @@ define(['jquery'], function( $ ) {
             GP.display.AddTestObject();
         },
         'noComma': 0
-    };
-
-    // ======================================================
-    // UI structure for displaying XYZ coordinates
-    // Create instance with the '#ID' of the containing HTML element
-    // Call 'Update' to update the values.
-    function UI_Coord(areaID) {
-        if ($(areaID)) {
-            $(areaID).empty();
-            var Xdiv = document.createElement('div');
-            Xdiv.setAttribute('class', 'coordEntry X');
-            var Ydiv = document.createElement('div');
-            Ydiv.setAttribute('class', 'coordEntry Y');
-            var Zdiv = document.createElement('div');
-            Zdiv.setAttribute('class', 'coordEntry Z');
-            $(areaID).append(Xdiv);
-            $(areaID).append(Ydiv);
-            $(areaID).append(Zdiv);
-            this.areaID = areaID;
-            DebugLog('Created UI_Coord element for ' + areaID);
-        }
-        else {
-            DebugLog('Did not create UI_Coord element because ' + areaID + ' not in document');
-        }
-    };
-    UI_Coord.prototype.Update = function(xx, yy, zz) {
-        if (this.areaID) {
-            var areaID = this.areaID;
-            if (xx.hasOwnProperty('x')) {
-                $(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
-                $(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
-                $(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
-            }
-            else {
-                $(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
-                $(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
-                $(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
-            }
-            DebugLog('Updated UI_Coord element for ' + areaID);
-        }
-        else {
-            DebugLog('Did not update UI_Coord element because no areaID');
-        }
     };
 
     // ======================================================
