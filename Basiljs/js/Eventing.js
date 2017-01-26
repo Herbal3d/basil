@@ -32,22 +32,103 @@
 // Global holding event subscription state
 var EV = EV || {};
 
+GP.EV = EV; // For debugging. Don't use for cross package access.
+
 define([], function( ) {
 
+    // ===========================================
+    // One subscription
+    var SubEntry = function(topic, processor, id, limits) {
+        this.topic = topic;
+        this.processor = processor;
+        this.id = id;
+        this.limits = limits;
+    };
+    SubEntry.prototype.fire = function(params) {
+        this.processor(this.topic, params);
+    };
+
+    // ===========================================
+    // One topic that can be subscribed to.
+    var TopicEntry = function(topicName) {
+        this.topic = topicName;
+        this.subs = [];
+    };
+    TopicEntry.prototype.addSubscription = function(sub) {
+        this.subs.push(sub);
+    };
+    TopicEntry.prototype.removeSubscription = function(sub) {
+        for (var ii=0; ii<this.subs.length; ii++) {
+            if (this.subs[ii].id == sub.id) {
+                subs.splice(ii, 1);
+            }
+        }
+    };
+    TopicEntry.prototype.fire = function(params) {
+        this.subs.foreach( sub => {
+            sub.fire(params);
+        });
+    };
+
+    // ===========================================
+    // Operations returned for eventing.
     var op = {
-        'subscribe': function(topic, limits) {
+        // Register to receive events for a topic.
+        // Returns a handle to control the subscription.
+        'subscribe': function(topic, processor, limits) {
+            EV.numSubscriptions++;
+            var sub = new SubEntry(topic, processor, Math.random(), limits);
+            var topicEnt = op.FindTopic(topic);
+            if (topicEnt == undefined) {
+                topicEnt = op.register(topic, 'subscribe');
+            }
+            topicEnt.addSubscription(sub, id);
+            return sub;
         },
-        'unsubscribe': function(subHandle, topic) {
+        // Release a topic subscription.
+        'unsubscribe': function(subHandle) {
+            if (subHandle && subHandle.topic) {
+                var topicEnt = op.FindTopic(subHandle.topic);
+                if (topicEnt) {
+                    topicEnt.removeSubscription(subHandle);
+                }
+            }
         },
-        'register': function(topic, processor) {
+        // Register a topic that can be generated.
+        // This returns a handle for the topic for later 'event' calls.
+        // The returned object just happens to be the TopicEntry object.
+        'register': function(topic, registar) {
+            var topicEnt = op.FindTopic(topic);
+            if (topicEnt == undefined) {
+                topicEnt = new TopicEntry(topic);
+                topicEnt.registar = registar;
+                EV.topics.topic = topicEnt;
+            }
+            return topicEnt;
         },
+        // Unregister a topic.
         'unregister': function(regHandle, topic) {
+            // cannot unregister a topic yet
+        },
+        // An event happened for a topic
+        'event': function(regHandle, params) {
+            EV.numEventsFired++;
+            if (regHandle && regHandle.fire) {
+                regHandle.fire(params);
+            }
+        },
+        'FindTopic': function(topic) {
+            return EV.topics.topic;
         },
         'noComma': 0
     };
 
-    return op;
+    EV.op = op;
+    EV.topics = EV.topics || {};
+    EV.numSubscriptions = 0;
+    EV.numEventsFired = 0;
 
+    return op;
 });
 
 

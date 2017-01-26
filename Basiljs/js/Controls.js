@@ -33,7 +33,7 @@
 var CO = CO || {};
 
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
-define(['jquery', 'UIControls', 'Eventing'], function( $ , UIControls, Eventing) {
+define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'], function(config, GR, $, UIControls, Eventing) {
     var op = {
         'Init': function() {
             if ($('#ButtonLoad')) {
@@ -41,8 +41,8 @@ define(['jquery', 'UIControls', 'Eventing'], function( $ , UIControls, Eventing)
             }
 
             // Whether debug output window is displayed can be set in the configuration file
-            if (GP.config.page.showDebug) {
-               op.ShowDebug(GP.config.page.showDebug);
+            if (config.page.showDebug) {
+               op.ShowDebug(config.page.showDebug);
             }
             else {
                op.ShowDebug(false);
@@ -62,7 +62,7 @@ define(['jquery', 'UIControls', 'Eventing'], function( $ , UIControls, Eventing)
         // Called by graphics section for each frame
         'PerFrameUpdate': function() {
             if (CO.cntlCameraPosition) {
-                var camPos = GP.GR.GetCameraPosition();
+                var camPos = GR.GetCameraPosition();
                 if (CO.lastCameraPosition) {
                     if (camPos != CO.lastCameraPosition) {
                         CO.cntlCameraPosition.Update(camPos);
@@ -77,11 +77,11 @@ define(['jquery', 'UIControls', 'Eventing'], function( $ , UIControls, Eventing)
         },
         'ShowDebug': function(onOff) {
             if (onOff) {
-                var showMS = GP.config.page.DebugShowMS ? GP.config.page.DebugShowMS : 800;
+                var showMS = config.page.DebugShowMS ? config.page.DebugShowMS : 800;
                 $('#DEBUGG').show(showMS);
             }
             else {
-                var hideMS = GP.config.page.DebugHideMS ? GP.config.page.DebugHideMS : 400;
+                var hideMS = config.page.DebugHideMS ? config.page.DebugHideMS : 400;
                 $('#DEBUGG').hide(hideMS);
             }
         },
@@ -91,24 +91,24 @@ define(['jquery', 'UIControls', 'Eventing'], function( $ , UIControls, Eventing)
             op.DoLoad(url);
         },
         'DoLoad': function(url) {
-            GP.display.ClearScene();
-            GP.display.LoadGltf(url, function() {
+            GR.ClearScene();
+            GR.LoadGltf(url, function() {
 
                 // DEBUG DEBUG -- initially point camera at one of the objects in the scene
                 var aPlace = GP.GR.scene.children[0].position;
                 var cameraPlace = new THREE.Vector3( aPlace.x + 40, aPlace.y + 40, aPlace.z + 40);
                 // cameraPlace = cameraPlace.add(new THREE.Vector3(100,100,100));
-                GP.display.SetCameraPosition(cameraPlace);
+                GR.SetCameraPosition(cameraPlace);
                 CO.cameraCoord.Update(cameraPlace);
-                GP.display.PointCameraAt(aPlace);
+                GR.PointCameraAt(aPlace);
                 DebugLog('Control: placing camera at <' + cameraPlace.toArray() + '> looking at <' + aPlace.toArray() + '>');
 
-                GP.display.Start(); // ClearScene possibly shuts down rendering
+                GR.Start(); // ClearScene possibly shuts down rendering
             });
         },
         'OnAddTestObject': function() {
             DebugLog('Controls: OnAddTestObject');
-            GP.display.AddTestObject();
+            GR.AddTestObject();
         },
         'noComma': 0
     };
