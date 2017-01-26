@@ -4,26 +4,52 @@
 @font-global-family: Veranda,Arial,Helvetica,sans-serif;
 @font-global-size: 12px;
 
-@color-global-color: #baaf0b;
-@color-global-bg: #369e09;
+// First greens =============================
+// @color-global-color: #baaf0b;
+// @color-global-bg: #369e09;
 
-@color-dialog-color: #f0e8af;
-@color-dialog-bg: #86af0a;
-@color-group-bg: #769f0a;
+// @color-dialog-color: #f0e8af;
+// @color-dialog-bg: #86af0a;
+// @color-group-bg: #769f0a;
+// @dialog-opacity: 0.8;
+
+// @color-dialog-accent: #b8af0b;
+// @color-dialog-button-color: @color-dialog-color;
+// @color-dialog-button-bg: #4dc41a;
+
+// @color-debug-color: #f0e84f;
+// @color-debug-bg: #4d6600;
+// @color-debug-error: #ff2020;
+// @debug-opacity: 0.4;
+
+// Creamier greens =============================
+@color-base-headline: #11455f;
+@color-base-color: #058e3f;
+@color-base-bg: #88d498;
+@color-base-accent2: #c6dabf;
+@color-base-accent: #e3e9d2;
+
+@color-global-color: @color-base-color;
+@color-global-bg: @color-base-headline;
+
+@color-dialog-color: @color-base-color;
+@color-dialog-bg: @color-base-headline;
+@color-group-bg: @color-base-bg;
 @dialog-opacity: 0.8;
 
-@color-dialog-accent: #b8af0b;
-@color-dialog-button-color: @color-dialog-color;
-@color-dialog-button-bg: #4dc41a;
+@color-dialog-accent: @color-base-accent;
+@color-dialog-button-color: @color-base-color;
+@color-dialog-button-bg: @color-base-accent2;
 
-@color-debug-color: #f0e84f;
-@color-debug-bg: #4d6600;
+@color-debug-color: @color-base-color;
+@color-debug-bg: @color-base-bg;
+@color-debug-error: #ff2020;
 @debug-opacity: 0.4;
 
 // overlay dialog box definition for mixins
 .defn-dialog {
-    margin: 1em;
-    padding: 1em;
+    margin: 5px;
+    padding: 5px;
     border-radius: 1em;
     -moz-border-radius: 1em;
     color: @color-dialog-color;
@@ -112,7 +138,7 @@ body {
     position: absolute;
     right: 0%;
     bottom: 0%;
-    width: 40%;
+    width: 25%;
     height: 30em;
     .defn-dialog;
 }
@@ -142,6 +168,6 @@ body {
 
 // Class added to a reported error message in the DEBUGG area
 .errorMsg {
-    color: #ff2020;
+    color: @color-debug-error;
     font-weight: heavy;
 }

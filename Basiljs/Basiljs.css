@@ -1,23 +1,23 @@
 .defn-dialog {
-  margin: 1em;
-  padding: 1em;
+  margin: 5px;
+  padding: 5px;
   border-radius: 1em;
   -moz-border-radius: 1em;
-  color: #f0e8af;
-  background: #86af0a;
+  color: #058e3f;
+  background: #11455f;
   opacity: 0.8;
 }
 .defn-dialogBlock {
   display: block;
-  border: 2px solid #b8af0b;
-  background: #769f0a;
+  border: 2px solid #e3e9d2;
+  background: #88d498;
   margin: 4px;
   padding: 4px;
 }
 .dialog-group {
   display: block;
-  border: 2px solid #b8af0b;
-  background: #769f0a;
+  border: 2px solid #e3e9d2;
+  background: #88d498;
   margin: 4px;
   padding: 4px;
 }
@@ -26,11 +26,11 @@
   margin: 4px;
   padding: 2px;
   text-align: center;
-  border: 3px solid #b8af0b;
+  border: 3px solid #e3e9d2;
   border-radius: 5px;
   -moz-border-radius: 5px;
-  color: #f0e8af;
-  background: #4dc41a;
+  color: #058e3f;
+  background: #c6dabf;
   opacity: 100;
 }
 .button-sm {
@@ -38,11 +38,11 @@
   margin: 4px;
   padding: 2px;
   text-align: center;
-  border: 3px solid #b8af0b;
+  border: 3px solid #e3e9d2;
   border-radius: 5px;
   -moz-border-radius: 5px;
-  color: #f0e8af;
-  background: #4dc41a;
+  color: #058e3f;
+  background: #c6dabf;
   opacity: 100;
   font-size: smaller;
 }
@@ -51,11 +51,11 @@
   margin: 4px;
   padding: 2px;
   text-align: center;
-  border: 3px solid #b8af0b;
+  border: 3px solid #e3e9d2;
   border-radius: 5px;
   -moz-border-radius: 5px;
-  color: #f0e8af;
-  background: #4dc41a;
+  color: #058e3f;
+  background: #c6dabf;
   opacity: 100;
   width: 7em;
   height: 2em;
@@ -63,8 +63,8 @@
 body {
   font-family: Veranda, Arial, Helvetica, sans-serif;
   font-size: 12px;
-  color: #baaf0b;
-  background: #369e09;
+  color: #058e3f;
+  background: #11455f;
   padding: 0px;
   margin: 0px;
 }
@@ -93,25 +93,25 @@ body {
   position: absolute;
   right: 0%;
   bottom: 0%;
-  width: 40%;
+  width: 25%;
   height: 30em;
-  margin: 1em;
-  padding: 1em;
+  margin: 5px;
+  padding: 5px;
   border-radius: 1em;
   -moz-border-radius: 1em;
-  color: #f0e8af;
-  background: #86af0a;
+  color: #058e3f;
+  background: #11455f;
   opacity: 0.8;
 }
 .coordDisplay {
   display: inline;
   margin: 1px;
-  border: 1px groove #b8af0b;
+  border: 1px groove #e3e9d2;
 }
 .coordEntry {
   display: inline;
   margin: 1px;
-  background: #4dc41a;
+  background: #c6dabf;
 }
 #DEBUGG {
   position: absolute;
@@ -119,15 +119,14 @@ body {
   bottom: 0%;
   width: 50%;
   height: 30em;
-  margin: 1em;
-  padding: 1em;
+  margin: 5px;
+  padding: 5px;
   border-radius: 1em;
   -moz-border-radius: 1em;
-  color: #f0e8af;
-  background: #86af0a;
+  background: #11455f;
   opacity: 0.8;
-  color: #f0e84f;
-  background: #4d6600;
+  color: #058e3f;
+  background: #88d498;
   opacity: 0.4;
 }
 .errorMsg {
