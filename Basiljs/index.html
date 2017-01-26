@@ -39,14 +39,15 @@
             <button type="button" class="button" id="ButtonShowDebug">Show Debug</button>
         </div>
         <div class="dialog-group">
-            <label>Camera Position
+            <fieldset>
+                <legend>Camera Position</legend>
                 <div id="CameraPosition" class="coordDisplay"></div>
-            </label>
-            <label>Selected Object
-                <div id="SelectedObjectInfo" class="dialog-group">
-                    <label>Position: <div b-info="position" class="coordDisplay"></div></label>
-                </div>
-            </label>
+            </fieldset>
+            <fieldset>
+                <legend>Selected Object </legend>
+                <label>Position: <div b-info="position" class="coordDisplay"></div></label>
+                <label>Rotation: <div b-info="rotation" class="coordDisplay"></div></label>
+            </fieldset>
         </div>
     </div>
     <div id="DEBUGG"></div>
