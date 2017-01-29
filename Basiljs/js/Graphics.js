@@ -32,12 +32,37 @@
 // holds the graphics context for this threejs instance
 var GR = GR || {};
 
-define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'], function(THREE, config, stats, Eventing) {
+define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'], function(THREE, Config, stats, Eventing) {
+
+    // Called by Eventing timer to check to see if event needs to be fired
+    var processCameraInfoEvent = function(topic) {
+        if (GR.eventCameraInfo.prevCamPosition == undefined) {
+            GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
+        }
+        var oldPos = GR.eventCameraInfo.prevCamPosition;
+        var newPos = GR.camera.position.clone();
+        if (!GR.camera.position.equals(GR.eventCameraInfo.prevCamPosition)) {
+            var camInfo = {
+                'position': GR.camera.position,
+                'rotation': GR.camera.rotation
+            };
+            Eventing.fire(GR.eventCameraInfo, camInfo);
+            GR.eventCameraInfo.prevCamPosition = newPos;
+        }
+    };
+
+    // Called by Eventing timer to check to see if event needs to be fired
+    var processDisplayInfoEvent = function(topic) {
+        if (GR.eventDisplayInfo.hasSubscriptions) {
+            // not general, but, for the moment, just return the WebGL info
+            var dispInfo = GR.renderer.info;
+            Eventing.fire(GR.eventDisplayInfo, dispInfo);
+        }
+    };
+
+    // ==============================================
     var op = {
         'Init': function(container, canvas) {
-            GP.GR = GR; // for debugging. Don't use for cross package access.
-            GR.op = op;
-
             GR.container = container;
             GR.canvas = canvas;
 
@@ -46,15 +71,15 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
             op.InitializeCameraAndLights(GR.scene, GR.canvas);
 
-            var rendererParams = config.webgl.renderer.params;
+            var rendererParams = Config.webgl.renderer.params;
             rendererParams.canvas = canvas;
             GR.renderer = new THREE.WebGLRenderer(rendererParams);
-            if (config.webgl.renderer.clearColor) {
-                GR.renderer.setClearColor(Number(config.webgl.renderer.clearColor));
+            if (Config.webgl.renderer.clearColor) {
+                GR.renderer.setClearColor(Number(Config.webgl.renderer.clearColor));
             }
             GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-            if (config.webgl.renderer.shadows) {
+            if (Config.webgl.renderer.shadows) {
                 GR.renderer.shadowMap.enabled = true;
                 GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
             }
@@ -62,7 +87,7 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             op.InitializeCameraControl(GR.scene, GR.container);
             container.addEventListener('resize', op.OnContainerResize, false);
 
-            if (config.page.showStats) {
+            if (Config.page.showStats) {
                 var stat = stats();
                 stat.showPanel(0);  // FPS
                 // stat.showPanel(1);  // MS rendering
@@ -76,7 +101,12 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                 container.appendChild(GR.stats.dom);
             }
 
-            Eventing.register('display.eachFrame', 'Graphics');
+            // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
+            GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
+            GR.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
+            GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, processCameraInfoEvent);
+            GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
+            GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, processDisplayInfoEvent);
         },
         'Start': function() {
             if (!GR.runLoopIdentifier) {
@@ -99,8 +129,9 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                 if (GR.cameraControl) {
                     GR.cameraControl.update();
                 }
-                Eventing.event(GR.perFrameEvent, {});
-                // GP.controls.PerFrameUpdate();
+                if (GR.eventEachFrame) {
+                    Eventing.fire(GR.eventEachFrame, {});
+                }
                 // TODO: insert animation updates (shouldn't this be done before render time?)
                 if (GR.stats) {
                     GR.stats.end();
@@ -153,39 +184,39 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
         },
         // Given a scene and optional gltf info, create a new scene
         'InitializeCameraAndLights': function(theScene, canvas) {
-            GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, config.webgl.camera.initialViewDistance );
+            GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, Config.webgl.camera.initialViewDistance );
             // GR.camera.up = new THREE.Vector3(0, 1, 0);
-            GR.camera.position.fromArray(GP.config.webgl.camera.initialCameraPosition);
+            GR.camera.position.fromArray(Config.webgl.camera.initialCameraPosition);
             var lookAt = new THREE.Vector3;
-            lookAt.fromArray(config.webgl.camera.initialCameraLookAt);
+            lookAt.fromArray(Config.webgl.camera.initialCameraLookAt);
             GR.camera.lookAt(lookAt);
-            if (config.webgl.camera.addCameraHelper) {
+            if (Config.webgl.camera.addCameraHelper) {
                 GR.cameraHelper = new THREE.CameraHelper(GR.camera);
                 theScene.add(GR.cameraHelper);
             }
-            if (config.webgl.camera.addAxisHelper) {
-                var helperSize = config.webgl.camera.axisHelperSize || 5;
+            if (Config.webgl.camera.addAxisHelper) {
+                var helperSize = Config.webgl.camera.axisHelperSize || 5;
                 GR.axisHelper = new THREE.AxisHelper(Number(helperSize));
                 theScene.add(GR.axisHelper);
             }
             theScene.add(GR.camera);
 
-            if (config.webgl.lights) {
-                if (config.webgl.lights.ambient) {
-                    var ambient = new THREE.AmbientLight(Number(config.webgl.lights.ambient.color),
-                                                        Number(config.webgl.lights.ambient.intensity));
+            if (Config.webgl.lights) {
+                if (Config.webgl.lights.ambient) {
+                    var ambient = new THREE.AmbientLight(Number(Config.webgl.lights.ambient.color),
+                                                        Number(Config.webgl.lights.ambient.intensity));
                     theScene.add(ambient);
                 }
-                if (config.webgl.lights.directional) {
-                    var directional = new THREE.DirectionalLight(Number(config.webgl.lights.directional.color),
-                                                        Number(config.webgl.lights.directional.intensity));
-                    directional.position.fromArray(config.webgl.lights.directional.position).normalize();
+                if (Config.webgl.lights.directional) {
+                    var directional = new THREE.DirectionalLight(Number(Config.webgl.lights.directional.color),
+                                                        Number(Config.webgl.lights.directional.intensity));
+                    directional.position.fromArray(Config.webgl.lights.directional.position).normalize();
                     GR.directionalLight = directional;
-                    if (config.webgl.lights.directional.shadows) {
+                    if (Config.webgl.lights.directional.shadows) {
                         directional.castShadow = true;
-                        directional.shadow.bias = config.webgl.lights.directional.shadows.bias;
-                        directional.shadow.mapSize.width = config.webgl.lights.directional.shadows.mapWidth;
-                        directional.shadow.mapSize.height = config.webgl.lights.directional.shadows.mapHeight;
+                        directional.shadow.bias = Config.webgl.lights.directional.shadows.bias;
+                        directional.shadow.mapSize.width = Config.webgl.lights.directional.shadows.mapWidth;
+                        directional.shadow.mapSize.height = Config.webgl.lights.directional.shadows.mapHeight;
                     }
                     theScene.add(directional);
                 }
@@ -229,12 +260,16 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             var geometry = new THREE.BoxGeometry( 1, 2, 3);
             var material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
             var cube = new THREE.Mesh(geometry, material);
-            cube.position.fromArray(config.webgl.camera.initialCameraLookAt);
+            cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
             GR.scene.add(cube);
-            DebugLog('Graphics: added test cube at ' + config.webgl.camera.initialCameraLookAt);
+            DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
         },
         'noComma': 0
     };
+
+    GP.GR = GR; // for debugging. Don't use for cross package access.
+
+    GR.op = op;
 
     return op;
 });

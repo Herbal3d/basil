@@ -40,13 +40,21 @@
         </div>
         <div class="dialog-group">
             <fieldset>
-                <legend>Camera Position</legend>
-                <div id="CameraPosition" class="coordDisplay"></div>
+                <legend>Camera</legend>
+                <label>Position: <div b-info="camPosition" class="coordDisplay"></div></label>
+                <label>Drawcalls: <div b-info="infoDrawCalls" class="textDisplay"></div></label>
+                <label>Texture Mem: <div b-info="infoTextureMem" class="textDisplay"></div></label>
+                <label>Geometry Mem: <div b-info="infoGeometryMem" class="textDisplay"></div></label>
+                <label>Vertices: <div b-info="infoVertices" class="textDisplay"></div></label>
+                <label>Faces: <div b-info="infoFaces" class="textDisplay"></div></label>
+                <label>Points: <div b-info="infoPoints" class="textDisplay"></div></label>
             </fieldset>
             <fieldset>
                 <legend>Selected Object </legend>
-                <label>Position: <div b-info="position" class="coordDisplay"></div></label>
-                <label>Rotation: <div b-info="rotation" class="coordDisplay"></div></label>
+                <label>Name: <div b-info="objName" class="textDisplay"></div></label>
+                <label>UUID: <div b-info="objUuid" class="textDisplay"></div></label>
+                <label>Position: <div b-info="objPosition" class="coordDisplay"></div></label>
+                <label>Rotation: <div b-info="objRotation" class="coordDisplay"></div></label>
             </fieldset>
         </div>
     </div>

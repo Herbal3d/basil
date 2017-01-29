@@ -41,12 +41,12 @@
 @color-dialog-button-color: @color-base-color;
 @color-dialog-button-bg: @color-base-accent2;
 
-@color-debug-color: @color-base-color;
+@color-debug-color: #111;
 @color-debug-bg: @color-base-bg;
 @color-debug-error: #ff2020;
 @debug-opacity: 0.4;
 
-// overlay dialog box definition for mixins
+// Base for overlay dialog box
 .defn-dialog {
     margin: 5px;
     padding: 5px;
@@ -57,7 +57,7 @@
     opacity: @dialog-opacity;
 }
 
-// A block area within a dialog
+// Base for block area within a dialog
 .defn-dialogBlock {
     display: block;
     border: 2px solid @color-dialog-accent;
@@ -66,11 +66,7 @@
     padding: 4px;
 }
 
-// The class used to mark a <div> group as a displayed group in a dialog
-.dialog-group {
-    .defn-dialogBlock;
-}
-
+// Base for buttons in the dialog
 .defn-button {
     display: inline;
     margin: 4px;
@@ -83,13 +79,20 @@
     background: @color-dialog-button-bg;
     opacity: 100;
 }
+// value display areas (text, coord, ...)
+.defn-display {
+    display: inline;
+    margin: 1px;
+    padding: 2px;
+    border: 1px solid @color-dialog-accent;
+}
 
 .button-sm {
     .defn-button;
     font-size: smaller;
 }
 
-// Class for a button appearing in the dialog
+// Button appearing in the dialog
 .button {
     .defn-button;
     width: 7em;
@@ -142,10 +145,21 @@ body {
     height: 30em;
     .defn-dialog;
 }
+//  <div> group as a displayed group in a dialog
+.dialog-group {
+    .defn-dialogBlock;
+}
+
+label {
+    display: block;
+}
+
+.textDisplay {
+    .defn-display;
+    border: 0px;
+}
 .coordDisplay {
-    display: inline;
-    margin: 1px;
-    border: 1px groove @color-dialog-accent;
+    .defn-display;
 }
 .coordEntry {
     display: inline;
@@ -158,7 +172,7 @@ body {
     position: absolute;
     left: 0%;
     bottom: 0%;
-    width: 50%;
+    width: 60%;
     height: 30em;
     .defn-dialog;
     color: @color-debug-color;

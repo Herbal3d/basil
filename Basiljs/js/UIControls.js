@@ -29,6 +29,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+var UC = UC || {};
+
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
 define(['jquery'], function( $ ) {
 
@@ -49,7 +51,7 @@ define(['jquery'], function( $ ) {
             $(areaID).append(Ydiv);
             $(areaID).append(Zdiv);
             this.areaID = areaID;
-            DebugLog('Created UI_Coord element for ' + areaID);
+            // DebugLog('Created UI_Coord element for ' + areaID);
         }
         else {
             DebugLog('Did not create UI_Coord element because ' + areaID + ' not in document');
@@ -68,7 +70,6 @@ define(['jquery'], function( $ ) {
                 $(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
                 $(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
             }
-            DebugLog('Updated UI_Coord element for ' + areaID);
         }
         else {
             DebugLog('Did not update UI_Coord element because no areaID');
@@ -76,13 +77,47 @@ define(['jquery'], function( $ ) {
     };
 
     // ======================================================
+    // UI structure for displaying text.
+    // Create instance with the '#ID' of the containing HTML element
+    // Call 'Update' to update the values.
+    var UI_TextF = function (areaID) {
+        if ($(areaID)) {
+            $(areaID).empty();
+            this.areaID = areaID;
+            // DebugLog('Created UI_Text element for ' + areaID);
+        }
+        else {
+            DebugLog('Did not create UI_Text element because ' + areaID + ' not in document');
+        }
+    };
+    UI_TextF.prototype.Update = function(txt) {
+        if (this.areaID) {
+            var areaID = this.areaID;
+            $(areaID).text(txt);
+        }
+        else {
+            DebugLog('Did not update UI_Text element because no areaID');
+        }
+    };
 
-    var UI_Controls = {
+    // ======================================================
+
+    // The objects returned by this package are designed to be 'new'ed for UI
+    // instances rather than called. Example usage:
+    //      var oneUiInterfaceControl = new UIControls.UI_Coord('#selectionID');
+    //      ...
+    //      oneUiInterfaceControl.Update(newValue);
+    //      ...
+    var op = {
         'UI_Coord': UI_CoordF,
+        'UI_Text': UI_TextF,
         'noComma': 0
     };
 
-    return UI_Controls;
+    GR.UC = UC;
+    UC.op = op;
+
+    return op;
 
 });
 

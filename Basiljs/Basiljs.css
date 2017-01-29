@@ -14,13 +14,6 @@
   margin: 4px;
   padding: 4px;
 }
-.dialog-group {
-  display: block;
-  border: 2px solid #e3e9d2;
-  background: #88d498;
-  margin: 4px;
-  padding: 4px;
-}
 .defn-button {
   display: inline;
   margin: 4px;
@@ -32,6 +25,12 @@
   color: #058e3f;
   background: #c6dabf;
   opacity: 100;
+}
+.defn-display {
+  display: inline;
+  margin: 1px;
+  padding: 2px;
+  border: 1px solid #e3e9d2;
 }
 .button-sm {
   display: inline;
@@ -103,10 +102,28 @@ body {
   background: #11455f;
   opacity: 0.8;
 }
+.dialog-group {
+  display: block;
+  border: 2px solid #e3e9d2;
+  background: #88d498;
+  margin: 4px;
+  padding: 4px;
+}
+label {
+  display: block;
+}
+.textDisplay {
+  display: inline;
+  margin: 1px;
+  padding: 2px;
+  border: 1px solid #e3e9d2;
+  border: 0px;
+}
 .coordDisplay {
   display: inline;
   margin: 1px;
-  border: 1px groove #e3e9d2;
+  padding: 2px;
+  border: 1px solid #e3e9d2;
 }
 .coordEntry {
   display: inline;
@@ -117,15 +134,16 @@ body {
   position: absolute;
   left: 0%;
   bottom: 0%;
-  width: 50%;
+  width: 60%;
   height: 30em;
   margin: 5px;
   padding: 5px;
   border-radius: 1em;
   -moz-border-radius: 1em;
+  color: #058e3f;
   background: #11455f;
   opacity: 0.8;
-  color: #058e3f;
+  color: #111111;
   background: #88d498;
   opacity: 0.4;
 }

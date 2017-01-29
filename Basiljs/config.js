@@ -59,6 +59,12 @@ define(
             },
 
             'noComma': 0
-        }
+        },
+        'eventing': {
+            'eventPollIntervalMS': 500,
+            'noComma': 0
+        },
+
+        'noComma': 0
     }
 );

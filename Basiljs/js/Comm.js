@@ -29,6 +29,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+var CM = CM || {};
+
 define([], function() {
     var op = {
         'Init': function() {
@@ -39,6 +41,10 @@ define([], function() {
         },
         'noComma': 0
     };
+
+    GP.CM = CM; // for debugging. Don't use for cross package access.
+
+    CM.op = op;
 
     return op;
 });

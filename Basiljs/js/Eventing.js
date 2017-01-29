@@ -32,9 +32,7 @@
 // Global holding event subscription state
 var EV = EV || {};
 
-GP.EV = EV; // For debugging. Don't use for cross package access.
-
-define([], function( ) {
+define(['config'], function( Config ) {
 
     // ===========================================
     // One subscription
@@ -45,7 +43,7 @@ define([], function( ) {
         this.limits = limits;
     };
     SubEntry.prototype.fire = function(params) {
-        this.processor(this.topic, params);
+        this.processor(params, this.topic);
     };
 
     // ===========================================
@@ -53,6 +51,9 @@ define([], function( ) {
     var TopicEntry = function(topicName) {
         this.topic = topicName;
         this.subs = [];
+    };
+    TopicEntry.prototype.hasSubscriptions = function(sub) {
+        return this.subs.length > 0;
     };
     TopicEntry.prototype.addSubscription = function(sub) {
         this.subs.push(sub);
@@ -65,9 +66,22 @@ define([], function( ) {
         }
     };
     TopicEntry.prototype.fire = function(params) {
-        this.subs.foreach( sub => {
+        this.subs.forEach( sub => {
             sub.fire(params);
         });
+    };
+
+
+    // ===========================================
+    // Call the event processors that get called twice a second.
+    var processTimedEvents = function() {
+        if (EV.timedEventProcessors) {
+            EV.timedEventProcessors.forEach(function(proc, topic) {
+                // DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
+                proc(topic);
+            });
+        }
+        setTimeout(processTimedEvents, Number(Config.eventing.eventPollIntervalMS));
     };
 
     // ===========================================
@@ -82,16 +96,18 @@ define([], function( ) {
             if (topicEnt == undefined) {
                 topicEnt = op.register(topic, 'subscribe');
             }
-            topicEnt.addSubscription(sub, id);
+            topicEnt.addSubscription(sub);
+            DebugLog("Eventing.subscribe: adding subscription to event " + topic);
             return sub;
         },
         // Release a topic subscription.
-        'unsubscribe': function(subHandle) {
-            if (subHandle && subHandle.topic) {
-                var topicEnt = op.FindTopic(subHandle.topic);
+        'unsubscribe': function(subEntry) {
+            if (subEntry && subEntry.topic) {
+                var topicEnt = op.FindTopic(subEntry.topic);
                 if (topicEnt) {
-                    topicEnt.removeSubscription(subHandle);
+                    topicEnt.removeSubscription(subEntry);
                 }
+                DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
             }
         },
         // Register a topic that can be generated.
@@ -102,31 +118,70 @@ define([], function( ) {
             if (topicEnt == undefined) {
                 topicEnt = new TopicEntry(topic);
                 topicEnt.registar = registar;
-                EV.topics.topic = topicEnt;
+                EV.topics.set(topic, topicEnt);
+                DebugLog("Eventing.register: registering event " + topic);
             }
             return topicEnt;
         },
         // Unregister a topic.
-        'unregister': function(regHandle, topic) {
+        'unregister': function(topicEntry, topic) {
             // cannot unregister a topic yet
+                DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
         },
-        // An event happened for a topic
-        'event': function(regHandle, params) {
+        // An event happened for a topic.
+        // Fire the event processors and pass 'params' to all subscribers.
+        'fire': function(topicEntry, params) {
             EV.numEventsFired++;
-            if (regHandle && regHandle.fire) {
-                regHandle.fire(params);
+            if (topicEntry && topicEntry.topic) {
+                topicEntry.fire(params);
             }
         },
+        // Return a TopicEntry for the given topic name.
+        // Return undefined if not found.
         'FindTopic': function(topic) {
-            return EV.topics.topic;
+            return EV.topics.get(topic);
+        },
+        // Calls a processor every 0.5 seconds for polled type events.
+        // First parameter can be either a TopicEntry or a topic name
+        // Returns handle  that can be used to remove timer.
+        'createTimedEventProcessor': function(topicEntryOrTopic, processor) {
+            if (EV.timedEventProcessors == undefined) {
+                EV.timedEventProcessors = new Map();
+            }
+            var topic = topicEntryOrTopic;
+            if ('topic' in topicEntryOrTopic) {
+                DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
+                topic = topicEntryOrTopic.topic;
+            }
+            EV.timedEventProcessors.set(topic, processor);
+            DebugLog("Eventing.createTimedEventProcessor: creating for event " + topic);
+            return topic;
+        },
+        // Return 'true' if a processor entry was actually removed
+        'removeTimedEventProcessor': function(topicEntryOrTopic) {
+            var ret = false;
+            if (EV.timedEventProcessors) {
+                var topic = topicEntryOrTopic;
+                if ('topic' in topicEntryOrTopic) {
+                    topic = topicEntryOrTopic.topic;
+                }
+                ret = EV.timedEventProcessors.delete(topic);
+                DebugLog("Eventing.removeTimedEventProcessor: removing for event " + topic);
+            }
+            return ret;
         },
         'noComma': 0
     };
 
+    GP.EV = EV; // For debugging. Don't use for cross package access.
+
     EV.op = op;
-    EV.topics = EV.topics || {};
+    EV.topics = EV.topics || new Map();
     EV.numSubscriptions = 0;
     EV.numEventsFired = 0;
+
+    // Start the timed event clock
+    processTimedEvents();
 
     return op;
 });

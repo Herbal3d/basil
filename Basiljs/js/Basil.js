@@ -32,6 +32,17 @@
 // Global parameters and variables. "GP.variable"
 var GP = GP || {};
 
+/*
+    Pattern for Basil packages is each has a local, global variable to hold
+    local state. This is two character (GR, EV, CM, CO, ...). There is one
+    global var named 'GP' that has references to everything but that is ONLY
+    for use in debugging.
+
+    Each package creates a map named 'op' that has the packages external operations.
+    'op' is what is returned by RequireJS for external access to the package.
+    This is added to the packages local var so there is always a 'GP.EV.op', for
+    instance.
+*/
 requirejs.config({
     'baseUrl': "",
     'paths': {
@@ -69,19 +80,15 @@ requirejs.config({
     }
 });
 
-require(['config', 'jquery', 'threejs'], function(config, $, THREE) {
-    GP.config = config;
+require(['config', 'jquery', 'threejs'], function(Config, $, THREE) {
+    GP.Config = Config;
     GP.Ready = false;
 
-    require(['Comm', 'Graphics', 'Coordinates', 'Controls'], function(pComm, pDisplay, pCoord, pControls) {
+    require(['Comm', 'Graphics', 'Coordinates', 'Controls'],
+                function(pComm, pDisplay, pCoord, pControls, pEventing, pUIControls) {
 
-        GP.comm = pComm;
-        GP.display = pDisplay;
-        GP.coord = pCoord;
-        GP.controls = pControls;
-
-        var container = document.getElementById(GP.config.page.webGLcontainerId);
-        var canvas = document.getElementById(GP.config.page.webGLcanvasId);
+        var container = document.getElementById(Config.page.webGLcontainerId);
+        var canvas = document.getElementById(Config.page.webGLcanvasId);
         pDisplay.Init(container, canvas);
         pControls.Init();
 

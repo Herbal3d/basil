@@ -45,6 +45,8 @@
 
 // =====================================================
 
+var CD = CD || [];
+
 define(['threejs'], function(THREE) {
     // An object to hold a transform or whatever is holding a position/rotation.
     function Loc() {
@@ -68,7 +70,7 @@ define(['threejs'], function(THREE) {
         this.location.copy(aTrans);
     };
 
-    var operations = {
+    var op = {
 
         // Return a transform matrix passed latitude and longitude strings
         'gPositionFromLatLong': function(lat, long) {
@@ -90,11 +92,15 @@ define(['threejs'], function(THREE) {
         }
     };
 
+    GP.CD = CD;
+
+    CD.op = op;
+
     GP.refLoc = new Loc();
 	// Start at Disneyland
-    GP.refLoc.setTrans(operations.gPositionFromLatLong("33.8120962", "-117.9211629,17z"));
+    GP.refLoc.setTrans(op.gPositionFromLatLong("33.8120962", "-117.9211629,17z"));
 
-    return operations;
+    return op;
 
 });
 
