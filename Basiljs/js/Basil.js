@@ -32,6 +32,8 @@
 // Global parameters and variables. "GP.variable"
 var GP = GP || {};
 
+GP.requireConfig = requireConfig;   // from the './requireConfig.js' in index.html
+
 /*
     Pattern for Basil packages is each has a local, global variable to hold
     local state. This is two character (GR, EV, CM, CO, ...). There is one
@@ -43,49 +45,13 @@ var GP = GP || {};
     This is added to the packages local var so there is always a 'GP.EV.op', for
     instance.
 */
-requirejs.config({
-    'baseUrl': "",
-    'paths': {
-        'config': 'config',
-        'jquery': 'jslibs/jquery-3.1.0.min',
+requirejs.config(GP.requireConfig);
 
-        // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
-        'threejs': 'jslibs/threejs-wrapper',
-        'real-threejs': 'jslibs/three-dev-20170207.min',
-        'orbitControl': 'jslibs/OrbitControls',
-        'stats': 'jslibs/stats.min',
-        'GLTFLoader': 'jslibs/GLTFLoader',
-
-        'Comm': 'js/Comm',
-        'Graphics': 'js/Graphics',
-        'Coordinates': 'js/Coordinates',
-        'Controls': 'js/Controls',
-        'UIControls': 'js/UIControls',
-        'Eventing': 'js/Eventing'
-
-    },
-    'shim': {
-        'threejs': {
-            'exports': 'THREE'
-        },
-        'orbitControl': {
-            'deps': ['threejs']
-        },
-        'stats': {
-            'deps': ['threejs']
-        },
-        'GLTFLoader': {
-            'deps': ['threejs']
-        }
-    }
-});
-
-require(['config', 'jquery', 'threejs'], function(Config, $, THREE) {
+require(['config', 'jquery'], function(Config, $) {
     GP.Config = Config;
     GP.Ready = false;
 
-    require(['Comm', 'Graphics', 'Coordinates', 'Controls'],
-                function(pComm, pDisplay, pCoord, pControls, pEventing, pUIControls) {
+    require(['Comm', 'Graphics', 'Coordinates', 'Controls'], function(pComm, pDisplay, pCoord, pControls) {
 
         var container = document.getElementById(Config.page.webGLcontainerId);
         var canvas = document.getElementById(Config.page.webGLcanvasId);

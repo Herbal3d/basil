@@ -32,7 +32,8 @@
 // holds the graphics context for this threejs instance
 var GR = GR || {};
 
-define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'], function(THREE, Config, stats, Eventing) {
+define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
+                            function(THREE, Config, stats, Eventing) {
 
     // Called by Eventing timer to check to see if event needs to be fired
     var processCameraInfoEvent = function(topic) {
