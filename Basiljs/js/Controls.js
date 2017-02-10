@@ -46,7 +46,7 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             CO.infoDrawCalls.Update(info.render.calls);
             CO.infoVertices.Update(info.render.vertices);
             CO.infoFaces.Update(info.render.faces);
-            CO.infoPoints.Update(info.render.points);
+            // CO.infoPoints.Update(info.render.points);
         }
         if (info && info.memory && CO.infoTextureMem) {
             CO.infoTextureMem.Update(info.memory.textures);
@@ -81,7 +81,7 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             CO.infoGeometryMem = new UIControls.UI_Text('div[b-info=infoGeometryMem]');
             CO.infoVertices = new UIControls.UI_Text('div[b-info=infoVertices]');
             CO.infoFaces = new UIControls.UI_Text('div[b-info=infoFaces]');
-            CO.infoPoints = new UIControls.UI_Text('div[b-info=infoPoints]');
+            // CO.infoPoints = new UIControls.UI_Text('div[b-info=infoPoints]');
 
             CO.eventCameraInfo = new Eventing.subscribe('display.cameraInfo', processEventCameraInfo);
             CO.eventDisplayInfo = new Eventing.subscribe('display.info', processEventDisplayInfo);
