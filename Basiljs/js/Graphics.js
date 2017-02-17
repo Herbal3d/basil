@@ -4,18 +4,18 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in
  * the documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  * contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -35,33 +35,6 @@ var GR = GR || {};
 define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                             function(THREE, Config, stats, Eventing) {
 
-    // Called by Eventing timer to check to see if event needs to be fired
-    var processCameraInfoEvent = function(topic) {
-        if (GR.eventCameraInfo.prevCamPosition == undefined) {
-            GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
-        }
-        var oldPos = GR.eventCameraInfo.prevCamPosition;
-        var newPos = GR.camera.position.clone();
-        if (!GR.camera.position.equals(GR.eventCameraInfo.prevCamPosition)) {
-            var camInfo = {
-                'position': GR.camera.position,
-                'rotation': GR.camera.rotation
-            };
-            Eventing.fire(GR.eventCameraInfo, camInfo);
-            GR.eventCameraInfo.prevCamPosition = newPos;
-        }
-    };
-
-    // Called by Eventing timer to check to see if event needs to be fired
-    var processDisplayInfoEvent = function(topic) {
-        if (GR.eventDisplayInfo.hasSubscriptions) {
-            // not general, but, for the moment, just return the WebGL info
-            var dispInfo = GR.renderer.info;
-            Eventing.fire(GR.eventDisplayInfo, dispInfo);
-        }
-    };
-
-    // ==============================================
     var op = {
         'Init': function(container, canvas) {
             GR.container = container;
@@ -104,10 +77,37 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
 
             // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
             GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
+
+            // Generate subscribable periodic when camera info (position) changes
             GR.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
-            GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, processCameraInfoEvent);
+            GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, function(topic) {
+                if (GR.eventCameraInfo.hasSubscriptions) {
+                    if (GR.eventCameraInfo.prevCamPosition == undefined) {
+                        GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
+                    }
+                    var oldPos = GR.eventCameraInfo.prevCamPosition;
+                    // must clone or 'newPos' will be just a reference to the old value.
+                    var newPos = GR.camera.position.clone();
+                    if (!newPos.equals(oldPos)) {
+                        var camInfo = {
+                            'position': GR.camera.position.clone(),
+                            'rotation': GR.camera.rotation.clone()
+                        };
+                        Eventing.fire(GR.eventCameraInfo, camInfo);
+                        GR.eventCameraInfo.prevCamPosition = newPos;
+                    }
+                }
+            });
+
+            // Generate subscribable periodic events when display info changes
             GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
-            GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, processDisplayInfoEvent);
+            GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, function(topic) {
+                if (GR.eventDisplayInfo.hasSubscriptions) {
+                    // not general, but, for the moment, just return the WebGL info
+                    var dispInfo = GR.renderer.info;
+                    Eventing.fire(GR.eventDisplayInfo, dispInfo);
+                }
+            });
         },
         'Start': function() {
             if (!GR.runLoopIdentifier) {
@@ -274,4 +274,3 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
 
     return op;
 });
-

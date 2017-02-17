@@ -4,18 +4,18 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in
  * the documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  * contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -29,7 +29,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// File with all the file placement and names
+// 'require' needs configuration that points to the files for the features
+// There are several options (different graphics systems) and that is
+//    specified here.
+// This global data structure is added to 'GP.requireConfig'.
 
 var requireConfig = {
     'baseUrl': "",
@@ -38,7 +41,7 @@ var requireConfig = {
         'jquery': 'jslibs/jquery-3.1.0.min',
 
         'Comm': 'js/Comm',
-        'Graphics': 'js/Graphics',
+        // 'Graphics': 'js/Graphics',
         'Coordinates': 'js/Coordinates',
         'Controls': 'js/Controls',
         'UIControls': 'js/UIControls',
@@ -49,10 +52,12 @@ var requireConfig = {
     }
 };
 
+// Two different underlying graphics libraries. Choose only one.
 var useThreeJS = true;
 var useBabylonJS = false;
 
 if (useThreeJS) {
+    requireConfig.paths['Graphics'] = 'js/Graphics';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
     requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170207.min';
@@ -66,5 +71,6 @@ if (useThreeJS) {
 }
 
 if (useBabylonJS) {
+    requireConfig.paths['Graphics'] = 'js/Graphics-Babylon';
     // not yet
 }
