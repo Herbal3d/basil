@@ -60,7 +60,7 @@ if (useThreeJS) {
     requireConfig.paths['Graphics'] = 'js/Graphics';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
-    requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170207.min';
+    requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170219.min';
     requireConfig.paths['orbitControl'] = 'jslibs/OrbitControls';
     requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
     requireConfig.paths['stats'] = 'jslibs/stats.min';
