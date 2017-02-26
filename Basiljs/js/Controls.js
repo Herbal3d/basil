@@ -74,10 +74,6 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
         },
         'Start': function() {
         },
-        'OnShowDebugButton': function() {
-            var isOn = $('#DEBUGG').is(':visible');
-            op.ShowDebug(!isOn);
-        },
         // Call to set debug window to specified state. Pass state that is should be in
         'ShowDebug': function(onOff) {
             if (onOff) {   // want it on
@@ -124,9 +120,8 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
         'noComma': 0
     };
 
-    GP.CO = CO;
+    GP.CO = CO;         // added for debugging. Do not use for inter-package access
 
     CO.op = op;
     return op;
-
 });
