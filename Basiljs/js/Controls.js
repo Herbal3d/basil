@@ -39,7 +39,7 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
     // ======================================================
     var op = {
         'Init': function() {
-            $('.clickable').click(op.OnClickable);
+            $('.clickable').click(op.internalOnClickable);
 
             // Whether debug output window is initially displayed can be set in the configuration file
            op.ShowDebug(Config.page.showDebug);
@@ -86,12 +86,12 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             }
         },
         // Operation called on UI button click ('clickable').
-        'OnClickable': function(evnt) {
+        'internalOnClickable': function(evnt) {
             var buttonOp = $(evnt.target).attr('op');
             if (buttonOp == 'loadGltf') {
                 var url = $('#SelectGltf').val();
                 DebugLog('Controls: OnLoadButton: loading ' + url);
-                op.DoLoad(url);
+                op.internalDoLoad(url);
             }
             if (buttonOp == 'addTest') {
                 DebugLog('Controls: OnAddTestObject');
@@ -102,7 +102,7 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                 op.ShowDebug(!$('#DEBUGG').is(':visible'));
             }
         },
-        'DoLoad': function(url) {
+        'internalDoLoad': function(url) {
             Display.ClearScene();
             Display.LoadGltf(url, function() {
 

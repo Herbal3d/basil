@@ -43,7 +43,7 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             GR.scene = new THREE.Scene();
 
             // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
-            op.InitializeCameraAndLights(GR.scene, GR.canvas);
+            op.internalInitializeCameraAndLights(GR.scene, GR.canvas);
 
             var rendererParams = Config.webgl.renderer.params;
             rendererParams.canvas = canvas;
@@ -58,8 +58,8 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                 GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
             }
 
-            op.InitializeCameraControl(GR.scene, GR.container);
-            container.addEventListener('resize', op.OnContainerResize, false);
+            op.internalInitializeCameraControl(GR.scene, GR.container);
+            container.addEventListener('resize', op.internalOnContainerResize, false);
 
             if (Config.page.showStats) {
                 var stat = stats();
@@ -111,18 +111,18 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
         },
         'Start': function() {
             if (!GR.runLoopIdentifier) {
-                op.StartRendering();
+                op.internalStartRendering();
             }
         },
-        'StartRendering': function() {
+        'internalStartRendering': function() {
             var keepRendering = function() {
                 GR.runLoopIdentifier = requestAnimationFrame(keepRendering);
-                GR.op.DoRender();
+                GR.op.internalDoRendering();
             };
             keepRendering();
         },
         // Do per-frame updates and then render the frame
-        'DoRender': function() {
+        'internalDoRendering': function() {
             if (GP.Ready && GR.scene && GR.camera) {
                 if (GR.stats) {
                     GR.stats.begin();
@@ -142,7 +142,7 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             }
         },
         // Container was resized
-        'OnContainerResize': function() {
+        'internalOnContainerResize': function() {
             DebugLog('Graphics: container resize');
             GR.camera.aspect = GR.canvas.clientWidth / GR.canvas.clientHeight;
             GR.camera.updateProjectionMatrix();
@@ -173,8 +173,8 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                     theScene.updateMatrixWorld(true);
                     // For the moment, we're ignoring camera and lights from gltf
                     GR.scene = theScene;
-                    op.InitializeCameraAndLights(theScene, GR.canvas);
-                    op.InitializeCameraControl(theScene, GR.container);
+                    op.internalInitializeCameraAndLights(theScene, GR.canvas);
+                    op.internalInitializeCameraControl(theScene, GR.container);
                     DebugLog('Graphics: Loaded GLTF scene');
                     loaded();
                 });
@@ -184,7 +184,7 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             }
         },
         // Given a scene and optional gltf info, create a new scene
-        'InitializeCameraAndLights': function(theScene, canvas) {
+        'internalInitializeCameraAndLights': function(theScene, canvas) {
             GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, Config.webgl.camera.initialViewDistance );
             // GR.camera.up = new THREE.Vector3(0, 1, 0);
             GR.camera.position.fromArray(Config.webgl.camera.initialCameraPosition);
@@ -224,7 +224,7 @@ define(['threejs', 'config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             }
         },
         // Add camera control to the scene.
-        'InitializeCameraControl': function(theScene, container) {
+        'internalInitializeCameraControl': function(theScene, container) {
             GR.controls = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
         },
         'GetCameraPosition': function() {
