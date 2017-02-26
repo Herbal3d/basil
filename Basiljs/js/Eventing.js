@@ -4,18 +4,18 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in
  * the documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  * contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -33,9 +33,29 @@
 var EV = EV || {};
 
 define(['config'], function( Config ) {
+    // A simple pub/sub system. An event producer registers a topic
+    //    and later 'fire's event on the topic. A envent consumer subscribers
+    //    to a topic and has a function called when that topic is 'fire'ed.
+    // The coding pattern:
+    // Event producer:
+    //    topicHandle = Eventing.register(topicName, whoIsRegistering);
+    //    ...
+    //    topicHandle.fire(params);
+    //        // 'params' is a JS object which is usually a map of values
+    //
+    // Event consumer:
+    //    eventHandle = Eventing.subscribe(topicName, function(topicName, params) {
+    //         //event processor
+    //    });
+    //    ...
+    //    Eventing.unsubscribe(eventHandle);
+    //
+    // NOTE: there is no locking here so beware of using multi-threaded JavaScript
 
     // ===========================================
     // One subscription
+    // Subscriptions are created with a unique ID so individual subscriptions can be
+    //     found for removal (because there can be multiple subescitions for the same processor).
     var SubEntry = function(topic, processor, id, limits) {
         this.topic = topic;
         this.processor = processor;
@@ -48,6 +68,8 @@ define(['config'], function( Config ) {
 
     // ===========================================
     // One topic that can be subscribed to.
+    // This is the datastructure for a topic, its subscriptions, and actions.
+    // THis data structure is passed around to the subscribers so 'fire' can be called.
     var TopicEntry = function(topicName) {
         this.topic = topicName;
         this.subs = [];
@@ -94,6 +116,9 @@ define(['config'], function( Config ) {
             var sub = new SubEntry(topic, processor, Math.random(), limits);
             var topicEnt = op.FindTopic(topic);
             if (topicEnt == undefined) {
+                // 'creator' is 'subscribe' so we can tell the topic was initially
+                //    created because someone subscribed to it. Hopefully someone
+                //    will register the topic.
                 topicEnt = op.register(topic, 'subscribe');
             }
             topicEnt.addSubscription(sub);
@@ -185,5 +210,3 @@ define(['config'], function( Config ) {
 
     return op;
 });
-
-
