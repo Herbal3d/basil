@@ -30,7 +30,7 @@ var useThreeJS = true;
 var useBabylonJS = false;
 
 if (useThreeJS) {
-    requireConfig.paths['Graphics'] = 'js/Graphics';
+    requireConfig.paths['Graphics'] = 'js/Graphics-ThreeJS';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
     requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170305.min';
