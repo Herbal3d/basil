@@ -2,42 +2,38 @@
 // All rights reserved.
 // Licensed for use under BSD License 2.0 (https://opensource.org/licenses/BSD-3-Clause).
 
-// holds the graphics context for this threejs instance
-// Generates Events:
-//      display.objectSelected
-//      display.cameraInfo
-//      display.info
+// holds the graphics context for the Babylon implementation
 var GR = GR || {};
 
-define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
-                            function(THREE, Config, stats, Eventing) {
+define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
+                    function(BABYLON, Config, Eventing) {
 
     var op = {
         'Init': function(container, canvas) {
             GR.container = container;
             GR.canvas = canvas;
 
-            GR.scene = new THREE.Scene();
+            GR.engine = new BABYLON.Engine(canvas, true);
+            GR.scene = new BABYLON.Scene(GR.engine);
 
             // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
             op.internalInitializeCameraAndLights(GR.scene, GR.canvas);
 
-            var rendererParams = Config.webgl.renderer.ThreeJSparams;
-            rendererParams.canvas = canvas;
-            GR.renderer = new THREE.WebGLRenderer(rendererParams);
             if (Config.webgl.renderer.clearColor) {
-                GR.renderer.setClearColor(Number(Config.webgl.renderer.clearColor));
+                GR.scene.clearColor = BABYLON.Color3.FromArray(Config.webgl.renderer.clearColor, 0);
             }
-            GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
+            /*
             if (Config.webgl.renderer.shadows) {
                 GR.renderer.shadowMap.enabled = true;
                 GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
             }
+            */
 
             op.internalInitializeCameraControl(GR.scene, GR.container);
             container.addEventListener('resize', op.internalOnContainerResize, false);
 
+            /*
             if (Config.page.showStats) {
                 var stat = stats();
                 stat.showPanel(0);  // FPS
@@ -51,6 +47,7 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                 GR.stats = stat;
                 container.appendChild(GR.stats.dom);
             }
+            */
 
             // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
             GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
@@ -60,7 +57,7 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, function(topic) {
                 if (GR.eventCameraInfo.hasSubscriptions) {
                     if (GR.eventCameraInfo.prevCamPosition == undefined) {
-                        GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
+                        GR.eventCameraInfo.prevCamPosition = new BABYLON.Vector3(0,0,0);
                     }
                     var oldPos = GR.eventCameraInfo.prevCamPosition;
                     // must clone or 'newPos' will be just a reference to the old value.
@@ -81,29 +78,20 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, function(topic) {
                 if (GR.eventDisplayInfo.hasSubscriptions) {
                     // not general, but, for the moment, just return the WebGL info
-                    var dispInfo = GR.renderer.info;
-                    Eventing.fire(GR.eventDisplayInfo, dispInfo);
+                    // var dispInfo = GR.renderer.info;
+                    // Eventing.fire(GR.eventDisplayInfo, dispInfo);
                 }
             });
         },
         'Start': function() {
-            if (!GR.runLoopIdentifier) {
-                op.internalStartRendering();
-            }
+            op.internalStartRendering();
         },
         'internalStartRendering': function() {
-            var keepRendering = function() {
-                GR.runLoopIdentifier = requestAnimationFrame(keepRendering);
-                GR.op.internalDoRendering();
-            };
-            keepRendering();
+            GR.engine.runRenderLoop(GR.op.internalDoRendering);
         },
         // Do per-frame updates and then render the frame
         'internalDoRendering': function() {
             if (GP.Ready && GR.scene && GR.camera) {
-                if (GR.stats) {
-                    GR.stats.begin();
-                }
                 if (GR.cameraControl) {
                     GR.cameraControl.update();
                 }
@@ -111,11 +99,7 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
                     Eventing.fire(GR.eventEachFrame, {});
                 }
                 // TODO: insert animation updates (shouldn't this be done before render time?)
-                if (GR.stats) {
-                    GR.stats.end();
-                    GR.stats.update();
-                }
-                GR.renderer.render(GR.scene, GR.camera);
+                GR.scene.render();
             }
         },
         // Container was resized
@@ -128,30 +112,28 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
         },
         // Remove everything from the scene
         'ClearScene': function() {
-            if (GR.runLoopIdentifier) {
-                cancelAnimationFrame(GR.runLoopIdentifier);
-                DebugLog('Graphics: canelling runLoop');
-            }
-            GR.runLoopIdentifier = undefined;
-
-            // http://stackoverflow.com/questions/29417374/threejs-remove-all-together-object-from-scene
-            for (let ii= GR.scene.children.length-1; ii >= 0; ii--) {
-                GR.scene.remove(GR.scene.children[ii]);
-            }
+            GR.scene.dispose();
             DebugLog('Graphics: cleared scene');
-            // GR.scene = undefined;
         },
         // Load the passed gltf file into the scene
         'LoadGltf': function(url, loaded) {
             try {
-                var loader = new THREE.GLTFLoader;
-                loader.load(url, function(gltf) {
-                    var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
-                    theScene.updateMatrixWorld(true);
+                GR.engine.stopRenderLoop();
+                // Remove the old scene
+                GR.engine.scenes.forEach(scene => {
+                    scene.dispose();
+                });
+
+                var urlPieces = url.split('/');
+                var baseFilename = urlPieces.pop().split('#')[0].split('?')[0];
+                var urlDir = urlPieces.join('/');
+                urlDir += '/';
+                DebugLog('LoadGltf: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
+                BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(newScene) {
                     // For the moment, we're ignoring camera and lights from gltf
-                    GR.scene = theScene;
-                    op.internalInitializeCameraAndLights(theScene, GR.canvas);
-                    op.internalInitializeCameraControl(theScene, GR.container);
+                    GR.scene = newScene;
+                    op.internalInitializeCameraAndLights(newScene, GR.canvas);
+                    op.internalInitializeCameraControl(newScene, GR.container);
                     DebugLog('Graphics: Loaded GLTF scene');
                     loaded();
                 });
@@ -164,90 +146,71 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
         'internalInitializeCameraAndLights': function(theScene, canvas) {
             var parms = Config.webgl.camera;
 
-            GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, parms.initialViewDistance );
-            // GR.camera.up = new THREE.Vector3(0, 1, 0);
-            GR.camera.position.fromArray(parms.initialCameraPosition);
-            var lookAt = new THREE.Vector3;
-            lookAt.fromArray(parms.initialCameraLookAt);
-            GR.camera.lookAt(lookAt);
-            if (parms.addCameraHelper) {
-                GR.cameraHelper = new THREE.CameraHelper(GR.camera);
-                theScene.add(GR.cameraHelper);
-            }
-            if (Config.webgl.camera.addAxisHelper) {
-                var helperSize = parms.axisHelperSize || 5;
-                GR.axisHelper = new THREE.AxisHelper(Number(helperSize));
-                theScene.add(GR.axisHelper);
-            }
-            theScene.add(GR.camera);
+            var initialCameraPosition = BABYLON.Vector3.FromArray(parms.initialCameraPosition, 0);
+            GR.camera = new BABYLON.TouchCamera(parms.name, initialCameraPosition, theScene);
+            // GR.camera = new BABYLON.UniversalCamera(parms.name, initialCameraPosition, theScene);
+
+            var lookAt = BABYLON.Vector3.FromArray(parms.initialCameraLookAt, 0);
+            GR.camera.setTarget(lookAt);
+
+            GR.camera.attachControl(canvas, theScene);
 
             if (Config.webgl.lights) {
                 parms = Config.webgl.lights;
                 if (parms.ambient) {
-                    var ambient = new THREE.AmbientLight(Number(parms.ambient.color),
-                                                        Number(parms.ambient.intensity));
+                    var ambient = new BABYLON.HemisphericLight(parms.ambient.name,
+                                    new BABYLON.Vector3(0,1,0), theScene);
+                    ambient.diffuse = BABYLON.Color3.FromArray(parms.ambient.color, 0);
+                    ambient.groundColor = new BABYLON.Color3(0, 0, 0);
+
                     GR.ambientLight = ambient;
-                    theScene.add(ambient);
                 }
                 if (parms.directional) {
-                    var directional = new THREE.DirectionalLight(Number(parms.directional.color),
-                                                        Number(parms.directional.intensity));
-                    directional.position.fromArray(parms.directional.direction).normalize();
+                    var direction = BABYLON.Vector3.Normalize(BABYLON.Vector3.FromArray(parms.directional.direction, 0));
+                    var directional = new BABYLON.DirectionalLight(parms.directional.name, direction, theScene);
+
+                    directional.diffuse = BABYLON.Color3.FromArray(parms.directional.color, 0);
+                    directional.intensity = BABYLON.Color3.FromArray(parms.directional.intensity, 0);
+
                     GR.directionalLight = directional;
+
                     if (parms.directional.shadows) {
-                        directional.castShadow = true;
-                        directional.shadow.bias = parms.directional.shadows.bias;
-                        directional.shadow.mapSize.width = parms.directional.shadows.mapWidth;
-                        directional.shadow.mapSize.height = parms.directional.shadows.mapHeight;
+                        // directional.castShadow = true;
+                        // directional.shadow.bias = parms.directional.shadows.bias;
+                        // directional.shadow.mapSize.width = parms.directional.shadows.mapWidth;
+                        // directional.shadow.mapSize.height = parms.directional.shadows.mapHeight;
                     }
-                    theScene.add(directional);
                 }
             }
         },
         // Add camera control to the scene.
         'internalInitializeCameraControl': function(theScene, container) {
-            GR.controls = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
+            // GR.controls = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
         },
         'GetCameraPosition': function() {
             return GR.camera.position;
         },
         'SetCameraPosition': function(pos) {
-            var newPos = new THREE.Vector3;
             if (Array.isArray(pos)) {
-                newPos.fromArray(pos);
+                GR.camera.position = BABYLON.Vector3.FromArray(pos);
             }
             else
-                newPos = pos;
-            GR.camera.position = pos;
+                GR.camera.position = pos;
         },
         // Point the camera at a place. Takes either an array or a Vector3.
         'PointCameraAt': function(pos) {
-            var look = new THREE.Vector3;
+            var look = new BABYLON.Vector3;
             if (Array.isArray(pos)) {
-                look.fromArray(pos);
+                look = BABYLON.Vector3.FromArray(pos);
             }
             else
                 look = pos;
-
-            if (GR.controls) {
-                GR.controls.target = look;
-                GR.controls.update();
-            }
-            else {
-                GR.camera.lookAt(look);
-            }
-            // Move axis helper to where the camera is looking
-            if (GR.axisHelper) {
-                GR.axisHelper.geometry.translate(look.x, look.y, look.z);
-            }
+            GR.camera.setTarget(look);
         },
         // Add a test object to the scene
         'AddTestObject': function() {
-            var geometry = new THREE.BoxGeometry( 1, 2, 3);
-            var material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
-            var cube = new THREE.Mesh(geometry, material);
-            cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
-            GR.scene.add(cube);
+            var cube = new BABYLON.Mesh.CreateBox('box1', 1, GR.scene);
+            cube.position = BABYLON.Vector3.FromArray(Config.webgl.camera.initialCameraLookAt);
             DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
         },
         'noComma': 0

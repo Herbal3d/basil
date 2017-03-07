@@ -20,7 +20,7 @@ GP.requireConfig = requireConfig;   // from the './requireConfig.js' in index.ht
 */
 requirejs.config(GP.requireConfig);
 
-require(['config', 'jquery'], function(Config, $) {
+require(['Config', 'jquery'], function(Config, $) {
     GP.Config = Config;
     GP.Ready = false;
 

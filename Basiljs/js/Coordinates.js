@@ -20,34 +20,48 @@
 
 var CD = CD || [];
 
-define(['threejs'], function(THREE) {
+define([], function() {
+    //Going to have to use some coordinate library. Which one to choose?
+    // for the short term. Make something up.
+    function Matrix4() {
+    }
+    Object.assign(Matrix4.prototype, {
+        'copy': function(mat) { },
+        'getPosition': function() { },
+        'getBasis': function() { }
+    });
+    function Vector3(x, y, z) {
+    }
+    function Quaternion() {
+    }
+    Object.assign(Quaternion.prototype, {
+        'setFromRotationMatrix': function(mat) { }
+    });
+
     // An object to hold a transform or whatever is holding a position/rotation.
     function Loc() {
-        this.location = new THREE.Matrix4();
-    };
-
-    Loc.prototype.trans = function() {
-        return this.location;
-    };
-
-    Loc.prototype.pos = function() {
-        return this.location.getPosition();
-    };
-
-    // Return a quatenion of the rotation held in this location
-    Loc.prototype.rot = function() {
-        return new THREE.Quaternion().setFromRotationMatrix(this.location.getBasis());
-    };
-
-    Loc.prototype.setTrans = function(aTrans) {
-        this.location.copy(aTrans);
-    };
+        this.location = new Matrix4();
+    }
+    Object.assign (Loc.prototype, {
+        'trans': function() {
+            return this.location;
+        },
+        'pos': function() {
+            return this.location.getPosition();
+        },
+        // Return a quatenion of the rotation held in this location
+        'rot': function() {
+            return new Quaternion().setFromRotationMatrix(this.location.getBasis());
+        },
+        'setTrans': function(aTrans) {
+            this.location.copy(aTrans);
+        }
+    });
 
     var op = {
-
         // Return a transform matrix passed latitude and longitude strings
         'gPositionFromLatLong': function(lat, long) {
-            return new THREE.Matrix4(); // TODO: put some real code here
+            return new Matrix4(); // TODO: put some real code here
         },
 
         // Convert a global position into a local position given GP.refLoc.
@@ -77,4 +91,3 @@ define(['threejs'], function(THREE) {
     return op;
 
 });
-

@@ -5,7 +5,7 @@
 // Global holding event subscription state
 var EV = EV || {};
 
-define(['config'], function( Config ) {
+define(['Config'], function( Config ) {
     // A simple pub/sub system. An event producer registers a topic
     //    and later 'fire's event on the topic. A envent consumer subscribers
     //    to a topic and has a function called when that topic is 'fire'ed.

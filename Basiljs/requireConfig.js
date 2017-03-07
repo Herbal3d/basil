@@ -10,9 +10,10 @@
 var requireConfig = {
     'baseUrl': "",
     'paths': {
-        'config': 'config',
+        'Config': 'config',
         'jquery': 'jslibs/jquery-3.1.0.min',
 
+        'Scene': 'js/Scene',
         'Comm': 'js/Comm',
         // 'Graphics': 'js/Graphics',
         'Coordinates': 'js/Coordinates',
@@ -26,10 +27,10 @@ var requireConfig = {
 };
 
 // Two different underlying graphics libraries. Choose only one.
-var useThreeJS = true;
-var useBabylonJS = false;
+// var useGraphics = 'ThreeJS';
+var useGraphics = 'BabylonJS';
 
-if (useThreeJS) {
+if (useGraphics == 'ThreeJS') {
     requireConfig.paths['Graphics'] = 'js/Graphics-ThreeJS';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
@@ -43,7 +44,11 @@ if (useThreeJS) {
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'threejs' ] };
 }
 
-if (useBabylonJS) {
+if (useGraphics == 'BabylonJS') {
     requireConfig.paths['Graphics'] = 'js/Graphics-Babylon';
-    // not yet
+    requireConfig.paths['babylonjs'] = 'jslibs/babylon.core-20170305';
+    requireConfig.paths['GLTFLoader'] = 'jslibs/babylon.glTFFileLoader';
+    requireConfig.shim['babylonjs'] = { 'exports': 'BABYLON' };
+    requireConfig.shim['Graphics'] = { 'deps': [ '' ] };
+    requireConfig.shim['GLTFLoader'] = { 'deps': [ 'babylonjs' ] };
 }

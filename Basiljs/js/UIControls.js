@@ -134,11 +134,9 @@ define(['jquery'], function( $ ) {
         'noComma': 0
     };
 
-    GR.UC = UC;
+    GP.UC = UC;
     UC.op = op;
 
     return op;
 
 });
-
-

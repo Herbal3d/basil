@@ -6,8 +6,8 @@
 var CO = CO || {};
 
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
-define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
-                    function(Config, Display, $, UIControls, Eventing) {
+define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
+                    function(Config, Graphics, $, UIControls, Eventing) {
 
     // ======================================================
     var op = {
@@ -68,7 +68,7 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             }
             if (buttonOp == 'addTest') {
                 DebugLog('Controls: OnAddTestObject');
-                Display.AddTestObject();
+                Graphics.AddTestObject();
             }
             if (buttonOp == 'showDebug') {
                 // Make the state to the opposite of what it is now
@@ -76,18 +76,27 @@ define(['config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             }
         },
         'internalDoLoad': function(url) {
-            Display.ClearScene();
-            Display.LoadGltf(url, function() {
+            Graphics.ClearScene();
+            Graphics.LoadGltf(url, function() {
 
                 // DEBUG DEBUG -- initially point camera at one of the objects in the scene
-                var aPlace = GP.GR.scene.children[0].position;
-                var cameraPlace = new THREE.Vector3( aPlace.x + 40, aPlace.y + 40, aPlace.z + 40);
-                // cameraPlace = cameraPlace.add(new THREE.Vector3(100,100,100));
-                Display.SetCameraPosition(cameraPlace);
-                Display.PointCameraAt(aPlace);
-                DebugLog('Control: placing camera at <' + cameraPlace.toArray() + '> looking at <' + aPlace.toArray() + '>');
+                var aPlace;
+                if (GP.GR.scene.children) {
+                    aPlace = GP.GR.scene.children[0].position;  // for ThreeJS
+                }
+                else {
+                    if (GP.GR.scene.meshes) {
+                        aPlace = GP.GR.scene.meshes[0].position;    // for BabylonJS
+                    }
+                }
+                if (aPlace != undefined) {
+                    var cameraPlace = [aPlace.x + 40, aPlace.y + 40, aPlace.z + 40];
+                    Graphics.SetCameraPosition(cameraPlace);
+                    Graphics.PointCameraAt([aPlace.x, aPlace.y, aPlace.z]);
+                    DebugLog('Control: placing camera at <' + cameraPlace + '> looking at <' + aPlace + '>');
+                }
                 // end DEBUG DEBUG
-                Display.Start(); // ClearScene possibly shuts down rendering
+                Graphics.Start(); // ClearScene possibly shuts down rendering
             });
         },
         'noComma': 0

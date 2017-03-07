@@ -12,10 +12,20 @@ define(
             'showStats': true,
             'noComma': 0
         },
+        'controlPanel': {
+            'testurls': [
+                { 'name': 'testtest02', 'url': './gltf/testtest02.gltf' },
+                { 'name': 'testtest88', 'url': './gltf/testtest88.gltf', 'selected': true },
+                { 'name': 'testtest00', 'url': './gltf/testtest00.gltf' },
+                { 'name': 'testtest10', 'url': './gltf/testtest10.gltf' },
+                { 'name': 'testtest01', 'url': './gltf/testtest01.gltf' }
+            ]
+        },
 
         // Parameters for the webgl environment
         'webgl': {
             'camera': {
+                'name': 'camera1',
                 'initialCameraPosition': [ 200, 50, 200 ],
                 'initialViewDistance': 1000,
                 'initialCameraLookAt': [ 128, 30, 128 ],
@@ -26,14 +36,16 @@ define(
             },
             'lights': {
                 'ambient': {
+                    'name': 'ambient1',
                     'color': '0x222222',
                     'intensity': 0.9,
                     'noComma': 0
                 },
                 // placeholder for the eventual sun system
                 'directional': {
+                    'name': 'directional1',
                     'color': '0xeeeeee',
-                    'position': [ 1000, 1000, 1000 ],
+                    'direction': [ 1000, 1000, 1000 ],
                     'intensity': 1,
                     'shadows': {
                         'bias': 0.0001,
@@ -46,9 +58,9 @@ define(
                 'noComma': 0
             },
             'renderer': {
-                'params': {
+                'ThreeJSparams': {
                     'antialias': true,
-                    'alphs': true,      // there are alpha textures in the scene
+                    'alpha': true,      // there are alpha textures in the scene
                     'logarithmicDepthBuffer': false
                 },
                 'clearColor': '0x222222',
