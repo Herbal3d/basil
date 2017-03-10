@@ -51,7 +51,7 @@ define(['Graphics', 'Config', 'Eventing'],
         'ClearScene': function() {
         },
         // Load the passed gltf file into the scene
-        'LoadGltf': function(url, loadedFunction) {
+        'LoadScene': function(url, loadedFunction) {
         },
         // Return the position that the camera is at
         'GetCameraPosition': function() {

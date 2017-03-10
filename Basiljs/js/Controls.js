@@ -77,7 +77,7 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
         },
         'internalDoLoad': function(url) {
             Graphics.ClearScene();
-            Graphics.LoadGltf(url, function() {
+            Graphics.LoadScene(url, function() {
 
                 // DEBUG DEBUG -- initially point camera at one of the objects in the scene
                 var aPlace;

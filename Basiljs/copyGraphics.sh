@@ -9,9 +9,10 @@ BABYLON=$HOME/Babylon.js
 
 cp $THREE/build/three.min.js jslibs/
 cp $THREE/examples/js/loaders/GLTFLoader.js jslibs/
+cp $THREE/examples/js/loaders/GLTF2Loader.js jslibs/
 cp $THREE/examples/js/controls/OrbitControls.js jslibs/
 
-cp "$BABYLON/dist/preview release/babylon.core.js" jslibs/
+cp "$BABYLON/dist/preview release/babylon.js" jslibs/
 cp "$BABYLON/dist/preview release/loaders/babylon.glTFFileLoader.js" jslibs/
 
 # Since we're using development copies of the graphics libraries, rename the

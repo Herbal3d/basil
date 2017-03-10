@@ -116,7 +116,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             DebugLog('Graphics: cleared scene');
         },
         // Load the passed gltf file into the scene
-        'LoadGltf': function(url, loaded) {
+        'LoadScene': function(url, loaded) {
             try {
                 GR.engine.stopRenderLoop();
                 // Remove the old scene
@@ -128,13 +128,13 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                 var baseFilename = urlPieces.pop().split('#')[0].split('?')[0];
                 var urlDir = urlPieces.join('/');
                 urlDir += '/';
-                DebugLog('LoadGltf: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
+                DebugLog('LoadScene: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
                 BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(newScene) {
                     // For the moment, we're ignoring camera and lights from gltf
                     GR.scene = newScene;
                     op.internalInitializeCameraAndLights(newScene, GR.canvas);
                     op.internalInitializeCameraControl(newScene, GR.container);
-                    DebugLog('Graphics: Loaded GLTF scene');
+                    DebugLog('Graphics: Loaded scene');
                     loaded();
                 });
             }
@@ -147,17 +147,29 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             var parms = Config.webgl.camera;
 
             var initialCameraPosition = BABYLON.Vector3.FromArray(parms.initialCameraPosition, 0);
-            GR.camera = new BABYLON.TouchCamera(parms.name, initialCameraPosition, theScene);
-            // GR.camera = new BABYLON.UniversalCamera(parms.name, initialCameraPosition, theScene);
-
             var lookAt = BABYLON.Vector3.FromArray(parms.initialCameraLookAt, 0);
-            GR.camera.setTarget(lookAt);
-
-            GR.camera.attachControl(canvas, theScene);
+            // trying out the many different camera types in Babylon
+            var camType = 'free';
+            if (camType == 'free') {
+                GR.camera = new BABYLON.FreeCamera(parms.name, initialCameraPosition, theScene);
+                GR.camera.setTarget(lookAt);
+                GR.camera.attachControl(canvas, false /*noPreventDefault*/);
+            }
+            if (camType == 'universal') {
+                GR.camera = new BABYLON.UniversalCamera(parms.name, initialCameraPosition, theScene);
+                GR.camera.setTarget(lookAt);
+                GR.camera.attachControl(canvas, false /*noPreventDefault*/);
+            }
+            if (camType == 'arcRotateCamera') {
+                GR.camera = new BABYLON.ArcRotateCamera(parms.name, 1, 0.8, 10, lookAt, theScene);
+                GR.camera.setPosition(initialCameraPosition);
+                GR.camera.attachControl(canvas, false /*noPreventDefault*/, false /*useCtrlForPanning*/);
+            }
 
             if (Config.webgl.lights) {
                 parms = Config.webgl.lights;
                 if (parms.ambient) {
+                    DebugLog('Creating ambient light');
                     var ambient = new BABYLON.HemisphericLight(parms.ambient.name,
                                     new BABYLON.Vector3(0,1,0), theScene);
                     ambient.diffuse = BABYLON.Color3.FromArray(parms.ambient.color, 0);
@@ -166,6 +178,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                     GR.ambientLight = ambient;
                 }
                 if (parms.directional) {
+                    DebugLog('Creating directional light');
                     var direction = BABYLON.Vector3.Normalize(BABYLON.Vector3.FromArray(parms.directional.direction, 0));
                     var directional = new BABYLON.DirectionalLight(parms.directional.name, direction, theScene);
 

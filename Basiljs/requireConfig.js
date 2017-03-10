@@ -34,7 +34,7 @@ if (useGraphics == 'ThreeJS') {
     requireConfig.paths['Graphics'] = 'js/Graphics-ThreeJS';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
-    requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170305.min';
+    requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170309.min';
     requireConfig.paths['orbitControl'] = 'jslibs/OrbitControls';
     requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
     requireConfig.paths['stats'] = 'jslibs/stats.min';
@@ -46,7 +46,7 @@ if (useGraphics == 'ThreeJS') {
 
 if (useGraphics == 'BabylonJS') {
     requireConfig.paths['Graphics'] = 'js/Graphics-Babylon';
-    requireConfig.paths['babylonjs'] = 'jslibs/babylon.core-20170305';
+    requireConfig.paths['babylonjs'] = 'jslibs/babylon-20170309';
     requireConfig.paths['GLTFLoader'] = 'jslibs/babylon.glTFFileLoader';
     requireConfig.shim['babylonjs'] = { 'exports': 'BABYLON' };
     requireConfig.shim['Graphics'] = { 'deps': [ '' ] };

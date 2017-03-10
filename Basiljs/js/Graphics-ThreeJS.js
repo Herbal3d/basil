@@ -142,19 +142,30 @@ define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
             // GR.scene = undefined;
         },
         // Load the passed gltf file into the scene
-        'LoadGltf': function(url, loaded) {
+        'LoadScene': function(url, loaded) {
             try {
-                var loader = new THREE.GLTFLoader;
-                loader.load(url, function(gltf) {
-                    var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
-                    theScene.updateMatrixWorld(true);
-                    // For the moment, we're ignoring camera and lights from gltf
-                    GR.scene = theScene;
-                    op.internalInitializeCameraAndLights(theScene, GR.canvas);
-                    op.internalInitializeCameraControl(theScene, GR.container);
-                    DebugLog('Graphics: Loaded GLTF scene');
-                    loaded();
-                });
+                var loader;
+                if (THREE.GLTFLoader) {
+                    loader = new THREE.GLTFLoader;
+                }
+                if (THREE.GLTF2Loader) {
+                    loader = new THREE.GLTF2Loader;
+                }
+                if (loader != undefined) {
+                    loader.load(url, function(gltf) {
+                        var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
+                        theScene.updateMatrixWorld(true);
+                        // For the moment, we're ignoring camera and lights from gltf
+                        GR.scene = theScene;
+                        op.internalInitializeCameraAndLights(theScene, GR.canvas);
+                        op.internalInitializeCameraControl(theScene, GR.container);
+                        DebugLog('Graphics: Loaded GLTF scene');
+                        loaded();
+                    });
+                }
+                else {
+                    ReportError('Could not find a suitable GLTF loader in ThreeJS');
+                }
             }
             catch (e) {
                 ReportError('Failed reading GLTF file: ' + e);
