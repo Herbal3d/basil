@@ -9,8 +9,8 @@
 //      display.info
 var GR = GR || {};
 
-define(['threejs', 'Config', 'stats', 'Eventing', 'orbitControl', 'GLTFLoader'],
-                            function(THREE, Config, stats, Eventing) {
+define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ],
+                    function(THREE, Config, Eventing, stats) {
 
     var op = {
         'Init': function(container, canvas) {

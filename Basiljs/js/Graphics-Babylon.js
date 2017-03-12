@@ -6,7 +6,7 @@
 var GR = GR || {};
 
 define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
-                    function(BABYLON, Config, Eventing) {
+                        function(BABYLON, Config, Eventing) {
 
     var op = {
         'Init': function(container, canvas) {
@@ -17,7 +17,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             GR.scene = new BABYLON.Scene(GR.engine);
 
             // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
-            op.internalInitializeCameraAndLights(GR.scene, GR.canvas);
+            op.internalInitializeCameraAndLights();
 
             if (Config.webgl.renderer.clearColor) {
                 GR.scene.clearColor = BABYLON.Color3.FromArray(Config.webgl.renderer.clearColor, 0);
@@ -30,7 +30,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             }
             */
 
-            op.internalInitializeCameraControl(GR.scene, GR.container);
+            op.internalInitializeCameraControl();
             container.addEventListener('resize', op.internalOnContainerResize, false);
 
             /*
@@ -132,8 +132,8 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                 BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(newScene) {
                     // For the moment, we're ignoring camera and lights from gltf
                     GR.scene = newScene;
-                    op.internalInitializeCameraAndLights(newScene, GR.canvas);
-                    op.internalInitializeCameraControl(newScene, GR.container);
+                    op.internalInitializeCameraAndLights();
+                    op.internalInitializeCameraControl();
                     DebugLog('Graphics: Loaded scene');
                     loaded();
                 });
@@ -143,27 +143,34 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             }
         },
         // Given a scene and optional gltf info, create a new scene
-        'internalInitializeCameraAndLights': function(theScene, canvas) {
+        'internalInitializeCameraAndLights': function() {
             var parms = Config.webgl.camera;
 
             var initialCameraPosition = BABYLON.Vector3.FromArray(parms.initialCameraPosition, 0);
             var lookAt = BABYLON.Vector3.FromArray(parms.initialCameraLookAt, 0);
             // trying out the many different camera types in Babylon
-            var camType = 'free';
+            var camType = 'arcRotateCamera';
             if (camType == 'free') {
-                GR.camera = new BABYLON.FreeCamera(parms.name, initialCameraPosition, theScene);
+                GR.camera = new BABYLON.FreeCamera(parms.name, initialCameraPosition, GR.scene);
                 GR.camera.setTarget(lookAt);
-                GR.camera.attachControl(canvas, false /*noPreventDefault*/);
+                GR.camera.attachControl(GR.canvas, false /*noPreventDefault*/);
+                GR.camera.checkCollisions = true;
+                // Ellipsoid around the camera to limit what we can run into
+                GR.camera.ellipsiod = new BABYLON.Vector3(1,2,1);
             }
             if (camType == 'universal') {
-                GR.camera = new BABYLON.UniversalCamera(parms.name, initialCameraPosition, theScene);
+                // THis camera definition is in the documentation but not the code... odd.
+                GR.camera = new BABYLON.UniversalCamera(parms.name, initialCameraPosition, GR.scene);
                 GR.camera.setTarget(lookAt);
-                GR.camera.attachControl(canvas, false /*noPreventDefault*/);
+                GR.camera.attachControl(GR.canvas, false /*noPreventDefault*/);
             }
             if (camType == 'arcRotateCamera') {
-                GR.camera = new BABYLON.ArcRotateCamera(parms.name, 1, 0.8, 10, lookAt, theScene);
+                GR.camera = new BABYLON.ArcRotateCamera(parms.name, 1, 0.8, 10, lookAt, GR.scene);
                 GR.camera.setPosition(initialCameraPosition);
-                GR.camera.attachControl(canvas, false /*noPreventDefault*/, false /*useCtrlForPanning*/);
+                GR.camera.attachControl(GR.canvas, false /*noPreventDefault*/, false /*useCtrlForPanning*/);
+                // GR.camera.checkCollisions = true;
+                // Ellipsoid around the camera to limit what we can run into
+                // GR.camera.ellipsiod = new BABYLON.Vector3(1,2,1);
             }
 
             if (Config.webgl.lights) {
@@ -171,19 +178,21 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                 if (parms.ambient) {
                     DebugLog('Creating ambient light');
                     var ambient = new BABYLON.HemisphericLight(parms.ambient.name,
-                                    new BABYLON.Vector3(0,1,0), theScene);
+                                    new BABYLON.Vector3(0,1,0), GR.scene);
                     ambient.diffuse = BABYLON.Color3.FromArray(parms.ambient.color, 0);
+                    ambient.intensity = Number(parms.ambient.intensity);
                     ambient.groundColor = new BABYLON.Color3(0, 0, 0);
 
                     GR.ambientLight = ambient;
                 }
                 if (parms.directional) {
                     DebugLog('Creating directional light');
-                    var direction = BABYLON.Vector3.Normalize(BABYLON.Vector3.FromArray(parms.directional.direction, 0));
-                    var directional = new BABYLON.DirectionalLight(parms.directional.name, direction, theScene);
-
+                    // var direction = -BABYLON.Vector3.Normalize(BABYLON.Vector3.FromArray(parms.directional.direction, 0));
+                    var direction = new BABYLON.Vector3(-1, -1, -1);
+                    var directional = new BABYLON.DirectionalLight(parms.directional.name, direction, GR.scene);
+                    directional.position = BABYLON.Vector3.FromArray(parms.directional.direction);
                     directional.diffuse = BABYLON.Color3.FromArray(parms.directional.color, 0);
-                    directional.intensity = BABYLON.Color3.FromArray(parms.directional.intensity, 0);
+                    directional.intensity = Number(parms.directional.intensity);
 
                     GR.directionalLight = directional;
 
@@ -197,7 +206,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             }
         },
         // Add camera control to the scene.
-        'internalInitializeCameraControl': function(theScene, container) {
+        'internalInitializeCameraControl': function() {
             // GR.controls = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
         },
         'GetCameraPosition': function() {
