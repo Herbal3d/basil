@@ -12,6 +12,13 @@ var GR = GR || {};
 define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ],
                     function(THREE, Config, Eventing, stats) {
 
+    // return a ThreeJS color number from an array of color values
+    var colorFromArray = function(colorArr) {
+        return colorArr[0] * 255 * 65536
+            + colorArr[1] * 255 * 256
+            + colorArr[2] * 255;
+    }
+
     var op = {
         'Init': function(container, canvas) {
             GR.container = container;
@@ -26,7 +33,7 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
             rendererParams.canvas = canvas;
             GR.renderer = new THREE.WebGLRenderer(rendererParams);
             if (Config.webgl.renderer.clearColor) {
-                GR.renderer.setClearColor(Number(Config.webgl.renderer.clearColor));
+                GR.renderer.setClearColor(colorFromArray(Config.webgl.renderer.clearColor));
             }
             GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
@@ -195,13 +202,13 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
             if (Config.webgl.lights) {
                 parms = Config.webgl.lights;
                 if (parms.ambient) {
-                    var ambient = new THREE.AmbientLight(Number(parms.ambient.color),
+                    var ambient = new THREE.AmbientLight(Number(colorFromArray(parms.ambient.color)),
                                                         Number(parms.ambient.intensity));
                     GR.ambientLight = ambient;
                     theScene.add(ambient);
                 }
                 if (parms.directional) {
-                    var directional = new THREE.DirectionalLight(Number(parms.directional.color),
+                    var directional = new THREE.DirectionalLight(Number(colorFromArray(parms.directional.color)),
                                                         Number(parms.directional.intensity));
                     directional.position.fromArray(parms.directional.direction).normalize();
                     GR.directionalLight = directional;

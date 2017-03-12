@@ -8,6 +8,15 @@ var GR = GR || {};
 define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                         function(BABYLON, Config, Eventing) {
 
+    // Create a Corlor3 from an array of values specified in 'paramName'.
+    var paramColor = function(paramName) {
+        return new BABYLON.Color3(paramName[0], paramName[1], paramName[2]);
+    }
+    // Create a Vector3 from an array of values specified in 'paramName'.
+    var paramVector = function(paramName) {
+        return new BABYLON.Vector3(paramName[0], paramName[1], paramName[2]);
+    }
+
     var op = {
         'Init': function(container, canvas) {
             GR.container = container;
@@ -146,8 +155,8 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
         'internalInitializeCameraAndLights': function() {
             var parms = Config.webgl.camera;
 
-            var initialCameraPosition = BABYLON.Vector3.FromArray(parms.initialCameraPosition, 0);
-            var lookAt = BABYLON.Vector3.FromArray(parms.initialCameraLookAt, 0);
+            var initialCameraPosition = paramVector(parms.initialCameraPosition);
+            var lookAt = paramVector(parms.initialCameraLookAt);
             // trying out the many different camera types in Babylon
             var camType = 'arcRotateCamera';
             if (camType == 'free') {
@@ -179,18 +188,19 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                     DebugLog('Creating ambient light');
                     var ambient = new BABYLON.HemisphericLight(parms.ambient.name,
                                     new BABYLON.Vector3(0,1,0), GR.scene);
-                    ambient.diffuse = BABYLON.Color3.FromArray(parms.ambient.color, 0);
                     ambient.intensity = Number(parms.ambient.intensity);
-                    ambient.groundColor = new BABYLON.Color3(0, 0, 0);
+                    ambient.diffuse = BABYLON.Color3.FromArray(parms.ambient.diffuse, 0);
+                    ambient.specular = BABYLON.Color3.FromArray(parms.ambient.specular, 0);
+                    ambient.groundColor = BABYLON.Color3.FromArray(parms.ambient.groundColor, 0);
 
                     GR.ambientLight = ambient;
                 }
                 if (parms.directional) {
                     DebugLog('Creating directional light');
-                    // var direction = -BABYLON.Vector3.Normalize(BABYLON.Vector3.FromArray(parms.directional.direction, 0));
-                    var direction = new BABYLON.Vector3(-1, -1, -1);
-                    var directional = new BABYLON.DirectionalLight(parms.directional.name, direction, GR.scene);
-                    directional.position = BABYLON.Vector3.FromArray(parms.directional.direction);
+                    var dirPos = BABYLON.Vector3.FromArray(parms.directional.direction, 0);
+                    var dirPosNegNorm = BABYLON.Vector3.Normalize(dirPos).negate();
+                    var directional = new BABYLON.DirectionalLight(parms.directional.name, dirPosNegNorm, GR.scene);
+                    directional.position = dirPos;
                     directional.diffuse = BABYLON.Color3.FromArray(parms.directional.color, 0);
                     directional.intensity = Number(parms.directional.intensity);
 
