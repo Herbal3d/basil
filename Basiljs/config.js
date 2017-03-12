@@ -37,17 +37,17 @@ define(
             'lights': {
                 'ambient': {
                     'name': 'ambient1',
-                    'color': [ 34, 34, 34 ],
+                    'color': [ 0.1328, 0.1328, 0.1328 ],    // 0x222222
                     'intensity': 0.9,
                     'specular': [ 0.3, 0.3, 0.3 ],
                     'diffuse': [ 0.3, 0.3, 0.3 ],
-                    'groundColor': [ 0, 0, 0 ],
+                    'groundColor': [ 0, 0, 0 ], //0x000000
                     'noComma': 0
                 },
                 // placeholder for the eventual sun system
                 'directional': {
                     'name': 'directional1',
-                    'color': [ 238, 238, 238 ],
+                    'color': [ 0.93, 0.93, 0.93 ], // 0xeeeeee
                     'direction': [ 1000, 1000, 1000 ],
                     'intensity': 1,
                     'shadows': {
@@ -66,7 +66,9 @@ define(
                     'alpha': true,      // there are alpha textures in the scene
                     'logarithmicDepthBuffer': false
                 },
-                'clearColor': [ 34, 34, 34 ],
+                'BabylonJSparams': {
+                },
+                'clearColor': [ 0.53, 0.828, 0.594 ],    // 0x88d493
                 'shadows': {
                     'noComma': 0
                 },
