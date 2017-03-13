@@ -26,6 +26,7 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             });
 
             // UPdate the renderer info
+            CO.infoFPS = new UIControls.UI_Text('div[b-info=infoFPS]');
             CO.infoDrawCalls = new UIControls.UI_Text('div[b-info=infoDrawCalls]');
             CO.infoVertices = new UIControls.UI_Text('div[b-info=infoVertices]');
             CO.infoFaces = new UIControls.UI_Text('div[b-info=infoFaces]');
@@ -34,6 +35,7 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             CO.infoGeometryMem = new UIControls.UI_Text('div[b-info=infoGeometryMem]');
             CO.eventDisplayInfo = new Eventing.subscribe('display.info', function(info, topic) {
                 if (info && info.render && CO.infoDrawCalls) {
+                    CO.infoFPS.Update(Math.round(info.render.fps));
                     CO.infoDrawCalls.Update(info.render.calls);
                     CO.infoVertices.Update(info.render.vertices);
                     CO.infoFaces.Update(info.render.faces);

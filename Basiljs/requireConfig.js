@@ -37,7 +37,6 @@ if (useGraphics == 'ThreeJS') {
     requireConfig.paths['real-threejs'] = 'jslibs/three-dev-20170312.min';
     requireConfig.paths['orbitControl'] = 'jslibs/OrbitControls';
     requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
-    requireConfig.paths['stats'] = 'jslibs/stats.min';
     requireConfig.shim['threejs'] = { 'exports': 'THREE' };
     requireConfig.shim['orbitControl'] = { 'deps': [ 'threejs' ]};
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'threejs' ]};

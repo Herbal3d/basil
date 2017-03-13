@@ -40,6 +40,13 @@ define(['Graphics', 'Config', 'Eventing'],
 
             // Generate subscribable periodic events when display info changes
             GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
+            // Returns:
+            //   params.render.fps        number of frames per socond rendered
+            //   params.render.calls      number of draw calls
+            //   params.render.vertices   number of vertices in scene
+            //   params.render.faces      number of faces in scene
+            //   params.memory.texture      memory used for textures
+            //   params.memory.geometries   memory used for meshes, etc
         },
         // Everything is ready so start rendering.
         'Start': function() {
@@ -65,6 +72,10 @@ define(['Graphics', 'Config', 'Eventing'],
         },
         // Add a test object to the scene
         'AddTestObject': function() {
+        },
+        // Do anything special that the graphics system has for debugging
+        // Pass 'true' if to enable. 'false' if to disable.
+        'SetDebugMode': function(enable) {
         },
         'noComma': 0
     };

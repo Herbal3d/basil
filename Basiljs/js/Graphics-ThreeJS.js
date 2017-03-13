@@ -9,8 +9,8 @@
 //      display.info
 var GR = GR || {};
 
-define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ],
-                    function(THREE, Config, Eventing, stats) {
+define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
+                    function(THREE, Config, Eventing) {
 
     // return a ThreeJS color number from an array of color values
     var colorFromArray = function(colorArr) {
@@ -45,20 +45,6 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
             op.internalInitializeCameraControl(GR.scene, GR.container);
             container.addEventListener('resize', op.internalOnContainerResize, false);
 
-            if (Config.page.showStats) {
-                var stat = stats();
-                stat.showPanel(0);  // FPS
-                // stat.showPanel(1);  // MS rendering
-                // stat.showPanel(2);  // MB allocated mem
-                stat.dom.style.position = 'absolute';
-                stat.dom.style.top = '0%';
-                stat.dom.style.right = '0%';
-                stat.dom.style.margin = '10px';
-                stat.dom.style.zIndex = 100;
-                GR.stats = stat;
-                container.appendChild(GR.stats.dom);
-            }
-
             // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
             GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
 
@@ -89,9 +75,12 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
                 if (GR.eventDisplayInfo.hasSubscriptions) {
                     // not general, but, for the moment, just return the WebGL info
                     var dispInfo = GR.renderer.info;
+                    dispInfo.render.fps = GR.fps;
                     Eventing.fire(GR.eventDisplayInfo, dispInfo);
                 }
             });
+            // start FPS computation
+            GR.lastFrameTime = new Date().getTime();
         },
         'Start': function() {
             if (!GR.runLoopIdentifier) {
@@ -108,8 +97,14 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
         // Do per-frame updates and then render the frame
         'internalDoRendering': function() {
             if (GP.Ready && GR.scene && GR.camera) {
-                if (GR.stats) {
-                    GR.stats.begin();
+                // compute fps
+                if (GR.lastFrameTime) {
+                    var nowTime = new Date().getTime();
+                    var secondsSinceLastFrame = (nowTime - GR.lastFrameTime) / 1000;
+                    GR.lastFrameTime = nowTime;
+                    if (secondsSinceLastFrame > 0) {
+                        GR.fps = 1 / secondsSinceLastFrame;
+                    }
                 }
                 if (GR.cameraControl) {
                     GR.cameraControl.update();
@@ -118,10 +113,6 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
                     Eventing.fire(GR.eventEachFrame, {});
                 }
                 // TODO: insert animation updates (shouldn't this be done before render time?)
-                if (GR.stats) {
-                    GR.stats.end();
-                    GR.stats.update();
-                }
                 GR.renderer.render(GR.scene, GR.camera);
             }
         },
@@ -267,6 +258,8 @@ define(['threejs', 'Config', 'Eventing', 'stats', 'orbitControl', 'GLTFLoader' ]
             cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
             GR.scene.add(cube);
             DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
+        },
+        'SetDebugMode': function(enable) {
         },
         'noComma': 0
     };

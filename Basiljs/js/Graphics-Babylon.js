@@ -86,9 +86,13 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
             GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, function(topic) {
                 if (GR.eventDisplayInfo.hasSubscriptions) {
-                    // not general, but, for the moment, just return the WebGL info
-                    // var dispInfo = GR.renderer.info;
-                    // Eventing.fire(GR.eventDisplayInfo, dispInfo);
+                    dispInfo = {};
+                    dispInfo.render = {};
+                    dispInfo.render.fps = GR.engine.getFps();
+                    dispInfo.render.calls = GR.engine.drawCalls;
+                    dispInfo.render.vertices = GR.scene.totalVerticesPerfCounter.current;
+                    dispInfo.render.faces = GR.scene.totalActiveIndicesPerfCounter.current / 3;
+                    Eventing.fire(GR.eventDisplayInfo, dispInfo);
                 }
             });
         },
@@ -244,6 +248,8 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             var cube = new BABYLON.Mesh.CreateBox('box1', 1, GR.scene);
             cube.position = BABYLON.Vector3.FromArray(Config.webgl.camera.initialCameraLookAt);
             DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
+        },
+        'SetDebugMode': function(enable) {
         },
         'noComma': 0
     };
