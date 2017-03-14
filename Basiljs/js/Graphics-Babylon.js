@@ -142,6 +142,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                 var urlDir = urlPieces.join('/');
                 urlDir += '/';
                 DebugLog('LoadScene: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
+                // BABYLON.GLTFFileLoader.HomogeneousCoordinates = true;
                 BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(newScene) {
                     // For the moment, we're ignoring camera and lights from gltf
                     GR.scene = newScene;
@@ -250,6 +251,17 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
         },
         'SetDebugMode': function(enable) {
+            if (GR.scene.debugLayer) {
+                if (GR.scene.debugLayer.isVisible()) {
+                    GR.scene.debugLayer.hide();
+                }
+                else {
+                    GR.scene.debugLayer.show();
+                }
+            }
+            else {
+                DebugLog('Graphics: no debug layer available');
+            }
         },
         'noComma': 0
     };

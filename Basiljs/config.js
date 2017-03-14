@@ -67,8 +67,7 @@ define(
                 },
                 'BabylonJSparams': {
                 },
-                'clearColorXX': [ 0.53, 0.828, 0.594 ],    // 0x88d493
-                'clearColor': [ 0.53, 0.528, 0.594 ],    // 0x88d493
+                'clearColor': [ 0.53, 0.828, 0.594 ],    // 0x88d493
                 'shadows': {
                     'noComma': 0
                 },

@@ -14,9 +14,12 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
 
     // return a ThreeJS color number from an array of color values
     var colorFromArray = function(colorArr) {
+        return new THREE.Color(colorArr[0], colorArr[1], colorArr[2]);
+        /*
         return colorArr[0] * 255 * 65536
             + colorArr[1] * 255 * 256
             + colorArr[2] * 255;
+            */
     }
 
     var op = {
@@ -193,13 +196,13 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
             if (Config.webgl.lights) {
                 parms = Config.webgl.lights;
                 if (parms.ambient) {
-                    var ambient = new THREE.AmbientLight(Number(colorFromArray(parms.ambient.color)),
+                    var ambient = new THREE.AmbientLight(colorFromArray(parms.ambient.color),
                                                         Number(parms.ambient.intensity));
                     GR.ambientLight = ambient;
                     theScene.add(ambient);
                 }
                 if (parms.directional) {
-                    var directional = new THREE.DirectionalLight(Number(colorFromArray(parms.directional.color)),
+                    var directional = new THREE.DirectionalLight(colorFromArray(parms.directional.color),
                                                         Number(parms.directional.intensity));
                     directional.position.fromArray(parms.directional.direction).normalize();
                     GR.directionalLight = directional;

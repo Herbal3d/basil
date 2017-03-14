@@ -76,6 +76,9 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                 // Make the state to the opposite of what it is now
                 op.ShowDebug(!$('#DEBUGG').is(':visible'));
             }
+            if (buttonOp == 'showDebugLayer') {
+                Graphics.SetDebugMode();
+            }
         },
         'internalDoLoad': function(url) {
             Graphics.ClearScene();
