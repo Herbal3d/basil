@@ -18,6 +18,7 @@
         <div class="dialog-group">
             <!-- http://stackoverflow.com/questions/1962041/jquery-dynamically-update-other-option-in-select -->
             <select id="SelectGltf">
+                <!--
                 <option value="./gltf/models/1.0/Duck/glTF/Duck.gltf">duck</option>
                 <option value="./gltf/models/1.0/Duck/glTF/Duck2.gltf">duck2</option>
                 <option value="./gltf/models/1.0/Duck/glTF-MaterialsCommon/Duck.gltf">duck-common</option>
@@ -25,17 +26,18 @@
                 <option value="./gltf/models/1.0/CesiumMan/glTF-MaterialsCommon/CesiumMan.gltf">CesiumMan-common</option>
                 <option value="./gltf/models/1.0/GearboxAssy/glTF/GearboxAssy.gltf">GearboxAssy</option>
                 <option value="./gltf/models/1.0/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf">GearboxAssy-common</option>
-                <option value="./gltf/testtest88.gltf" selected >testtest88</option>
+                -->
+                <option value="./gltf/testtest88.gltf" selected >testtest88 - 12 draws</option>
+                <option value="./gltf/testtest22.gltf">testtest22 - 1 draws</option>
+                <option value="./gltf/testtest20.gltf">testtest20 - 3 draws</option>
+                <option value="./gltf/testtest02.gltf">testtest02 - 9 draws</option>
+                <option value="./gltf/testtest12.gltf">testtest12 - 32 draws</option>
+                <option value="./gltf/testtest00.gltf">testtest00 - 128 draws</option>
+                <option value="./gltf/testtest21.gltf">testtest21 - 213 draws</option>
+                <option value="./gltf/testtest10.gltf">testtest10 - 375 draws</option>
+                <option value="./gltf/testtest01.gltf">testtest01 - 801 draws</option>
+                <option value="./gltf/testtest11.gltf">testtest11 - 4000 draws</option>
                 <option value="./object.babylon">ObjectBabylon</option>
-                <option value="./gltf/testtest00.gltf">testtest00</option>
-                <option value="./gltf/testtest10.gltf">testtest10</option>
-                <option value="./gltf/testtest02.gltf">testtest02</option>
-                <option value="./gltf/testtest01.gltf">testtest01</option>
-                <option value="./gltf/testtest11.gltf">testtest11</option>
-                <option value="./gltf/testtest12.gltf">testtest12</option>
-                <option value="./gltf/testtest20.gltf">testtest20</option>
-                <option value="./gltf/testtest21.gltf">testtest21</option>
-                <option value="./gltf/testtest22.gltf">testtest22</option>
             </select>
             <button type="button" class="button clickable" op="loadGltf">Load</button>
         </div>
@@ -45,23 +47,31 @@
             <button type="button" class="button clickable" op="showDebugLayer">Debug Layer</button>
         </div>
         <div class="dialog-group">
-            <fieldset>
-                <legend>Camera</legend>
-                <label>Position: <div b-info="camPosition" class="coordDisplay"></div></label>
-                <label>FPS: <div b-info="infoFPS" class="textDisplay"></div></label>
-                <label>Drawcalls: <div b-info="infoDrawCalls" class="textDisplay"></div></label>
-                <label>Vertices: <div b-info="infoVertices" class="textDisplay"></div></label>
-                <label>Faces: <div b-info="infoFaces" class="textDisplay"></div></label>
-                <label>Texture Mem: <div b-info="infoTextureMem" class="textDisplay"></div></label>
-                <label>Geometry Mem: <div b-info="infoGeometryMem" class="textDisplay"></div></label>
-            </fieldset>
-            <fieldset>
-                <legend>Selected Object </legend>
-                <label>Name: <div b-info="objName" class="textDisplay"></div></label>
-                <label>UUID: <div b-info="objUuid" class="textDisplay"></div></label>
-                <label>Position: <div b-info="objPosition" class="coordDisplay"></div></label>
-                <label>Rotation: <div b-info="objRotation" class="coordDisplay"></div></label>
-            </fieldset>
+            <div id="dialog-group-1">
+                <fieldset>
+                    <legend>Camera</legend>
+                    <label>Position: <div b-info="camPosition" class="coordDisplay"></div></label>
+                    <label>FPS: <div b-info="infoFPS" class="textDisplay"></div></label>
+                    <label>Drawcalls: <div b-info="infoDrawCalls" class="textDisplay"></div></label>
+                    <label>Vertices: <div b-info="infoVertices" class="textDisplay"></div></label>
+                    <label>Triangles: <div b-info="infoTriangles" class="textDisplay"></div></label>
+                    <label>Texture Mem: <div b-info="infoTextureMem" class="textDisplay"></div></label>
+                    <label>Geometry Mem: <div b-info="infoGeometryMem" class="textDisplay"></div></label>
+                </fieldset>
+            </div>
+            <div id="dialog-group-2">
+            <!--
+                <fieldset>
+                    <legend>Selected Object </legend>
+                    <label>Name: <div b-info="objName" class="textDisplay"></div></label>
+                    <label>UUID: <div b-info="objUuid" class="textDisplay"></div></label>
+                    <label>Position: <div b-info="objPosition" class="coordDisplay"></div></label>
+                    <label>Rotation: <div b-info="objRotation" class="coordDisplay"></div></label>
+                </fieldset>
+            -->
+            </div>
+            <div id="dialog-group-3">
+            </div>
         </div>
     </div>
     <div id="DEBUGG"></div>

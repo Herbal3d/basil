@@ -29,7 +29,7 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             CO.infoFPS = new UIControls.UI_Text('div[b-info=infoFPS]');
             CO.infoDrawCalls = new UIControls.UI_Text('div[b-info=infoDrawCalls]');
             CO.infoVertices = new UIControls.UI_Text('div[b-info=infoVertices]');
-            CO.infoFaces = new UIControls.UI_Text('div[b-info=infoFaces]');
+            CO.infoTriangles = new UIControls.UI_Text('div[b-info=infoTriangles]');
             // CO.infoPoints = new UIControls.UI_Text('div[b-info=infoPoints]');
             CO.infoTextureMem = new UIControls.UI_Text('div[b-info=infoTextureMem]');
             CO.infoGeometryMem = new UIControls.UI_Text('div[b-info=infoGeometryMem]');
@@ -38,7 +38,7 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                     CO.infoFPS.Update(Math.round(info.render.fps));
                     CO.infoDrawCalls.Update(info.render.calls);
                     CO.infoVertices.Update(info.render.vertices);
-                    CO.infoFaces.Update(info.render.faces);
+                    CO.infoTriangles.Update(info.render.faces);
                     // CO.infoPoints.Update(info.render.points);
                 }
                 if (info && info.memory && CO.infoTextureMem) {

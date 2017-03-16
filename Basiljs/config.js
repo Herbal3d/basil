@@ -11,16 +11,6 @@ define(
             'showDebug': false,
             'noComma': 0
         },
-        'controlPanel': {
-            'testurls': [
-                { 'name': 'testtest02', 'url': './gltf/testtest02.gltf' },
-                { 'name': 'testtest88', 'url': './gltf/testtest88.gltf', 'selected': true },
-                { 'name': 'testtest00', 'url': './gltf/testtest00.gltf' },
-                { 'name': 'testtest10', 'url': './gltf/testtest10.gltf' },
-                { 'name': 'testtest01', 'url': './gltf/testtest01.gltf' }
-            ]
-        },
-
         // Parameters for the webgl environment
         'webgl': {
             'camera': {
