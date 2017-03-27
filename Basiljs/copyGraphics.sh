@@ -4,21 +4,30 @@
 # cd into the directory containing this copy script
 cd "$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-THREE=$HOME/three.js
-BABYLON=$HOME/Babylon.js
+# Copy ThreeJS and store a file for the date of the primary file
+THREEDIR=$HOME/three.js
+THREEJS="$THREEDIR/build/three.min.js"
+cp "${THREEJS}" jslibs/
+STATTIME=$(stat -c '%Y' "${THREEJS}")
+THREEJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${THREEJSMODIFYDATE} > jslibs/three.js.date
 
-cp $THREE/build/three.min.js jslibs/
-cp $THREE/examples/js/loaders/GLTFLoader.js jslibs/
-cp $THREE/examples/js/loaders/GLTF2Loader.js jslibs/
-cp $THREE/examples/js/controls/OrbitControls.js jslibs/
+cp $THREEDIR/examples/js/loaders/GLTFLoader.js jslibs/
+cp $THREEDIR/examples/js/loaders/GLTF2Loader.js jslibs/
+cp $THREEDIR/examples/js/controls/OrbitControls.js jslibs/
 
-cp "$BABYLON/dist/preview release/babylon.js" jslibs/
-cp "$BABYLON/dist/preview release/loaders/babylon.glTFFileLoader.js" jslibs/
+# =====================================
+# Copy BabylonJS and store a file for the date of the primary file
+BABYLONDIR=$HOME/Babylon.js
+BABYLONJS="$BABYLONDIR/dist/preview release/babylon.js"
+cp "${BABYLONJS}" jslibs/
+STATTIME=$(stat -c '%Y' "${BABYLONJS}")
+BABYLONJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${BABYLONJSMODIFYDATE} > jslibs/babylon.js.date
 
-# Since we're using development copies of the graphics libraries, rename the
-#    base files to include the date they were captured.
-#        cd jslibs
-#        mv three.min.js three-20170305.min.js
-#        mv babylon.core.js babylon.core-20170302.js
-# AFTER DOING THE COPY AND MOVE, edit requireConfig.js to point to the correct filenames.
+cp "$BABYLONDIR/dist/preview release/loaders/babylon.glTFFileLoader.js" jslibs/
 
+echo "THREEJS $THREEJS"
+echo "THREEJSMODIFYDATE $THREEJSMODIFYDATE"
+echo "BABYLONJS $BABYLONJS"
+echo "BABYLONJSMODIFYDATE $BABYLONJSMODIFYDATE"
