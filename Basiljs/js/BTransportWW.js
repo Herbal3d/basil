@@ -19,7 +19,7 @@ var BTransportWebWorker = function() {
     that.open = function(connectionString) {};
     that.close = function() {};
     that.write = function(data) {};
-    that.read = function() {};
+    that.read = function(completionCallback) {};
     that.dataAvailable = function(callBack) {};
     that.isOpen = function() {};
     return that;

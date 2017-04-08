@@ -18,7 +18,7 @@ var BTransport = function() {
         'open': function(connectionString) {},
         'close': function() {},
         'write': function(data) {},
-        'read': function() {},
+        'read': function(completionCallback) {},
         'dataAvailable': function(callBack) {},
         'isOpen': function() {}
     };

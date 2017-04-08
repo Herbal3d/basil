@@ -12,7 +12,7 @@ var BFlow = function(transport) {
     var that = {
         'write': function(msg) {},
         'call': function(msg, responseCallback) {},
-        'read': function() {},
+        'read': function(completionCallback) {},
         'dataAvailable': function(callBack) {},
     };
     that.transport = transport

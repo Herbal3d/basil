@@ -19,8 +19,12 @@ var requireConfig = {
         'Coordinates': 'js/Coordinates',
         'Controls': 'js/Controls',
         'UIControls': 'js/UIControls',
-        'Eventing': 'js/Eventing'
+        'Eventing': 'js/Eventing',
 
+        'FlatBuffers': 'jslibs/flatbuffers',
+        'BasilClientGenerated': 'jslibs/BasilClient_generated',
+        'BasilServerGenerated': 'jslibs/BasilServer_generated',
+        'BasilServer': 'js/BasilServer'
     },
     'shim': {
     }

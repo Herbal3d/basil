@@ -1,0 +1,85 @@
+#! /bin/bash
+# Copy code from a ThreeJS source tree to the proper place for Basiljs
+# Also copies FlatBuffer support files.
+#
+# This expects all the libraries to be GIT pulls into the directory
+#   two above the one with this script. So, the process is usually:
+#      cd SomeBuildDirectory
+#      git clone git@github.com:mrdoob/three.js.git
+#      git branch --track dev origin/dev
+#      git checkout dev     # Using the development version of ThreeJS
+#      git clone git@github.com:BabylonJS/Babylon.js.git
+#      git clone git@github.com:google/flatbuffers.git
+#      git clone git@github.com:Misterblue/Basil-protocol.git
+#      cd Basil-protocol
+#      ./makeStubs.sh       # Build the flatbuffer structure code
+#      cd ..
+#      git clone git@github.com:Misterblue/basil.git
+#      cd basil/Basiljs
+#      ./copyLibs.sh        # Finally copy all the libraries to be used
+
+# cd into the directory containing this copy script
+cd "$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PLACE=$(pwd)
+
+# Copy ThreeJS and store a file for the date of the primary file
+THREEDIR=${PLACE}/../../three.js
+THREEJS="$THREEDIR/build/three.min.js"
+cp "${THREEJS}" jslibs/
+STATTIME=$(stat -c '%Y' "${THREEJS}")
+THREEJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${THREEJSMODIFYDATE} > jslibs/three.js.date
+
+cp $THREEDIR/examples/js/loaders/GLTFLoader.js jslibs/
+cp $THREEDIR/examples/js/loaders/GLTF2Loader.js jslibs/
+cp $THREEDIR/examples/js/controls/OrbitControls.js jslibs/
+
+# =====================================
+# Copy BabylonJS and store a file for the date of the primary file
+BABYLONDIR=${PLACE}/../../Babylon.js
+BABYLONJS="$BABYLONDIR/dist/preview release/babylon.js"
+cp "${BABYLONJS}" jslibs/
+STATTIME=$(stat -c '%Y' "${BABYLONJS}")
+BABYLONJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${BABYLONJSMODIFYDATE} > jslibs/babylon.js.date
+
+cp "$BABYLONDIR/dist/preview release/loaders/babylon.glTFFileLoader.js" jslibs/
+
+# =====================================
+# Copy the FlatBuffer code
+FLATBUFFERDIR=${PLACE}/../../flatbuffers
+FLATBUFFERJS=${FLATBUFFERDIR}/js/flatbuffers.js
+cp "${FLATBUFFERJS}" jslibs/
+
+STATTIME=$(stat -c '%Y' "${FLATBUFFERJS}")
+FLATBUFFERSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${FLATBUFFERJSMODIFYDATE} > jslibs/flatbuffers.js.date
+
+# =====================================
+# Copy the generated FlatBuffer interface code
+FBGENDIR=${PLACE}/../../Basil-protocol
+FBGENBASILCLIENT=${FBGENDIR}/gen-BasilClient-js/BasilClient_generated.js
+FBGENBASILSERVER=${FBGENDIR}/gen-BasilServer-js/BasilServer_generated.js
+cp "$FBGENBASILCLIENT" jslibs/
+cp "$FBGENBASILSERVER" jslibs/
+
+STATTIME=$(stat -c '%Y' "${FBGENBASILCLIENT}")
+FBGENBASILCLIENTMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${FBGENBASILCLIENTMODIFYDATE} > jslibs/BasilClient_generated.js.date
+STATTIME=$(stat -c '%Y' "${FBGENBASILSERVER}")
+FBGENBASILSERVERMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
+echo ${FBGENBASILSERVERMODIFYDATE} > jslibs/BasilServer_generated.js.date
+
+# =====================================
+# Debugging
+echo "THREEJS $THREEJS"
+echo "THREEJSMODIFYDATE $THREEJSMODIFYDATE"
+echo "BABYLONJS $BABYLONJS"
+echo "BABYLONJSMODIFYDATE $BABYLONJSMODIFYDATE"
+echo "FLATBUFFERJS $FLATBUFFERJS"
+echo "FLATBUFFERJSMODIFYDATE $FLATBUFFERJSMODIFYDATE"
+echo "FBGENBASILCLIENT $FBGENBASILCLIENT"
+echo "FBGENBASILCLIENTMODIFYDATE $FBGENBASILCLIENTMODIFYDATE"
+echo "FBGENBASILSERVER $FBGENBASILSERVER"
+echo "FBGENBASILSERVERMODIFYDATE $FBGENBASILSERVERMODIFYDATE"
+
