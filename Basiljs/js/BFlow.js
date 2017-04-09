@@ -11,7 +11,9 @@
 var BFlow = function(transport) {
     var that = {
         'write': function(msg) {},
+        'writeFlowMsg': function(msg, msgBuilder) {},
         'call': function(msg, responseCallback) {},
+        'callFlowMsg': function(msg, msgBuilder, responseCallback) {},
         'read': function(completionCallback) {},
         'dataAvailable': function(callBack) {},
     };

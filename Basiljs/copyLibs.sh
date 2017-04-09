@@ -58,28 +58,26 @@ echo ${FLATBUFFERJSMODIFYDATE} > jslibs/flatbuffers.js.date
 # =====================================
 # Copy the generated FlatBuffer interface code
 FBGENDIR=${PLACE}/../../Basil-protocol
-FBGENBASILCLIENT=${FBGENDIR}/gen-BasilClient-js/BasilClient_generated.js
+FBGENBASILTYPES=${FBGENDIR}/gen-BasilTypes-js/BasilTypes_generated.js
+FBGENBTRANSPORTHDR=${FBGENDIR}/gen-BTransportHdr-js/BTransportHdr_generated.js
 FBGENBASILSERVER=${FBGENDIR}/gen-BasilServer-js/BasilServer_generated.js
-cp "$FBGENBASILCLIENT" jslibs/
+cp "$FBGENBASILTYPES" jslibs/
+cp "$FBGENBTRANSPORTHDR" jslibs/
 cp "$FBGENBASILSERVER" jslibs/
 
-STATTIME=$(stat -c '%Y' "${FBGENBASILCLIENT}")
-FBGENBASILCLIENTMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
-echo ${FBGENBASILCLIENTMODIFYDATE} > jslibs/BasilClient_generated.js.date
 STATTIME=$(stat -c '%Y' "${FBGENBASILSERVER}")
 FBGENBASILSERVERMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
 echo ${FBGENBASILSERVERMODIFYDATE} > jslibs/BasilServer_generated.js.date
 
 # =====================================
 # Debugging
+exit    # comment this to print out where it's getting the libraries from
 echo "THREEJS $THREEJS"
 echo "THREEJSMODIFYDATE $THREEJSMODIFYDATE"
 echo "BABYLONJS $BABYLONJS"
 echo "BABYLONJSMODIFYDATE $BABYLONJSMODIFYDATE"
 echo "FLATBUFFERJS $FLATBUFFERJS"
 echo "FLATBUFFERJSMODIFYDATE $FLATBUFFERJSMODIFYDATE"
-echo "FBGENBASILCLIENT $FBGENBASILCLIENT"
-echo "FBGENBASILCLIENTMODIFYDATE $FBGENBASILCLIENTMODIFYDATE"
 echo "FBGENBASILSERVER $FBGENBASILSERVER"
 echo "FBGENBASILSERVERMODIFYDATE $FBGENBASILSERVERMODIFYDATE"
 

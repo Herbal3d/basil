@@ -22,7 +22,8 @@ var requireConfig = {
         'Eventing': 'js/Eventing',
 
         'FlatBuffers': 'jslibs/flatbuffers',
-        'BasilClientGenerated': 'jslibs/BasilClient_generated',
+        'BasilTypesGenerated': 'jslibs/BasilTypes_generated',
+        'BTransportHdrGenerated': 'jslibs/BTransportHdr_generated',
         'BasilServerGenerated': 'jslibs/BasilServer_generated',
         'BasilServer': 'js/BasilServer'
     },

@@ -35,23 +35,30 @@ org.herbal3d.protocol.basil.server = org.herbal3d.protocol.basil.server || {};
  */
 org.herbal3d.protocol.basil.server.BasilServerMsgMsg = {
   NONE: 0,
-  DefineDisplayableObject: 1,
-  CreateObjectInstance: 2,
-  UpdateObjectProperty: 3,
-  UpdateInstanceProperty: 4,
-  UpdateInstancePosition: 5,
-  ObjectPropertiesRequest: 6,
-  InstancePropertiesRequest: 7,
-  OpenSession: 8,
-  CloseSession: 9,
-  AliveCheck: 10,
-  AliveResponse: 11
+  AddEntity: 1,
+  RemoveEntity: 2,
+  AddInstance: 3,
+  RemoveInstance: 4,
+  GetUniqueInstanceId: 5,
+  GetUniqueInstanceIdResponse: 6,
+  UpdateEntityProperty: 7,
+  UpdateInstanceProperty: 8,
+  UpdateInstancePosition: 9,
+  EntityPropertyRequest: 10,
+  EntityPropertyResponse: 11,
+  InstancePropertyRequest: 12,
+  InstancePropertyResponse: 13,
+  OpenSession: 14,
+  OpenSessionResponse: 15,
+  CloseSession: 16,
+  AliveCheck: 17,
+  AliveResponse: 18
 };
 
 /**
  * @constructor
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject = function() {
+org.herbal3d.protocol.basil.server.AddEntity = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -66,9 +73,9 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {org.herbal3d.protocol.basil.server.DefineDisplayableObject}
+ * @returns {org.herbal3d.protocol.basil.server.AddEntity}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.__init = function(i, bb) {
+org.herbal3d.protocol.basil.server.AddEntity.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -76,18 +83,18 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.__init = fu
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {org.herbal3d.protocol.basil.server.DefineDisplayableObject=} obj
- * @returns {org.herbal3d.protocol.basil.server.DefineDisplayableObject}
+ * @param {org.herbal3d.protocol.basil.server.AddEntity=} obj
+ * @returns {org.herbal3d.protocol.basil.server.AddEntity}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.getRootAsDefineDisplayableObject = function(bb, obj) {
-  return (obj || new org.herbal3d.protocol.basil.server.DefineDisplayableObject).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+org.herbal3d.protocol.basil.server.AddEntity.getRootAsAddEntity = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.AddEntity).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
  * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
  * @returns {org.herbal3d.protocol.basil.accessAuthorization}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.auth = function(obj) {
+org.herbal3d.protocol.basil.server.AddEntity.prototype.auth = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -96,7 +103,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.auth = func
  * @param {flatbuffers.Encoding=} optionalEncoding
  * @returns {string|Uint8Array}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.objectId = function(optionalEncoding) {
+org.herbal3d.protocol.basil.server.AddEntity.prototype.objectId = function(optionalEncoding) {
   var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
 };
@@ -105,7 +112,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.objectId = 
  * @param {org.herbal3d.protocol.basil.assetInformation=} obj
  * @returns {org.herbal3d.protocol.basil.assetInformation}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.assetInfo = function(obj) {
+org.herbal3d.protocol.basil.server.AddEntity.prototype.assetInfo = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? (obj || new org.herbal3d.protocol.basil.assetInformation).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -114,7 +121,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.assetInfo =
  * @param {org.herbal3d.protocol.basil.aaBoundingBox=} obj
  * @returns {org.herbal3d.protocol.basil.aaBoundingBox}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.aabb = function(obj) {
+org.herbal3d.protocol.basil.server.AddEntity.prototype.aabb = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 10);
   return offset ? (obj || new org.herbal3d.protocol.basil.aaBoundingBox).__init(this.bb_pos + offset, this.bb) : null;
 };
@@ -122,7 +129,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.prototype.aabb = func
 /**
  * @param {flatbuffers.Builder} builder
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.startDefineDisplayableObject = function(builder) {
+org.herbal3d.protocol.basil.server.AddEntity.startAddEntity = function(builder) {
   builder.startObject(4);
 };
 
@@ -130,7 +137,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.startDefineDisplayabl
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} authOffset
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.addAuth = function(builder, authOffset) {
+org.herbal3d.protocol.basil.server.AddEntity.addAuth = function(builder, authOffset) {
   builder.addFieldOffset(0, authOffset, 0);
 };
 
@@ -138,7 +145,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.addAuth = function(bu
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} objectIdOffset
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.addObjectId = function(builder, objectIdOffset) {
+org.herbal3d.protocol.basil.server.AddEntity.addObjectId = function(builder, objectIdOffset) {
   builder.addFieldOffset(1, objectIdOffset, 0);
 };
 
@@ -146,7 +153,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.addObjectId = functio
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} assetInfoOffset
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.addAssetInfo = function(builder, assetInfoOffset) {
+org.herbal3d.protocol.basil.server.AddEntity.addAssetInfo = function(builder, assetInfoOffset) {
   builder.addFieldOffset(2, assetInfoOffset, 0);
 };
 
@@ -154,7 +161,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.addAssetInfo = functi
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} aabbOffset
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.addAabb = function(builder, aabbOffset) {
+org.herbal3d.protocol.basil.server.AddEntity.addAabb = function(builder, aabbOffset) {
   builder.addFieldStruct(3, aabbOffset, 0);
 };
 
@@ -162,7 +169,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.addAabb = function(bu
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.DefineDisplayableObject.endDefineDisplayableObject = function(builder) {
+org.herbal3d.protocol.basil.server.AddEntity.endAddEntity = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -170,7 +177,7 @@ org.herbal3d.protocol.basil.server.DefineDisplayableObject.endDefineDisplayableO
 /**
  * @constructor
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance = function() {
+org.herbal3d.protocol.basil.server.RemoveEntity = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -185,9 +192,9 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {org.herbal3d.protocol.basil.server.CreateObjectInstance}
+ * @returns {org.herbal3d.protocol.basil.server.RemoveEntity}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.__init = function(i, bb) {
+org.herbal3d.protocol.basil.server.RemoveEntity.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -195,18 +202,103 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.__init = funct
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {org.herbal3d.protocol.basil.server.CreateObjectInstance=} obj
- * @returns {org.herbal3d.protocol.basil.server.CreateObjectInstance}
+ * @param {org.herbal3d.protocol.basil.server.RemoveEntity=} obj
+ * @returns {org.herbal3d.protocol.basil.server.RemoveEntity}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.getRootAsCreateObjectInstance = function(bb, obj) {
-  return (obj || new org.herbal3d.protocol.basil.server.CreateObjectInstance).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+org.herbal3d.protocol.basil.server.RemoveEntity.getRootAsRemoveEntity = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.RemoveEntity).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
  * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
  * @returns {org.herbal3d.protocol.basil.accessAuthorization}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.auth = function(obj) {
+org.herbal3d.protocol.basil.server.RemoveEntity.prototype.auth = function(obj) {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
+};
+
+/**
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array}
+ */
+org.herbal3d.protocol.basil.server.RemoveEntity.prototype.objectId = function(optionalEncoding) {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.RemoveEntity.startRemoveEntity = function(builder) {
+  builder.startObject(2);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} authOffset
+ */
+org.herbal3d.protocol.basil.server.RemoveEntity.addAuth = function(builder, authOffset) {
+  builder.addFieldOffset(0, authOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} objectIdOffset
+ */
+org.herbal3d.protocol.basil.server.RemoveEntity.addObjectId = function(builder, objectIdOffset) {
+  builder.addFieldOffset(1, objectIdOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.RemoveEntity.endRemoveEntity = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.AddInstance = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.AddInstance}
+ */
+org.herbal3d.protocol.basil.server.AddInstance.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.AddInstance=} obj
+ * @returns {org.herbal3d.protocol.basil.server.AddInstance}
+ */
+org.herbal3d.protocol.basil.server.AddInstance.getRootAsAddInstance = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.AddInstance).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
+ * @returns {org.herbal3d.protocol.basil.accessAuthorization}
+ */
+org.herbal3d.protocol.basil.server.AddInstance.prototype.auth = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -214,7 +306,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.auth = functio
 /**
  * @returns {number}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.instanceId = function() {
+org.herbal3d.protocol.basil.server.AddInstance.prototype.instanceId = function() {
   var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
 };
@@ -223,7 +315,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.instanceId = f
  * @param {org.herbal3d.protocol.basil.instancePositionInfo=} obj
  * @returns {org.herbal3d.protocol.basil.instancePositionInfo}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.pos = function(obj) {
+org.herbal3d.protocol.basil.server.AddInstance.prototype.pos = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? (obj || new org.herbal3d.protocol.basil.instancePositionInfo).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -233,7 +325,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.pos = function
  * @param {org.herbal3d.protocol.basil.propertyValue=} obj
  * @returns {org.herbal3d.protocol.basil.propertyValue}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.propertiesToSet = function(index, obj) {
+org.herbal3d.protocol.basil.server.AddInstance.prototype.propertiesToSet = function(index, obj) {
   var offset = this.bb.__offset(this.bb_pos, 10);
   return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
 };
@@ -241,7 +333,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.propertiesToSe
 /**
  * @returns {number}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.propertiesToSetLength = function() {
+org.herbal3d.protocol.basil.server.AddInstance.prototype.propertiesToSetLength = function() {
   var offset = this.bb.__offset(this.bb_pos, 10);
   return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
 };
@@ -249,7 +341,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.prototype.propertiesToSe
 /**
  * @param {flatbuffers.Builder} builder
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.startCreateObjectInstance = function(builder) {
+org.herbal3d.protocol.basil.server.AddInstance.startAddInstance = function(builder) {
   builder.startObject(4);
 };
 
@@ -257,7 +349,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.startCreateObjectInstanc
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} authOffset
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.addAuth = function(builder, authOffset) {
+org.herbal3d.protocol.basil.server.AddInstance.addAuth = function(builder, authOffset) {
   builder.addFieldOffset(0, authOffset, 0);
 };
 
@@ -265,7 +357,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.addAuth = function(build
  * @param {flatbuffers.Builder} builder
  * @param {number} instanceId
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.addInstanceId = function(builder, instanceId) {
+org.herbal3d.protocol.basil.server.AddInstance.addInstanceId = function(builder, instanceId) {
   builder.addFieldInt32(1, instanceId, 0);
 };
 
@@ -273,7 +365,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.addInstanceId = function
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} posOffset
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.addPos = function(builder, posOffset) {
+org.herbal3d.protocol.basil.server.AddInstance.addPos = function(builder, posOffset) {
   builder.addFieldOffset(2, posOffset, 0);
 };
 
@@ -281,7 +373,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.addPos = function(builde
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} propertiesToSetOffset
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.addPropertiesToSet = function(builder, propertiesToSetOffset) {
+org.herbal3d.protocol.basil.server.AddInstance.addPropertiesToSet = function(builder, propertiesToSetOffset) {
   builder.addFieldOffset(3, propertiesToSetOffset, 0);
 };
 
@@ -290,7 +382,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.addPropertiesToSet = fun
  * @param {Array.<flatbuffers.Offset>} data
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.createPropertiesToSetVector = function(builder, data) {
+org.herbal3d.protocol.basil.server.AddInstance.createPropertiesToSetVector = function(builder, data) {
   builder.startVector(4, data.length, 4);
   for (var i = data.length - 1; i >= 0; i--) {
     builder.addOffset(data[i]);
@@ -302,7 +394,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.createPropertiesToSetVec
  * @param {flatbuffers.Builder} builder
  * @param {number} numElems
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.startPropertiesToSetVector = function(builder, numElems) {
+org.herbal3d.protocol.basil.server.AddInstance.startPropertiesToSetVector = function(builder, numElems) {
   builder.startVector(4, numElems, 4);
 };
 
@@ -310,7 +402,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.startPropertiesToSetVect
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.CreateObjectInstance.endCreateObjectInstance = function(builder) {
+org.herbal3d.protocol.basil.server.AddInstance.endAddInstance = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -318,7 +410,7 @@ org.herbal3d.protocol.basil.server.CreateObjectInstance.endCreateObjectInstance 
 /**
  * @constructor
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty = function() {
+org.herbal3d.protocol.basil.server.RemoveInstance = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -333,9 +425,9 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {org.herbal3d.protocol.basil.server.UpdateObjectProperty}
+ * @returns {org.herbal3d.protocol.basil.server.RemoveInstance}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.__init = function(i, bb) {
+org.herbal3d.protocol.basil.server.RemoveInstance.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -343,18 +435,220 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.__init = funct
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {org.herbal3d.protocol.basil.server.UpdateObjectProperty=} obj
- * @returns {org.herbal3d.protocol.basil.server.UpdateObjectProperty}
+ * @param {org.herbal3d.protocol.basil.server.RemoveInstance=} obj
+ * @returns {org.herbal3d.protocol.basil.server.RemoveInstance}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.getRootAsUpdateObjectProperty = function(bb, obj) {
-  return (obj || new org.herbal3d.protocol.basil.server.UpdateObjectProperty).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+org.herbal3d.protocol.basil.server.RemoveInstance.getRootAsRemoveInstance = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.RemoveInstance).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
  * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
  * @returns {org.herbal3d.protocol.basil.accessAuthorization}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.auth = function(obj) {
+org.herbal3d.protocol.basil.server.RemoveInstance.prototype.auth = function(obj) {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.server.RemoveInstance.prototype.instanceId = function() {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.RemoveInstance.startRemoveInstance = function(builder) {
+  builder.startObject(2);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} authOffset
+ */
+org.herbal3d.protocol.basil.server.RemoveInstance.addAuth = function(builder, authOffset) {
+  builder.addFieldOffset(0, authOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} instanceId
+ */
+org.herbal3d.protocol.basil.server.RemoveInstance.addInstanceId = function(builder, instanceId) {
+  builder.addFieldInt32(1, instanceId, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.RemoveInstance.endRemoveInstance = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceId = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.GetUniqueInstanceId}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceId.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.GetUniqueInstanceId=} obj
+ * @returns {org.herbal3d.protocol.basil.server.GetUniqueInstanceId}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceId.getRootAsGetUniqueInstanceId = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.GetUniqueInstanceId).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceId.startGetUniqueInstanceId = function(builder) {
+  builder.startObject(0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceId.endGetUniqueInstanceId = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse=} obj
+ * @returns {org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse.getRootAsGetUniqueInstanceIdResponse = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse.prototype.instanceId = function() {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse.startGetUniqueInstanceIdResponse = function(builder) {
+  builder.startObject(1);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} instanceId
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse.addInstanceId = function(builder, instanceId) {
+  builder.addFieldInt32(0, instanceId, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse.endGetUniqueInstanceIdResponse = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.UpdateEntityProperty = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.UpdateEntityProperty}
+ */
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.UpdateEntityProperty=} obj
+ * @returns {org.herbal3d.protocol.basil.server.UpdateEntityProperty}
+ */
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.getRootAsUpdateEntityProperty = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.UpdateEntityProperty).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
+ * @returns {org.herbal3d.protocol.basil.accessAuthorization}
+ */
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.auth = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -363,7 +657,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.auth = functio
  * @param {flatbuffers.Encoding=} optionalEncoding
  * @returns {string|Uint8Array}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.objectId = function(optionalEncoding) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.objectId = function(optionalEncoding) {
   var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
 };
@@ -373,7 +667,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.objectId = fun
  * @param {org.herbal3d.protocol.basil.propertyValue=} obj
  * @returns {org.herbal3d.protocol.basil.propertyValue}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.props = function(index, obj) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.props = function(index, obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
 };
@@ -381,7 +675,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.props = functi
 /**
  * @returns {number}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.propsLength = function() {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.propsLength = function() {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
 };
@@ -389,7 +683,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.prototype.propsLength = 
 /**
  * @param {flatbuffers.Builder} builder
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.startUpdateObjectProperty = function(builder) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.startUpdateEntityProperty = function(builder) {
   builder.startObject(3);
 };
 
@@ -397,7 +691,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.startUpdateObjectPropert
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} authOffset
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.addAuth = function(builder, authOffset) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.addAuth = function(builder, authOffset) {
   builder.addFieldOffset(0, authOffset, 0);
 };
 
@@ -405,7 +699,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.addAuth = function(build
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} objectIdOffset
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.addObjectId = function(builder, objectIdOffset) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.addObjectId = function(builder, objectIdOffset) {
   builder.addFieldOffset(1, objectIdOffset, 0);
 };
 
@@ -413,7 +707,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.addObjectId = function(b
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} propsOffset
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.addProps = function(builder, propsOffset) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.addProps = function(builder, propsOffset) {
   builder.addFieldOffset(2, propsOffset, 0);
 };
 
@@ -422,7 +716,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.addProps = function(buil
  * @param {Array.<flatbuffers.Offset>} data
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.createPropsVector = function(builder, data) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.createPropsVector = function(builder, data) {
   builder.startVector(4, data.length, 4);
   for (var i = data.length - 1; i >= 0; i--) {
     builder.addOffset(data[i]);
@@ -434,7 +728,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.createPropsVector = func
  * @param {flatbuffers.Builder} builder
  * @param {number} numElems
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.startPropsVector = function(builder, numElems) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.startPropsVector = function(builder, numElems) {
   builder.startVector(4, numElems, 4);
 };
 
@@ -442,7 +736,7 @@ org.herbal3d.protocol.basil.server.UpdateObjectProperty.startPropsVector = funct
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.UpdateObjectProperty.endUpdateObjectProperty = function(builder) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.endUpdateEntityProperty = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -682,7 +976,7 @@ org.herbal3d.protocol.basil.server.UpdateInstancePosition.endUpdateInstancePosit
 /**
  * @constructor
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest = function() {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -697,9 +991,9 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {org.herbal3d.protocol.basil.server.ObjectPropertiesRequest}
+ * @returns {org.herbal3d.protocol.basil.server.EntityPropertyRequest}
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.__init = function(i, bb) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -707,18 +1001,18 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.__init = fu
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {org.herbal3d.protocol.basil.server.ObjectPropertiesRequest=} obj
- * @returns {org.herbal3d.protocol.basil.server.ObjectPropertiesRequest}
+ * @param {org.herbal3d.protocol.basil.server.EntityPropertyRequest=} obj
+ * @returns {org.herbal3d.protocol.basil.server.EntityPropertyRequest}
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.getRootAsObjectPropertiesRequest = function(bb, obj) {
-  return (obj || new org.herbal3d.protocol.basil.server.ObjectPropertiesRequest).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.getRootAsEntityPropertyRequest = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.EntityPropertyRequest).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
  * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
  * @returns {org.herbal3d.protocol.basil.accessAuthorization}
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.auth = function(obj) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.prototype.auth = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -727,7 +1021,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.auth = func
  * @param {flatbuffers.Encoding=} optionalEncoding
  * @returns {string|Uint8Array}
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.objectId = function(optionalEncoding) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.prototype.objectId = function(optionalEncoding) {
   var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
 };
@@ -736,7 +1030,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.objectId = 
  * @param {flatbuffers.Encoding=} optionalEncoding
  * @returns {string|Uint8Array}
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.propertyMatch = function(optionalEncoding) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.prototype.propertyMatch = function(optionalEncoding) {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
 };
@@ -744,7 +1038,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.prototype.propertyMat
 /**
  * @param {flatbuffers.Builder} builder
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.startObjectPropertiesRequest = function(builder) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.startEntityPropertyRequest = function(builder) {
   builder.startObject(3);
 };
 
@@ -752,7 +1046,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.startObjectProperties
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} authOffset
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.addAuth = function(builder, authOffset) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.addAuth = function(builder, authOffset) {
   builder.addFieldOffset(0, authOffset, 0);
 };
 
@@ -760,7 +1054,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.addAuth = function(bu
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} objectIdOffset
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.addObjectId = function(builder, objectIdOffset) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.addObjectId = function(builder, objectIdOffset) {
   builder.addFieldOffset(1, objectIdOffset, 0);
 };
 
@@ -768,7 +1062,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.addObjectId = functio
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} propertyMatchOffset
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.addPropertyMatch = function(builder, propertyMatchOffset) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.addPropertyMatch = function(builder, propertyMatchOffset) {
   builder.addFieldOffset(2, propertyMatchOffset, 0);
 };
 
@@ -776,7 +1070,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.addPropertyMatch = fu
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.endObjectPropertiesRequest = function(builder) {
+org.herbal3d.protocol.basil.server.EntityPropertyRequest.endEntityPropertyRequest = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -784,7 +1078,7 @@ org.herbal3d.protocol.basil.server.ObjectPropertiesRequest.endObjectPropertiesRe
 /**
  * @constructor
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest = function() {
+org.herbal3d.protocol.basil.server.EntityPropertyResponse = function() {
   /**
    * @type {flatbuffers.ByteBuffer}
    */
@@ -799,9 +1093,9 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest = function() {
 /**
  * @param {number} i
  * @param {flatbuffers.ByteBuffer} bb
- * @returns {org.herbal3d.protocol.basil.server.InstancePropertiesRequest}
+ * @returns {org.herbal3d.protocol.basil.server.EntityPropertyResponse}
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.__init = function(i, bb) {
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.__init = function(i, bb) {
   this.bb_pos = i;
   this.bb = bb;
   return this;
@@ -809,18 +1103,133 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.__init = 
 
 /**
  * @param {flatbuffers.ByteBuffer} bb
- * @param {org.herbal3d.protocol.basil.server.InstancePropertiesRequest=} obj
- * @returns {org.herbal3d.protocol.basil.server.InstancePropertiesRequest}
+ * @param {org.herbal3d.protocol.basil.server.EntityPropertyResponse=} obj
+ * @returns {org.herbal3d.protocol.basil.server.EntityPropertyResponse}
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.getRootAsInstancePropertiesRequest = function(bb, obj) {
-  return (obj || new org.herbal3d.protocol.basil.server.InstancePropertiesRequest).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.getRootAsEntityPropertyResponse = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.EntityPropertyResponse).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array}
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.objectId = function(optionalEncoding) {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
+};
+
+/**
+ * @param {number} index
+ * @param {org.herbal3d.protocol.basil.propertyValue=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyValue}
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.props = function(index, obj) {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.propsLength = function() {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.startEntityPropertyResponse = function(builder) {
+  builder.startObject(2);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} objectIdOffset
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.addObjectId = function(builder, objectIdOffset) {
+  builder.addFieldOffset(0, objectIdOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} propsOffset
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.addProps = function(builder, propsOffset) {
+  builder.addFieldOffset(1, propsOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {Array.<flatbuffers.Offset>} data
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.createPropsVector = function(builder, data) {
+  builder.startVector(4, data.length, 4);
+  for (var i = data.length - 1; i >= 0; i--) {
+    builder.addOffset(data[i]);
+  }
+  return builder.endVector();
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} numElems
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.startPropsVector = function(builder, numElems) {
+  builder.startVector(4, numElems, 4);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.endEntityPropertyResponse = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyRequest = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.InstancePropertyRequest}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.InstancePropertyRequest=} obj
+ * @returns {org.herbal3d.protocol.basil.server.InstancePropertyRequest}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.getRootAsInstancePropertyRequest = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.InstancePropertyRequest).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 };
 
 /**
  * @param {org.herbal3d.protocol.basil.accessAuthorization=} obj
  * @returns {org.herbal3d.protocol.basil.accessAuthorization}
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.auth = function(obj) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.prototype.auth = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new org.herbal3d.protocol.basil.accessAuthorization).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
@@ -828,7 +1237,7 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.auth = fu
 /**
  * @returns {number}
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.instanceId = function() {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.prototype.instanceId = function() {
   var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
 };
@@ -837,7 +1246,7 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.instanceI
  * @param {flatbuffers.Encoding=} optionalEncoding
  * @returns {string|Uint8Array}
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.propertyMatch = function(optionalEncoding) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.prototype.propertyMatch = function(optionalEncoding) {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
 };
@@ -845,7 +1254,7 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.prototype.propertyM
 /**
  * @param {flatbuffers.Builder} builder
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.startInstancePropertiesRequest = function(builder) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.startInstancePropertyRequest = function(builder) {
   builder.startObject(3);
 };
 
@@ -853,7 +1262,7 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.startInstanceProper
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} authOffset
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.addAuth = function(builder, authOffset) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.addAuth = function(builder, authOffset) {
   builder.addFieldOffset(0, authOffset, 0);
 };
 
@@ -861,7 +1270,7 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.addAuth = function(
  * @param {flatbuffers.Builder} builder
  * @param {number} instanceId
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.addInstanceId = function(builder, instanceId) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.addInstanceId = function(builder, instanceId) {
   builder.addFieldInt32(1, instanceId, 0);
 };
 
@@ -869,7 +1278,7 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.addInstanceId = fun
  * @param {flatbuffers.Builder} builder
  * @param {flatbuffers.Offset} propertyMatchOffset
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.addPropertyMatch = function(builder, propertyMatchOffset) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.addPropertyMatch = function(builder, propertyMatchOffset) {
   builder.addFieldOffset(2, propertyMatchOffset, 0);
 };
 
@@ -877,7 +1286,121 @@ org.herbal3d.protocol.basil.server.InstancePropertiesRequest.addPropertyMatch = 
  * @param {flatbuffers.Builder} builder
  * @returns {flatbuffers.Offset}
  */
-org.herbal3d.protocol.basil.server.InstancePropertiesRequest.endInstancePropertiesRequest = function(builder) {
+org.herbal3d.protocol.basil.server.InstancePropertyRequest.endInstancePropertyRequest = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.InstancePropertyResponse}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.InstancePropertyResponse=} obj
+ * @returns {org.herbal3d.protocol.basil.server.InstancePropertyResponse}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.getRootAsInstancePropertyResponse = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.InstancePropertyResponse).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.instanceId = function() {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param {number} index
+ * @param {org.herbal3d.protocol.basil.propertyValue=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyValue}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.props = function(index, obj) {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.propsLength = function() {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.startInstancePropertyResponse = function(builder) {
+  builder.startObject(2);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} instanceId
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.addInstanceId = function(builder, instanceId) {
+  builder.addFieldInt32(0, instanceId, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} propsOffset
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.addProps = function(builder, propsOffset) {
+  builder.addFieldOffset(1, propsOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {Array.<flatbuffers.Offset>} data
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.createPropsVector = function(builder, data) {
+  builder.startVector(4, data.length, 4);
+  for (var i = data.length - 1; i >= 0; i--) {
+    builder.addOffset(data[i]);
+  }
+  return builder.endVector();
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} numElems
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.startPropsVector = function(builder, numElems) {
+  builder.startVector(4, numElems, 4);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.endInstancePropertyResponse = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
@@ -993,6 +1516,104 @@ org.herbal3d.protocol.basil.server.OpenSession.startParamsVector = function(buil
  * @returns {flatbuffers.Offset}
  */
 org.herbal3d.protocol.basil.server.OpenSession.endOpenSession = function(builder) {
+  var offset = builder.endObject();
+  return offset;
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.server.OpenSessionResponse}
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {org.herbal3d.protocol.basil.server.OpenSessionResponse=} obj
+ * @returns {org.herbal3d.protocol.basil.server.OpenSessionResponse}
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.getRootAsOpenSessionResponse = function(bb, obj) {
+  return (obj || new org.herbal3d.protocol.basil.server.OpenSessionResponse).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param {number} index
+ * @param {org.herbal3d.protocol.basil.propertyValue=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyValue}
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.prototype.features = function(index, obj) {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.prototype.featuresLength = function() {
+  var offset = this.bb.__offset(this.bb_pos, 4);
+  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.startOpenSessionResponse = function(builder) {
+  builder.startObject(1);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} featuresOffset
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.addFeatures = function(builder, featuresOffset) {
+  builder.addFieldOffset(0, featuresOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {Array.<flatbuffers.Offset>} data
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.createFeaturesVector = function(builder, data) {
+  builder.startVector(4, data.length, 4);
+  for (var i = data.length - 1; i >= 0; i--) {
+    builder.addOffset(data[i]);
+  }
+  return builder.endVector();
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} numElems
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.startFeaturesVector = function(builder, numElems) {
+  builder.startVector(4, numElems, 4);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.server.OpenSessionResponse.endOpenSessionResponse = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
