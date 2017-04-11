@@ -13,14 +13,23 @@
 // dataAvailable(callBack)
 // isOpen()
 
-var BTransport = function() {
-    var that = {
-        'open': function(connectionString) {},
-        'close': function() {},
-        'write': function(data) {},
-        'read': function(completionCallback) {},
-        'dataAvailable': function(callBack) {},
-        'isOpen': function() {}
-    };
-    return that;
-}
+define(['Config'],
+            function( Config ) {
+
+    return function() {
+        var that = {};
+
+        that.open = function(connectionString) {},
+        that.close = function() {},
+        that.send = function(data) {},
+        // Read a message and call the callback when received. Will hang if no input yet.
+        that.receive = function(completionCallback) {},
+        // Call callback when there is data in put input queue.
+        //    A way of getting called when data is available.
+        //    Pass 'undefined' to turn off the callbacks.
+        that.dataAvailable = function(callBack) {},
+        that.isOpen = function() {}
+
+        return that;
+    }
+});

@@ -49,6 +49,20 @@ org.herbal3d.protocol.basil.rotationSystem = {
 };
 
 /**
+ * @enum
+ */
+org.herbal3d.protocol.basil.assetType = {
+  unknown: 0,
+  text: 1,
+  mesh: 2,
+  sound: 3,
+  animation: 4,
+  location: 5,
+  image: 6,
+  directory: 7
+};
+
+/**
  * @constructor
  */
 org.herbal3d.protocol.basil.Vector3 = function() {
@@ -107,6 +121,68 @@ org.herbal3d.protocol.basil.Vector3.createVector3 = function(builder, X, Y, Z) {
   builder.writeFloat64(Z);
   builder.writeFloat64(Y);
   builder.writeFloat64(X);
+  return builder.offset();
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.Vector3F = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.Vector3F}
+ */
+org.herbal3d.protocol.basil.Vector3F.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.Vector3F.prototype.X = function() {
+  return this.bb.readFloat32(this.bb_pos);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.Vector3F.prototype.Y = function() {
+  return this.bb.readFloat32(this.bb_pos + 4);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.Vector3F.prototype.Z = function() {
+  return this.bb.readFloat32(this.bb_pos + 8);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} X
+ * @param {number} Y
+ * @param {number} Z
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.Vector3F.createVector3F = function(builder, X, Y, Z) {
+  builder.prep(4, 12);
+  builder.writeFloat32(Z);
+  builder.writeFloat32(Y);
+  builder.writeFloat32(X);
   return builder.offset();
 };
 
@@ -178,6 +254,77 @@ org.herbal3d.protocol.basil.Quaternion.createQuaternion = function(builder, X, Y
   builder.writeFloat64(Z);
   builder.writeFloat64(Y);
   builder.writeFloat64(X);
+  return builder.offset();
+};
+
+/**
+ * @constructor
+ */
+org.herbal3d.protocol.basil.QuaternionF = function() {
+  /**
+   * @type {flatbuffers.ByteBuffer}
+   */
+  this.bb = null;
+
+  /**
+   * @type {number}
+   */
+  this.bb_pos = 0;
+};
+
+/**
+ * @param {number} i
+ * @param {flatbuffers.ByteBuffer} bb
+ * @returns {org.herbal3d.protocol.basil.QuaternionF}
+ */
+org.herbal3d.protocol.basil.QuaternionF.prototype.__init = function(i, bb) {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.QuaternionF.prototype.X = function() {
+  return this.bb.readFloat32(this.bb_pos);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.QuaternionF.prototype.Y = function() {
+  return this.bb.readFloat32(this.bb_pos + 4);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.QuaternionF.prototype.Z = function() {
+  return this.bb.readFloat32(this.bb_pos + 8);
+};
+
+/**
+ * @returns {number}
+ */
+org.herbal3d.protocol.basil.QuaternionF.prototype.W = function() {
+  return this.bb.readFloat32(this.bb_pos + 12);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} X
+ * @param {number} Y
+ * @param {number} Z
+ * @param {number} W
+ * @returns {flatbuffers.Offset}
+ */
+org.herbal3d.protocol.basil.QuaternionF.createQuaternionF = function(builder, X, Y, Z, W) {
+  builder.prep(4, 16);
+  builder.writeFloat32(W);
+  builder.writeFloat32(Z);
+  builder.writeFloat32(Y);
+  builder.writeFloat32(X);
   return builder.offset();
 };
 
@@ -530,28 +677,28 @@ org.herbal3d.protocol.basil.coordPosition.prototype.pos = function(obj) {
 };
 
 /**
- * @param {org.herbal3d.protocol.basil.Quaternion=} obj
- * @returns {org.herbal3d.protocol.basil.Quaternion}
+ * @param {org.herbal3d.protocol.basil.QuaternionF=} obj
+ * @returns {org.herbal3d.protocol.basil.QuaternionF}
  */
 org.herbal3d.protocol.basil.coordPosition.prototype.rot = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? (obj || new org.herbal3d.protocol.basil.Quaternion).__init(this.bb_pos + offset, this.bb) : null;
+  return offset ? (obj || new org.herbal3d.protocol.basil.QuaternionF).__init(this.bb_pos + offset, this.bb) : null;
 };
 
 /**
- * @returns {number}
+ * @returns {org.herbal3d.protocol.basil.coordSystem}
  */
 org.herbal3d.protocol.basil.coordPosition.prototype.posRef = function() {
   var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? this.bb.readUint8(this.bb_pos + offset) : 0;
+  return offset ? /** @type {org.herbal3d.protocol.basil.coordSystem} */ (this.bb.readUint8(this.bb_pos + offset)) : org.herbal3d.protocol.basil.coordSystem.WGS86;
 };
 
 /**
- * @returns {number}
+ * @returns {org.herbal3d.protocol.basil.rotationSystem}
  */
 org.herbal3d.protocol.basil.coordPosition.prototype.rotRef = function() {
   var offset = this.bb.__offset(this.bb_pos, 10);
-  return offset ? this.bb.readUint8(this.bb_pos + offset) : 0;
+  return offset ? /** @type {org.herbal3d.protocol.basil.rotationSystem} */ (this.bb.readUint8(this.bb_pos + offset)) : org.herbal3d.protocol.basil.rotationSystem.WORLD;
 };
 
 /**
@@ -579,18 +726,18 @@ org.herbal3d.protocol.basil.coordPosition.addRot = function(builder, rotOffset) 
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {number} posRef
+ * @param {org.herbal3d.protocol.basil.coordSystem} posRef
  */
 org.herbal3d.protocol.basil.coordPosition.addPosRef = function(builder, posRef) {
-  builder.addFieldInt8(2, posRef, 0);
+  builder.addFieldInt8(2, posRef, org.herbal3d.protocol.basil.coordSystem.WGS86);
 };
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {number} rotRef
+ * @param {org.herbal3d.protocol.basil.rotationSystem} rotRef
  */
 org.herbal3d.protocol.basil.coordPosition.addRotRef = function(builder, rotRef) {
-  builder.addFieldInt8(3, rotRef, 0);
+  builder.addFieldInt8(3, rotRef, org.herbal3d.protocol.basil.rotationSystem.WORLD);
 };
 
 /**
@@ -771,35 +918,63 @@ org.herbal3d.protocol.basil.assetInformation.getRootAsassetInformation = functio
 };
 
 /**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.assetInformation.prototype.id = function() {
-  var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? this.bb.readUint32(this.bb_pos + offset) : 0;
-};
-
-/**
  * @param {org.herbal3d.protocol.basil.objectDisplayInfo=} obj
  * @returns {org.herbal3d.protocol.basil.objectDisplayInfo}
  */
 org.herbal3d.protocol.basil.assetInformation.prototype.displayInfo = function(obj) {
-  var offset = this.bb.__offset(this.bb_pos, 6);
+  var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new org.herbal3d.protocol.basil.objectDisplayInfo).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
+};
+
+/**
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array}
+ */
+org.herbal3d.protocol.basil.assetInformation.prototype.hash = function(optionalEncoding) {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
+};
+
+/**
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array}
+ */
+org.herbal3d.protocol.basil.assetInformation.prototype.fetchURL = function(optionalEncoding) {
+  var offset = this.bb.__offset(this.bb_pos, 8);
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
+};
+
+/**
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array}
+ */
+org.herbal3d.protocol.basil.assetInformation.prototype.assetServer = function(optionalEncoding) {
+  var offset = this.bb.__offset(this.bb_pos, 10);
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
+};
+
+/**
+ * @param {flatbuffers.Encoding=} optionalEncoding
+ * @returns {string|Uint8Array}
+ */
+org.herbal3d.protocol.basil.assetInformation.prototype.assetId = function(optionalEncoding) {
+  var offset = this.bb.__offset(this.bb_pos, 12);
+  return offset ? this.bb.__string(this.bb_pos + offset, optionalEncoding) : null;
+};
+
+/**
+ * @returns {org.herbal3d.protocol.basil.assetType}
+ */
+org.herbal3d.protocol.basil.assetInformation.prototype.type = function() {
+  var offset = this.bb.__offset(this.bb_pos, 14);
+  return offset ? /** @type {org.herbal3d.protocol.basil.assetType} */ (this.bb.readUint8(this.bb_pos + offset)) : org.herbal3d.protocol.basil.assetType.unknown;
 };
 
 /**
  * @param {flatbuffers.Builder} builder
  */
 org.herbal3d.protocol.basil.assetInformation.startassetInformation = function(builder) {
-  builder.startObject(2);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} id
- */
-org.herbal3d.protocol.basil.assetInformation.addId = function(builder, id) {
-  builder.addFieldInt32(0, id, 0);
+  builder.startObject(6);
 };
 
 /**
@@ -807,7 +982,47 @@ org.herbal3d.protocol.basil.assetInformation.addId = function(builder, id) {
  * @param {flatbuffers.Offset} displayInfoOffset
  */
 org.herbal3d.protocol.basil.assetInformation.addDisplayInfo = function(builder, displayInfoOffset) {
-  builder.addFieldOffset(1, displayInfoOffset, 0);
+  builder.addFieldOffset(0, displayInfoOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} hashOffset
+ */
+org.herbal3d.protocol.basil.assetInformation.addHash = function(builder, hashOffset) {
+  builder.addFieldOffset(1, hashOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} fetchURLOffset
+ */
+org.herbal3d.protocol.basil.assetInformation.addFetchURL = function(builder, fetchURLOffset) {
+  builder.addFieldOffset(2, fetchURLOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} assetServerOffset
+ */
+org.herbal3d.protocol.basil.assetInformation.addAssetServer = function(builder, assetServerOffset) {
+  builder.addFieldOffset(3, assetServerOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} assetIdOffset
+ */
+org.herbal3d.protocol.basil.assetInformation.addAssetId = function(builder, assetIdOffset) {
+  builder.addFieldOffset(4, assetIdOffset, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {org.herbal3d.protocol.basil.assetType} type
+ */
+org.herbal3d.protocol.basil.assetInformation.addType = function(builder, type) {
+  builder.addFieldInt8(5, type, org.herbal3d.protocol.basil.assetType.unknown);
 };
 
 /**

@@ -17,8 +17,8 @@
 // Global holding Basil server
 var BS = BS || {};
 
-define(['Config', 'FlatBuffers', 'BasilTypesGenerated', 'BasilServerGenerated'],
-            function( Config, Flat, BTypes, BServer) {
+define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
+            function( Config, Flat, BTypes, BServerG) {
 
     GP.BS = BS; // For debugging. Don't use for cross package access.
 
@@ -26,142 +26,173 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated', 'BasilServerGenerated'],
 
     // Return a factory that creates a BasilServer communication object
     return function(aFlow) {
-        var that = {
-            'AddEntity': function(auth, objectId, assetInfo, aabb) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.AddEntity;
+        var that = {};
+        that.AddEntity = function(auth, objectId, assetInfo, aabb) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.AddEntity;
                 msgBuilder.startAddEntity(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addObjectId(me.fbb, me.makeObjectId(objectId));
-                msgBuilder.addAssetInfo(me.fbb, me.makeAssetInfo(assetInfo));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addObjectId(me.fbb, BTypes.makeObjectId(objectId));
+                msgBuilder.addAssetInfo(me.fbb, BTypes.makeAssetInfo(assetInfo));
                 msgBuilder.addAabb(me.fbb, me.makeAabb(aabb));
                 var bltMsg = msgBuilder.endAddEntity(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'RemoveEntity': function(auth, objectId) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.RemoveEntity;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.AddEntity,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.RemoveEntity = function(auth, objectId) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.RemoveEntity;
                 msgBuilder.startRemoveEntity(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addObjectId(me.fbb, me.makeObjectId(objectId));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addObjectId(me.fbb, BTypes.makeObjectId(objectId));
                 var bltMsg = msgBuilder.endRemoveEntity(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'AddInstance': function(auth, instanceId, pos, propertiesToSet) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.AddInstance;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.RemoveEntity,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.AddInstance = function(auth, instanceId, pos, propertiesToSet) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.AddInstance;
+                var props = (propertiesToSet == undefined) ? undefined : BTypes.makePropertyList(propertiesToSet);
                 msgBuilder.startAddInstance(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addInstanceId(me.fbb, me.makeInstanceId(objectId));
-                msgBuilder.addPos(me.fbb, me.makePositionInfo(pos));
-                msgBuilder.addPropertiesToSet(me.fbb, me.makeProperties(propertiesToSet));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addInstanceId(me.fbb, BTypes.makeInstanceId(objectId));
+                msgBuilder.addPos(me.fbb, BTypes.makeCoordPosition(pos));
+                if (props != undefined) msgBuilder.addPropertiesToSet(me.fbb, props);
                 var bltMsg = msgBuilder.endAddInstance(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'RemoveInstance': function(auth, instanceId) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.RemoveInstance;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.AddInstance,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.RemoveInstance = function(auth, instanceId) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.RemoveInstance;
                 msgBuilder.startRemoveInstance(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addInstanceId(me.fbb, me.makeInstanceId(objectId));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addInstanceId(me.fbb, BTypes.makeInstanceId(objectId));
                 var bltMsg = msgBuilder.endRemoveInstance(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'GetUniqueInstanceId': function(newIdCallback) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.GetUniqueInstanceId;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.RemoveInstance,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.GetUniqueInstanceId = function(newIdCallback) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.GetUniqueInstanceId;
                 msgBuilder.startGetUniqueInstanceId(me.fbb);
                 var bltMsg = msgBuilder.endGetUniqueInstanceId(me.fbb);
-                me.flow.callFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg,
+                me.flow.callFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.GetUniqueInstanceId,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg,
                     function(response) {
-                        var newID = GetTheIdFromTheResponseMsg;
+                        // Response should come back as an instance of BasilServerMsg.
+                        if (response.MsgType != BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.GetUniqueInstanceIdResponse) {
+                            throw 'BasilServer.GetUniqueInstanceId: response message type not correct';
+                        }
+                        var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse;
+                        var resp = msgBuilder.getRootAsGetUniqueInstanceResponse(ms.fbb, response.Msg);
+                        var newID = resp.instanceId;
                         newIdCallback(newId);
                     }
                 );
-            },
-            'GetUniqueInstanceIdResponse': function(instanceId) {
-            },
-            'UpdateEntityProperty': function(auth, objectId, props) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.UpdateEntityProperty;
+        };
+        that.GetUniqueInstanceIdResponse = function(incoming, instanceId) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.GetUniqueInstanceIdResponse;
+                msgBuilder.startGetUniqueInstanceIdResponse(me.fbb);
+                msgBuilder.addInstanceId(me.fbb, BTypes.makeInstanceId(instanceId));
+                var bltMsg = msgBuilder.endGetUniqueInstanceIdResponse(me.fbb);
+                me.flow.respondFlowMsg(incoming,
+                    BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.GetUniqueInstanceIdResponse,
+                    bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.UpdateEntityProperty = function(auth, objectId, propsToUpdate) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.UpdateEntityProperty;
                 msgBuilder.startUpdateEntityProperty(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addObjectId(me.fbb, me.makeObjectId(objectId));
-                msgBuilder.addProps(me.fbb, me.makeProperties(props));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addObjectId(me.fbb, BTypes.makeObjectId(objectId));
+                msgBuilder.addProps(me.fbb, BTypes.makePropertyList(propsToUpdate));
                 var bltMsg = msgBuilder.endUpdateEntityProperty(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'UpdateInstanceProperty': function(auth, instanceId, props) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.UpdateInstanceProperty;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.UpdateEntityProperty,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.UpdateInstanceProperty = function(auth, instanceId, propsToUpdate) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.UpdateInstanceProperty;
                 msgBuilder.startUpdateInstanceProperty(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addInstanceId(me.fbb, me.makeInstanceId(objectId));
-                msgBuilder.addProps(me.fbb, me.makeProperties(props));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addInstanceId(me.fbb, BTypes.makeInstanceId(objectId));
+                msgBuilder.addProps(me.fbb, BTypes.makePropertyList(propsToUpdate));
                 var bltMsg = msgBuilder.endUpdateInstanceProperty(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'UpdateInstancePosition': function(auth, instanceId, pos) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.UpdateInstancePosition;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.UpdateInstanceProperty,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.UpdateInstancePosition = function(auth, instanceId, pos) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.UpdateInstancePosition;
                 msgBuilder.startUpdateInstancePosition(me.fbb);
-                msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
-                msgBuilder.addInstanceId(me.fbb, me.makeInstanceId(objectId));
-                msgBuilder.addPos(me.fbb, me.makePositionInfo(pos));
+                msgBuilder.addAuth(me.fbb, BTypes.makeAuth(auth));
+                msgBuilder.addInstanceId(me.fbb, BTypes.makeInstanceId(objectId));
+                msgBuilder.addPos(me.fbb, BTypes.makePositionInfo(pos));
                 var bltMsg = msgBuilder.endUpdateInstancePosition(me.fbb);
-                me.flow.sendFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg);
-            },
-            'EntityPropertyRequest': function(auth, objectId, filter, propCallback) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.EntityPropertyRequest;
+                me.flow.sendFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.UpdateInstancePosition,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg);
+        };
+        that.EntityPropertyRequest = function(auth, objectId, filter, propCallback) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.EntityPropertyRequest;
                 msgBuilder.startEntityPropertyRequest(me.fbb);
                 msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
                 msgBuilder.addObjectId(me.fbb, me.makeObjectId(objectId));
                 msgBuilder.addPropertyMatch(me.fbb, me.makeString(filter));
                 var bltMsg = msgBuilder.endEntityPropertyRequest(me.fbb);
-                me.flow.callFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg, function(response) {
-                    var fetchedProperties = GetThePropertiesFromTheResponseMsg;
-                    propCallback(fetchedProperties);
-                });
-            },
-            'EntityPropertyResponse': function(objectId, props) {
-            },
-            'InstancePropertyRequest': function(auth, objectId, filter, propCallback) {
-                var msgBuilder = BServer.org.herbal3d.protocol.basil.server.InstancePropertyRequest;
+                me.flow.callFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.EntityPropertyRequest,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg,
+                    function(response) {
+                        var fetchedProperties = GetThePropertiesFromTheResponseMsg;
+                        // Response should come back as an instance of BasilServerMsg.
+                        if (response.MsgType != BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.EntityPropertyResponse) {
+                                throw 'BasilServer.EntityPropertyRequest: response message type not correct';
+                        }
+                        var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.EntityPropertyResponse;
+                        var resp = msgBuilder.getRootAsEntityPropertyResponse(ms.fbb, response.Msg);
+                        var fetchedProperties = BTypes.extractPropertyList(resp.props);
+                        propCallback(fetchedProperties);
+                    }
+                );
+        };
+        that.EntityPropertyResponse = function(objectId, props) {
+        };
+        that.InstancePropertyRequest = function(auth, objectId, filter, propCallback) {
+                var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.InstancePropertyRequest;
                 msgBuilder.startInstancePropertyRequest(me.fbb);
                 msgBuilder.addAuth(me.fbb, me.makeAuth(auth));
                 msgBuilder.addObjectId(me.fbb, me.makeObjectId(objectId));
                 msgBuilder.addPropertyMatch(me.fbb, me.makeString(filter));
                 var bltMsg = msgBuilder.endInstancePropertyRequest(me.fbb);
-                me.flow.callFlowMsg(bltMsg, BServer.org.herbal3d.protocol.basil.server.BasilServerMsg, function(response) {
-                    var fetchedProperties = GetThePropertiesFromTheResponseMsg;
-                    propCallback(fetchedProperties);
-                });
-            },
-            'InstancePropertyResponse': function(instanceId, props) {
-            },
-            'Close': function() {
-            },
-            'OpenSession': function(auth, props, openedCallback) {
-            },
-            'OpenSessionResponse': function(features) {
-            },
-            'CloseSession': function(reason) {
-            },
-            'AliveCheck': function(time, sequenceNum) {
-            },
-            'AliveResponse': function(time, sequenceNum, timeArrived, sequenceNumReceoved) {
-            },
-            'noComma': 0
+                me.flow.callFlowMsg(BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.InstancePropertyRequest,
+                            bltMsg, BServerG.org.herbal3d.protocol.basil.server.BasilServerMsg,
+                    function(response) {
+                        // Response should come back as an instance of BasilServerMsg.
+                        if (response.MsgType != BServerG.org.herbal3d.protocol.basil.server.BasilServerMsgMsg.InstancePropertyResponse) {
+                                throw 'BasilServer.InstancePropertyRequest: response message type not correct';
+                        }
+                        var msgBuilder = BServerG.org.herbal3d.protocol.basil.server.InstancePropertyResponse;
+                        var resp = msgBuilder.getRootAsInstancePropertyResponse(ms.fbb, response.Msg);
+                        var fetchedProperties = BTypes.extractPropertyList(resp.props);
+                        propCallback(fetchedProperties);
+                    }
+                );
         };
+        that.InstancePropertyResponse = function(instanceId, props) {
+        };
+        that.Close = function() {
+        };
+        that.OpenSession = function(auth, props, openedCallback) {
+        };
+        that.OpenSessionResponse = function(features) {
+        };
+        that.CloseSession = function(reason) {
+        };
+        that.AliveCheck = function(time, sequenceNum) {
+        };
+        that.AliveResponse = function(time, sequenceNum, timeArrived, sequenceNumReceoved) {
+        };
+
         // Add links to underlying libraries to this instance
         that.flow = aFlow;
         that.flat = Flat;
-        that.bClient = BClient;
-        that.bServer = BServer;
+        that.bServerG = BServerG;
         that.fbb = new Flat.Builder(200);
+        that.fbb2 = new Flat.Builder(200);  // extra one for building while building
+        that.fbb3 = new Flat.Builder(200);  // extra one for building while building
         that.me = that;       // link to myself for local refs
-
-        // Helper functions for building message parts
-        that.makeAuth = function(auth){ };
-        that.makeObjectId = function(objectId){ };
-        that.makeInstanceId = function(instanceId){ };
-        that.makeAssetInfo = function(assetInfo){ };
-        that.makeAabb = function(aabb){ };
-        that.makePositionInfo = function(pos){ };
-        that.makeProperties = function(props){ };
-        that.makeString = function(aString){ };
 
         that.processIncoming = function(inMsg) {
             // TODO: processing incoming message

@@ -21,11 +21,17 @@ var requireConfig = {
         'UIControls': 'js/UIControls',
         'Eventing': 'js/Eventing',
 
+        'BTransport': 'js/BTransport',
+        'BTransportWebWorker': 'js/BTransportWW',
+        'BTransportTest': 'js/BTransportTest',
+        'BFlow': 'js/BFlow',
+
         'FlatBuffers': 'jslibs/flatbuffers',
-        'BasilTypesGenerated': 'jslibs/BasilTypes_generated',
         'BTransportHdrGenerated': 'jslibs/BTransportHdr_generated',
         'BasilServerGenerated': 'jslibs/BasilServer_generated',
         'BasilServer': 'js/BasilServer'
+        'BasilTypesGenerated': 'jslibs/BasilTypes_generated',
+        'BasilTypes': 'js/BasilTypes'
     },
     'shim': {
     }
