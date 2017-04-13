@@ -29,11 +29,15 @@ var requireConfig = {
         'FlatBuffers': 'jslibs/flatbuffers',
         'BTransportHdrGenerated': 'jslibs/BTransportHdr_generated',
         'BasilServerGenerated': 'jslibs/BasilServer_generated',
-        'BasilServer': 'js/BasilServer'
+        'BasilServer': 'js/BasilServer',
         'BasilTypesGenerated': 'jslibs/BasilTypes_generated',
         'BasilTypes': 'js/BasilTypes'
     },
     'shim': {
+        'FlatBuffers': { 'exports': 'flatbuffers' }
+        'BTransportHdrGenerated': { 'exports': 'org.herbal3d.protocol.basil' },
+        'BasilServerGenerated': { 'exports': 'org.herbal3d.protocol.basil.server' },
+        'BasilTypesGenerated': { 'exports': 'org.herbal3d.protocol.basil' }
     }
 };
 

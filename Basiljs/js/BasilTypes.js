@@ -18,15 +18,15 @@
 var BS = BS || {};
 
 define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
-            function( Config, Flat, BTypesG) {
+            function( Config, flatbuffers, BTypesG) {
 
     // Return a factory that creates a BasilServer communication object
     return function() {
         var that = {};
-        that.flat = Flat;
+        that.flat = flatbuffers;
         that.bTypesG = BTypesG;
-        that.fbb = new Flat.Builder(200);
-        that.fbb2 = new Flat.Builder(200);  // extra one for building while building
+        that.fbb = new flatbuffers.Builder(200);
+        that.fbb2 = new flatbuffers.Builder(200);  // extra one for building while building
         that.me = that;       // link to myself for local refs
 
         // May be passed an array (of XYZ) or a Vector3
@@ -104,7 +104,7 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
             var extractedPropList = {};
             msgBuilder = BTypesG.org.herbal3d.protocol.basil.propertyList
             var propList = msgBuilder.getRootAspropertyList(me.fbb2, propListOffset);
-            for (int ii=0; ii<propList.propsLength; ii++) {
+            for (var ii=0; ii<propList.propsLength; ii++) {
                 var propVal = propList.props(ii, propList);
                 extractedPropList[propval.property] = propval.value;
             }
@@ -180,7 +180,7 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
             if (fetchURL != undefined) msgBuilder.addFetchURL(me.fbb, me.makeString(fetchURL));
             if (assetServer != undefined) msgBuilder.addAssetServer(me.fbb, me.makeString(assetServer));
             if (assetId != undefined) msgBuilder.addAssetId(me.fbb, me.makeString(assetId));
-            if (assetType != undefined) msgBuilder.addAssetType(me.fbb, assetType));
+            if (assetType != undefined) msgBuilder.addAssetType(me.fbb, assetType);
             return msgBuilder.endobjectDisplayInfo(me.fbb);
         }
         // Create a description of a path through space

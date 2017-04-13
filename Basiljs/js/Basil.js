@@ -24,7 +24,8 @@ require(['Config', 'jquery'], function(Config, $) {
     GP.Config = Config;
     GP.Ready = false;
 
-    require(['Comm', 'Graphics', 'Coordinates', 'Controls'], function(pComm, pDisplay, pCoord, pControls) {
+    require(['Comm', 'Graphics', 'Coordinates', 'Controls'],
+                function(pComm, pDisplay, pCoord, pControls) {
 
         var container = document.getElementById(Config.page.webGLcontainerId);
         var canvas = document.getElementById(Config.page.webGLcanvasId);
@@ -57,8 +58,7 @@ function LogMessage(msg, classs) {
 
         if ($('#DEBUGG').children().length > DebugLogLines) {
             $('#DEBUGG').children('div:first').remove();
-            
+
         }
     }
 };
-
