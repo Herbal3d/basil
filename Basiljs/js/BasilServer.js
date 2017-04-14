@@ -181,7 +181,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
         that.CloseSession = function(reason) {
         };
         that.aliveSequenceNumber = 11;
-        that.AliveCheck = function(time, sequenceNum) {
+        that.AliveCheck = function() {
             // var msgBuilder = this.BServerG.AliveCheck;
             var msgBuilder = this.BServerG.AliveCheck;
             msgBuilder.startAliveCheck(this.fbb);
@@ -208,7 +208,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
 
         // Add links to underlying libraries to this instance
         that.flow = aFlow;
-        aFlow.dataAvailable(this.processIncoming);
+        aFlow.dataAvailable(that.processIncoming);
 
         that.BServerG = BServerG;
 

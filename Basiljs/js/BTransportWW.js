@@ -14,8 +14,14 @@
 // dataAvailable(callBack)
 // isOpen()
 
+// context for BTransportWW
+// If inside a WebWorker, isWorker = true
+var BTW = BTW || {};
+
 define(['Config', 'BTransport'],
             function( Config, BTransport ) {
+
+    BTW.isWorker = false;
 
     // WebWorker transport.
     // @param {boolean} true if called by the WebWorker
@@ -28,11 +34,15 @@ define(['Config', 'BTransport'],
         };
 
         if (isWorker != undefined && isWorker) {
+            BTW.isWorker = true;
             // Operation if we're the web worker
             that.open = function() {
                 DebugLog('transport.worker.open');
                 this.worker = undefined;
-                onmessage = this.onMessage;
+                var me = this;
+                onmessage = function(msg) {
+                    me.processMessage(msg, me);
+                };
                 this.connected = true;
             };
             that.close = function() {
@@ -45,10 +55,14 @@ define(['Config', 'BTransport'],
             that.send = function(data, type) {
                 DebugLog('transport.worker.send');
                 if (type == undefined) {
-                    postMessage({ op: this.msgCode.Raw }, [ data.buffer ]);
+                    postMessage(
+                        { 'op': this.msgCode.Raw, 'data': data },
+                        [ data.buffer ]);
                 }
                 else {
-                    postMessage({ op: this.msgCode.BasilServerMsg }, [ data.buffer ]);
+                    postMessage(
+                        { 'op': this.msgCode.BasilServerMsg, 'data': data },
+                        [ data.buffer ]);
                 }
             };
             that.receive = function(completionCallback) {
@@ -70,10 +84,16 @@ define(['Config', 'BTransport'],
         }
         else {
             // Operations if we're the main browser
+            BTW.isWorker = false;
+            BTW.handler = this;
+
             that.open = function(worker, connectionString) {
                 this.worker = worker;
                 this.connectionString = connectionString;
-                worker.onmessage = this.onMessage;
+                var me = this;
+                worker.onmessage = function(msg) {
+                    me.processMessage(msg, me);
+                };
                 this.connected = true;
             };
             that.close = function() {
@@ -88,10 +108,14 @@ define(['Config', 'BTransport'],
             that.send = function(data, meta) {
                 DebugLog('transport.main.send');
                 if (meta == undefined) {
-                    this.worker.postMessage({ 'op': this.msgCode.Raw }, [ data.buffer ]);
+                    this.worker.postMessage(
+                        { 'op': this.msgCode.Raw, 'data': data },
+                        [ data.buffer ]);
                 }
                 else {
-                    this.worker.postMessage({ 'op': this.msgCode.BasilServerMsg, 'meta': meta }, [ data.buffer ]);
+                    this.worker.postMessage(
+                        { 'op': this.msgCode.BasilServerMsg, 'meta': meta , 'data': data},
+                        [ data.buffer ]);
                 }
             };
             that.receive = function(completionCallback) {
@@ -131,26 +155,28 @@ define(['Config', 'BTransport'],
         // Since this is a WebWorker, we expect a 'msg' which is an Object which has 'op'
         //     and 'meta' optionally defined. The 'data' paramter should be the binary
         //     data.
-        that.onMessage = function(msg, data) {
-            var props = Object.getOwnPropertyNames(this);
-            DebugLog('BTransportWW.onMesssage. this props=' + props);
-            if (this.inQueue.length == 0
-                    && (this.availableCallback != null || this.receiveCallback != null)) {
+        that.processMessage = function(msg, context) {
+            var op = msg.data.op;
+            var meta = msg.data.meta;
+            var data = msg.data.data;
+            DebugLog('BTransportWW.onMessage: op=' + op + ', meta=' + meta + ', data.length=' + data.length);
+            if (context.inQueue.length == 0
+                    && (context.availableCallback != null || context.receiveCallback != null)) {
                 // Nothing in the queue and there is a listener. Just send the message
-                if (this.receiveCallback != undefined) {
+                if (context.receiveCallback != undefined) {
                     DebugLog('transport.onMessage: Empty queue. Sending for receiveCallback. op=' + msg.op);
-                    var cb = this.receiveCallback;
-                    this.receiveCallback = undefined;
+                    var cb = context.receiveCallback;
+                    context.receiveCallback = undefined;
                     cb(data, msg);
                 }
                 else {
-                    if (this.availableCallback != undefined) {
+                    if (context.availableCallback != undefined) {
                         DebugLog('transport.onMessage: Empty queue. Sending for availableCallback. op=' + msg.op);
-                        this.availableCallback(data, msg);
+                        context.availableCallback(data, msg);
                     }
                     else {
                         DebugLog('transport.onMessage: queuing data. op=' + msg.op);
-                        this.inQueue.push( [ msg, data ] );
+                        context.inQueue.push( [ msg, data ] );
                     }
                 }
             }

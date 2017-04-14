@@ -127,24 +127,28 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BTransportHdrGenerated'],
             if (bltTrace != undefined) btBuilder.addTrace(this.fbb2, bltTrace);
             return btBuilder.endBTransportHdrStruct(this.fbb2);
         };
-
-        that.transport = transport;
-        // Link to transport to processing incoming messages
-        transport.dataAvailable(function(data, op) {
-            DebugLog('flow.received data');
-            if (this.completionCallback != undefined) {
-                var cb = this.completionCallback;
-                this.completionCallback = undefined;
+        that.processMessage = function(data, op, context) {
+            if (context.completionCallback != undefined) {
+                var cb = context.completionCallback;
+                context.completionCallback = undefined;
                 cb(data, op);
             }
             else {
-                if (this.availableCallback != undefined) {
-                    this.availableCallback(data, op);
+                if (context.availableCallback != undefined) {
+                    DebugLog('flow.received data. Calling availableCallback');
+                    context.availableCallback(data, op);
                 }
                 else {
                     DebugLog('flow.received. Throwing message away because no receiver callback');
                 }
             }
+        };
+
+        that.transport = transport;
+        // Link to transport to processing incoming messages
+        var me = that;
+        transport.dataAvailable(function(data, op) {
+            me.processMessage(data, op, me);
         });
 
         // The collection of responses we're waiting for
