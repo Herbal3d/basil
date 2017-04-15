@@ -312,30 +312,21 @@ org.herbal3d.protocol.basil.server.AddInstance.prototype.instanceId = function()
 };
 
 /**
- * @param {org.herbal3d.protocol.basil.instancePositionInfo=} obj
- * @returns {org.herbal3d.protocol.basil.instancePositionInfo}
+ * @param {org.herbal3d.protocol.basil.coordPosition=} obj
+ * @returns {org.herbal3d.protocol.basil.coordPosition}
  */
 org.herbal3d.protocol.basil.server.AddInstance.prototype.pos = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? (obj || new org.herbal3d.protocol.basil.instancePositionInfo).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
+  return offset ? (obj || new org.herbal3d.protocol.basil.coordPosition).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.AddInstance.prototype.propertiesToSet = function(index, obj) {
+org.herbal3d.protocol.basil.server.AddInstance.prototype.propertiesToSet = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 10);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.AddInstance.prototype.propertiesToSetLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 10);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -375,27 +366,6 @@ org.herbal3d.protocol.basil.server.AddInstance.addPos = function(builder, posOff
  */
 org.herbal3d.protocol.basil.server.AddInstance.addPropertiesToSet = function(builder, propertiesToSetOffset) {
   builder.addFieldOffset(3, propertiesToSetOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.AddInstance.createPropertiesToSetVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.AddInstance.startPropertiesToSetVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**
@@ -663,21 +633,12 @@ org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.objectId = fun
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.props = function(index, obj) {
+org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.props = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.UpdateEntityProperty.prototype.propsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -709,27 +670,6 @@ org.herbal3d.protocol.basil.server.UpdateEntityProperty.addObjectId = function(b
  */
 org.herbal3d.protocol.basil.server.UpdateEntityProperty.addProps = function(builder, propsOffset) {
   builder.addFieldOffset(2, propsOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.UpdateEntityProperty.createPropsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.UpdateEntityProperty.startPropsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**
@@ -794,21 +734,12 @@ org.herbal3d.protocol.basil.server.UpdateInstanceProperty.prototype.instanceId =
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.UpdateInstanceProperty.prototype.props = function(index, obj) {
+org.herbal3d.protocol.basil.server.UpdateInstanceProperty.prototype.props = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.UpdateInstanceProperty.prototype.propsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -840,27 +771,6 @@ org.herbal3d.protocol.basil.server.UpdateInstanceProperty.addInstanceId = functi
  */
 org.herbal3d.protocol.basil.server.UpdateInstanceProperty.addProps = function(builder, propsOffset) {
   builder.addFieldOffset(2, propsOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.UpdateInstanceProperty.createPropsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.UpdateInstanceProperty.startPropsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**
@@ -1120,21 +1030,12 @@ org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.objectId = f
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.props = function(index, obj) {
+org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.props = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.EntityPropertyResponse.prototype.propsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1158,27 +1059,6 @@ org.herbal3d.protocol.basil.server.EntityPropertyResponse.addObjectId = function
  */
 org.herbal3d.protocol.basil.server.EntityPropertyResponse.addProps = function(builder, propsOffset) {
   builder.addFieldOffset(1, propsOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.EntityPropertyResponse.createPropsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.EntityPropertyResponse.startPropsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**
@@ -1335,21 +1215,12 @@ org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.instanceId
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.props = function(index, obj) {
+org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.props = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.InstancePropertyResponse.prototype.propsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1373,27 +1244,6 @@ org.herbal3d.protocol.basil.server.InstancePropertyResponse.addInstanceId = func
  */
 org.herbal3d.protocol.basil.server.InstancePropertyResponse.addProps = function(builder, propsOffset) {
   builder.addFieldOffset(1, propsOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.InstancePropertyResponse.createPropsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.InstancePropertyResponse.startPropsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**
@@ -1450,21 +1300,12 @@ org.herbal3d.protocol.basil.server.OpenSession.prototype.auth = function(obj) {
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.OpenSession.prototype.params = function(index, obj) {
+org.herbal3d.protocol.basil.server.OpenSession.prototype.params = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.OpenSession.prototype.paramsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1488,27 +1329,6 @@ org.herbal3d.protocol.basil.server.OpenSession.addAuth = function(builder, authO
  */
 org.herbal3d.protocol.basil.server.OpenSession.addParams = function(builder, paramsOffset) {
   builder.addFieldOffset(1, paramsOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.OpenSession.createParamsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.OpenSession.startParamsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**
@@ -1556,21 +1376,12 @@ org.herbal3d.protocol.basil.server.OpenSessionResponse.getRootAsOpenSessionRespo
 };
 
 /**
- * @param {number} index
- * @param {org.herbal3d.protocol.basil.propertyValue=} obj
- * @returns {org.herbal3d.protocol.basil.propertyValue}
+ * @param {org.herbal3d.protocol.basil.propertyList=} obj
+ * @returns {org.herbal3d.protocol.basil.propertyList}
  */
-org.herbal3d.protocol.basil.server.OpenSessionResponse.prototype.features = function(index, obj) {
+org.herbal3d.protocol.basil.server.OpenSessionResponse.prototype.features = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? (obj || new org.herbal3d.protocol.basil.propertyValue).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-org.herbal3d.protocol.basil.server.OpenSessionResponse.prototype.featuresLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new org.herbal3d.protocol.basil.propertyList).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1586,27 +1397,6 @@ org.herbal3d.protocol.basil.server.OpenSessionResponse.startOpenSessionResponse 
  */
 org.herbal3d.protocol.basil.server.OpenSessionResponse.addFeatures = function(builder, featuresOffset) {
   builder.addFieldOffset(0, featuresOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.OpenSessionResponse.createFeaturesVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-org.herbal3d.protocol.basil.server.OpenSessionResponse.startFeaturesVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
 };
 
 /**

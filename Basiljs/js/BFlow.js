@@ -8,63 +8,51 @@
 
 // See MessagingDesign.md for what the flow layer is supposed to do
 
-define(['Config', 'FlatBuffers', 'BasilTypes', 'BTransportHdrGenerated'],
-            function( Config, flatbuffers, BTypes, BTransportHdrG) {
+define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BTransportHdrGenerated'],
+            function( Config, flatbuffers, BTypes, BServerG, BTransportHdrG) {
 
     // Return a function that returns a new instance of the flow system
     return function(transport) {
         var that = {};
+
+        that.BServerG = BServerG;
+
         // Send raw message
         that.send = function(msg) {
             this.transport.send(msg);
         };
         // Send a message with a BTransportHdr
-        that.sendFlowMsg = function(msgType, msg, msgBuilder) {
+        that.sendFlowMsg = function(fbb, msgType, msg) {
             // passing callback as undefined causes the call version to not add that to the message
-            this.callFlowMsg(msgType, msg, msgBuilder, undefined);
+            this.callFlowMsg(fbb, msgType, msg, undefined);
         };
         // Send a message expecting a response. The callback will be called with
         //     the message as the first parameter.
         // THis builds a new FlatBuffers message using 'msgBuilder' and expects
         //    to add to that message a BTransportHdr as well as the passed, build
         //    'msg' of the passed 'msgType'.
-        // @param {int} type code of 'msg' that will go into 'msgBuilder'
-        // @param {offset} built message to be included in 'msgBUilder'
-        // @param {flatbuffer.Builder} builder to be used to create the wrpaaer message to send
+        // @param {int} type code of 'msg' that will go into BasilServerMsg.MsgType
+        // @param {offset} built message to be included in BasilServerMsg.Msg
         // @param {function} if defined, exepct a response from this message so
         //     setup 'ResponseRequested' in the BTransportHdr and call this function
         //     when  the response is received.
-        that.callFlowMsg = function(msgType, msg, msgBuilder, responseCallback) {
-            // This routine is supposed to be generic in that, in theory, any message
-            //    that needs a BTransportHdr could be passed as 'msgBuilder'.
-            //    But, because of how the FlatBuffers builders are generated,
-            //    the start and end functions are not
-            //    generic. THerefore, there is a test herein to find the 'starter'
-            //    and 'ender' for the msssage to be built.
-            // When there are more flow message types, add them here.
-            var starter, ender;
-            if (msgBuilder.startBasilServerMsg) {
-                starter = msgBuilder.startBasilServerMsg;
-                ender = msgBuilder.endBasilServerMsg;
-                DebugLog('flow.callFlowMsg. Has startBasilServerMsg');
-            }
-            starter(this.fbb);
-            if (msgBuilder.addBTransportHdr) {
-                var bltSeq = this.buildSequence();
-                var bltResponseRequested = this.buildResponseRequested(responseCallback);
-                var bltAuth = this.buildAuth();
-                var bltTrace = this.buildTrace();;
+        that.callFlowMsg = function(fbb, msgType, msg, responseCallback) {
+            var bltSeq = this.buildSequence(fbb);
+            var bltResponseRequested = this.buildResponseRequested(fbb, responseCallback);
+            var bltAuth = this.buildAuth(fbb);
+            var bltTrace = this.buildTrace(fbb);;
 
-                var bltBTransportHdr = this.buildTransportHdr(bltSeq, bltResponseRequested, bltAuth, bltTrace);
-                msgBuilder.addBTransportHdr(this.fbb, bltBTransportHdr)
-            }
-            msgBuilder.addMsgType(this.fbb, msgType);
-            msgBuilder.addMsg(this.fbb, msg);
-            var bltServerMsg = ender(this.fbb);
+            var bltBTransportHdr = this.buildTransportHdr(fbb, bltSeq, bltResponseRequested, bltAuth, bltTrace);
 
-            this.fbb.finish(bltServerMsg);
+            BServerG.BasilServerMsg.startBasilServerMsg(fbb);
+            BServerG.BasilServerMsg.addBTransportHdr(fbb, bltBTransportHdr)
+            BServerG.BasilServerMsg.addMsgType(fbb, msgType);
+            BServerG.BasilServerMsg.addMsg(fbb, msg);
+            var bltServerMsg = BServerG.BasilServerMsg.endBasilServerMsg(fbb);
 
-            this.transport.send(this.fbb.asUint8Array(), { 'msgType': msgType });
+            fbb.finish(bltServerMsg);
+
+            this.transport.send(fbb.asUint8Array());
         };
         // Respond to a flow message. Pass the incoming message so the reply can be matched.
         that.respondFlowMsg = function(incoming, msgType, msg, msgBuilder) {
@@ -82,26 +70,26 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BTransportHdrGenerated'],
             this.availableCallback = callback;
         };
 
-        that.buildSequence = function() {
+        that.buildSequence = function(fbb) {
             var seqBuilder = BTransportHdrG.BTransportSeqStruct;
-            seqBuilder.startBTransportSeqStruct(this.fbb2);
-            seqBuilder.addSequenceNum(this.fbb2, this.sequenceNum++);
-            seqBuilder.addStream(this.fbb2, 0);
-            seqBuilder.addQueueTime(this.fbb2, this.fbb2.createLong(Date.now()));
-            return seqBuilder.endBTransportSeqStruct(this.fbb2);
+            seqBuilder.startBTransportSeqStruct(fbb);
+            seqBuilder.addSequenceNum(fbb, this.sequenceNum++);
+            seqBuilder.addStream(fbb, 0);
+            seqBuilder.addQueueTime(fbb, fbb.createLong(Date.now()));
+            return seqBuilder.endBTransportSeqStruct(fbb);
         };
         // Build ResponseRequested and setup data structures for the eventual reply.
-        that.buildResponseRequested = function(callback) {
+        that.buildResponseRequested = function(fbb, callback) {
             var bltResponseRequested;
             // if no response callback, there cannot be a response
             if (callback != undefined) {
                 var reqBuilder = BTransportHdrG.BTransportRequestStruct;
                 var thisSession = this.sessionNum++;
                 var sessionKey = Math.random().toString();  // a uniqifier to stop fake responses
-                reqBuilder.startBTransportRequestStruct(this.fbb2);
-                reqBuilder.addSession(this.fbb2, thisSession);
-                reqBuilder.addSessionKey(this.fbb2, BTypes.makeString(sessionKey));
-                var bltResponseRequested = reqBuilder.endBTransportRequestStruct(this.fbb2);
+                reqBuilder.startBTransportRequestStruct(fbb);
+                reqBuilder.addSession(fbb, thisSession);
+                reqBuilder.addSessionKey(fbb, BTypes.makeString(sessionKey));
+                var bltResponseRequested = reqBuilder.endBTransportRequestStruct(fbb);
                 this.responses[thisSession] = { 'session': thisSession,
                                                 'sessionKey': sessionKey,
                                                 'callback': callback,
@@ -111,32 +99,53 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BTransportHdrGenerated'],
             return bltResponseRequested;
         };
         // TODO: add session authorization
-        that.buildAuth = function() {
+        that.buildAuth = function(fbb) {
             return undefined;
         };
         // TODO: add message tracing
-        that.buildTrace = function() {
+        that.buildTrace = function(fbb) {
             return undefined;
         };
-        that.buildTransportHdr = function(bltSeq, bltReqResp, bltAuth, bltTrace) {
+        that.buildTransportHdr = function(fbb, bltSeq, bltReqResp, bltAuth, bltTrace) {
             var btBuilder = BTransportHdrG.BTransportHdrStruct;
-            btBuilder.startBTransportHdrStruct(this.fbb2);
-            if (bltSeq != undefined) btBuilder.addSeq(this.fbb2, bltSeq);
-            if (bltReqResp != undefined) btBuilder.addResponseRequested(this.fbb2, bltReqResp);
-            if (bltAuth != undefined) btBuilder.addAuth(this.fbb2, bltAuth);
-            if (bltTrace != undefined) btBuilder.addTrace(this.fbb2, bltTrace);
-            return btBuilder.endBTransportHdrStruct(this.fbb2);
+            btBuilder.startBTransportHdrStruct(fbb);
+            if (bltSeq != undefined) btBuilder.addSeq(fbb, bltSeq);
+            if (bltReqResp != undefined) btBuilder.addResponseRequested(fbb, bltReqResp);
+            if (bltAuth != undefined) btBuilder.addAuth(fbb, bltAuth);
+            if (bltTrace != undefined) btBuilder.addTrace(fbb, bltTrace);
+            return btBuilder.endBTransportHdrStruct(fbb);
         };
-        that.processMessage = function(data, op, context) {
+
+        // Received message. Read it as a BasilServerMsg and process the message type
+        that.processMessage = function(data, context) {
+            var pkgData = new flatbuffers.ByteBuffer(data);
+            var serverMsg = BServerG.BasilServerMsg.getRootAsBasilServerMsg(pkgData);
+
+            // Replys are odd in that the callback is through the sessions.
+            switch (serverMsg.MsgType()) {
+                case BServerG.BasilServerMsgMsg.GetUniqueInstanceIdResponse:
+                    break;
+                case BServerG.BasilServerMsgMsg.EntityPropertyResponse:
+                    break;
+                case BServerG.BasilServerMsgMsg.InstancePropertyResponse:
+                    break;
+                case BServerG.BasilServerMsgMsg.OpenSessionResponse:
+                    break;
+                case BServerG.BasilServerMsgMsg.AliveResponse:
+                    break;
+                default:
+                    break;
+            }
+
             if (context.completionCallback != undefined) {
                 var cb = context.completionCallback;
                 context.completionCallback = undefined;
-                cb(data, op);
+                cb(serverMsg);
             }
             else {
                 if (context.availableCallback != undefined) {
                     DebugLog('flow.received data. Calling availableCallback');
-                    context.availableCallback(data, op);
+                    context.availableCallback(serverMsg);
                 }
                 else {
                     DebugLog('flow.received. Throwing message away because no receiver callback');
@@ -147,8 +156,8 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BTransportHdrGenerated'],
         that.transport = transport;
         // Link to transport to processing incoming messages
         var me = that;
-        transport.dataAvailable(function(data, op) {
-            me.processMessage(data, op, me);
+        transport.dataAvailable(function(data) {
+            me.processMessage(data, me);
         });
 
         // The collection of responses we're waiting for
@@ -157,15 +166,6 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BTransportHdrGenerated'],
         that.responses = {};
         that.availableCallback = undefined;
         that.completionCallback = undefined;
-        that.fbb = new flatbuffers.Builder();
-        that.fbb2 = new flatbuffers.Builder();
-        if (that.fbb == undefined) {
-            DebugLog('BFlow.init: fbb is undefined');
-        }
-        else {
-            DebugLog('BFlow.init: fbb is defined');
-        }
-        that.me = that;
 
         return that;
     }

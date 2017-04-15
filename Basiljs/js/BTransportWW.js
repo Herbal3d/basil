@@ -52,18 +52,12 @@ define(['Config', 'BTransport'],
                 this.availableCallback = undefined;
                 this.receiveCallback = undefined;
             };
-            that.send = function(data, type) {
+            that.send = function(data) {
                 DebugLog('transport.worker.send');
-                if (type == undefined) {
-                    postMessage(
-                        { 'op': this.msgCode.Raw, 'data': data },
-                        [ data.buffer ]);
-                }
-                else {
-                    postMessage(
-                        { 'op': this.msgCode.BasilServerMsg, 'data': data },
-                        [ data.buffer ]);
-                }
+                postMessage(
+                    { 'op': this.msgCode.BasilServerMsg, 'data': data },
+                    [ data.buffer ]
+                );
             };
             that.receive = function(completionCallback) {
                 DebugLog('transport.worker.receive');
@@ -85,7 +79,6 @@ define(['Config', 'BTransport'],
         else {
             // Operations if we're the main browser
             BTW.isWorker = false;
-            BTW.handler = this;
 
             that.open = function(worker, connectionString) {
                 this.worker = worker;
@@ -105,18 +98,12 @@ define(['Config', 'BTransport'],
                 this.availableCallback = undefined;
                 this.receiveCallback = undefined;
             };
-            that.send = function(data, meta) {
+            that.send = function(data) {
                 DebugLog('transport.main.send');
-                if (meta == undefined) {
-                    this.worker.postMessage(
-                        { 'op': this.msgCode.Raw, 'data': data },
-                        [ data.buffer ]);
-                }
-                else {
-                    this.worker.postMessage(
-                        { 'op': this.msgCode.BasilServerMsg, 'meta': meta , 'data': data},
-                        [ data.buffer ]);
-                }
+                this.worker.postMessage(
+                    { 'op': this.msgCode.BasilServerMsg, 'data': data},
+                    [ data.buffer ]
+                );
             };
             that.receive = function(completionCallback) {
                 DebugLog('transport.main.receive');
@@ -142,47 +129,42 @@ define(['Config', 'BTransport'],
                     && (this.availableCallback != null || this.receiveCallback != null)) {
                 if (this.receiveCallback != undefined) {
                     var msgData = this.inQueue.shift();
-                    this.receiveCallback( msgData[1], msgData[0] );
+                    this.receiveCallback( msgData[0] );
                     this.receiveCallback = undefined;
                 }
                 if (this.inQueue.length > 0 && this.availableCallback != undefined) {
                     var msgData = this.inQueue.shift();
-                    this.availableCallback( msgData[1], msgData[0] );
+                    this.availableCallback( msgData[0] );
                 }
             }
         };
         // Receive massage from the other end of the WebWorker connection.
-        // Since this is a WebWorker, we expect a 'msg' which is an Object which has 'op'
-        //     and 'meta' optionally defined. The 'data' paramter should be the binary
-        //     data.
         that.processMessage = function(msg, context) {
             var op = msg.data.op;
-            var meta = msg.data.meta;
             var data = msg.data.data;
-            DebugLog('BTransportWW.onMessage: op=' + op + ', meta=' + meta + ', data.length=' + data.length);
             if (context.inQueue.length == 0
                     && (context.availableCallback != null || context.receiveCallback != null)) {
                 // Nothing in the queue and there is a listener. Just send the message
                 if (context.receiveCallback != undefined) {
-                    DebugLog('transport.onMessage: Empty queue. Sending for receiveCallback. op=' + msg.op);
+                    DebugLog('transport.onMessage: Empty queue. Sending for receiveCallback. op=' + op);
                     var cb = context.receiveCallback;
                     context.receiveCallback = undefined;
-                    cb(data, msg);
+                    cb(data);
                 }
                 else {
                     if (context.availableCallback != undefined) {
                         DebugLog('transport.onMessage: Empty queue. Sending for availableCallback. op=' + msg.op);
-                        context.availableCallback(data, msg);
+                        context.availableCallback(data);
                     }
                     else {
                         DebugLog('transport.onMessage: queuing data. op=' + msg.op);
-                        context.inQueue.push( [ msg, data ] );
+                        context.inQueue.push( [ data ] );
                     }
                 }
             }
             else {
                 DebugLog('transport.onMessage: Stuff in queue. Queuing. len=' + this.inQueue.length);
-                this.inQueue.push( [ msg, data ] );
+                context.inQueue.push( [ data ] );
             }
         };
 

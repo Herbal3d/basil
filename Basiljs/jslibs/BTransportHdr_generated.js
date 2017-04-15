@@ -183,10 +183,18 @@ org.herbal3d.protocol.basil.BTransportRequestStruct.prototype.session = function
 };
 
 /**
+ * @returns {flatbuffers.Long}
+ */
+org.herbal3d.protocol.basil.BTransportRequestStruct.prototype.sessionKey = function() {
+  var offset = this.bb.__offset(this.bb_pos, 6);
+  return offset ? this.bb.readInt64(this.bb_pos + offset) : this.bb.createLong(0, 0);
+};
+
+/**
  * @param {flatbuffers.Builder} builder
  */
 org.herbal3d.protocol.basil.BTransportRequestStruct.startBTransportRequestStruct = function(builder) {
-  builder.startObject(1);
+  builder.startObject(2);
 };
 
 /**
@@ -195,6 +203,14 @@ org.herbal3d.protocol.basil.BTransportRequestStruct.startBTransportRequestStruct
  */
 org.herbal3d.protocol.basil.BTransportRequestStruct.addSession = function(builder, session) {
   builder.addFieldInt32(0, session, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Long} sessionKey
+ */
+org.herbal3d.protocol.basil.BTransportRequestStruct.addSessionKey = function(builder, sessionKey) {
+  builder.addFieldInt64(1, sessionKey, builder.createLong(0, 0));
 };
 
 /**

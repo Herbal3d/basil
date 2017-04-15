@@ -23,22 +23,22 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
     // Return a factory that creates a BasilServer communication object
     return function() {
         var that = {};
+
         that.flat = flatbuffers;
         that.bTypesG = BTypesG;
-        that.fbb = new flatbuffers.Builder(200);
-        that.fbb2 = new flatbuffers.Builder(200);  // extra one for building while building
-        that.me = that;       // link to myself for local refs
 
         // May be passed an array (of XYZ) or a Vector3
         that.makeVector3 = function(vect) {
             var vect2 = me.getVectorArray(vect);
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.Vector3;
-            return msgBuilder.createVector3(me.fbb2, vect2[0], vect2[1], vect2[2]);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.Vector3;
+            return msgBuilder.createVector3(fbb, vect2[0], vect2[1], vect2[2]);
         };
         that.makeVector3F = function(vect) {
             var vect2 = me.getVectorArray(vect);
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.Vector3F;
-            return msgBuilder.createVector3F(me.fbb2, vect2[0], vect2[1], vect2[2]);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.Vector3F;
+            return msgBuilder.createVector3F(fbb, vect2[0], vect2[1], vect2[2]);
         };
         // Checks the passed parameter for a vector returns an array of [ x,y,z];
         this.getVectorArray = function(vect) {
@@ -53,13 +53,15 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
         };
         that.makeQuaterion = function(quat) {
             var quat2 = me.getQuaternionArray(quat);
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.Quaterion;
-            return msgBuilder.createQuaterion(me.fbb2, quat2[0], quat2[1], quat2[2], quat2[3]);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.Quaterion;
+            return msgBuilder.createQuaterion(fbb, quat2[0], quat2[1], quat2[2], quat2[3]);
         };
         that.makeQuaterionF = function(quat) {
             var quat2 = me.getQuaternionArray(quat);
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.QuaterionF;
-            return msgBuilder.createQuaterionF(me.fbb2, quat2[0], quat2[1], quat2[2], quat2[3]);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.QuaterionF;
+            return msgBuilder.createQuaterionF(fbb, quat2[0], quat2[1], quat2[2], quat2[3]);
         };
         // Checks the passed parameter for a quaternion returns an array of [ x,y,z,w];
         that.getQuaternionArray = function(quant) {
@@ -75,35 +77,39 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
         // that.makeTransform = function(mat) {};
         // that.makeTransformF = function(mat) {};
         that.makePropertyValue = function(prop, val) {
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.propertyValue;
-            msgBuilder.startpropertyValue(me.fbb);
-            msgBuilder.addProperty(me.fbb, me.makeString(prop));
-            msgBuilder.addValue(me.fbb, me.makeString(val));
-            return msgBuilder.endpropertyValue(me.fbb);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.propertyValue;
+            msgBuilder.startpropertyValue(fbb);
+            msgBuilder.addProperty(fbb, me.makeString(prop));
+            msgBuilder.addValue(fbb, me.makeString(val));
+            return msgBuilder.endpropertyValue(fbb);
         }
         // @param {Object} Contains '{ key: val, key: val, ...}'
         // @return {flatbuffer.Offset} built propertyList
         that.makePropertyList = function(props) {
             var propVal = [];
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.propertyValue
+            var msgBuilder = BTypesG.propertyValue
             props.keys().foreach(function(key) {
-                msgBuilder.startpropertyValue(me.fbb2);
-                msgBuilder.addProperty(me.fbb2, me.makeString(key));
-                msgBuilder.addValue(me.fbb2, me.makeString(props[key]));
-                propVal.push(msgBuilder.endpropertyValue(me.fbb2));
+                var fbb = new flatbuffers.Builder();
+                msgBuilder.startpropertyValue(fbb);
+                msgBuilder.addProperty(fbb, me.makeString(key));
+                msgBuilder.addValue(fbb, me.makeString(props[key]));
+                propVal.push(msgBuilder.endpropertyValue(fbb));
             })
-            msgBuilder = BTypesG.org.herbal3d.protocol.basil.propertyList
-            propList = msgBuilder.createPropsVector(me.fbb2, propVal);
-            msgBuilder.startpropertyList(me.fbb2);
-            msgBuilder.addProps(me.fbb2, propList)
-            return msgBuilder.endpropertyList(me.fbb2);
+            var fbb = new flatbuffers.Builder();
+            msgBuilder = BTypesG.propertyList
+            propList = msgBuilder.createPropsVector(fbb, propVal);
+            msgBuilder.startpropertyList(fbb);
+            msgBuilder.addProps(fbb, propList)
+            return msgBuilder.endpropertyList(fbb);
         };
         // @param {flatbuffers.Offset} reference to propertyList
         // @return [Object} returns '{key: val, key: val, ...}'
         that.extractPropertyList = function(propListOffset) {
+            var fbb = new flatbuffers.Builder();
             var extractedPropList = {};
-            msgBuilder = BTypesG.org.herbal3d.protocol.basil.propertyList
-            var propList = msgBuilder.getRootAspropertyList(me.fbb2, propListOffset);
+            msgBuilder = BTypesG.propertyList
+            var propList = msgBuilder.getRootAspropertyList(fbb, propListOffset);
             for (var ii=0; ii<propList.propsLength; ii++) {
                 var propVal = propList.props(ii, propList);
                 extractedPropList[propval.property] = propval.value;
@@ -128,13 +134,14 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
                 if (rotRef != undefined) posRotRef = rotRef;
             }
 
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.coordPosition;
-            msgBuilder.startCoordPosition(me.fbb2);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.coordPosition;
+            msgBuilder.startCoordPosition(fbb);
             if (posPos != undefined) msgBuilder.addPos(posPos);
             if (posRot != undefined) msgBuilder.addRot(posRot);
             if (posPosRef != undefined) msgBuilder.addPosRef(posPosRef);
             if (posRotRef != undefined) msgBuilder.addRotRef(posRotRef);
-            return msgBuilder.endCoordPosition(me.fbb2);
+            return msgBuilder.endCoordPosition(fbb);
         };
         // May be called with a single parameter containing '[ [x,y,z],[x,y,z]]'
         //     or a single parameter containing '{upperFrontLeft: vector3, lowerBackRight: vector3}'
@@ -158,38 +165,41 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
                 ufl = me.getVectorArray(upperFrontLeft.upperFrontLeft);
                 lbr = me.getVectorArray(upperFrontLeft.lowerBackRight);
             }
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.aaBoundingBox;
-            return msgBuilder.createaaBoundingBox(me.fbb2,
+            var msgBuilder = BTypesG.aaBoundingBox;
+            return msgBuilder.createaaBoundingBox(fbb,
                     ufl[0], ufl[1], ufl[2], lbr[0], lbr[1], lbr[2] );
         };
         that.makeObjectDisplayInfo = function(aabb) {
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.objectDisplayInfo;
-            msgBuilder.startobjectDisplayInfo(me.fbb);
-            msgBuilder.addAabb(me.fbb, me.makeAaBoundingBox(aabb));
-            return msgBuilder.endobjectDisplayInfo(me.fbb);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.objectDisplayInfo;
+            msgBuilder.startobjectDisplayInfo(fbb);
+            msgBuilder.addAabb(fbb, me.makeAaBoundingBox(aabb));
+            return msgBuilder.endobjectDisplayInfo(fbb);
         };
         // Create information about an asset. Where to fetch it anc such
         // Param: dispInfo: displayInfo -- a built displayInfo block
         // Param: has, fetchURL, assetServer, assetID are all strings and may be 'undefined'
         // Param: assetType is an asset type code (or 'undefined').
         that.makeAssetInformation = function(dispInfo, hash, fetchURL, assetServer, assetId, assetType) {
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.assetInformation;
-            msgBuilder.startassetInformation(me.fbb);
-            if (dispInfo != undefined) msgBuilder.addDisplayInfo(me.fbb, dispInfo);
-            if (hash != undefined) msgBuilder.addHash(me.fbb, me.makeString(hash));
-            if (fetchURL != undefined) msgBuilder.addFetchURL(me.fbb, me.makeString(fetchURL));
-            if (assetServer != undefined) msgBuilder.addAssetServer(me.fbb, me.makeString(assetServer));
-            if (assetId != undefined) msgBuilder.addAssetId(me.fbb, me.makeString(assetId));
-            if (assetType != undefined) msgBuilder.addAssetType(me.fbb, assetType);
-            return msgBuilder.endobjectDisplayInfo(me.fbb);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.assetInformation;
+            msgBuilder.startassetInformation(fbb);
+            if (dispInfo != undefined) msgBuilder.addDisplayInfo(fbb, dispInfo);
+            if (hash != undefined) msgBuilder.addHash(fbb, me.makeString(hash));
+            if (fetchURL != undefined) msgBuilder.addFetchURL(fbb, me.makeString(fetchURL));
+            if (assetServer != undefined) msgBuilder.addAssetServer(fbb, me.makeString(assetServer));
+            if (assetId != undefined) msgBuilder.addAssetId(fbb, me.makeString(assetId));
+            if (assetType != undefined) msgBuilder.addAssetType(fbb, assetType);
+            return msgBuilder.endobjectDisplayInfo(fbb);
         }
         // Create a description of a path through space
         // Param: pathType: string -- desciption of a movement path (usually JSON)
         that.makePathDescription = function(pathType) {
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.pathDescription;
-            msgBuilder.startpathDescription(me.fbb);
-            if (pathType != undefined) msgBuilder.addPathType(me.fbb, me.makeString(pathType));
-            return msgBuilder.endpathDescription(me.fbb);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.pathDescription;
+            msgBuilder.startpathDescription(fbb);
+            if (pathType != undefined) msgBuilder.addPathType(fbb, me.makeString(pathType));
+            return msgBuilder.endpathDescription(fbb);
         };
         // Create a position/movement update for an instance
         // Param: pos: coordPosition -- position of the instance
@@ -197,32 +207,36 @@ define(['Config', 'FlatBuffers', 'BasilTypesGenerated'],
         // Param: vel: float (optional) -- velocity of instance
         // Param: path: pathDescription -- path item is moving along
         that.makeInstancePositionInfo = function(pos, instanceId, vel, path) {
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.instancePositionInfo;
-            msgBuilder.startinstancePositionInfo(me.fbb);
-            msgBuilder.addPos(me.fbb, pos);
-            msgBuilder.addInstanceId(me.fbb, instanceId);
-            if (vel != undefined) msgBuilder.addVel(me.fbb, vel);
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.instancePositionInfo;
+            msgBuilder.startinstancePositionInfo(fbb);
+            msgBuilder.addPos(fbb, pos);
+            msgBuilder.addInstanceId(fbb, instanceId);
+            if (vel != undefined) msgBuilder.addVel(fbb, vel);
             if (path != undefined) msgBuilder.addPath(md.fbb, path);
-            return msgBuilder.endinstancePositionInfo(me.fbb);
+            return msgBuilder.endinstancePositionInfo(fbb);
         };
         that.makeAccessAuthorization = function(accessProperties) {
-            var msgBuilder = BTypesG.org.herbal3d.protocol.basil.accessAuthorization;
+            var fbb = new flatbuffers.Builder();
+            var msgBuilder = BTypesG.accessAuthorization;
             var props = me.makePropertyList(accessProperties);
-            msgBuilder.startaccessAuthorization(me.fbb);
-            msgBuilder.addAccessProperties(me.fbb, props);
-            return msgBuilder.endaccessAuthorization(me.fbb);
+            msgBuilder.startaccessAuthorization(fbb);
+            msgBuilder.addAccessProperties(fbb, props);
+            return msgBuilder.endaccessAuthorization(fbb);
 
         };
         // Create the FB thing for an ObjectId
         that.makeObjectId = function(objectId) {
-            return me.fbb2.createString(objectId);
+            var fbb = new flatbuffers.Builder();
+            return fbb.createString(objectId);
         };
         // Create the thing for an instanceId
         that.makeInstanceId = function(instanceId) {
             return instanceId;
         };
         that.makeString = function(aString) {
-            return me.fbb2.createString(aString);
+            var fbb = new flatbuffers.Builder();
+            return fbb.createString(aString);
         };
 
         return that;
