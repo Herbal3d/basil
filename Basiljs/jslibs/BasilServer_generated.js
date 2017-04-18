@@ -31,31 +31,6 @@ org.herbal3d.protocol.basil = org.herbal3d.protocol.basil || {};
 org.herbal3d.protocol.basil.server = org.herbal3d.protocol.basil.server || {};
 
 /**
- * @enum
- */
-org.herbal3d.protocol.basil.server.BasilServerMsgMsg = {
-  NONE: 0,
-  AddEntity: 1,
-  RemoveEntity: 2,
-  AddInstance: 3,
-  RemoveInstance: 4,
-  GetUniqueInstanceId: 5,
-  GetUniqueInstanceIdResponse: 6,
-  UpdateEntityProperty: 7,
-  UpdateInstanceProperty: 8,
-  UpdateInstancePosition: 9,
-  EntityPropertyRequest: 10,
-  EntityPropertyResponse: 11,
-  InstancePropertyRequest: 12,
-  InstancePropertyResponse: 13,
-  OpenSession: 14,
-  OpenSessionResponse: 15,
-  CloseSession: 16,
-  AliveCheck: 17,
-  AliveResponse: 18
-};
-
-/**
  * @constructor
  */
 org.herbal3d.protocol.basil.server.AddEntity = function() {
@@ -1670,107 +1645,6 @@ org.herbal3d.protocol.basil.server.AliveResponse.addSequenceNumberReceived = fun
  * @returns {flatbuffers.Offset}
  */
 org.herbal3d.protocol.basil.server.AliveResponse.endAliveResponse = function(builder) {
-  var offset = builder.endObject();
-  return offset;
-};
-
-/**
- * @constructor
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg = function() {
-  /**
-   * @type {flatbuffers.ByteBuffer}
-   */
-  this.bb = null;
-
-  /**
-   * @type {number}
-   */
-  this.bb_pos = 0;
-};
-
-/**
- * @param {number} i
- * @param {flatbuffers.ByteBuffer} bb
- * @returns {org.herbal3d.protocol.basil.server.BasilServerMsg}
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.prototype.__init = function(i, bb) {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-};
-
-/**
- * @param {flatbuffers.ByteBuffer} bb
- * @param {org.herbal3d.protocol.basil.server.BasilServerMsg=} obj
- * @returns {org.herbal3d.protocol.basil.server.BasilServerMsg}
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.getRootAsBasilServerMsg = function(bb, obj) {
-  return (obj || new org.herbal3d.protocol.basil.server.BasilServerMsg).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-};
-
-/**
- * @param {org.herbal3d.protocol.basil.BTransportHdrStruct=} obj
- * @returns {org.herbal3d.protocol.basil.BTransportHdrStruct}
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.prototype.BTransportHdr = function(obj) {
-  var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? (obj || new org.herbal3d.protocol.basil.BTransportHdrStruct).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
-};
-
-/**
- * @returns {org.herbal3d.protocol.basil.server.BasilServerMsgMsg}
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.prototype.MsgType = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? /** @type {org.herbal3d.protocol.basil.server.BasilServerMsgMsg} */ (this.bb.readUint8(this.bb_pos + offset)) : org.herbal3d.protocol.basil.server.BasilServerMsgMsg.NONE;
-};
-
-/**
- * @param {flatbuffers.Table} obj
- * @returns {?flatbuffers.Table}
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.prototype.Msg = function(obj) {
-  var offset = this.bb.__offset(this.bb_pos, 8);
-  return offset ? this.bb.__union(obj, this.bb_pos + offset) : null;
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.startBasilServerMsg = function(builder) {
-  builder.startObject(3);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} BTransportHdrOffset
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.addBTransportHdr = function(builder, BTransportHdrOffset) {
-  builder.addFieldOffset(0, BTransportHdrOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {org.herbal3d.protocol.basil.server.BasilServerMsgMsg} MsgType
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.addMsgType = function(builder, MsgType) {
-  builder.addFieldInt8(1, MsgType, org.herbal3d.protocol.basil.server.BasilServerMsgMsg.NONE);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} MsgOffset
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.addMsg = function(builder, MsgOffset) {
-  builder.addFieldOffset(2, MsgOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @returns {flatbuffers.Offset}
- */
-org.herbal3d.protocol.basil.server.BasilServerMsg.endBasilServerMsg = function(builder) {
   var offset = builder.endObject();
   return offset;
 };

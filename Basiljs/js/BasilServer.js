@@ -17,8 +17,8 @@
 // Global holding Basil server
 var BS = BS || {};
 
-define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
-            function( Config, flatbuffers, BTypes, BServerG) {
+define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BFlowGenerated'],
+            function( Config, flatbuffers, BTypes, BServerG, BFlowG) {
 
     GP.BS = BS; // For debugging. Don't use for cross package access.
 
@@ -36,7 +36,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addAssetInfo(fbb, BTypes.makeAssetInfo(assetInfo));
                 msgBuilder.addAabb(fbb, this.makeAabb(aabb));
                 var bltMsg = msgBuilder.endAddEntity(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.AddEntity, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_AddEntity, bltMsg);
         };
         that.RemoveEntity = function(auth, objectId) {
                 var fbb = new flatbuffers.Builder();
@@ -45,7 +45,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addAuth(fbb, BTypes.makeAuth(auth));
                 msgBuilder.addObjectId(fbb, BTypes.makeObjectId(objectId));
                 var bltMsg = msgBuilder.endRemoveEntity(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.RemoveEntity, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_RemoveEntity, bltMsg);
         };
         that.AddInstance = function(auth, instanceId, pos, propertiesToSet) {
                 var fbb = new flatbuffers.Builder();
@@ -57,7 +57,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addPos(fbb, BTypes.makeCoordPosition(pos));
                 if (props != undefined) msgBuilder.addPropertiesToSet(fbb, props);
                 var bltMsg = msgBuilder.endAddInstance(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.AddInstance, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_AddInstance, bltMsg);
         };
         that.RemoveInstance = function(auth, instanceId) {
                 var fbb = new flatbuffers.Builder();
@@ -66,35 +66,33 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addAuth(fbb, BTypes.makeAuth(auth));
                 msgBuilder.addInstanceId(fbb, BTypes.makeInstanceId(objectId));
                 var bltMsg = msgBuilder.endRemoveInstance(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.RemoveInstance, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_RemoveInstance, bltMsg);
         };
         that.GetUniqueInstanceId = function(newIdCallback) {
                 var fbb = new flatbuffers.Builder();
                 var msgBuilder = BServerG.GetUniqueInstanceId;
                 msgBuilder.startGetUniqueInstanceId(fbb);
                 var bltMsg = msgBuilder.endGetUniqueInstanceId(fbb);
-                this.flow.callFlowMsg(fbb, BServerG.BasilServerMsgMsg.GetUniqueInstanceId,
-                            bltMsg, BServerG.BasilServerMsg,
+                this.flow.callFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_GetUniqueInstanceId, bltMsg,
                     function(response) {
                         // Response should come back as an instance of BasilServerMsg.
-                        if (response.MsgType != BServerG.BasilServerMsgMsg.GetUniqueInstanceIdResponse) {
+                        if (response.MsgType != BFlowG.BFlowMsgMsg.server_GetUniqueInstanceIdResponse) {
                             throw 'BasilServer.GetUniqueInstanceId: response message type not correct';
                         }
-                        var msgBuilder = BServerG.GetUniqueInstanceIdResponse;
-                        var resp = msgBuilder.getRootAsGetUniqueInstanceResponse(ms.fbb, response.Msg);
-                        var newID = resp.instanceId;
+                        var getUniqueInstanceIdResponse = response.Msg(new BServerG.GetUniqueInstanceIdResponse());
+                        var newID = getUniqueInstanceIdResponse.instanceId();
                         newIdCallback(newId);
                     }
                 );
         };
         that.GetUniqueInstanceIdResponse = function(incoming, instanceId) {
                 var fbb = new flatbuffers.Builder();
-                var msgBuilder = BServerG.GetUniqueInstanceIdResponse;
+                var msgBuilder = BFlowG.GetUniqueInstanceIdResponse;
                 msgBuilder.startGetUniqueInstanceIdResponse(fbb);
                 msgBuilder.addInstanceId(fbb, BTypes.makeInstanceId(instanceId));
                 var bltMsg = msgBuilder.endGetUniqueInstanceIdResponse(fbb);
                 this.flow.respondFlowMsg(fbb, incoming,
-                    BServerG.BasilServerMsgMsg.GetUniqueInstanceIdResponse,
+                    BFlowG.BFlowMsgMsg.server_GetUniqueInstanceIdResponse,
                     bltMsg, BServerG.BasilServerMsg);
         };
         that.UpdateEntityProperty = function(auth, objectId, propsToUpdate) {
@@ -105,7 +103,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addObjectId(fbb, BTypes.makeObjectId(objectId));
                 msgBuilder.addProps(fbb, BTypes.makePropertyList(propsToUpdate));
                 var bltMsg = msgBuilder.endUpdateEntityProperty(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.UpdateEntityProperty, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_UpdateEntityProperty, bltMsg);
         };
         that.UpdateInstanceProperty = function(auth, instanceId, propsToUpdate) {
                 var fbb = new flatbuffers.Builder();
@@ -115,7 +113,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addInstanceId(fbb, BTypes.makeInstanceId(objectId));
                 msgBuilder.addProps(fbb, BTypes.makePropertyList(propsToUpdate));
                 var bltMsg = msgBuilder.endUpdateInstanceProperty(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.UpdateInstanceProperty, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_UpdateInstanceProperty, bltMsg);
         };
         that.UpdateInstancePosition = function(auth, instanceId, pos) {
                 var fbb = new flatbuffers.Builder();
@@ -125,7 +123,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addInstanceId(fbb, BTypes.makeInstanceId(objectId));
                 msgBuilder.addPos(fbb, BTypes.makePositionInfo(pos));
                 var bltMsg = msgBuilder.endUpdateInstancePosition(fbb);
-                this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.UpdateInstancePosition, bltMsg);
+                this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_UpdateInstancePosition, bltMsg);
         };
         that.EntityPropertyRequest = function(auth, objectId, filter, propCallback) {
                 var fbb = new flatbuffers.Builder();
@@ -135,19 +133,14 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addObjectId(me.fbb, BTypes.makeObjectId(objectId));
                 msgBuilder.addPropertyMatch(fbb, this.makeString(filter));
                 var bltMsg = msgBuilder.endEntityPropertyRequest(fbb);
-                this.flow.callFlowMsg(fbb, BServerG.BasilServerMsgMsg.EntityPropertyRequest,
-                            bltMsg, BServerG.BasilServerMsg,
+                this.flow.callFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_EntityPropertyRequest, bltMsg,
                     function(response) {
-                        var fetchedProperties = GetThePropertiesFromTheResponseMsg;
                         // Response should come back as an instance of BasilServerMsg.
-                        if (response.MsgType != BServerG.BasilServerMsgMsg.EntityPropertyResponse) {
+                        if (response.MsgType != BFlowG.BFlowMsgMsg.server_EntityPropertyResponse) {
                                 throw 'BasilServer.EntityPropertyRequest: response message type not correct';
                         }
-                        var fbb2 = new flatbuffers.Builder();
-                        // TODO: THIS CODE IS WRONG!
-                        var msgBuilder = BServerG.EntityPropertyResponse();
-                        var resp = msgBuilder.getRootAsEntityPropertyResponse(fbb2, response.Msg);
-                        var fetchedProperties = BTypes.extractPropertyList(resp.props);
+                        var entityPropertyResponse = response.Msg(new BServer.EntityPropertyResponse());
+                        var fetchedProperties = BTypes.extractPropertyList(entityPropertyResponse.props());
                         propCallback(fetchedProperties);
                     }
                 );
@@ -162,11 +155,11 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
                 msgBuilder.addObjectId(fbb, BTypes.makeObjectId(objectId));
                 msgBuilder.addPropertyMatch(fbb, this.makeString(filter));
                 var bltMsg = msgBuilder.endInstancePropertyRequest(fbb);
-                this.flow.callFlowMsg(fbb, BServerG.BasilServerMsgMsg.InstancePropertyRequest,
+                this.flow.callFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_InstancePropertyRequest,
                             bltMsg, BServerG.BasilServerMsg,
                     function(response) {
                         // Response should come back as an instance of BasilServerMsg.
-                        if (response.MsgType() != BServerG.BasilServerMsgMsg.InstancePropertyResponse) {
+                        if (response.MsgType() != BFlowG.BFlowMsgMsg.server_InstancePropertyResponse) {
                                 throw 'BasilServer.InstancePropertyRequest: response message type not correct';
                         }
                         // TODO: THIS CODE IS WRONG
@@ -198,7 +191,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
             msgBuilder.addSequenceNumber(fbb, this.aliveSequenceNumber++);
             var bltMsg = msgBuilder.endAliveCheck(fbb);
             DebugLog('BasilServer.AliveCheck: sending AliveCheck. seq=' + (this.aliveSequenceNumber - 1));
-            this.flow.sendFlowMsg(fbb, BServerG.BasilServerMsgMsg.AliveCheck, bltMsg,
+            this.flow.sendFlowMsg(fbb, BFlowG.BFlowMsgMsg.server_AliveCheck, bltMsg,
                 function(response) {
                     DebugLog('BasilServer.AliveCheck: received AliveCheckResponse');
                 }
@@ -208,54 +201,53 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
         };
 
         // =====================================================================
-        that.processIncoming = function(serverMsg, context) {
-            DebugLog('BasilServer.processIncoming: received msg. type=' + serverMsg.MsgType());
+        that.processIncoming = function(flowMsg, context) {
+            DebugLog('BasilServer.processIncoming: received msg. type=' + flowMsg.msgType());
 
-            switch (serverMsg.MsgType()) {
-                case BServerG.BasilServerMsgMsg.AddEntity:
+            switch (flowMsg.msgType()) {
+                case BFlowG.BFlowMsgMsg.server_AddEntity:
                     break;
-                case BServerG.BasilServerMsgMsg.RemoveEntity:
+                case BFlowG.BFlowMsgMsg.server_RemoveEntity:
                     break;
-                case BServerG.BasilServerMsgMsg.AddInstance:
+                case BFlowG.BFlowMsgMsg.server_AddInstance:
                     break;
-                case BServerG.BasilServerMsgMsg.RemoveInstance:
+                case BFlowG.BFlowMsgMsg.server_RemoveInstance:
                     break;
-                case BServerG.BasilServerMsgMsg.GetUniqueInstanceId:
+                case BFlowG.BFlowMsgMsg.server_GetUniqueInstanceId:
                     break;
-                case BServerG.BasilServerMsgMsg.GetUniqueInstanceIdResponse:
+                case BFlowG.BFlowMsgMsg.server_GetUniqueInstanceIdResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.UpdateEntityProperty:
+                case BFlowG.BFlowMsgMsg.server_UpdateEntityProperty:
                     break;
-                case BServerG.BasilServerMsgMsg.UpdateInstanceProperty:
+                case BFlowG.BFlowMsgMsg.server_UpdateInstanceProperty:
                     break;
-                case BServerG.BasilServerMsgMsg.UpdateInstancePosition:
+                case BFlowG.BFlowMsgMsg.server_UpdateInstancePosition:
                     break;
-                case BServerG.BasilServerMsgMsg.EntityPropertyRequest:
+                case BFlowG.BFlowMsgMsg.server_EntityPropertyRequest:
                     break;
-                case BServerG.BasilServerMsgMsg.EntityPropertyResponse:
+                case BFlowG.BFlowMsgMsg.server_EntityPropertyResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.InstancePropertyRequest:
+                case BFlowG.BFlowMsgMsg.server_InstancePropertyRequest:
                     break;
-                case BServerG.BasilServerMsgMsg.InstancePropertyResponse:
+                case BFlowG.BFlowMsgMsg.server_InstancePropertyResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.OpenSession:
+                case BFlowG.BFlowMsgMsg.server_OpenSession:
                     break;
-                case BServerG.BasilServerMsgMsg.OpenSessionResponse:
+                case BFlowG.BFlowMsgMsg.server_OpenSessionResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.CloseSession:
+                case BFlowG.BFlowMsgMsg.server_CloseSession:
                     break;
-                case BServerG.BasilServerMsgMsg.AliveCheck:
-                    var transHdr = serverMsg.BTransportHdr();
-                    var seq = transHdr.seq();
+                case BFlowG.BFlowMsgMsg.server_AliveCheck:
+                    var seq = flowMsg.seq();
                     if (seq) {
                         DebugLog('BasilServer.processIncoming: seqNum=' + seq.sequenceNum() + ', seq.stream=' + seq.stream());
                     }
-                    var aliveCheckMsg = serverMsg.Msg(new BServerG.AliveCheck());
+                    var aliveCheckMsg = flowMsg.msg(new BServerG.AliveCheck());
                     DebugLog('BasilServer.processIncoming: AliveCheck.'
                                 + ' time=' + aliveCheckMsg.time()
                                 + ', seq=' + aliveCheckMsg.sequenceNumber());
                     break;
-                case BServerG.BasilServerMsgMsg.AliveResponse:
+                case BFlowG.BFlowMsgMsg.server_AliveResponse:
                     break;
                 default:
                     break;
@@ -271,6 +263,7 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated'],
         } );
 
         that.BServerG = BServerG;
+        that.BFlowG = BFlowG;
         that.flat = flatbuffers;
 
         // remember this instance for debugging

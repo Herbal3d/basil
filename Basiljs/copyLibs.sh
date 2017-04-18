@@ -59,10 +59,10 @@ echo ${FLATBUFFERJSMODIFYDATE} > jslibs/flatbuffers.js.date
 # Copy the generated FlatBuffer interface code
 FBGENDIR=${PLACE}/../../Basil-protocol
 FBGENBASILTYPES=${FBGENDIR}/gen-BasilTypes-js/BasilTypes_generated.js
-FBGENBTRANSPORTHDR=${FBGENDIR}/gen-BTransportHdr-js/BTransportHdr_generated.js
+FBGENBFLOW=${FBGENDIR}/gen-BFlow-js/BFlow_generated.js
 FBGENBASILSERVER=${FBGENDIR}/gen-BasilServer-js/BasilServer_generated.js
 cp "$FBGENBASILTYPES" jslibs/
-cp "$FBGENBTRANSPORTHDR" jslibs/
+cp "$FBGENBFLOW" jslibs/
 cp "$FBGENBASILSERVER" jslibs/
 
 STATTIME=$(stat -c '%Y' "${FBGENBASILSERVER}")

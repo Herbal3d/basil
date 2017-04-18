@@ -8,14 +8,14 @@
 
 // See MessagingDesign.md for what the flow layer is supposed to do
 
-define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BTransportHdrGenerated'],
-            function( Config, flatbuffers, BTypes, BServerG, BTransportHdrG) {
+define(['Config', 'FlatBuffers', 'BasilTypes', 'BFlowGenerated'],
+            function( Config, flatbuffers, BTypes, BFlowG) {
 
     // Return a function that returns a new instance of the flow system
     return function(transport) {
         var that = {};
 
-        that.BServerG = BServerG;
+        that.BFlowG = BFlowG;
 
         // Send raw message
         that.send = function(msg) {
@@ -42,15 +42,21 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BTranspo
             var bltAuth = this.buildAuth(fbb);
             var bltTrace = this.buildTrace(fbb);;
 
-            var bltBTransportHdr = this.buildTransportHdr(fbb, bltSeq, bltResponseRequested, bltAuth, bltTrace);
+            BFlowG.FlowMsg.startFlowMsg(fbb);
+            if (bltSeq)
+                BFlowG.FlowMsg.addSeq(fbb, bltSeq);
+            if (bltResponseRequested)
+                BFlowG.FlowMsg.addResponseRequested(fbb, bltResponseRequested);
+            if (bltAuth)
+                BFlowG.FlowMsg.addAuth(fbb, bltAuth);
+            if (bltTrace)
+                BFlowG.FlowMsg.addTrace(fbb, bltTrace);
 
-            BServerG.BasilServerMsg.startBasilServerMsg(fbb);
-            BServerG.BasilServerMsg.addBTransportHdr(fbb, bltBTransportHdr)
-            BServerG.BasilServerMsg.addMsgType(fbb, msgType);
-            BServerG.BasilServerMsg.addMsg(fbb, msg);
-            var bltServerMsg = BServerG.BasilServerMsg.endBasilServerMsg(fbb);
+            BFlowG.FlowMsg.addMsgType(fbb, msgType);
+            BFlowG.FlowMsg.addMsg(fbb, msg);
+            var bltFLowMsg = BFlowG.FlowMsg.endFlowMsg(fbb);
 
-            fbb.finish(bltServerMsg);
+            fbb.finish(bltFLowMsg);
 
             this.transport.send(fbb.asUint8Array());
         };
@@ -71,19 +77,19 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BTranspo
         };
 
         that.buildSequence = function(fbb) {
-            var seqBuilder = BTransportHdrG.BTransportSeqStruct;
-            seqBuilder.startBTransportSeqStruct(fbb);
+            var seqBuilder = BFlowG.BFlowSeqStruct;
+            seqBuilder.startBFlowSeqStruct(fbb);
             seqBuilder.addSequenceNum(fbb, this.sequenceNum++);
             seqBuilder.addStream(fbb, 0);
             seqBuilder.addQueueTime(fbb, fbb.createLong(Date.now()));
-            return seqBuilder.endBTransportSeqStruct(fbb);
+            return seqBuilder.endBFlowSeqStruct(fbb);
         };
         // Build ResponseRequested and setup data structures for the eventual reply.
         that.buildResponseRequested = function(fbb, callback) {
             var bltResponseRequested;
             // if no response callback, there cannot be a response
             if (callback != undefined) {
-                var reqBuilder = BTransportHdrG.BTransportRequestStruct;
+                var reqBuilder = BFlowG.BFlowRequestStruct;
                 var thisSession = this.sessionNum++;
                 var sessionKey = Math.random().toString();  // a uniqifier to stop fake responses
                 reqBuilder.startBTransportRequestStruct(fbb);
@@ -106,32 +112,23 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BTranspo
         that.buildTrace = function(fbb) {
             return undefined;
         };
-        that.buildTransportHdr = function(fbb, bltSeq, bltReqResp, bltAuth, bltTrace) {
-            var btBuilder = BTransportHdrG.BTransportHdrStruct;
-            btBuilder.startBTransportHdrStruct(fbb);
-            if (bltSeq != undefined) btBuilder.addSeq(fbb, bltSeq);
-            if (bltReqResp != undefined) btBuilder.addResponseRequested(fbb, bltReqResp);
-            if (bltAuth != undefined) btBuilder.addAuth(fbb, bltAuth);
-            if (bltTrace != undefined) btBuilder.addTrace(fbb, bltTrace);
-            return btBuilder.endBTransportHdrStruct(fbb);
-        };
 
         // Received message. Read it as a BasilServerMsg and process the message type
         that.processMessage = function(data, context) {
             var pkgData = new flatbuffers.ByteBuffer(data);
-            var serverMsg = BServerG.BasilServerMsg.getRootAsBasilServerMsg(pkgData);
+            var flowMsg = BFlowG.FlowMsg.getRootAsFlowMsg(pkgData);
 
             // Replys are odd in that the callback is through the sessions.
-            switch (serverMsg.MsgType()) {
-                case BServerG.BasilServerMsgMsg.GetUniqueInstanceIdResponse:
+            switch (flowMsg.msgType()) {
+                case BFlowG.BFlowMsgMsg.GetUniqueInstanceIdResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.EntityPropertyResponse:
+                case BFlowG.BFlowMsgMsg.EntityPropertyResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.InstancePropertyResponse:
+                case BFlowG.BFlowMsgMsg.InstancePropertyResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.OpenSessionResponse:
+                case BFlowG.BFlowMsgMsg.OpenSessionResponse:
                     break;
-                case BServerG.BasilServerMsgMsg.AliveResponse:
+                case BFlowG.BFlowMsgMsg.AliveResponse:
                     break;
                 default:
                     break;
@@ -140,12 +137,12 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BasilServerGenerated', 'BTranspo
             if (context.completionCallback != undefined) {
                 var cb = context.completionCallback;
                 context.completionCallback = undefined;
-                cb(serverMsg);
+                cb(flowMsg);
             }
             else {
                 if (context.availableCallback != undefined) {
                     DebugLog('flow.received data. Calling availableCallback');
-                    context.availableCallback(serverMsg);
+                    context.availableCallback(flowMsg);
                 }
                 else {
                     DebugLog('flow.received. Throwing message away because no receiver callback');
