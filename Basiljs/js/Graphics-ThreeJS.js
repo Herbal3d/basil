@@ -172,6 +172,89 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
                 ReportError('Failed reading GLTF file: ' + e);
             }
         },
+        // Load multiple scenes.
+        // The caller should clear and release the previous scene as this creates new.
+        // Pass in an array: [ [url1, [x,y,x]], [url2,[x,y,x]], ...]
+        //     Where the [x,y,z] is a displacement base for the region.
+        'LoadSceneMultiple': function(urlsAndLocations, loaded) {
+            try {
+                var loader;
+                if (THREE.GLTFLoader) {
+                    loader = new THREE.GLTFLoader;
+                }
+                if (THREE.GLTF2Loader) {
+                    loader = new THREE.GLTF2Loader;
+                }
+                if (loader != undefined) {
+                    var newScene = new THREE.Scene();
+                    GR.scene = newScene;
+                    Promise.all(urlsAndLocations.map(oneRegionInfo => {
+                        let regionURL = oneRegionInfo[0];
+                        let regionOffset = oneRegionInfo[1];
+                        DebugLog('Graphics: Loading multipe region from ' + regionURL + " at offset " + regionOffset);
+                        return new Promise(function(resolve, reject) {
+                            try {
+                                DebugLog('Graphics: starting loading of ' + regionURL);
+                                loader.load(regionURL, function(gltf) {
+                                    DebugLog('Graphics: resolving loading of ' + regionURL);
+                                    resolve([gltf, regionURL, regionOffset]);
+                                }, undefined// onProgress
+                                , function() { // onError
+                                    // If this does a reject, the whole 'all' fails.
+                                    // Fake a resolve but pass an undefined gltf pointer.
+                                    DebugLog('Graphics: resolving fake gltf because error for ' + regionURL);
+                                    resolve([ undefined, regionURL, regionOffset]);
+                                });
+                            }
+                            catch (e) {
+                                DebugLog('Graphics: rejecting loading of ' + regionURL);
+                                reject(e);
+                            }
+                        });
+                    }))
+                    .catch(function(e) {
+                        DebugLog('Graphics: failed loading multiple region');
+                    })
+                    // The above reads in all the gltf files and they show up here
+                    //    as an array of arrays each containing '[gltf, url, offset]'
+                    .then(function(loadedGltfs) {
+                        loadedGltfs.forEach(gltfInfo => {
+                            var gltf = gltfInfo[0];
+                            var regionURL = gltfInfo[1];
+                            var regionOffset = gltfInfo[2];
+                            if (gltf) {
+                                DebugLog('Graphics: processing loaded region ' + regionURL);
+                                var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
+                                var group = new THREE.Group();
+                                group.position.fromArray(regionOffset);
+                                theScene.children.forEach(aNode => {
+                                    group.add(aNode);
+                                })
+                                newScene.add(group);
+                            }
+                            else {
+                                DebugLog('Graphics: not processing gltf for ' + regionURL);
+                            }
+                        })
+                    })
+                    // All the scenes have been merged into 'newScene'.
+                    // Finish scene initialization.
+                    .then(function() {
+                        DebugLog('Graphics: doing final processing to the scene');
+                        op.internalInitializeCameraAndLights(newScene, GR.canvas);
+                        op.internalInitializeCameraControl(newScene, GR.container);
+                        DebugLog('Graphics: Loaded GLTF scene');
+                        loaded();
+                    });
+                }
+                else {
+                    ReportError('Could not find a suitable GLTF loader in ThreeJS');
+                }
+            }
+            catch (e) {
+                ReportError('Failed reading GLTF file: ' + e);
+            }
+        },
         // Given a scene and optional gltf info, create a new scene
         'internalInitializeCameraAndLights': function(theScene, canvas) {
             var parms = Config.webgl.camera;

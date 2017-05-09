@@ -42,36 +42,20 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             op.internalInitializeCameraControl();
             container.addEventListener('resize', op.internalOnContainerResize, false);
 
-            /*
-            if (Config.page.showStats) {
-                var stat = stats();
-                stat.showPanel(0);  // FPS
-                // stat.showPanel(1);  // MS rendering
-                // stat.showPanel(2);  // MB allocated mem
-                stat.dom.style.position = 'absolute';
-                stat.dom.style.top = '0%';
-                stat.dom.style.right = '0%';
-                stat.dom.style.margin = '10px';
-                stat.dom.style.zIndex = 100;
-                GR.stats = stat;
-                container.appendChild(GR.stats.dom);
-            }
-            */
-
             // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
             GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
 
             // Generate subscribable periodic when camera info (position) changes
             GR.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
             GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, function(topic) {
-                if (GR.eventCameraInfo.hasSubscriptions) {
+                if (GR.eventCameraInfo.hasSubscriptions) {  // if anyone is listening for this event
                     if (GR.eventCameraInfo.prevCamPosition == undefined) {
                         GR.eventCameraInfo.prevCamPosition = new BABYLON.Vector3(0,0,0);
                     }
                     var oldPos = GR.eventCameraInfo.prevCamPosition;
                     // must clone or 'newPos' will be just a reference to the old value.
                     var newPos = GR.camera.position.clone();
-                    if (!newPos.equals(oldPos)) {
+                    if (!newPos.equals(oldPos)) {   // if camera has moved since last time
                         var camInfo = {
                             'position': GR.camera.position.clone(),
                             'rotation': GR.camera.rotation.clone()
@@ -85,7 +69,7 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             // Generate subscribable periodic events when display info changes
             GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
             GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, function(topic) {
-                if (GR.eventDisplayInfo.hasSubscriptions) {
+                if (GR.eventDisplayInfo.hasSubscriptions) { // if anyone is listening for this event
                     dispInfo = {};
                     dispInfo.render = {};
                     dispInfo.render.fps = GR.engine.getFps();
@@ -125,11 +109,13 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
         },
         // Remove everything from the scene
         'ClearScene': function() {
-            GR.scene.dispose();
+            if (GR.scene) {
+                GR.scene.dispose();
+            }
             DebugLog('Graphics: cleared scene');
         },
         // Load the passed gltf file into the scene
-        'LoadScene': function(url, loaded) {
+        'LoadSceneMultiple': function(urlsAndLocations, loaded) {
             try {
                 GR.engine.stopRenderLoop();
                 // Remove the old scene
@@ -137,15 +123,64 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                     scene.dispose();
                 });
 
-                var urlPieces = url.split('/');
-                var baseFilename = urlPieces.pop().split('#')[0].split('?')[0];
-                var urlDir = urlPieces.join('/');
-                urlDir += '/';
-                DebugLog('LoadScene: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
-                // BABYLON.GLTFFileLoader.HomogeneousCoordinates = true;
-                BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(newScene) {
-                    // For the moment, we're ignoring camera and lights from gltf
-                    GR.scene = newScene;
+                // var newScene = new BABYLON.Scene();
+                GR.scene = new BABYLON.Scene(GR.engine);
+                var groupNum = 0;
+                Promise.all(urlsAndLocations.map(oneRegionInfo => {
+                    let regionURL = oneRegionInfo[0];
+                    let regionOffset = oneRegionInfo[1];
+                    DebugLog('Graphics: Loading multipe region from ' + regionURL + " at offset " + regionOffset);
+                    let urlPieces = regionURL.split('/');
+                    let baseFilename = urlPieces.pop().split('#')[0].split('?')[0];
+                    let urlDir = urlPieces.join('/');
+                    urlDir += '/';
+                    DebugLog('LoadScene: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
+                    return new Promise(function(resolve, reject) {
+                        try {
+                            BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(loadedScene) { // onSuccess
+                                DebugLog('LoadScene: loaded. url=' + regionURL);
+                                resolve([loadedScene, regionURL, regionOffset]);
+                            }, undefined,   // onProgress
+                            function() { // onError
+                                // If this does a reject, the whole 'all' fails.
+                                // Fake a resolve but pass an undefined gltf pointer.
+                                DebugLog('LoadScene: resolving fake gltf because error for ' + regionURL);
+                                resolve([undefined, regionURL, regionOffset]);
+                            });
+                        }
+                        catch (e) {
+                            return reject(e);
+                        }
+                    });
+                }))
+                // The above reads in all the gltf files and they show up here
+                //    as an array of arrays each containing '[scene, url, offset]'
+                .then(function(loadedScenes) {
+                    DebugLog('LoadScene: all scenes loaded. num=' + loadedScenes.length);
+                    loadedScenes.forEach(sceneInfo => {
+                        var loadedScene =  sceneInfo[0];
+                        var regionURL = sceneInfo[1];
+                        var regionOffset = sceneInfo[2];
+                        if (loadedScene) {
+                            DebugLog('LoadScene: collecting meshes for group ' + groupNum);
+                            let group = new BABYLON.AbstractMesh('Group' + groupNum, GR.scene);
+                            group.absolutePosition = new BABYLON.Vector3(regionOffset);
+                            loadedScene.meshes.forEach(child => {
+                                var newMesh = new BABYLON.Mesh(child.name, GR.scene, group, child, true);
+                                GR.scene.addMesh(newMesh);
+                            });
+                            groupNum++;
+                        }
+                        else {
+                            DebugLog('LoadScene: not processing gltf for ' + regionURL);
+                        }
+                    })
+                    return loadedScenes.length;
+                })
+                // All the scenes have been merged into 'newScene'.
+                // Finish scene initialization.
+                .then(function(count) {
+                    DebugLog('LoadScene: All processed. Doing final scene init. Count=' + count);
                     op.internalInitializeCameraAndLights();
                     op.internalInitializeCameraControl();
                     DebugLog('Graphics: Loaded scene');

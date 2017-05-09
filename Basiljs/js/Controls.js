@@ -66,7 +66,22 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
             if (buttonOp == 'loadGltf') {
                 var url = $('#SelectGltf').val();
                 DebugLog('Controls: OnLoadButton: loading ' + url);
-                op.internalDoLoad(url);
+                op.internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
+            }
+            if (buttonOp == 'loadAtropia') {
+                DebugLog('Controls: OnLoadAtropia');
+                var atropiaRegions = [
+                    [ "./gltf/testtest00.gltf", [0,0,512] ],
+                    [ "./gltf/testtest01.gltf", [0,0,256] ],
+                    [ "./gltf/testtest02.gltf", [0,0,0] ],
+                    [ "./gltf/testtest10.gltf", [256,0,512] ],
+                    // [ "./gltf/testtest11.gltf", [256,0,256] ],
+                    [ "./gltf/testtest12.gltf", [256,0,0] ],
+                    [ "./gltf/testtest20.gltf", [512,0,512] ],
+                    [ "./gltf/testtest21.gltf", [512,0,256] ],
+                    [ "./gltf/testtest22.gltf", [512,0,0] ]
+                ];
+                op.internalDoLoadMultiple(atropiaRegions);
             }
             if (buttonOp == 'addTest') {
                 DebugLog('Controls: OnAddTestObject');
@@ -80,9 +95,9 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                 Graphics.SetDebugMode();
             }
         },
-        'internalDoLoad': function(url) {
+        'internalDoLoadMultiple': function(urlsAndLocations) {
             Graphics.ClearScene();
-            Graphics.LoadScene(url, function() {
+            Graphics.LoadSceneMultiple(urlsAndLocations, function() {
 
                 // DEBUG DEBUG -- initially point camera at one of the objects in the scene
                 var aPlace;

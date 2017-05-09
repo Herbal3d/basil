@@ -16,7 +16,7 @@ define(
             'camera': {
                 'name': 'camera1',
                 'initialCameraPosition': [ 200, 50, 200 ],
-                'initialViewDistance': 1000,
+                'initialViewDistance': 2000,
                 'initialCameraLookAt': [ 128, 30, 128 ],
                 'addCameraHelper': false,
                 'addAxisHelper': true,
