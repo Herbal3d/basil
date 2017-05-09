@@ -166,8 +166,20 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
                             let group = new BABYLON.AbstractMesh('Group' + groupNum, GR.scene);
                             group.absolutePosition = new BABYLON.Vector3(regionOffset);
                             loadedScene.meshes.forEach(child => {
-                                var newMesh = new BABYLON.Mesh(child.name, GR.scene, group, child, true);
-                                GR.scene.addMesh(newMesh);
+                                var clone = child.clone();
+                                clone._scene = GR.scene;
+                                if (child.masterial) {
+                                    clone.material = child.material.clone();
+                                    clone.material._scene = GR.scene;
+                                    if (child.material.subMaterials) {
+                                        for (var ii=0; ii < child.material.subMaterials.length; ii++) {
+                                            clone.material.subMaterials[ii] = child.material.subMaterials[ii].clone();
+                                            clone.material.subMaterials[ii]._scene = GR.scene;
+                                        }
+                                    }
+                                }
+                                // var newMesh = new BABYLON.Mesh(child.name, GR.scene, group, child, true);
+                                GR.scene.addMesh(clone);
                             });
                             groupNum++;
                         }
