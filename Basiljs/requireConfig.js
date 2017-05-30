@@ -59,7 +59,8 @@ if (useGraphics == 'ThreeJS') {
 
 if (useGraphics == 'BabylonJS') {
     requireConfig.paths['Graphics'] = 'js/Graphics-Babylon';
-    requireConfig.paths['babylonjs'] = 'jslibs/babylon.max';
+    // requireConfig.paths['babylonjs'] = 'jslibs/babylon.max';
+    requireConfig.paths['babylonjs'] = 'jslibs/babylon';
     requireConfig.paths['GLTFLoader'] = 'jslibs/babylon.glTFFileLoader';
     requireConfig.shim['babylonjs'] = { 'exports': 'BABYLON' };
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'babylonjs' ]};
