@@ -22,6 +22,51 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
             */
     }
 
+    // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
+    // From https://stackoverflow.com/questions/33152132/three-js-collada-whats-the-proper-way-to-dispose-and-release-memory-garbag/33199591#33199591
+    function disposeNode (node) {
+        if (node instanceof THREE.Mesh) {
+            if (node.geometry) {
+                node.geometry.dispose ();
+            }
+            if (node.material) {
+                if (node.material instanceof THREE.MeshFaceMaterial) {
+                    for (let mtrl in node.material.materials) {
+                        if (mtrl.map)           mtrl.map.dispose ();
+                        if (mtrl.lightMap)      mtrl.lightMap.dispose ();
+                        if (mtrl.bumpMap)       mtrl.bumpMap.dispose ();
+                        if (mtrl.normalMap)     mtrl.normalMap.dispose ();
+                        if (mtrl.specularMap)   mtrl.specularMap.dispose ();
+                        if (mtrl.envMap)        mtrl.envMap.dispose ();
+                        mtrl.dispose ();    // disposes any programs associated with the material
+                    }
+                }
+                else {
+                    if (node.material.map)          node.material.map.dispose ();
+                    if (node.material.lightMap)     node.material.lightMap.dispose ();
+                    if (node.material.bumpMap)      node.material.bumpMap.dispose ();
+                    if (node.material.normalMap)    node.material.normalMap.dispose ();
+                    if (node.material.specularMap)  node.material.specularMap.dispose ();
+                    if (node.material.envMap)       node.material.envMap.dispose ();
+                    node.material.dispose ();   // disposes any programs associated with the material
+                }
+            }
+        }
+    }   // disposeNode
+    // disposeHierarchy (YOUR_OBJECT3D, disposeNode);
+    function disposeHierarchy (node, callback) {
+        for (var i = node.children.length - 1; i >= 0; i--) {
+            var child = node.children[i];
+            disposeHierarchy (child, callback);
+            callback (child);
+        }
+    }
+    function disposeScene(scene) {
+        for (var ii = scene.children.length - 1; ii >= 0; ii--) {
+            disposeHierarchy(scene.children[ii], node => { scene.remove(node)});
+        }
+    }
+
     var op = {
         'Init': function(container, canvas) {
             GR.container = container;
@@ -239,6 +284,7 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
                                 });
                                 DebugLog('loadedGltf: num children after = ' + theScene.children.length);
                                 newScene.add(group);
+                                disposeScene(theScene);
                             }
                             else {
                                 DebugLog('Graphics: not processing gltf for ' + regionURL);
