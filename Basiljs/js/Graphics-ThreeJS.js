@@ -227,9 +227,17 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
                                 var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
                                 var group = new THREE.Group();
                                 group.position.fromArray(regionOffset);
-                                theScene.children.forEach(aNode => {
-                                    group.add(aNode);
-                                })
+                                DebugLog('loadedGltf: num children = ' + theScene.children.length);
+                                theScene.children.forEach(function(aNode, iii) {
+                                    var newNode = aNode.clone();
+                                    if (newNode instanceof THREE.Mesh) {
+                                        newNode.material = aNode.material.clone();
+                                        newNode.position = aNode.position.clone();
+                                    }
+                                    DebugLog('loadedGltf: adding child named ' + aNode.name + ' with index ' + iii);
+                                    group.add(newNode);
+                                });
+                                DebugLog('loadedGltf: num children after = ' + theScene.children.length);
                                 newScene.add(group);
                             }
                             else {

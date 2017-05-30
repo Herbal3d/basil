@@ -102,11 +102,25 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                 // DEBUG DEBUG -- initially point camera at one of the objects in the scene
                 var aPlace;
                 if (GP.GR.scene.children) {
-                    aPlace = GP.GR.scene.children[0].position;  // for ThreeJS
+                    // ThreeJS
+                    // If loading multiple scenes, the top level is a group
+                    var anObject;
+                    let group = GP.GR.scene.children.find(xx => { return xx.type == 'Group'});
+                    if (group) {
+                        anObject = group.children.find(xx => { return xx.type == 'Object3D'});
+                    }
+                    else {
+                        // there must not be a gropu
+                        anObject = GP.GR.scene.children.find(xx => { return xx.type == 'Object3D'});
+                    }
+                    if (anObject) {
+                        aPlace = anObject.position.clone();
+                    }
                 }
                 else {
                     if (GP.GR.scene.meshes) {
-                        aPlace = GP.GR.scene.meshes[0].position;    // for BabylonJS
+                        // for BabylonJS
+                        aPlace = GP.GR.scene.meshes[0].position;
                     }
                 }
                 if (aPlace != undefined) {
