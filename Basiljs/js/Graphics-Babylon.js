@@ -116,92 +116,65 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
         },
         // Load the passed gltf file into the scene
         'LoadSceneMultiple': function(urlsAndLocations, loaded) {
-            try {
-                GR.engine.stopRenderLoop();
-                // Remove the old scene
-                GR.engine.scenes.forEach(scene => {
-                    scene.dispose();
-                });
+            GR.engine.stopRenderLoop();
+            // Remove the old scene
+            GR.engine.scenes.forEach(scene => {
+                scene.dispose();
+            });
 
-                // var newScene = new BABYLON.Scene();
-                GR.scene = new BABYLON.Scene(GR.engine);
-                var groupNum = 0;
-                Promise.all(urlsAndLocations.map(oneRegionInfo => {
-                    let regionURL = oneRegionInfo[0];
-                    let regionOffset = oneRegionInfo[1];
-                    DebugLog('Graphics: Loading multipe region from ' + regionURL + " at offset " + regionOffset);
-                    let urlPieces = regionURL.split('/');
-                    let baseFilename = urlPieces.pop().split('#')[0].split('?')[0];
-                    let urlDir = urlPieces.join('/');
-                    urlDir += '/';
-                    DebugLog('LoadScene: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
-                    return new Promise(function(resolve, reject) {
-                        try {
-                            BABYLON.SceneLoader.Load(urlDir, baseFilename, GR.engine, function(loadedScene) { // onSuccess
-                                DebugLog('LoadScene: loaded. url=' + regionURL);
-                                resolve([loadedScene, regionURL, regionOffset]);
-                            }, undefined,   // onProgress
-                            function() { // onError
-                                // If this does a reject, the whole 'all' fails.
-                                // Fake a resolve but pass an undefined gltf pointer.
-                                DebugLog('LoadScene: resolving fake gltf because error for ' + regionURL);
-                                resolve([undefined, regionURL, regionOffset]);
-                            });
-                        }
-                        catch (e) {
-                            return reject(e);
-                        }
-                    });
-                }))
-                // The above reads in all the gltf files and they show up here
-                //    as an array of arrays each containing '[scene, url, offset]'
-                .then(function(loadedScenes) {
-                    DebugLog('LoadScene: all scenes loaded. num=' + loadedScenes.length);
-                    loadedScenes.forEach(sceneInfo => {
-                        var loadedScene =  sceneInfo[0];
-                        var regionURL = sceneInfo[1];
-                        var regionOffset = sceneInfo[2];
-                        if (loadedScene) {
-                            DebugLog('LoadScene: collecting meshes for group ' + groupNum);
-                            let group = new BABYLON.AbstractMesh('Group' + groupNum, GR.scene);
-                            group.absolutePosition = new BABYLON.Vector3(regionOffset);
-                            loadedScene.meshes.forEach(child => {
-                                var clone = child.clone();
-                                clone._scene = GR.scene;
-                                if (child.masterial) {
-                                    clone.material = child.material.clone();
-                                    clone.material._scene = GR.scene;
-                                    if (child.material.subMaterials) {
-                                        for (var ii=0; ii < child.material.subMaterials.length; ii++) {
-                                            clone.material.subMaterials[ii] = child.material.subMaterials[ii].clone();
-                                            clone.material.subMaterials[ii]._scene = GR.scene;
+            // var newScene = new BABYLON.Scene();
+            GR.scene = new BABYLON.Scene(GR.engine);
+            var groupNum = 0;
+            Promise.all(urlsAndLocations.map(oneRegionInfo => {
+                let regionURL = oneRegionInfo[0];
+                let regionOffset = new BABYLON.Vector3(oneRegionInfo[1][0], oneRegionInfo[1][1], oneRegionInfo[1][2]);
+                DebugLog('Graphics: Loading multiple region from ' + regionURL + " at offset " + regionOffset);
+                let urlPieces = regionURL.split('/');
+                let baseFilename = urlPieces.pop().split('#')[0].split('?')[0];
+                let urlDir = urlPieces.join('/');
+                urlDir += '/';
+                DebugLog('LoadScene: urlDir=' + urlDir + ', baseFilename=' + baseFilename);
+                return new Promise(function(resolve, reject) {
+                    try {
+                        let lastChildren = GR.scene.meshes.splice();
+                        BABYLON.SceneLoader.Append(urlDir, baseFilename, GR.scene, function(loadedScene) { // onSuccess
+                            DebugLog('LoadScene: loaded. url=' + regionURL);
+                            // Offset objects added by this scene
+                            GR.scene.meshes
+                                    .filter(ch => { return !lastChildren.includes(ch); })
+                                    .map(ch => {
+                                        if (ch && ch.position) {
+                                            ch.position.x += regionOffset.x;
+                                            ch.position.y += regionOffset.y;
+                                            ch.position.z += regionOffset.z;
                                         }
-                                    }
-                                }
-                                // var newMesh = new BABYLON.Mesh(child.name, GR.scene, group, child, true);
-                                GR.scene.addMesh(clone);
-                            });
-                            groupNum++;
-                        }
-                        else {
-                            DebugLog('LoadScene: not processing gltf for ' + regionURL);
-                        }
-                    })
-                    return loadedScenes.length;
-                })
-                // All the scenes have been merged into 'newScene'.
-                // Finish scene initialization.
-                .then(function(count) {
-                    DebugLog('LoadScene: All processed. Doing final scene init. Count=' + count);
-                    op.internalInitializeCameraAndLights();
-                    op.internalInitializeCameraControl();
-                    DebugLog('Graphics: Loaded scene');
-                    loaded();
+                                    })
+                                    ;
+                            resolve();
+                        }, undefined,   // onProgress
+                        function() {    // onError
+                            // If this does a reject, the whole 'all' fails.
+                            // Fake a resolve but pass an undefined gltf pointer.
+                            DebugLog('LoadScene: resolving fake gltf because error for ' + regionURL);
+                            resolve();
+                        });
+                    }
+                    catch (e) {
+                        reject(e);
+                    }
                 });
-            }
-            catch (e) {
-                ReportError('Failed reading GLTF file: ' + e);
-            }
+            }))
+            .then(() => {
+                DebugLog('LoadScene: All processed. Doing final scene init');
+                op.internalInitializeCameraAndLights();
+                op.internalInitializeCameraControl();
+
+                var optim = new BABYLON.SceneOptimization();
+                optim.apply(GR.scene);
+
+                DebugLog('Graphics: Loaded scene');
+                loaded();
+            });
         },
         // Given a scene and optional gltf info, create a new scene
         'internalInitializeCameraAndLights': function() {
@@ -275,21 +248,24 @@ define([ 'babylonjs', 'Config', 'Eventing', 'GLTFLoader' ],
             return GR.camera.position;
         },
         'SetCameraPosition': function(pos) {
+            var newPos = pos
             if (Array.isArray(pos)) {
-                GR.camera.position = BABYLON.Vector3.FromArray(pos);
+                newPos = BABYLON.Vector3.FromArray(pos);
             }
-            else
-                GR.camera.position = pos;
+            GR.camera.position = newPos;
+            DebugLog('Graphics: SetCameraPosition: setting to ' + newPos);
         },
         // Point the camera at a place. Takes either an array or a Vector3.
         'PointCameraAt': function(pos) {
             var look = new BABYLON.Vector3;
             if (Array.isArray(pos)) {
-                look = BABYLON.Vector3.FromArray(pos);
+                look = new BABYLON.Vector3(pos[0], pos[1], pos[2]);
             }
-            else
+            else {
                 look = pos;
+            }
             GR.camera.setTarget(look);
+            DebugLog('Graphics: PointCameraAt: setting to ' + look);
         },
         // Add a test object to the scene
         'AddTestObject': function() {

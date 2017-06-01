@@ -114,7 +114,8 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                         anObject = GP.GR.scene.children.find(xx => { return xx.type == 'Object3D'});
                     }
                     if (anObject) {
-                        aPlace = anObject.position.clone();
+                        var pos = anObject.position.clone();
+                        aPlace = [pos.x, pos.y, pos.z];
                     }
                 }
                 else {
@@ -124,10 +125,9 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                     }
                 }
                 if (aPlace != undefined) {
-                    var cameraPlace = [aPlace.x + 40, aPlace.y + 40, aPlace.z + 40];
+                    let cameraPlace = [aPlace.x + 40, aPlace.y + 40, aPlace.z + 40];
                     Graphics.SetCameraPosition(cameraPlace);
                     Graphics.PointCameraAt([aPlace.x, aPlace.y, aPlace.z]);
-                    DebugLog('Control: placing camera at <' + cameraPlace + '> looking at <' + aPlace + '>');
                 }
                 // end DEBUG DEBUG
                 Graphics.Start(); // ClearScene possibly shuts down rendering
