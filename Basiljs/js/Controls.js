@@ -114,20 +114,22 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                         anObject = GP.GR.scene.children.find(xx => { return xx.type == 'Object3D'});
                     }
                     if (anObject) {
-                        var pos = anObject.position.clone();
+                        let pos = anObject.position;
                         aPlace = [pos.x, pos.y, pos.z];
                     }
                 }
                 else {
                     if (GP.GR.scene.meshes) {
                         // for BabylonJS
-                        aPlace = GP.GR.scene.meshes[0].position;
+                        let ppos = GP.GR.scene.meshes[0].position;
+                        aPlace = [ ppos.x, ppos.y, ppos.z ];
                     }
                 }
+                // The position is passed as an array because not using some libary's Vector3
                 if (aPlace != undefined) {
-                    let cameraPlace = [aPlace.x + 40, aPlace.y + 40, aPlace.z + 40];
+                    var cameraPlace = [aPlace[0] + 40, aPlace[1] + 40, aPlace[2] + 40];
                     Graphics.SetCameraPosition(cameraPlace);
-                    Graphics.PointCameraAt([aPlace.x, aPlace.y, aPlace.z]);
+                    Graphics.PointCameraAt([aPlace[0], aPlace[1], aPlace[2]]);
                 }
                 // end DEBUG DEBUG
                 Graphics.Start(); // ClearScene possibly shuts down rendering

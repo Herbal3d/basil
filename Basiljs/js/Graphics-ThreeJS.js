@@ -236,7 +236,7 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
                     Promise.all(urlsAndLocations.map(oneRegionInfo => {
                         let regionURL = oneRegionInfo[0];
                         let regionOffset = oneRegionInfo[1];
-                        DebugLog('Graphics: Loading multipe region from ' + regionURL + " at offset " + regionOffset);
+                        DebugLog('Graphics: Loading multiple regions from ' + regionURL + " at offset " + regionOffset);
                         return new Promise(function(resolve, reject) {
                             try {
                                 DebugLog('Graphics: starting loading of ' + regionURL);
@@ -279,7 +279,7 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
                                         newNode.material = aNode.material.clone();
                                         newNode.position = aNode.position.clone();
                                     }
-                                    DebugLog('loadedGltf: adding child named ' + aNode.name + ' with index ' + iii);
+                                    // DebugLog('loadedGltf: adding child named ' + aNode.name + ' with index ' + iii);
                                     group.add(newNode);
                                 });
                                 DebugLog('loadedGltf: num children after = ' + theScene.children.length);
@@ -361,13 +361,13 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
             return GR.camera.position;
         },
         'SetCameraPosition': function(pos) {
-            var newPos = new THREE.Vector3;
+            var newPos;
             if (Array.isArray(pos)) {
-                newPos.fromArray(pos);
+                newPos = new THREE.Vector3().fromArray(pos);
             }
             else
                 newPos = pos;
-            GR.camera.position = pos;
+            GR.camera.position = newPos;
         },
         // Point the camera at a place. Takes either an array or a Vector3.
         'PointCameraAt': function(pos) {
