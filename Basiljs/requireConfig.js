@@ -7,6 +7,20 @@
 //    specified here.
 // This global data structure is added to 'GP.requireConfig'.
 
+// From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
+// Used to see if 'engine' is specified before any environment or libraries are loaded.
+function requireConfigGetQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1]);
+        }
+    }
+    return undefined;
+}
+
 var requireConfig = {
     'baseUrl': "",
     'paths': {
@@ -42,10 +56,16 @@ var requireConfig = {
 };
 
 // Two different underlying graphics libraries. Choose only one.
-// var useGraphics = 'ThreeJS';
-var useGraphics = 'BabylonJS';
+var useGraphics = requireConfigGetQueryVariable('engine');
+if (useGraphics == undefined) {
+    useGraphics = 'ThreeJS'.toLowerCase();
+    // useGraphics = 'BabylonJS'.toLowerCase();
+}
+else {
+    useGraphics = useGraphics.toLowerCase();
+}
 
-if (useGraphics == 'ThreeJS') {
+if (useGraphics == 'ThreeJS'.toLowerCase()) {
     requireConfig.paths['Graphics'] = 'js/Graphics-ThreeJS';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
@@ -57,7 +77,7 @@ if (useGraphics == 'ThreeJS') {
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'threejs' ]};
 }
 
-if (useGraphics == 'BabylonJS') {
+if (useGraphics == 'BabylonJS'.toLowerCase()) {
     requireConfig.paths['Graphics'] = 'js/Graphics-Babylon';
     // requireConfig.paths['babylonjs'] = 'jslibs/babylon.max';
     requireConfig.paths['babylonjs'] = 'jslibs/babylon';
