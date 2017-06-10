@@ -81,6 +81,11 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
                     [ "./gltf/testtest21.gltf", [512,0,256] ],
                     [ "./gltf/testtest22.gltf", [512,0,0] ]
                 ];
+                var valueFromHTML = $(evnt.target).attr('value');
+                if (valueFromHTML) {
+                    DebugLog('Getting value for regions from HTML')
+                    atropiaRegions = JSON.parse(valueFromHTML);
+                }
                 op.internalDoLoadMultiple(atropiaRegions);
             }
             if (buttonOp == 'addTest') {

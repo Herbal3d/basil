@@ -272,6 +272,7 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
                                 var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
                                 var group = new THREE.Group();
                                 group.position.fromArray(regionOffset);
+                                // group.setRotationFromAxisAngle(1, 0, 0, -0.7071068);
                                 DebugLog('loadedGltf: num children = ' + theScene.children.length);
                                 theScene.children.forEach(function(aNode, iii) {
                                     var newNode = aNode.clone();
