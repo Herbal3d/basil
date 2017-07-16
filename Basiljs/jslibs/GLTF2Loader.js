@@ -1812,7 +1812,7 @@ THREE.GLTF2Loader = ( function () {
 				// For VEC3: itemSize is 3, elementBytes is 4, itemBytes is 12.
 				var elementBytes = TypedArray.BYTES_PER_ELEMENT;
 				var itemBytes = elementBytes * itemSize;
-				var byteStride = json.bufferViews[accessor.bufferView].byteStride;	
+				var byteStride = json.bufferViews[ accessor.bufferView ].byteStride;
 				var array;
 
 				// The buffer is not interleaved if the stride is the item size in bytes.
@@ -2184,7 +2184,7 @@ THREE.GLTF2Loader = ( function () {
 
 						}
 
-						if ( material.aoMap !== undefined
+						if ( material.aoMap
 								&& geometry.attributes.uv2 === undefined
 								&& geometry.attributes.uv !== undefined ) {
 
@@ -2328,17 +2328,13 @@ THREE.GLTF2Loader = ( function () {
 
 							geometry.setIndex( dependencies.accessors[ primitive.indices ] );
 
-							meshNode = new THREE.LineSegments( geometry, material );
-
-						} else {
-
-							meshNode = new THREE.Line( geometry, material );
-
 						}
+
+						meshNode = new THREE.LineSegments( geometry, material );
 
 					} else {
 
-						throw new Error( "Only triangular and line primitives are supported" );
+						throw new Error( 'Only triangular and line primitives are supported' );
 
 					}
 
@@ -2365,38 +2361,43 @@ THREE.GLTF2Loader = ( function () {
 
 	};
 
+	/**
+	 * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#cameras
+	 */
 	GLTFParser.prototype.loadCameras = function () {
 
 		var json = this.json;
 
 		return _each( json.cameras, function ( camera ) {
 
-			if ( camera.type == "perspective" && camera.perspective ) {
+			var _camera;
 
-				var yfov = camera.perspective.yfov;
-				var aspectRatio = camera.perspective.aspectRatio !== undefined ? camera.perspective.aspectRatio : 1;
+			var params = camera[ camera.type ];
 
-				// According to COLLADA spec...
-				// aspectRatio = xfov / yfov
-				var xfov = yfov * aspectRatio;
+			if ( !params ) {
 
-				var _camera = new THREE.PerspectiveCamera( THREE.Math.radToDeg( xfov ), aspectRatio, camera.perspective.znear || 1, camera.perspective.zfar || 2e6 );
-				if ( camera.name !== undefined ) _camera.name = camera.name;
-
-				if ( camera.extras ) _camera.userData = camera.extras;
-
-				return _camera;
-
-			} else if ( camera.type == "orthographic" && camera.orthographic ) {
-
-				var _camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, camera.orthographic.znear, camera.orthographic.zfar );
-				if ( camera.name !== undefined ) _camera.name = camera.name;
-
-				if ( camera.extras ) _camera.userData = camera.extras;
-
-				return _camera;
+				console.warn( 'GLTF2Loader: Missing camera parameters.' );
+				return;
 
 			}
+
+			if ( camera.type === 'perspective' ) {
+
+				var aspectRatio = params.aspectRatio || 1;
+				var xfov = params.yfov * aspectRatio;
+
+				_camera = new THREE.PerspectiveCamera( THREE.Math.radToDeg( xfov ), aspectRatio, params.znear || 1, params.zfar || 2e6 );
+
+			} else if ( camera.type === 'orthographic' ) {
+
+				_camera = new THREE.OrthographicCamera( params.xmag / -2, params.xmag / 2, params.ymag / 2, params.ymag / -2, params.znear, params.zfar );
+
+			}
+
+			if ( camera.name !== undefined ) _camera.name = camera.name;
+			if ( camera.extras ) _camera.userData = camera.extras;
+
+			return _camera;
 
 		} );
 
@@ -2414,12 +2415,7 @@ THREE.GLTF2Loader = ( function () {
 
 			return _each( json.skins, function ( skin ) {
 
-				var bindShapeMatrix = new THREE.Matrix4();
-
-				if ( skin.bindShapeMatrix !== undefined ) bindShapeMatrix.fromArray( skin.bindShapeMatrix );
-
 				var _skin = {
-					bindShapeMatrix: bindShapeMatrix,
 					joints: skin.joints,
 					inverseBindMatrices: dependencies.accessors[ skin.inverseBindMatrices ]
 				};
@@ -2656,6 +2652,8 @@ THREE.GLTF2Loader = ( function () {
 
 							}
 
+							//do not clone children as they will be replaced anyway
+							var clonedgroup = group.clone( false );
 							for ( var childrenId in group.children ) {
 
 								var child = group.children[ childrenId ];
@@ -2717,7 +2715,7 @@ THREE.GLTF2Loader = ( function () {
 									material = originalMaterial;
 									material.skinning = true;
 
-									child = new THREE.SkinnedMesh( geometry, material, false );
+									child = new THREE.SkinnedMesh( geometry, material );
 									child.castShadow = true;
 									child.userData = originalUserData;
 									child.name = originalName;
@@ -2746,39 +2744,14 @@ THREE.GLTF2Loader = ( function () {
 
 									}
 
-									child.bind( new THREE.Skeleton( bones, boneInverses, false ), skinEntry.bindShapeMatrix );
-
-									var buildBoneGraph = function ( parentJson, parentObject, property ) {
-
-										var children = parentJson[ property ];
-
-										if ( children === undefined ) return;
-
-										for ( var i = 0, il = children.length; i < il; i ++ ) {
-
-											var nodeId = children[ i ];
-											var bone = __nodes[ nodeId ];
-											var boneJson = json.nodes[ nodeId ];
-
-											if ( bone !== undefined && bone.isBone === true && boneJson !== undefined ) {
-
-												parentObject.add( bone );
-												buildBoneGraph( boneJson, bone, 'children' );
-
-											}
-
-										}
-
-									};
-
-									buildBoneGraph( node, child, 'skeletons' );
+									child.bind( new THREE.Skeleton( bones, boneInverses ), child.matrixWorld );
 
 								}
 
-								_node.add( child );
 
+								clonedgroup.add(child);
 							}
-
+							_node.add( clonedgroup );
 						}
 
 					}
