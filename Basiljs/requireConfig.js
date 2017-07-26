@@ -71,7 +71,24 @@ if (useGraphics == 'ThreeJS'.toLowerCase()) {
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
     requireConfig.paths['real-threejs'] = 'jslibs/three.min';
     requireConfig.paths['orbitControl'] = 'jslibs/OrbitControls';
-    requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
+    var gltfVersion = requireConfigGetQueryVariable('gltf');
+    if (gltfVersion == undefined) {
+        gltfVersion = 1;
+    }
+    else {
+        if (gltfVersion == 2) {
+            gltfVersion = 2;
+        }
+        else {
+            gltfVersion = 1;
+        }
+    }
+    if (gltfVersion == 1) {
+        requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
+    }
+    else {
+        requireConfig.paths['GLTFLoader'] = 'jslibs/GLTF2Loader';
+    }
     requireConfig.shim['threejs'] = { 'exports': 'THREE' };
     requireConfig.shim['orbitControl'] = { 'deps': [ 'threejs' ]};
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'threejs' ]};

@@ -25,7 +25,7 @@ git pull --all
 
 echo "=== Fetch Basil-protocol"
 cd $PLACE/../../Basil-protocol
-checkout master
+git checkout master
 git pull --all
 
 echo "=== Build stubs for Basil-protocol"
