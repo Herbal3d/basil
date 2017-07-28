@@ -77,7 +77,7 @@ define(['threejs', 'Config', 'Eventing', 'orbitControl', 'GLTFLoader' ],
             // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
             op.internalInitializeCameraAndLights(GR.scene, GR.canvas);
 
-            var rendererParams = Config.webgl.renderer.ThreeJSparams;
+            var rendererParams = Config.webgl.renderer.ThreeJS;
             rendererParams.canvas = canvas;
             GR.renderer = new THREE.WebGLRenderer(rendererParams);
             if (Config.webgl.renderer.clearColor) {

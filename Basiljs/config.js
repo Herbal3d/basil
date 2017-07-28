@@ -50,16 +50,21 @@ define(
                 'noComma': 0
             },
             'renderer': {
-                'ThreeJSparams': {
+                'ThreeJS': {
                     'antialias': true,
                     'alpha': true,      // there are alpha textures in the scene
-                    'logarithmicDepthBuffer': false
+                    'logarithmicDepthBuffer': false,
+                    'noComma': 0
                 },
-                'BabylonJSparams': {
+                'BabylonJS': {
+                    'clearColor-previous': [ 0.53, 0.828, 0.594 ],    // 0x88d493
+                    'clearColor': [ 0, 0.5, 0.5 ],
+                    'shadows': {
+                        'noComma': 0
+                    },
+                    'noComma': 0
                 },
-                'clearColor-previous': [ 0.53, 0.828, 0.594 ],    // 0x88d493
-                'clearColor': [ 0, 0.5, 0.5 ],
-                'shadows': {
+                'Cesium': {
                     'noComma': 0
                 },
                 'noComma': 0

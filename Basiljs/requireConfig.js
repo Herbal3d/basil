@@ -58,8 +58,8 @@ var requireConfig = {
 // Two different underlying graphics libraries. Choose only one.
 var useGraphics = requireConfigGetQueryVariable('engine');
 if (useGraphics == undefined) {
+    // default to ThreeJS
     useGraphics = 'ThreeJS'.toLowerCase();
-    // useGraphics = 'BabylonJS'.toLowerCase();
 }
 else {
     useGraphics = useGraphics.toLowerCase();
@@ -102,4 +102,8 @@ if (useGraphics == 'BabylonJS'.toLowerCase()) {
     requireConfig.shim['babylonjs'] = { 'exports': 'BABYLON' };
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'babylonjs' ]};
     requireConfig.shim['babylonjs-inspector'] = { 'deps': [ 'babylonjs' ]};
+}
+
+if (useGraphics == 'Cesium'.toLowerCase()) {
+    requireConfig.paths['Graphics'] = 'js/Graphics-Cesium';
 }

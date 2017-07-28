@@ -34,7 +34,7 @@ structs:
 
 The message source creates that message with a FlatBuffer.Builder. It then passes
 that Builder to the flow layer. If the message contains a 'BTransportHdr' struct, the flow
-layer fills that structure with the approriate stuff. If the 'BTransportHdr' struct contains
+layer fills that structure with the appropriate stuff. If the 'BTransportHdr' struct contains
 a 'responseRequested' struct, it also remembers the response key and callback
 for handling the response.
 
@@ -53,7 +53,5 @@ Questions:
 
 The receiving queue ends up with either raw or message format. How does the reader
 know the difference? Only queuing the 'message' struct out of the message format
-would cause a copy and/or problems with buffer freeing. Maybe the latter isn't a 
+would cause a copy and/or problems with buffer freeing. Maybe the latter isn't a
 problem for JavaScript and C#? What about C++?
-
-
