@@ -18,6 +18,14 @@ cd $PLACE/../../Babylon.js
 git checkout master
 git pull --all
 
+echo "=== Fetch Cesium"
+cd $PLACE/../../cesium
+git checkout master
+git pull --all
+npm install
+npm run build
+npm run minifyRelease
+
 echo "=== Fetch flatbuffers"
 cd $PLACE/../../flatbuffers
 git checkout master

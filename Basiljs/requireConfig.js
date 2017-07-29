@@ -105,5 +105,8 @@ if (useGraphics == 'BabylonJS'.toLowerCase()) {
 }
 
 if (useGraphics == 'Cesium'.toLowerCase()) {
+    requireConfig.waitSeconds = 60;
     requireConfig.paths['Graphics'] = 'js/Graphics-Cesium';
+    requireConfig.paths['Cesium'] = 'jslibs/Cesium/Cesium';
+    requireConfig.shim['Cesium'] = { 'exports': 'Cesium' };
 }
