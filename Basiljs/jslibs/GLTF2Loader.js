@@ -2204,6 +2204,21 @@ THREE.GLTF2Loader = ( function () {
 
 						}
 
+						if ( geometry.attributes.normal === undefined ) {
+
+							if ( material.flatShading !== undefined ) {
+
+								material.flatShading = true;
+
+							} else {
+
+								// TODO: Remove this backwards-compatibility fix after r87 release.
+								material.shading = THREE.FlatShading;
+
+							}
+
+						}
+
 						meshNode = new THREE.Mesh( geometry, material );
 						meshNode.castShadow = true;
 
@@ -2688,8 +2703,9 @@ THREE.GLTF2Loader = ( function () {
 
 							}
 
-							//do not clone children as they will be replaced anyway
+							// do not clone children as they will be replaced anyway
 							var clonedgroup = group.clone( false );
+
 							for ( var childrenId in group.children ) {
 
 								var child = group.children[ childrenId ];
@@ -2786,10 +2802,12 @@ THREE.GLTF2Loader = ( function () {
 
 								}
 
+								clonedgroup.add( child );
 
-								clonedgroup.add(child);
 							}
+
 							_node.add( clonedgroup );
+
 						}
 
 					}
