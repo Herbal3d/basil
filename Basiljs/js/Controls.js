@@ -64,27 +64,31 @@ define(['Config', 'Graphics', 'jquery', 'UIControls', 'Eventing'],
         'internalOnClickable': function(evnt) {
             var buttonOp = $(evnt.target).attr('op');
             if (buttonOp == 'loadGltf') {
-                var url = $('#SelectGltf').val();
+                var url = Config.gltfURLBase + $('#SelectGltf').val();
                 DebugLog('Controls: OnLoadButton: loading ' + url);
                 op.internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
             }
             if (buttonOp == 'loadAtropia') {
                 DebugLog('Controls: OnLoadAtropia');
                 var atropiaRegions = [
-                    [ "./gltf/testtest00.gltf", [0,0,512] ],
-                    [ "./gltf/testtest01.gltf", [0,0,256] ],
-                    [ "./gltf/testtest02.gltf", [0,0,0] ],
-                    [ "./gltf/testtest10.gltf", [256,0,512] ],
-                    // [ "./gltf/testtest11.gltf", [256,0,256] ],
-                    [ "./gltf/testtest12.gltf", [256,0,0] ],
-                    [ "./gltf/testtest20.gltf", [512,0,512] ],
-                    [ "./gltf/testtest21.gltf", [512,0,256] ],
-                    [ "./gltf/testtest22.gltf", [512,0,0] ]
+                    [ "testtest00.gltf", [0,0,512] ],
+                    [ "testtest01.gltf", [0,0,256] ],
+                    [ "testtest02.gltf", [0,0,0] ],
+                    [ "testtest10.gltf", [256,0,512] ],
+                    // [ "testtest11.gltf", [256,0,256] ],
+                    [ "testtest12.gltf", [256,0,0] ],
+                    [ "testtest20.gltf", [512,0,512] ],
+                    [ "testtest21.gltf", [512,0,256] ],
+                    [ "testtest22.gltf", [512,0,0] ]
                 ];
                 var valueFromHTML = $(evnt.target).attr('value');
                 if (valueFromHTML) {
                     DebugLog('Getting value for regions from HTML')
-                    atropiaRegions = JSON.parse(valueFromHTML);
+                    parsedInput = JSON.parse(valueFromHTML);
+                    // Add the url base for GLTF files (since it changes with the GLTF version)
+                    atropiaRegions = parsedInput.map(oneRegionInfo => {
+                        return [ Config.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
+                    });
                 }
                 op.internalDoLoadMultiple(atropiaRegions);
             }

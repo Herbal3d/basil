@@ -24,6 +24,12 @@ require(['Config', 'jquery'], function(Config, $) {
     GP.Config = Config;
     GP.Ready = false;
 
+    GP.Config.gltfURLBase = './convoar/gltf';
+    if (gltfVersion == 2) {
+        GP.Config.gltfURLBase += "2";
+    }
+    GP.Config.gltfURLBase += "/";
+
     require(['Comm', 'Graphics', 'Coordinates', 'Controls'],
                 function(pComm, pDisplay, pCoord, pControls) {
 

@@ -65,24 +65,26 @@ else {
     useGraphics = useGraphics.toLowerCase();
 }
 
+// Set global gltfVersion to 1 or 2
+var gltfVersion = requireConfigGetQueryVariable('gltf');
+if (gltfVersion == undefined) {
+    gltfVersion = 1;
+}
+else {
+    if (gltfVersion == 2) {
+        gltfVersion = 2;
+    }
+    else {
+        gltfVersion = 1;
+    }
+}
+
 if (useGraphics == 'ThreeJS'.toLowerCase()) {
     requireConfig.paths['Graphics'] = 'js/Graphics-ThreeJS';
     // see https://github.com/mrdoob/three.js/issues/9602 about this wrapper thing
     requireConfig.paths['threejs'] = 'jslibs/threejs-wrapper';
     requireConfig.paths['real-threejs'] = 'jslibs/three.min';
     requireConfig.paths['orbitControl'] = 'jslibs/OrbitControls';
-    var gltfVersion = requireConfigGetQueryVariable('gltf');
-    if (gltfVersion == undefined) {
-        gltfVersion = 1;
-    }
-    else {
-        if (gltfVersion == 2) {
-            gltfVersion = 2;
-        }
-        else {
-            gltfVersion = 1;
-        }
-    }
     if (gltfVersion == 1) {
         requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
     }
@@ -105,7 +107,7 @@ if (useGraphics == 'BabylonJS'.toLowerCase()) {
 }
 
 if (useGraphics == 'Cesium'.toLowerCase()) {
-    requireConfig.waitSeconds = 60;
+    requireConfig.waitSeconds = 60; // it takes a while to load the large Cesium.js file
     requireConfig.paths['Graphics'] = 'js/Graphics-Cesium';
     requireConfig.paths['Cesium'] = 'jslibs/Cesium/Cesium';
     requireConfig.shim['Cesium'] = { 'exports': 'Cesium' };
