@@ -89,7 +89,7 @@ if (useGraphics == 'ThreeJS'.toLowerCase()) {
         requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
     }
     else {
-        requireConfig.paths['GLTFLoader'] = 'jslibs/GLTF2Loader';
+        requireConfig.paths['GLTFLoader'] = 'jslibs/GLTFLoader';
     }
     requireConfig.shim['threejs'] = { 'exports': 'THREE' };
     requireConfig.shim['orbitControl'] = { 'deps': [ 'threejs' ]};

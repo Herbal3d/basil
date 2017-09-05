@@ -30,7 +30,7 @@ THREEJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
 echo ${THREEJSMODIFYDATE} > jslibs/three.js.date
 
 cp $THREEDIR/examples/js/loaders/GLTFLoader.js jslibs/
-cp $THREEDIR/examples/js/loaders/GLTF2Loader.js jslibs/
+# cp $THREEDIR/examples/js/loaders/GLTF2Loader.js jslibs/
 cp $THREEDIR/examples/js/controls/OrbitControls.js jslibs/
 
 # =====================================

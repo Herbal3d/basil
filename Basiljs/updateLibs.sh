@@ -8,10 +8,8 @@ PLACE=$(pwd)
 
 echo "=== Fetch ThreeJS"
 cd $PLACE/../../three.js
-git checkout master
-git pull --all
 git checkout dev
-git pull
+git pull --all
 
 echo "=== Fetch BabylonJS"
 cd $PLACE/../../Babylon.js
