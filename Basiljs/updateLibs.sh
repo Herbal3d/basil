@@ -11,11 +11,6 @@ cd $PLACE/../../three.js
 git checkout dev
 git pull --all
 
-echo "=== Fetch BabylonJS"
-cd $PLACE/../../Babylon.js
-git checkout master
-git pull --all
-
 echo "=== Fetch Cesium"
 cd $PLACE/../../cesium
 git checkout master

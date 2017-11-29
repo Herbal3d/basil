@@ -1,8 +1,7 @@
 // Configuration
-// This is called by RequireJS and expects a parameters map returned.
-//     Do any processing needed and just return a data structure.
+// Just returns a data structure of configuration parameters.
 // Note: colors may be specified as strings (a number as a string) or numbers.
-define(
+module.exports = 
     {
         // Parameters for the main display page
         'page': {
@@ -13,6 +12,7 @@ define(
         },
         // Parameters for the webgl environment
         'webgl': {
+            'engine': 'ThreeJS',
             'camera': {
                 'name': 'camera1',
                 'initialCameraPosition': [ 200, 50, 200 ],
@@ -51,20 +51,20 @@ define(
             },
             'renderer': {
                 'ThreeJS': {
+                    'scripts': [
+                        'jslibs/three.min.js',
+                        'jslibs/OrbitControls.js',
+                        'jslibs/GLTFLoader.js'
+                    ],
                     'antialias': true,
                     'alpha': true,      // there are alpha textures in the scene
                     'logarithmicDepthBuffer': false,
                     'noComma': 0
                 },
-                'BabylonJS': {
-                    'clearColor-previous': [ 0.53, 0.828, 0.594 ],    // 0x88d493
-                    'clearColor': [ 0, 0.5, 0.5 ],
-                    'shadows': {
-                        'noComma': 0
-                    },
-                    'noComma': 0
-                },
                 'Cesium': {
+                    'scripts': [
+                        'jslibs/Cesium/Cesium.js'
+                    ],
                     'noComma': 0
                 },
                 'noComma': 0
@@ -77,4 +77,4 @@ define(
         },
         'noComma': 0
     }
-);
+;

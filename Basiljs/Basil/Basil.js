@@ -2,10 +2,31 @@
 // All rights reserved.
 // Licensed for use under BSD License 2.0 (https://opensource.org/licenses/BSD-3-Clause).
 
+// From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
+// Used to see if 'engine' is specified before any environment or libraries are loaded.
+function configGetQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1]);
+        }
+    }
+    return undefined;
+}
+
 // Global parameters and variables. "GP.variable"
 var GP = GP || {};
 
-GP.requireConfig = requireConfig;   // from the './requireConfig.js' in index.html
+var Config = require('../BasilConfig');
+GP.Config = Config;
+
+// Get optional invocation parameter specifying which rendering engine to use
+var gEngine = configGetQueryVariable('engine');
+if (gEngine) {
+    Config.webgl.engine = gEngine;
+}
 
 /*
     Pattern for Basil packages is each has a local, global variable to hold
@@ -14,34 +35,26 @@ GP.requireConfig = requireConfig;   // from the './requireConfig.js' in index.ht
     for use in debugging.
 
     Each package creates a map named 'op' that has the packages external operations.
-    'op' is what is returned by RequireJS for external access to the package.
+    'op' is what is returned by require() for external access to the package.
     This is added to the packages local var so there is always a 'GP.EV.op', for
     instance.
 */
-requirejs.config(GP.requireConfig);
 
-require(['Config', 'jquery'], function(Config, $) {
-    GP.Config = Config;
-    GP.Ready = false;
+var Comm = require('../BasilComm');
+var Graphics = require('../BasilGraphics');
+var Controls = require('../BasilControls');
 
-    GP.Config.gltfURLBase = './convoar/gltf';
-    if (gltfVersion == 2) {
-        GP.Config.gltfURLBase += "2";
-    }
-    GP.Config.gltfURLBase += "/";
+GP.Ready = false;
 
-    require(['Comm', 'Graphics', 'Coordinates', 'Controls'],
-                function(pComm, pDisplay, pCoord, pControls) {
+var container = document.getElementById(Config.page.webGLcontainerId);
+var canvas = document.getElementById(Config.page.webGLcanvasId);
+Graphics.Init(container, canvas, function() {
+    Controls.Init();
 
-        var container = document.getElementById(Config.page.webGLcontainerId);
-        var canvas = document.getElementById(Config.page.webGLcanvasId);
-        pDisplay.Init(container, canvas);
-        pControls.Init();
+    Graphics.Start();
+    Comm.Start();
 
-        pDisplay.Start();
-        pComm.Start();
-        GP.Ready = true;
-    });
+    GP.Ready = true;
 });
 
 // Global debug information printout.

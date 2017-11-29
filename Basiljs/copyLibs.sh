@@ -8,7 +8,6 @@
 #      git clone git@github.com:mrdoob/three.js.git
 #      git branch --track dev origin/dev
 #      git checkout dev     # Using the development version of ThreeJS
-#      git clone git@github.com:BabylonJS/Babylon.js.git
 #      git clone https://github.com/AnalyticalGraphicsInc/cesium.git
 #      git clone git@github.com:google/flatbuffers.git
 #      git clone git@github.com:Misterblue/Basil-protocol.git
@@ -32,17 +31,6 @@ echo ${THREEJSMODIFYDATE} > jslibs/three.js.date
 cp $THREEDIR/examples/js/loaders/GLTFLoader.js jslibs/
 # cp $THREEDIR/examples/js/loaders/GLTF2Loader.js jslibs/
 cp $THREEDIR/examples/js/controls/OrbitControls.js jslibs/
-
-# =====================================
-# Copy BabylonJS and store a file for the date of the primary file
-BABYLONDIR=${PLACE}/../../Babylon.js
-BABYLONJS="$BABYLONDIR/dist/preview release/babylon.js"
-cp "${BABYLONJS}" jslibs/
-STATTIME=$(stat -c '%Y' "${BABYLONJS}")
-BABYLONJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
-echo ${BABYLONJSMODIFYDATE} > jslibs/babylon.js.date
-
-cp "$BABYLONDIR/dist/preview release/loaders/babylon.glTFFileLoader.js" jslibs/
 
 # =====================================
 # Copy Cesium and store a file for the date of the primary file
@@ -82,8 +70,6 @@ echo ${FBGENBASILSERVERMODIFYDATE} > jslibs/BasilServer_generated.js.date
 exit    # comment this to print out where it's getting the libraries from
 echo "THREEJS $THREEJS"
 echo "THREEJSMODIFYDATE $THREEJSMODIFYDATE"
-echo "BABYLONJS $BABYLONJS"
-echo "BABYLONJSMODIFYDATE $BABYLONJSMODIFYDATE"
 echo "FLATBUFFERJS $FLATBUFFERJS"
 echo "FLATBUFFERJSMODIFYDATE $FLATBUFFERJSMODIFYDATE"
 echo "FBGENBASILSERVER $FBGENBASILSERVER"

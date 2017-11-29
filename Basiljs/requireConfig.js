@@ -96,16 +96,6 @@ if (useGraphics == 'ThreeJS'.toLowerCase()) {
     requireConfig.shim['GLTFLoader'] = { 'deps': [ 'threejs' ]};
 }
 
-if (useGraphics == 'BabylonJS'.toLowerCase()) {
-    requireConfig.paths['Graphics'] = 'js/Graphics-Babylon';
-    // requireConfig.paths['babylonjs'] = 'jslibs/babylon.max';
-    requireConfig.paths['babylonjs'] = 'jslibs/babylon';
-    requireConfig.paths['GLTFLoader'] = 'jslibs/babylon.glTFFileLoader';
-    requireConfig.shim['babylonjs'] = { 'exports': 'BABYLON' };
-    requireConfig.shim['GLTFLoader'] = { 'deps': [ 'babylonjs' ]};
-    requireConfig.shim['babylonjs-inspector'] = { 'deps': [ 'babylonjs' ]};
-}
-
 if (useGraphics == 'Cesium'.toLowerCase()) {
     requireConfig.waitSeconds = 60; // it takes a while to load the large Cesium.js file
     requireConfig.paths['Graphics'] = 'js/Graphics-Cesium';
