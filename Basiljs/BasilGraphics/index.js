@@ -9,7 +9,7 @@ var engine = Config.webgl.engine;
 
 var importScript = (function (oHead) {
     return function (sSrc, fOnload, fOnError) {
-        var oScript = document.createElement("script");
+        let oScript = document.createElement("script");
         oScript.type = "text\/javascript";
         oScript.onerror = fOnError;
         if (fOnload) { oScript.onload = fOnload; }
@@ -19,6 +19,8 @@ var importScript = (function (oHead) {
 
 })(document.head || document.getElementsByTagName("head")[0]);
 
+// The configuration ways which graphis engine to load.
+// Load the engine and save the state of the load.
 for (var script of Config.webgl.renderer[engine].scripts) {
     DebugLog('Loading graphics script ' + script);
     importScript(script, function() {
@@ -29,4 +31,3 @@ for (var script of Config.webgl.renderer[engine].scripts) {
         }
     );
 }
-

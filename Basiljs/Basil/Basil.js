@@ -29,7 +29,7 @@ if (gEngine) {
 }
 
 /*
-    Pattern for Basil packages is each has a local, global variable to hold
+    Pattern for Basil is for each package to define a global variable to hold
     local state. This is two character (GR, EV, CM, CO, ...). There is one
     global var named 'GP' that has references to everything but that is ONLY
     for use in debugging.
