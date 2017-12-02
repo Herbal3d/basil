@@ -67,11 +67,11 @@ let op = {
         var buttonOp = $(evnt.target).attr('op');
         if (buttonOp == 'loadGltf') {
             var url = Config.gltfURLBase + $('#SelectGltf').val();
-            DebugLog('Controls: OnLoadButton: loading ' + url);
+            GP.DebugLog('Controls: OnLoadButton: loading ' + url);
             op.internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
         }
         if (buttonOp == 'loadAtropia') {
-            DebugLog('Controls: OnLoadAtropia');
+            GP.DebugLog('Controls: OnLoadAtropia');
             var atropiaRegions = [
                 [ "testtest00.gltf", [0,0,512] ],
                 [ "testtest01.gltf", [0,0,256] ],
@@ -85,7 +85,7 @@ let op = {
             ];
             var valueFromHTML = $(evnt.target).attr('value');
             if (valueFromHTML) {
-                DebugLog('Getting value for regions from HTML')
+                GP.DebugLog('Getting value for regions from HTML')
                 parsedInput = JSON.parse(valueFromHTML);
                 // Add the url base for GLTF files (since it changes with the GLTF version)
                 atropiaRegions = parsedInput.map(oneRegionInfo => {
@@ -95,7 +95,7 @@ let op = {
             op.internalDoLoadMultiple(atropiaRegions);
         }
         if (buttonOp == 'addTest') {
-            DebugLog('Controls: OnAddTestObject');
+            GP.DebugLog('Controls: OnAddTestObject');
             Graphics.AddTestObject();
         }
         if (buttonOp == 'showDebug') {
@@ -151,5 +151,6 @@ let op = {
 
 GP.CO = CO;         // added for debugging. Do not use for inter-package access
 
-module.exports = op;
 CO.op = op;
+
+export default op;

@@ -19,6 +19,6 @@ GP.CM = CM; // for debugging. Don't use for cross package access.
 
 CM.op = op;
 
-module.exports = op;
+export default op;
 
 

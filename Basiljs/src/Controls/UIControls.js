@@ -25,10 +25,10 @@ var UI_CoordF = function (areaID) {
         $(areaID).append(Ydiv);
         $(areaID).append(Zdiv);
         this.areaID = areaID;
-        // DebugLog('Created UI_Coord element for ' + areaID);
+        // GP.DebugLog('Created UI_Coord element for ' + areaID);
     }
     else {
-        DebugLog('Did not create UI_Coord element because ' + areaID + ' not in document');
+        GP.DebugLog('Did not create UI_Coord element because ' + areaID + ' not in document');
     }
 };
 UI_CoordF.prototype.Update = function(xx, yy, zz) {
@@ -46,7 +46,7 @@ UI_CoordF.prototype.Update = function(xx, yy, zz) {
         }
     }
     else {
-        DebugLog('Did not update UI_Coord element because no areaID');
+        GP.DebugLog('Did not update UI_Coord element because no areaID');
     }
 };
 
@@ -72,7 +72,7 @@ var UI_QuatF = function (areaID) {
         this.areaID = areaID;
     }
     else {
-        DebugLog('Did not create UI_Quat element because ' + areaID + ' not in document');
+        GP.DebugLog('Did not create UI_Quat element because ' + areaID + ' not in document');
     }
 };
 UI_QuatF.prototype.Update = function(xx, yy, zz, ww) {
@@ -92,7 +92,7 @@ UI_QuatF.prototype.Update = function(xx, yy, zz, ww) {
         }
     }
     else {
-        DebugLog('Did not update UI_Coord element because no areaID');
+        GP.DebugLog('Did not update UI_Coord element because no areaID');
     }
 };
 
@@ -104,10 +104,10 @@ var UI_TextF = function (areaID) {
     if ($(areaID)) {
         $(areaID).empty();
         this.areaID = areaID;
-        // DebugLog('Created UI_Text element for ' + areaID);
+        // GP.DebugLog('Created UI_Text element for ' + areaID);
     }
     else {
-        DebugLog('Did not create UI_Text element because ' + areaID + ' not in document');
+        GP.DebugLog('Did not create UI_Text element because ' + areaID + ' not in document');
     }
 };
 UI_TextF.prototype.Update = function(txt) {
@@ -116,7 +116,7 @@ UI_TextF.prototype.Update = function(txt) {
         $(areaID).text(txt);
     }
     else {
-        DebugLog('Did not update UI_Text element because no areaID');
+        GP.DebugLog('Did not update UI_Text element because no areaID');
     }
 };
 
@@ -136,4 +136,5 @@ var op = {
 
 GP.UC = UC;
 UC.op = op;
-module.exports = op;
+
+export default op;

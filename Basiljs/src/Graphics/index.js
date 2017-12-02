@@ -23,7 +23,7 @@ var importScript = (function (oHead) {
 // The configuration ways which graphis engine to load.
 // Load the engine and save the state of the load.
 for (var script of Config.webgl.renderer[engine].scripts) {
-    DebugLog('Loading graphics script ' + script);
+    GP.DebugLog('Loading graphics script ' + script);
     importScript(script, function() {
             // script loaded
         },

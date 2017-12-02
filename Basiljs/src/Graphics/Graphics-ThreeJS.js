@@ -81,7 +81,7 @@ var op = {
 
         GR.scene = new THREE.Scene();
 
-        // DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
+        // GP.DebugLog('Graphics.Init: canvas width=' + canvas.clientWidth + ', height=' + canvas.clientHeight);
         op.internalInitializeCameraAndLights(GR.scene, GR.canvas);
 
         var rendererParams = Config.webgl.renderer.ThreeJS;
@@ -173,7 +173,7 @@ var op = {
     },
     // Container was resized
     'internalOnContainerResize': function() {
-        DebugLog('Graphics: container resize');
+        GP.DebugLog('Graphics: container resize');
         GR.camera.aspect = GR.canvas.clientWidth / GR.canvas.clientHeight;
         GR.camera.updateProjectionMatrix();
 
@@ -183,7 +183,7 @@ var op = {
     'ClearScene': function() {
         if (GR.runLoopIdentifier) {
             cancelAnimationFrame(GR.runLoopIdentifier);
-            DebugLog('Graphics: canelling runLoop');
+            GP.DebugLog('Graphics: canelling runLoop');
         }
         GR.runLoopIdentifier = undefined;
 
@@ -191,7 +191,7 @@ var op = {
         for (let ii= GR.scene.children.length-1; ii >= 0; ii--) {
             GR.scene.remove(GR.scene.children[ii]);
         }
-        DebugLog('Graphics: cleared scene');
+        GP.DebugLog('Graphics: cleared scene');
         // GR.scene = undefined;
     },
     // Load the passed gltf file into the scene
@@ -212,7 +212,7 @@ var op = {
                     GR.scene = theScene;
                     op.internalInitializeCameraAndLights(theScene, GR.canvas);
                     op.internalInitializeCameraControl(theScene, GR.container);
-                    DebugLog('Graphics: Loaded GLTF scene');
+                    GP.DebugLog('Graphics: Loaded GLTF scene');
                     loaded();
                 });
             }
@@ -243,29 +243,29 @@ var op = {
                 Promise.all(urlsAndLocations.map(oneRegionInfo => {
                     let regionURL = oneRegionInfo[0];
                     let regionOffset = oneRegionInfo[1];
-                    DebugLog('Graphics: Loading multiple regions from ' + regionURL + " at offset " + regionOffset);
+                    GP.DebugLog('Graphics: Loading multiple regions from ' + regionURL + " at offset " + regionOffset);
                     return new Promise(function(resolve, reject) {
                         try {
-                            DebugLog('Graphics: starting loading of ' + regionURL);
+                            GP.DebugLog('Graphics: starting loading of ' + regionURL);
                             loader.load(regionURL, function(gltf) {
-                                DebugLog('Graphics: resolving loading of ' + regionURL);
+                                GP.DebugLog('Graphics: resolving loading of ' + regionURL);
                                 resolve([gltf, regionURL, regionOffset]);
                             }, undefined// onProgress
                             , function() { // onError
                                 // If this does a reject, the whole 'all' fails.
                                 // Fake a resolve but pass an undefined gltf pointer.
-                                DebugLog('Graphics: resolving fake gltf because error for ' + regionURL);
+                                GP.DebugLog('Graphics: resolving fake gltf because error for ' + regionURL);
                                 resolve([ undefined, regionURL, regionOffset]);
                             });
                         }
                         catch (e) {
-                            DebugLog('Graphics: rejecting loading of ' + regionURL);
+                            GP.DebugLog('Graphics: rejecting loading of ' + regionURL);
                             reject(e);
                         }
                     });
                 }))
                 .catch(function(e) {
-                    DebugLog('Graphics: failed loading multiple region');
+                    GP.DebugLog('Graphics: failed loading multiple region');
                 })
                 // The above reads in all the gltf files and they show up here
                 //    as an array of arrays each containing '[gltf, url, offset]'
@@ -275,37 +275,37 @@ var op = {
                         var regionURL = gltfInfo[1];
                         var regionOffset = gltfInfo[2];
                         if (gltf) {
-                            DebugLog('Graphics: processing loaded region ' + regionURL);
+                            GP.DebugLog('Graphics: processing loaded region ' + regionURL);
                             var theScene = gltf.scene ? gltf.scene : gltf.scenes[0];
                             var group = new THREE.Group();
                             group.position.fromArray(regionOffset);
                             // group.setRotationFromAxisAngle(1, 0, 0, -0.7071068);
-                            DebugLog('loadedGltf: num children = ' + theScene.children.length);
+                            GP.DebugLog('loadedGltf: num children = ' + theScene.children.length);
                             theScene.children.forEach(function(aNode, iii) {
                                 var newNode = aNode.clone();
                                 if (newNode instanceof THREE.Mesh) {
                                     newNode.material = aNode.material.clone();
                                     newNode.position = aNode.position.clone();
                                 }
-                                // DebugLog('loadedGltf: adding child named ' + aNode.name + ' with index ' + iii);
+                                // GP.DebugLog('loadedGltf: adding child named ' + aNode.name + ' with index ' + iii);
                                 group.add(newNode);
                             });
-                            DebugLog('loadedGltf: num children after = ' + theScene.children.length);
+                            GP.DebugLog('loadedGltf: num children after = ' + theScene.children.length);
                             newScene.add(group);
                             disposeScene(theScene);
                         }
                         else {
-                            DebugLog('Graphics: not processing gltf for ' + regionURL);
+                            GP.DebugLog('Graphics: not processing gltf for ' + regionURL);
                         }
                     })
                 })
                 // All the scenes have been merged into 'newScene'.
                 // Finish scene initialization.
                 .then(function() {
-                    DebugLog('Graphics: doing final processing to the scene');
+                    GP.DebugLog('Graphics: doing final processing to the scene');
                     op.internalInitializeCameraAndLights(newScene, GR.canvas);
                     op.internalInitializeCameraControl(newScene, GR.container);
-                    DebugLog('Graphics: Loaded GLTF scene');
+                    GP.DebugLog('Graphics: Loaded GLTF scene');
                     loaded();
                 });
             }
@@ -405,7 +405,7 @@ var op = {
         var cube = new THREE.Mesh(geometry, material);
         cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
         GR.scene.add(cube);
-        DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
+        GP.DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
     },
     'SetDebugMode': function(enable) {
     },
@@ -416,4 +416,4 @@ GP.GR = GR; // for debugging. Don't use for cross package access.
 
 GR.op = op;
 
-module.exports = op;
+export default op;

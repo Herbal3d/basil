@@ -66,14 +66,14 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BFlowGenerated'],
         };
         // Read a message and call the callback when received. Will hang if no input yet.
         that.receive = function(completionCallback) {
-            DebugLog('flow.receive. Setting callback');
+            GP.DebugLog('flow.receive. Setting callback');
             this.completionCallback = completionCallback;
         };
         // Call callback when there is data in put input queue.
         //    A way of getting called when data is available.
         //    Pass 'undefined' to turn off the callbacks.
         that.dataAvailable = function(callback) {
-            DebugLog('flow.dataAvailable. Setting callback');
+            GP.DebugLog('flow.dataAvailable. Setting callback');
             this.availableCallback = callback;
         };
 
@@ -142,11 +142,11 @@ define(['Config', 'FlatBuffers', 'BasilTypes', 'BFlowGenerated'],
             }
             else {
                 if (context.availableCallback != undefined) {
-                    DebugLog('flow.received data. Calling availableCallback');
+                    GP.DebugLog('flow.received data. Calling availableCallback');
                     context.availableCallback(flowMsg);
                 }
                 else {
-                    DebugLog('flow.received. Throwing message away because no receiver callback');
+                    GP.DebugLog('flow.received. Throwing message away because no receiver callback');
                 }
             }
         };

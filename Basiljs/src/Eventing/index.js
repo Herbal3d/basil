@@ -74,7 +74,7 @@ TopicEntry.prototype.fire = function(params) {
 var processTimedEvents = function() {
     if (EV.timedEventProcessors) {
         EV.timedEventProcessors.forEach(function(proc, topic) {
-            // DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
+            // GP.DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
             proc(topic);
         });
     }
@@ -97,7 +97,7 @@ let op = {
             topicEnt = op.register(topic, 'subscribe');
         }
         topicEnt.addSubscription(sub);
-        DebugLog("Eventing.subscribe: adding subscription to event " + topic);
+        GP.DebugLog("Eventing.subscribe: adding subscription to event " + topic);
         return sub;
     },
     // Release a topic subscription.
@@ -107,7 +107,7 @@ let op = {
             if (topicEnt) {
                 topicEnt.removeSubscription(subEntry);
             }
-            DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
+            GP.DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
         }
     },
     // Register a topic that can be generated.
@@ -119,14 +119,14 @@ let op = {
             topicEnt = new TopicEntry(topic);
             topicEnt.registar = registar;
             EV.topics.set(topic, topicEnt);
-            DebugLog("Eventing.register: registering event " + topic);
+            GP.DebugLog("Eventing.register: registering event " + topic);
         }
         return topicEnt;
     },
     // Unregister a topic.
     'unregister': function(topicEntry, topic) {
         // cannot unregister a topic yet
-            DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
+            GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
     },
     // An event happened for a topic.
     // Fire the event processors and pass 'params' to all subscribers.
@@ -150,11 +150,11 @@ let op = {
         }
         var topic = topicEntryOrTopic;
         if ('topic' in topicEntryOrTopic) {
-            DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
+            GP.DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
             topic = topicEntryOrTopic.topic;
         }
         EV.timedEventProcessors.set(topic, processor);
-        DebugLog("Eventing.createTimedEventProcessor: creating for event " + topic);
+        GP.DebugLog("Eventing.createTimedEventProcessor: creating for event " + topic);
         return topic;
     },
     // Return 'true' if a processor entry was actually removed
@@ -166,7 +166,7 @@ let op = {
                 topic = topicEntryOrTopic.topic;
             }
             ret = EV.timedEventProcessors.delete(topic);
-            DebugLog("Eventing.removeTimedEventProcessor: removing for event " + topic);
+            GP.DebugLog("Eventing.removeTimedEventProcessor: removing for event " + topic);
         }
         return ret;
     },
@@ -175,7 +175,7 @@ let op = {
 
 GP.EV = EV; // For debugging. Don't use for cross package access.
 
-module.exports = op;
+export default op;
 EV.op = op;
 EV.topics = EV.topics || new Map();
 EV.numSubscriptions = 0;

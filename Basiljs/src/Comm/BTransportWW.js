@@ -38,7 +38,7 @@ define(['Config', 'BTransport'],
             BTW.isWorker = true;
             // Operation if we're the web worker
             that.open = function() {
-                DebugLog('transport.worker.open');
+                GP.DebugLog('transport.worker.open');
                 this.worker = undefined;
                 var me = this;
                 onmessage = function(msg) {
@@ -47,27 +47,27 @@ define(['Config', 'BTransport'],
                 this.connected = true;
             };
             that.close = function() {
-                DebugLog('transport.worker.close');
+                GP.DebugLog('transport.worker.close');
                 this.connected = false;
                 this.flushInQueue();
                 this.availableCallback = undefined;
                 this.receiveCallback = undefined;
             };
             that.send = function(data) {
-                DebugLog('transport.worker.send');
+                GP.DebugLog('transport.worker.send');
                 postMessage(
                     { 'op': this.msgCode.BasilServerMsg, 'data': data },
                     [ data.buffer ]
                 );
             };
             that.receive = function(completionCallback) {
-                DebugLog('transport.worker.receive');
+                GP.DebugLog('transport.worker.receive');
                 this.receiveCallback = completionCallback;
                 // Apply the callback to anything already in the queue
                 this.flushInQueue();
             };
             that.dataAvailable = function(callback) {
-                DebugLog('transport.worker.dataAvailable');
+                GP.DebugLog('transport.worker.dataAvailable');
                 this.availableCallback = callback;
                 // Apply the callback to anything already in the queue
                 this.flushInQueue();
@@ -100,20 +100,20 @@ define(['Config', 'BTransport'],
                 this.receiveCallback = undefined;
             };
             that.send = function(data) {
-                DebugLog('transport.main.send');
+                GP.DebugLog('transport.main.send');
                 this.worker.postMessage(
                     { 'op': this.msgCode.BasilServerMsg, 'data': data},
                     [ data.buffer ]
                 );
             };
             that.receive = function(completionCallback) {
-                DebugLog('transport.main.receive');
+                GP.DebugLog('transport.main.receive');
                 this.receiveCallback = completionCallback;
                 // Apply the callback to anything already in the queue
                 this.flushInQueue();
             };
             that.dataAvailable = function(callback) {
-                DebugLog('transport.main.dataAvailable');
+                GP.DebugLog('transport.main.dataAvailable');
                 this.availableCallback = callback;
                 // Apply the callback to anything already in the queue
                 this.flushInQueue();
@@ -147,24 +147,24 @@ define(['Config', 'BTransport'],
                     && (context.availableCallback != null || context.receiveCallback != null)) {
                 // Nothing in the queue and there is a listener. Just send the message
                 if (context.receiveCallback != undefined) {
-                    DebugLog('transport.onMessage: Empty queue. Sending for receiveCallback. op=' + op);
+                    GP.DebugLog('transport.onMessage: Empty queue. Sending for receiveCallback. op=' + op);
                     var cb = context.receiveCallback;
                     context.receiveCallback = undefined;
                     cb(data);
                 }
                 else {
                     if (context.availableCallback != undefined) {
-                        DebugLog('transport.onMessage: Empty queue. Sending for availableCallback. op=' + msg.op);
+                        GP.DebugLog('transport.onMessage: Empty queue. Sending for availableCallback. op=' + msg.op);
                         context.availableCallback(data);
                     }
                     else {
-                        DebugLog('transport.onMessage: queuing data. op=' + msg.op);
+                        GP.DebugLog('transport.onMessage: queuing data. op=' + msg.op);
                         context.inQueue.push( [ data ] );
                     }
                 }
             }
             else {
-                DebugLog('transport.onMessage: Stuff in queue. Queuing. len=' + this.inQueue.length);
+                GP.DebugLog('transport.onMessage: Stuff in queue. Queuing. len=' + this.inQueue.length);
                 context.inQueue.push( [ data ] );
             }
         };
