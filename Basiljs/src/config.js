@@ -73,6 +73,10 @@ module.exports = {
         },
         'noComma': 0
     },
+    'assets': {
+        'gltfURLBase': '/convoar/gltf2/',
+        'noComma': 0
+    },
     'eventing': {
         'eventPollIntervalMS': 500,
         'noComma': 0

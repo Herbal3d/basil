@@ -79,20 +79,17 @@ GP.Ready = false;
 
 var container = document.getElementById(Config.page.webGLcontainerId);
 var canvas = document.getElementById(Config.page.webGLcanvasId);
-GP.DebugLog('Basil.main: about to init graphics');
+
 Graphics.Init(container, canvas)
-    .then(() => {
-        GP.DebugLog('Basil.main: graphics initialized');
-        Controls.Init();
-        GP.DebugLog('Basil.main: controls initialized');
+.then(() => {
+    Controls.Init();
 
-        Graphics.Start();
-        GP.DebugLog('Basil.main: graphics started');
-        Comm.Start();
+    Graphics.Start();
+    Comm.Start();
 
-        GP.Ready = true;
-    })
-    .catch ((e) => {
-        GP.DebugLog('Basil.main: failure initializing:' + e);
-    });
+    GP.Ready = true;
+})
+.catch ((e) => {
+    GP.DebugLog('Basil.main: failure initializing:' + e);
+});
 

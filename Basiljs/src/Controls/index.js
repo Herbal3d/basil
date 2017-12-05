@@ -13,14 +13,12 @@ import * as Eventing from 'xEventing';
 import * as UIControls from './UIControls.js';
 
 export function Init() {
-    GP.DebugLog('Controls.Init: In Controls.Init');    // DEBUG DEBUG
     $('.clickable').click(internalOnClickable);
 
     // Whether debug output window is initially displayed can be set in the configuration file
     ShowDebug(Config.page.showDebug);
 
     // Update the camera position for debugging
-    GP.DebugLog('Controls.Init: adding controls for camera pos');    // DEBUG DEBUG
     CO.infoCameraCoord = new UIControls.UI_Coord('div[b-info=camPosition]');
     CO.eventCameraInfo = new Eventing.subscribe('display.cameraInfo', function(camInfo, topic) {
         if (camInfo && camInfo.position && CO.infoCameraCoord) {
@@ -29,7 +27,6 @@ export function Init() {
     });
 
     // UPdate the renderer info
-    GP.DebugLog('Controls.Init: updating renderer info');    // DEBUG DEBUG
     CO.infoFPS = new UIControls.UI_Text('div[b-info=infoFPS]');
     CO.infoDrawCalls = new UIControls.UI_Text('div[b-info=infoDrawCalls]');
     CO.infoVertices = new UIControls.UI_Text('div[b-info=infoVertices]');
@@ -50,7 +47,6 @@ export function Init() {
             CO.infoGeometryMem.Update(info.memory.geometries);
         }
     });
-    GP.DebugLog('Controls.Init: complete');    // DEBUG DEBUG
 };
 
 export function Start() {
@@ -72,7 +68,7 @@ export function ShowDebug(onOff) {
 function internalOnClickable(evnt) {
     var buttonOp = $(evnt.target).attr('op');
     if (buttonOp == 'loadGltf') {
-        var url = Config.gltfURLBase + $('#SelectGltf').val();
+        var url = Config.assets.gltfURLBase + $('#SelectGltf').val();
         GP.DebugLog('Controls: OnLoadButton: loading ' + url);
         internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
     }
@@ -92,10 +88,10 @@ function internalOnClickable(evnt) {
         var valueFromHTML = $(evnt.target).attr('value');
         if (valueFromHTML) {
             GP.DebugLog('Getting value for regions from HTML')
-            parsedInput = JSON.parse(valueFromHTML);
+            let parsedInput = JSON.parse(valueFromHTML);
             // Add the url base for GLTF files (since it changes with the GLTF version)
             atropiaRegions = parsedInput.map(oneRegionInfo => {
-                return [ Config.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
+                return [ Config.assets.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
             });
         }
         internalDoLoadMultiple(atropiaRegions);
