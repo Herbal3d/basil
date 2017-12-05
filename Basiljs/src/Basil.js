@@ -3,6 +3,14 @@
 // Licensed for use under BSD License 2.0 (https://opensource.org/licenses/BSD-3-Clause).
 'use strict';
 
+// Global parameters and variables. "GP.variable"
+// var GP = GP || {};
+
+import Config from 'xConfig';
+import * as $ from 'jquery';
+
+GP.Config = Config;
+
 // Force the processing of the CSS format file
 require('./Basiljs.less');
 
@@ -20,12 +28,31 @@ function configGetQueryVariable(variable) {
     return undefined;
 }
 
-// Global parameters and variables. "GP.variable"
-var GP = GP || {};
+// Global debug information printout.
+// Adds a text line to a div and scroll the area
+var DebugLogLines = 20;
+GP.LogMessage = function LogMessage(msg, classs) {
+    if ($('#DEBUGG')) {
+        if (classs)
+            $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
+        else
+            $('#DEBUGG').append('<div>' + msg + '</div>');
 
-var Config = require('xConfig');
-GP.Config = Config;
+        if ($('#DEBUGG').children().length > DebugLogLines) {
+            $('#DEBUGG').children('div:first').remove();
 
+        }
+    }
+};
+GP.DebugLog = function DebugLog(msg) {
+    GP.LogMessage(msg, undefined);
+}
+
+GP.ReportError = function ReportError(msg) {
+    GP.LogMessage(msg, 'errorMsg');
+};
+
+// ===================================================== 
 // Get optional invocation parameter specifying which rendering engine to use
 var gEngine = configGetQueryVariable('engine');
 if (gEngine) {
@@ -44,44 +71,28 @@ if (gEngine) {
     instance.
 */
 
-var Comm = require('xComm');
-var Graphics = require('xGraphics');
-var Controls = require('xControls');
+import * as Comm from 'xComm';
+import * as Graphics from 'xGraphics';
+import * as Controls from 'xControls';
 
 GP.Ready = false;
 
 var container = document.getElementById(Config.page.webGLcontainerId);
 var canvas = document.getElementById(Config.page.webGLcanvasId);
-Graphics.Init(container, canvas, function() {
-    Controls.Init();
+GP.DebugLog('Basil.main: about to init graphics');
+Graphics.Init(container, canvas)
+    .then(() => {
+        GP.DebugLog('Basil.main: graphics initialized');
+        Controls.Init();
+        GP.DebugLog('Basil.main: controls initialized');
 
-    Graphics.Start();
-    Comm.Start();
+        Graphics.Start();
+        GP.DebugLog('Basil.main: graphics started');
+        Comm.Start();
 
-    GP.Ready = true;
-});
+        GP.Ready = true;
+    })
+    .catch ((e) => {
+        GP.DebugLog('Basil.main: failure initializing:' + e);
+    });
 
-// Global debug information printout.
-// Adds a text line to a div and scroll the area
-var DebugLogLines = 20;
-GP.DebugLog = function DebugLog(msg) {
-    LogMessage(msg, undefined);
-}
-
-GP.ReportError = function ReportError(msg) {
-    LogMessage(msg, 'errorMsg');
-};
-
-GP.LogMessage = function LogMessage(msg, classs) {
-    if ($('#DEBUGG')) {
-        if (classs)
-            $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
-        else
-            $('#DEBUGG').append('<div>' + msg + '</div>');
-
-        if ($('#DEBUGG').children().length > DebugLogLines) {
-            $('#DEBUGG').children('div:first').remove();
-
-        }
-    }
-};

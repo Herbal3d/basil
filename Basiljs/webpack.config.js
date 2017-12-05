@@ -21,6 +21,7 @@ module.exports = {
   // Create aliases for the main components so filenames aren't required in each file
   //      ref: https://webpack.js.org/configuration/resolve/
   resolve: {
+    // Aliases so individual files don't reference the filenames
     alias: {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
         'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
@@ -30,6 +31,8 @@ module.exports = {
         'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSModules': path.resolve(__dirname, 'src/jslibs/three.module.js'),
+        'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
+        'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
     },
     extensions: [ '.js', '.jsx' ]
   },
@@ -41,6 +44,10 @@ module.exports = {
     // Causes a separate bundle for the entry.vendor modules
     new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor'
+    }),
+    // Creates a global alias for ThreeJS (needed for example/modules)
+    new webpack.ProvidePlugin({
+        'THREE': 'xThreeJS'
     }),
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
     new webpack.optimize.CommonsChunkPlugin({

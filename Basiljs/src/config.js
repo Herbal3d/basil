@@ -3,6 +3,7 @@
 // Note: colors may be specified as strings (a number as a string) or numbers.
 'use strict';
 
+// Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 module.exports = {
     // Parameters for the main display page
     'page': {

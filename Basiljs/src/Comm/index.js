@@ -5,20 +5,13 @@
 
 var CM = CM || {};
 
-var op = {
-    'Init': function() {
-    },
-    'Start': function() {
-    },
-    'Connect': function(spaceManagerURL, connector) {
-    },
-    'noComma': 0
+export function Init() {
+};
+
+export function Start() {
+};
+
+export function Connect(spaceManagerURL, connector) {
 };
 
 GP.CM = CM; // for debugging. Don't use for cross package access.
-
-CM.op = op;
-
-export default op;
-
-
