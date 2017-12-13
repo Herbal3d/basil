@@ -117,15 +117,14 @@ function internalDoLoadMultiple(urlsAndLocations) {
         var aPlace;
         if (GP.GR.scene.children) {
             // ThreeJS
-            // If loading multiple scenes, the top level is a group
-            var anObject;
-            let group = GP.GR.scene.children.find(xx => { return xx.type == 'Group'});
-            if (group) {
-                anObject = group.children.find(xx => { return xx.type == 'Object3D'});
-            }
-            else {
-                // there must not be a group
-                anObject = GP.GR.scene.children.find(xx => { return xx.type == 'Object3D'});
+            // Walk down the tree until we find something not at <9,9<
+            var anObject = GP.GR.scene.children[0];
+            while (anObject && anObject.position.x == 0 && anObject.position.y == 0) {
+                let nextObj = anObject.children.find(xx => { return xx.type == 'Group'});
+                if (nextObj == undefined) {
+                    nextObj = anObject.children.find(xx => { return xx.type == 'Object3D'});
+                }
+                anObject = nextObj;
             }
             if (anObject) {
                 let pos = anObject.position;
@@ -151,4 +150,3 @@ function internalDoLoadMultiple(urlsAndLocations) {
 };
 
 GP.CO = CO;         // added for debugging. Do not use for inter-package access
-

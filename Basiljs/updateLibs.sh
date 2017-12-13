@@ -11,6 +11,7 @@ cd $PLACE/../../three.js
 git checkout master
 git pull --all
 git checkout dev
+git pull
 
 echo "=== Fetch Cesium"
 cd $PLACE/../../cesium

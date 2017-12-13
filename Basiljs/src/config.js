@@ -74,7 +74,7 @@ module.exports = {
         'noComma': 0
     },
     'assets': {
-        'gltfURLBase': '/convoar/gltf2/',
+        'gltfURLBase': '/basil/',
         'noComma': 0
     },
     'eventing': {

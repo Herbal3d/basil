@@ -293,7 +293,7 @@ export function LoadSceneMultiple(urlsAndLocations, loaded) {
                             var newNode = aNode.clone();
                             if (newNode instanceof THREE.Mesh) {
                                 newNode.material = aNode.material.clone();
-                                newNode.position = aNode.position.clone();
+                                newNode.position.set(aNode.position.clone());
                             }
                             // GP.DebugLog('loadedGltf: adding child named ' + aNode.name + ' with index ' + iii);
                             group.add(newNode);
@@ -381,13 +381,17 @@ export function GetCameraPosition() {
 };
 
 export function SetCameraPosition(pos) {
-    var newPos;
+    // var newPos;
     if (Array.isArray(pos)) {
-        newPos = new THREE.Vector3().fromArray(pos);
+        // newPos = new THREE.Vector3().fromArray(pos);
+        GR.camera.position.fromArray(pos);
     }
-    else
-        newPos = pos;
-    GR.camera.position = newPos;
+    else {
+        // newPos = pos;
+        GR.camera.position.set(pos);
+        GP.DebugLog("Graphics-ThreeJS: camera position: " + pos.x + " " + pos.y + " " + pos.z)
+        // GR.camera.position = newPos;
+    }
 };
 
 // Point the camera at a place. Takes either an array or a Vector3.
@@ -426,4 +430,3 @@ export function SetDebugMode(enable) {
 };
 
 GP.GR = GR; // for debugging. Don't use for cross package access.
-
