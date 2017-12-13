@@ -19935,13 +19935,16 @@ function WebGLState( gl, extensions, utils ) {
 
 	}
 
-	function setMaterial( material ) {
+	function setMaterial( material, frontFaceCW ) {
 
 		material.side === DoubleSide
 			? disable( gl.CULL_FACE )
 			: enable( gl.CULL_FACE );
 
-		setFlipSided( material.side === BackSide );
+		var flipSided = ( material.side === BackSide );
+		if ( frontFaceCW ) flipSided = ! flipSided;
+
+		setFlipSided( flipSided );
 
 		material.transparent === true
 			? setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst, material.blendEquationAlpha, material.blendSrcAlpha, material.blendDstAlpha, material.premultipliedAlpha )
@@ -20699,17 +20702,7 @@ function WebVRManager( renderer ) {
 		//
 
 		var pose = frameData.pose;
-		var poseObject;
-
-		if ( poseTarget !== null ) {
-
-			poseObject = poseTarget;
-
-		} else {
-
-			poseObject = camera;
-
-		}
+		var poseObject = poseTarget !== null ? poseTarget : camera;
 
 		if ( pose.position !== null ) {
 
@@ -20745,7 +20738,7 @@ function WebVRManager( renderer ) {
 		cameraL.matrixWorldInverse.fromArray( frameData.leftViewMatrix );
 		cameraR.matrixWorldInverse.fromArray( frameData.rightViewMatrix );
 
-		var parent = camera.parent;
+		var parent = poseObject.parent;
 
 		if ( parent !== null ) {
 
@@ -21820,7 +21813,9 @@ function WebGLRenderer( parameters ) {
 
 	this.renderBufferDirect = function ( camera, fog, geometry, material, object, group ) {
 
-		state.setMaterial( material );
+		var frontFaceCW = ( object.isMesh && object.matrixWorld.determinant() < 0 );
+
+		state.setMaterial( material, frontFaceCW );
 
 		var program = setProgram( camera, fog, material, object );
 		var geometryProgram = geometry.id + '_' + program.id + '_' + ( material.wireframe === true );
@@ -22569,7 +22564,9 @@ function WebGLRenderer( parameters ) {
 
 		if ( object.isImmediateRenderObject ) {
 
-			state.setMaterial( material );
+			var frontFaceCW = ( object.isMesh && object.matrixWorld.determinant() < 0 );
+
+			state.setMaterial( material, frontFaceCW );
 
 			var program = setProgram( camera, scene.fog, material, object );
 
@@ -25067,7 +25064,19 @@ function VideoTexture( video, mapping, wrapS, wrapT, magFilter, minFilter, forma
 	Texture.call( this, video, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
 
 	this.generateMipmaps = false;
-	this.needsUpdate = true;
+
+	// Set needsUpdate when first frame is ready
+
+	var scope = this;
+
+	function onLoaded() {
+
+		video.removeEventListener( 'loadeddata', onLoaded, false );
+		scope.needsUpdate = true;
+
+	}
+
+	video.addEventListener( 'loadeddata', onLoaded, false );
 
 }
 
