@@ -1,6 +1,15 @@
-// Copyright (c) 2017, Robert Adams
-// All rights reserved.
 // Licensed for use under BSD License 2.0 (https://opensource.org/licenses/BSD-3-Clause).
+// Copyright 2018 Robert Adams
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 'use strict';
 
 // holds the controls context for this threejs instance
@@ -10,9 +19,11 @@ import Config from 'xConfig';
 import * as $ from 'jquery';
 import * as Graphics from 'xGraphics';
 import * as Eventing from 'xEventing';
+// Classes that implement different types of UI controls
 import * as UIControls from './UIControls.js';
 
 export function Init() {
+    // Make all 'class=clickable' page items create events
     $('.clickable').click(internalOnClickable);
 
     // Whether debug output window is initially displayed can be set in the configuration file
@@ -20,11 +31,13 @@ export function Init() {
 
     // Update the camera position for debugging
     CO.infoCameraCoord = new UIControls.UI_Coord('div[b-info=camPosition]');
-    CO.eventCameraInfo = new Eventing.subscribe('display.cameraInfo', function(camInfo, topic) {
-        if (camInfo && camInfo.position && CO.infoCameraCoord) {
-            CO.infoCameraCoord.Update(camInfo.position);
-        }
-    });
+    if (CO.infoCameraCoord) {
+        CO.eventCameraInfo = new Eventing.subscribe('display.cameraInfo', function(camInfo) {
+            if (camInfo && camInfo.position && CO.infoCameraCoord) {
+                CO.infoCameraCoord.Update(camInfo.position);
+            }
+        });
+    }
 
     // UPdate the renderer info
     CO.infoFPS = new UIControls.UI_Text('div[b-info=infoFPS]');
@@ -34,19 +47,21 @@ export function Init() {
     // CO.infoPoints = new UIControls.UI_Text('div[b-info=infoPoints]');
     CO.infoTextureMem = new UIControls.UI_Text('div[b-info=infoTextureMem]');
     CO.infoGeometryMem = new UIControls.UI_Text('div[b-info=infoGeometryMem]');
-    CO.eventDisplayInfo = new Eventing.subscribe('display.info', function(info, topic) {
-        if (info && info.render && CO.infoDrawCalls) {
-            CO.infoFPS.Update(Math.round(info.render.fps));
-            CO.infoDrawCalls.Update(info.render.calls);
-            CO.infoVertices.Update(info.render.vertices);
-            CO.infoTriangles.Update(info.render.faces);
-            // CO.infoPoints.Update(info.render.points);
-        }
-        if (info && info.memory && CO.infoTextureMem) {
-            CO.infoTextureMem.Update(info.memory.textures);
-            CO.infoGeometryMem.Update(info.memory.geometries);
-        }
-    });
+    if (CO.infoDrawCalls) {
+        CO.eventDisplayInfo = new Eventing.subscribe('display.info', function(info) {
+            if (info && info.render && CO.infoDrawCalls) {
+                CO.infoFPS.Update(Math.round(info.render.fps));
+                CO.infoDrawCalls.Update(info.render.calls);
+                CO.infoVertices.Update(info.render.vertices);
+                CO.infoTriangles.Update(info.render.faces);
+                // CO.infoPoints.Update(info.render.points);
+            }
+            if (info && info.memory && CO.infoTextureMem) {
+                CO.infoTextureMem.Update(info.memory.textures);
+                CO.infoGeometryMem.Update(info.memory.geometries);
+            }
+        });
+    }
 };
 
 export function Start() {

@@ -1,6 +1,15 @@
-// Copyright (c) 2017, Robert Adams
-// All rights reserved.
 // Licensed for use under BSD License 2.0 (https://opensource.org/licenses/BSD-3-Clause).
+// Copyright 2018 Robert Adams
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 'use strict';
 
 var UC = UC || {};
@@ -33,6 +42,7 @@ export class UI_Coord {
         }
     }
 
+    // Update with three coordinates or one parameter that has a .x, .y, and .z
     Update(xx, yy, zz) {
         if (this.areaID) {
             var areaID = this.areaID;
@@ -80,6 +90,7 @@ export class UI_Quat {
         }
     }
     
+    // Update with four values or one value with a .x, .y, .z and .w
     Update(xx, yy, zz, ww) {
         if (this.areaID) {
             var areaID = this.areaID;

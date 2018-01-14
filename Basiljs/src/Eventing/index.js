@@ -1,6 +1,15 @@
-// Copyright (c) 2017, Robert Adams
-// All rights reserved.
 // Licensed for use under BSD License 2.0 (https://opensource.org/licenses/BSD-3-Clause).
+// Copyright 2018 Robert Adams
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 'use strict';
 
 // Global holding event subscription state
@@ -19,7 +28,7 @@ import Config from 'xConfig';
 //        // 'params' is a JS object which is usually a map of values
 //
 // Event consumer:
-//    eventHandle = Eventing.subscribe(topicName, function(topicName, params) {
+//    eventHandle = Eventing.subscribe(topicName, function(params, topicName) {
 //         //event processor
 //    });
 //    ...
@@ -31,6 +40,7 @@ import Config from 'xConfig';
 // One subscription
 // Subscriptions are created with a unique ID so individual subscriptions can be
 //     found for removal (because there can be multiple subescitions for the same processor).
+// Note: currently 'limits' is unused but someday will be used for timing and frequency limiting
 let SubEntry = function(topic, processor, id, limits) {
     this.topic = topic;
     this.processor = processor;
@@ -44,7 +54,7 @@ SubEntry.prototype.fire = function(params) {
 // ===========================================
 // One topic that can be subscribed to.
 // This is the datastructure for a topic, its subscriptions, and actions.
-// THis data structure is passed around to the subscribers so 'fire' can be called.
+// This data structure is passed around to the subscribers so 'fire' can be called.
 let TopicEntry = function(topicName) {
     this.topic = topicName;
     this.subs = [];
