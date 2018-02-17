@@ -248,46 +248,39 @@ export function LoadScene(url, loaded) {
 //     Where the [x,y,z] is a displacement base for the region.
 export function LoadSceneMultiple(urlsAndLocations, loaded) {
     try {
-        var loader;
-        if (THREE.GLTFLoader) {
-            loader = new THREE.GLTFLoader;
-        }
-        if (THREE.GLTF2Loader) {
-            loader = new THREE.GLTF2Loader;
-        }
-        if (loader != undefined) {
-            var newScene = new THREE.Scene();
-            GR.scene = newScene;
-            Promise.all(urlsAndLocations.map(oneRegionInfo => {
-                let regionURL = oneRegionInfo[0];
-                let regionOffset = oneRegionInfo[1];
-                GP.DebugLog('Graphics: Loading multiple regions from ' + regionURL + " at offset " + regionOffset);
-                return new Promise(function(resolve, reject) {
-                    try {
-                        GP.DebugLog('Graphics: starting loading of ' + regionURL);
-                        loader.load(regionURL, function(gltf) {
-                            GP.DebugLog('Graphics: resolving loading of ' + regionURL);
-                            resolve([gltf, regionURL, regionOffset]);
-                        }, undefined// onProgress
-                        , function() { // onError
-                            // If this does a reject, the whole 'all' fails.
-                            // Fake a resolve but pass an undefined gltf pointer.
-                            GP.DebugLog('Graphics: resolving fake gltf because error for ' + regionURL);
-                            resolve([ undefined, regionURL, regionOffset]);
-                        });
-                    }
-                    catch (e) {
-                        GP.DebugLog('Graphics: rejecting loading of ' + regionURL);
-                        reject(e);
-                    }
-                });
-            }))
-            .catch(function(e) {
-                GP.DebugLog('Graphics: failed loading multiple region');
-            })
-            // The above reads in all the gltf files and they show up here
-            //    as an array of arrays each containing '[gltf, url, offset]'
-            .then(function(loadedGltfs) {
+        var newScene = new THREE.Scene();
+        GR.scene = newScene;
+        Promise.all(urlsAndLocations.map(oneRegionInfo => {
+            let regionURL = oneRegionInfo[0];
+            let regionOffset = oneRegionInfo[1];
+            GP.DebugLog('Graphics: Loading multiple regions from ' + regionURL + " at offset " + regionOffset);
+            return new Promise(function(resolve, reject) {
+                try {
+                    GP.DebugLog('Graphics: starting loading of ' + regionURL);
+                    THREE.GLTFLoader.load(regionURL, function(gltf) {
+                        GP.DebugLog('Graphics: resolving loading of ' + regionURL);
+                        resolve([gltf, regionURL, regionOffset]);
+                    }, undefined// onProgress
+                    , function() { // onError
+                        // If this does a reject, the whole 'all' fails.
+                        // Fake a resolve but pass an undefined gltf pointer.
+                        GP.DebugLog('Graphics: resolving fake gltf because error for ' + regionURL);
+                        resolve([ undefined, regionURL, regionOffset]);
+                    });
+                }
+                catch (e) {
+                    GP.DebugLog('Graphics: rejecting loading of ' + regionURL);
+                    reject(e);
+                }
+            });
+        }))
+        .catch(function(e) {
+            GP.DebugLog('Graphics: failed loading multiple region');
+        })
+        // The above reads in all the gltf files and they show up here
+        //    as an array of arrays each containing '[gltf, url, offset]'
+        .then(loadedGltfs => {
+            if (loadedGltfs) {
                 loadedGltfs.forEach(gltfInfo => {
                     var gltf = gltfInfo[0];
                     var regionURL = gltfInfo[1];
@@ -316,20 +309,20 @@ export function LoadSceneMultiple(urlsAndLocations, loaded) {
                         GP.DebugLog('Graphics: not processing gltf for ' + regionURL);
                     }
                 })
-            })
-            // All the scenes have been merged into 'newScene'.
-            // Finish scene initialization.
-            .then(function() {
-                GP.DebugLog('Graphics: doing final processing to the scene');
-                internalInitializeCameraAndLights(newScene, GR.canvas);
-                internalInitializeCameraControl(newScene, GR.container);
-                GP.DebugLog('Graphics: Loaded GLTF scene');
-                loaded();
-            });
-        }
-        else {
-            ReportError('Could not find a suitable GLTF loader in ThreeJS');
-        }
+            }
+            else {
+                GP.DebugLog('Graphics: no regions loaded');
+            }
+        })
+        // All the scenes have been merged into 'newScene'.
+        // Finish scene initialization.
+        .then(function() {
+            GP.DebugLog('Graphics: doing final processing to the scene');
+            internalInitializeCameraAndLights(newScene, GR.canvas);
+            internalInitializeCameraControl(newScene, GR.container);
+            GP.DebugLog('Graphics: Loaded GLTF scene');
+            loaded();
+        });
     }
     catch (e) {
         ReportError('Failed reading GLTF file: ' + e);

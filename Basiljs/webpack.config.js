@@ -1,5 +1,5 @@
 // As copied from example at https://webpack.js.org/guides/getting-started/
-//    This is not ES6 import format so update this file someday
+//    This is not ES6 'import' format so update this file someday
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -30,7 +30,6 @@ module.exports = {
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
         'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
-        'xThreeJSModules': path.resolve(__dirname, 'src/jslibs/three.module.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
         'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
     },

@@ -13,18 +13,10 @@ git pull --all
 git checkout dev
 git pull
 
-echo "=== Fetch Cesium"
-cd $PLACE/../../cesium
-git checkout master
-git pull --all
-npm install
-npm run build
-npm run minifyRelease
-
-echo "=== Fetch Basil-protocol"
-cd $PLACE/../../Basil-protocol
-git checkout master
-git pull --all
+# echo "=== Fetch Basil-protocol"
+# cd $PLACE/../../Basil-protocol
+# git checkout master
+# git pull --all
 
 echo "=== Build stubs for Basil-protocol"
 # ./makeStubs.sh

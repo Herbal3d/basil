@@ -53,20 +53,9 @@ module.exports = {
         },
         'renderer': {
             'ThreeJS': {
-                'scripts': [
-                    'jslibs/three.min.js',
-                    'jslibs/OrbitControls.js',
-                    'jslibs/GLTFLoader.js'
-                ],
                 'antialias': true,
                 'alpha': true,      // there are alpha textures in the scene
                 'logarithmicDepthBuffer': false,
-                'noComma': 0
-            },
-            'Cesium': {
-                'scripts': [
-                    'jslibs/Cesium/Cesium.js'
-                ],
                 'noComma': 0
             },
             'noComma': 0

@@ -15,7 +15,8 @@ GP.Config = Config;
 require('./Basiljs.less');
 
 // From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
-// Used to see if 'engine' is specified before any environment or libraries are loaded.
+// Used to fetch invocation parameters. The request better be well formed as
+//     parsing is pretty unforgiving.
 function configGetQueryVariable(variable) {
     var query = window.location.search.substring(1);
     var vars = query.split('&');
@@ -53,12 +54,6 @@ GP.ReportError = function ReportError(msg) {
 };
 
 // ===================================================== 
-// Get optional invocation parameter specifying which rendering engine to use
-var gEngine = configGetQueryVariable('engine');
-if (gEngine) {
-    Config.webgl.engine = gEngine;
-}
-
 /*
     Pattern for Basil is for each package to define a global variable to hold
     local state. This is two character (GR, EV, CM, CO, ...). There is one

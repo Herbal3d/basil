@@ -23,41 +23,13 @@ JSLIBS=src/jslibs
 # Copy ThreeJS and store a file for the date of the primary file
 THREEDIR=${PLACE}/../../three.js
 THREEJS="$THREEDIR/build/three.min.js"
-THREEJSMODULE="$THREEDIR/build/three.module.js"
 cp "${THREEJS}" "${JSLIBS}"
-cp "${THREEJSMODULE}" "${JSLIBS}"
 STATTIME=$(stat -c '%Y' "${THREEJS}")
 THREEJSMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
 echo ${THREEJSMODIFYDATE} > "${JSLIBS}/three.js.date"
 
 cp $THREEDIR/examples/js/loaders/GLTFLoader.js "${JSLIBS}"
 cp $THREEDIR/examples/js/controls/OrbitControls.js "${JSLIBS}"
-
-# =====================================
-# Copy Cesium and store a file for the date of the primary file
-CESIUMDIR=${PLACE}/../../cesium
-CESIUM="$CESIUMDIR/Build/Cesium"
-cp -r "${CESIUM}" "${JSLIBS}"
-STATTIME=$(stat -c '%Y' "${CESIUM}")
-CESIUMMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
-echo ${CESIUMMODIFYDATE} > "${JSLIBS}/cesium.date"
-
-# =====================================
-# Copy the protobuf/grpc
-
-# =====================================
-# Copy the generated protobuf/grpc
-# FBGENDIR=${PLACE}/../../Basil-protocol
-# FBGENBASILTYPES=${FBGENDIR}/gen-BasilTypes-js/BasilTypes_generated.js
-# FBGENBFLOW=${FBGENDIR}/gen-BFlow-js/BFlow_generated.js
-# FBGENBASILSERVER=${FBGENDIR}/gen-BasilServer-js/BasilServer_generated.js
-# cp "$FBGENBASILTYPES" "${JSLIBS}"
-# cp "$FBGENBFLOW" "${JSLIBS}"
-# cp "$FBGENBASILSERVER" "${JSLIBS}"
-
-# STATTIME=$(stat -c '%Y' "${FBGENBASILSERVER}")
-# FBGENBASILSERVERMODIFYDATE=$(date -d @${STATTIME} +%Y%m%d)
-# echo ${FBGENBASILSERVERMODIFYDATE} > "${JSLIBS}/BasilServer_generated.js.date"
 
 # =====================================
 # Debugging
