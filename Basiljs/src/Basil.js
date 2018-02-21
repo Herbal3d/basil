@@ -59,11 +59,6 @@ GP.ReportError = function ReportError(msg) {
     local state. This is two character (GR, EV, CM, CO, ...). There is one
     global var named 'GP' that has references to everything but that is ONLY
     for use in debugging.
-
-    Each package creates a map named 'op' that has the packages external operations.
-    'op' is what is returned by require() for external access to the package.
-    This is added to the packages local var so there is always a 'GP.EV.op', for
-    instance.
 */
 
 import * as Comm from 'xComm';
