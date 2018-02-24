@@ -11,6 +11,8 @@
 
 'use strict';
 
+import * as BasilServer from "xBasilServerMessages"
+
 var CM = CM || {};
 
 export function Init() {

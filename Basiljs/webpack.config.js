@@ -21,6 +21,7 @@ module.exports = {
   // Create aliases for the main components so filenames aren't required in each file
   //      ref: https://webpack.js.org/configuration/resolve/
   resolve: {
+    modules: [ path.resolve(__dirname, "src/jslibs"), "node_modules" ],
     // Aliases so individual files don't reference the filenames
     alias: {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
@@ -32,6 +33,9 @@ module.exports = {
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
         'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
+        'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
+        // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
+        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
     },
     extensions: [ '.js', '.jsx' ]
   },
