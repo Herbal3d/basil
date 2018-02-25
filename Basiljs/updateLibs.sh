@@ -8,6 +8,9 @@ PLACE=$(pwd)
 
 JSLIBS=${PLACE}/src/jslibs
 
+UPDATEDATE=$(date +%Y%m%d)
+echo "${UPDATEDATE}" > "${JSLIBS}/update.date"
+
 echo "=== Fetch ThreeJS"
 THREEDIR=$PLACE/../../three.js
 cd "$THREEDIR"

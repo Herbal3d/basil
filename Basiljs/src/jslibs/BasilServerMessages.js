@@ -22,8 +22,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an IdentifyDisplayableObjectReq.
          * @memberof Basil
          * @interface IIdentifyDisplayableObjectReq
+         * @property {BTransport.IBTransport|null} [transport] IdentifyDisplayableObjectReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] IdentifyDisplayableObjectReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] IdentifyDisplayableObjectReq trace
          * @property {BasilType.IObjectIdentifier|null} [id] IdentifyDisplayableObjectReq id
          * @property {BasilType.IAssetInformation|null} [assetInfo] IdentifyDisplayableObjectReq assetInfo
          * @property {BasilType.IAaBoundingBox|null} [aabb] IdentifyDisplayableObjectReq aabb
@@ -45,20 +45,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * IdentifyDisplayableObjectReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.IdentifyDisplayableObjectReq
+         * @instance
+         */
+        IdentifyDisplayableObjectReq.prototype.transport = null;
+
+        /**
          * IdentifyDisplayableObjectReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.IdentifyDisplayableObjectReq
          * @instance
          */
         IdentifyDisplayableObjectReq.prototype.auth = null;
-
-        /**
-         * IdentifyDisplayableObjectReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         */
-        IdentifyDisplayableObjectReq.prototype.trace = null;
 
         /**
          * IdentifyDisplayableObjectReq id.
@@ -108,10 +108,10 @@ export const Basil = $root.Basil = (() => {
         IdentifyDisplayableObjectReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
                 $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
@@ -153,10 +153,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
@@ -202,15 +202,15 @@ export const Basil = $root.Basil = (() => {
         IdentifyDisplayableObjectReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.id != null && message.hasOwnProperty("id")) {
                 let error = $root.BasilType.ObjectIdentifier.verify(message.id);
@@ -242,15 +242,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.IdentifyDisplayableObjectReq)
                 return object;
             let message = new $root.Basil.IdentifyDisplayableObjectReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.IdentifyDisplayableObjectReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.id != null) {
                 if (typeof object.id !== "object")
@@ -284,16 +284,16 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.id = null;
                 object.assetInfo = null;
                 object.aabb = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = $root.BasilType.ObjectIdentifier.toObject(message.id, options);
             if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
@@ -323,6 +323,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of an IdentifyDisplayableObjectResp.
          * @memberof Basil
          * @interface IIdentifyDisplayableObjectResp
+         * @property {BTransport.IBTransport|null} [transport] IdentifyDisplayableObjectResp transport
          * @property {BasilType.IBasilException|null} [success] IdentifyDisplayableObjectResp success
          */
 
@@ -340,6 +341,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * IdentifyDisplayableObjectResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.IdentifyDisplayableObjectResp
+         * @instance
+         */
+        IdentifyDisplayableObjectResp.prototype.transport = null;
 
         /**
          * IdentifyDisplayableObjectResp success.
@@ -373,8 +382,10 @@ export const Basil = $root.Basil = (() => {
         IdentifyDisplayableObjectResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -410,6 +421,9 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -447,6 +461,11 @@ export const Basil = $root.Basil = (() => {
         IdentifyDisplayableObjectResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -467,6 +486,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.IdentifyDisplayableObjectResp)
                 return object;
             let message = new $root.Basil.IdentifyDisplayableObjectResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.IdentifyDisplayableObjectResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.IdentifyDisplayableObjectResp.success: object expected");
@@ -488,8 +512,12 @@ export const Basil = $root.Basil = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.transport = null;
                 object.success = null;
+            }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
@@ -515,8 +543,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of a CreateObjectInstanceReq.
          * @memberof Basil
          * @interface ICreateObjectInstanceReq
+         * @property {BTransport.IBTransport|null} [transport] CreateObjectInstanceReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] CreateObjectInstanceReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] CreateObjectInstanceReq trace
          * @property {BasilType.IObjectIdentifier|null} [id] CreateObjectInstanceReq id
          * @property {BasilType.IInstancePositionInfo|null} [pos] CreateObjectInstanceReq pos
          * @property {BasilType.IPropertyList|null} [propertiesToSet] CreateObjectInstanceReq propertiesToSet
@@ -538,20 +566,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * CreateObjectInstanceReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.CreateObjectInstanceReq
+         * @instance
+         */
+        CreateObjectInstanceReq.prototype.transport = null;
+
+        /**
          * CreateObjectInstanceReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.CreateObjectInstanceReq
          * @instance
          */
         CreateObjectInstanceReq.prototype.auth = null;
-
-        /**
-         * CreateObjectInstanceReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         */
-        CreateObjectInstanceReq.prototype.trace = null;
 
         /**
          * CreateObjectInstanceReq id.
@@ -601,10 +629,10 @@ export const Basil = $root.Basil = (() => {
         CreateObjectInstanceReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
                 $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.pos != null && message.hasOwnProperty("pos"))
@@ -646,10 +674,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
@@ -695,15 +723,15 @@ export const Basil = $root.Basil = (() => {
         CreateObjectInstanceReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.id != null && message.hasOwnProperty("id")) {
                 let error = $root.BasilType.ObjectIdentifier.verify(message.id);
@@ -735,15 +763,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.CreateObjectInstanceReq)
                 return object;
             let message = new $root.Basil.CreateObjectInstanceReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.CreateObjectInstanceReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.CreateObjectInstanceReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.id != null) {
                 if (typeof object.id !== "object")
@@ -777,16 +805,16 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.id = null;
                 object.pos = null;
                 object.propertiesToSet = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = $root.BasilType.ObjectIdentifier.toObject(message.id, options);
             if (message.pos != null && message.hasOwnProperty("pos"))
@@ -816,6 +844,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of a CreateObjectInstanceResp.
          * @memberof Basil
          * @interface ICreateObjectInstanceResp
+         * @property {BTransport.IBTransport|null} [transport] CreateObjectInstanceResp transport
          * @property {BasilType.IBasilException|null} [success] CreateObjectInstanceResp success
          * @property {BasilType.IInstanceIdentifier|null} [createInstanceId] CreateObjectInstanceResp createInstanceId
          */
@@ -834,6 +863,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * CreateObjectInstanceResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.CreateObjectInstanceResp
+         * @instance
+         */
+        CreateObjectInstanceResp.prototype.transport = null;
 
         /**
          * CreateObjectInstanceResp success.
@@ -875,10 +912,12 @@ export const Basil = $root.Basil = (() => {
         CreateObjectInstanceResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.createInstanceId != null && message.hasOwnProperty("createInstanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.createInstanceId, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.createInstanceId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -914,9 +953,12 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.createInstanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
                     break;
                 default:
@@ -954,6 +996,11 @@ export const Basil = $root.Basil = (() => {
         CreateObjectInstanceResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -979,6 +1026,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.CreateObjectInstanceResp)
                 return object;
             let message = new $root.Basil.CreateObjectInstanceResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.CreateObjectInstanceResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.CreateObjectInstanceResp.success: object expected");
@@ -1006,9 +1058,12 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.success = null;
                 object.createInstanceId = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.createInstanceId != null && message.hasOwnProperty("createInstanceId"))
@@ -1036,8 +1091,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an UpdateObjectPropertyReq.
          * @memberof Basil
          * @interface IUpdateObjectPropertyReq
+         * @property {BTransport.IBTransport|null} [transport] UpdateObjectPropertyReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] UpdateObjectPropertyReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] UpdateObjectPropertyReq trace
          * @property {BasilType.IObjectIdentifier|null} [objectId] UpdateObjectPropertyReq objectId
          * @property {BasilType.IPropertyList|null} [props] UpdateObjectPropertyReq props
          */
@@ -1058,20 +1113,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * UpdateObjectPropertyReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.UpdateObjectPropertyReq
+         * @instance
+         */
+        UpdateObjectPropertyReq.prototype.transport = null;
+
+        /**
          * UpdateObjectPropertyReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.UpdateObjectPropertyReq
          * @instance
          */
         UpdateObjectPropertyReq.prototype.auth = null;
-
-        /**
-         * UpdateObjectPropertyReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @instance
-         */
-        UpdateObjectPropertyReq.prototype.trace = null;
 
         /**
          * UpdateObjectPropertyReq objectId.
@@ -1113,10 +1168,10 @@ export const Basil = $root.Basil = (() => {
         UpdateObjectPropertyReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.objectId != null && message.hasOwnProperty("objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.props != null && message.hasOwnProperty("props"))
@@ -1156,10 +1211,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
@@ -1202,15 +1257,15 @@ export const Basil = $root.Basil = (() => {
         UpdateObjectPropertyReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.objectId != null && message.hasOwnProperty("objectId")) {
                 let error = $root.BasilType.ObjectIdentifier.verify(message.objectId);
@@ -1237,15 +1292,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.UpdateObjectPropertyReq)
                 return object;
             let message = new $root.Basil.UpdateObjectPropertyReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.UpdateObjectPropertyReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.UpdateObjectPropertyReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.objectId != null) {
                 if (typeof object.objectId !== "object")
@@ -1274,15 +1329,15 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.objectId = null;
                 object.props = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.objectId != null && message.hasOwnProperty("objectId"))
                 object.objectId = $root.BasilType.ObjectIdentifier.toObject(message.objectId, options);
             if (message.props != null && message.hasOwnProperty("props"))
@@ -1310,6 +1365,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of an UpdateObjectPropertyResp.
          * @memberof Basil
          * @interface IUpdateObjectPropertyResp
+         * @property {BTransport.IBTransport|null} [transport] UpdateObjectPropertyResp transport
          * @property {BasilType.IBasilException|null} [success] UpdateObjectPropertyResp success
          */
 
@@ -1327,6 +1383,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UpdateObjectPropertyResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.UpdateObjectPropertyResp
+         * @instance
+         */
+        UpdateObjectPropertyResp.prototype.transport = null;
 
         /**
          * UpdateObjectPropertyResp success.
@@ -1360,8 +1424,10 @@ export const Basil = $root.Basil = (() => {
         UpdateObjectPropertyResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -1397,6 +1463,9 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1434,6 +1503,11 @@ export const Basil = $root.Basil = (() => {
         UpdateObjectPropertyResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -1454,6 +1528,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.UpdateObjectPropertyResp)
                 return object;
             let message = new $root.Basil.UpdateObjectPropertyResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.UpdateObjectPropertyResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.UpdateObjectPropertyResp.success: object expected");
@@ -1475,8 +1554,12 @@ export const Basil = $root.Basil = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.transport = null;
                 object.success = null;
+            }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
@@ -1502,8 +1585,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an UpdateInstancePropertyReq.
          * @memberof Basil
          * @interface IUpdateInstancePropertyReq
+         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePropertyReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] UpdateInstancePropertyReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] UpdateInstancePropertyReq trace
          * @property {BasilType.IInstanceIdentifier|null} [instanceId] UpdateInstancePropertyReq instanceId
          * @property {BasilType.IPropertyList|null} [props] UpdateInstancePropertyReq props
          */
@@ -1524,20 +1607,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * UpdateInstancePropertyReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.UpdateInstancePropertyReq
+         * @instance
+         */
+        UpdateInstancePropertyReq.prototype.transport = null;
+
+        /**
          * UpdateInstancePropertyReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.UpdateInstancePropertyReq
          * @instance
          */
         UpdateInstancePropertyReq.prototype.auth = null;
-
-        /**
-         * UpdateInstancePropertyReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @instance
-         */
-        UpdateInstancePropertyReq.prototype.trace = null;
 
         /**
          * UpdateInstancePropertyReq instanceId.
@@ -1579,10 +1662,10 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePropertyReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.props != null && message.hasOwnProperty("props"))
@@ -1622,10 +1705,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
@@ -1668,15 +1751,15 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePropertyReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.instanceId != null && message.hasOwnProperty("instanceId")) {
                 let error = $root.BasilType.InstanceIdentifier.verify(message.instanceId);
@@ -1703,15 +1786,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.UpdateInstancePropertyReq)
                 return object;
             let message = new $root.Basil.UpdateInstancePropertyReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.UpdateInstancePropertyReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.UpdateInstancePropertyReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.instanceId != null) {
                 if (typeof object.instanceId !== "object")
@@ -1740,15 +1823,15 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.instanceId = null;
                 object.props = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
                 object.instanceId = $root.BasilType.InstanceIdentifier.toObject(message.instanceId, options);
             if (message.props != null && message.hasOwnProperty("props"))
@@ -1776,6 +1859,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of an UpdateInstancePropertyResp.
          * @memberof Basil
          * @interface IUpdateInstancePropertyResp
+         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePropertyResp transport
          * @property {BasilType.IBasilException|null} [success] UpdateInstancePropertyResp success
          */
 
@@ -1793,6 +1877,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UpdateInstancePropertyResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.UpdateInstancePropertyResp
+         * @instance
+         */
+        UpdateInstancePropertyResp.prototype.transport = null;
 
         /**
          * UpdateInstancePropertyResp success.
@@ -1826,8 +1918,10 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePropertyResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -1863,6 +1957,9 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1900,6 +1997,11 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePropertyResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -1920,6 +2022,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.UpdateInstancePropertyResp)
                 return object;
             let message = new $root.Basil.UpdateInstancePropertyResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.UpdateInstancePropertyResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.UpdateInstancePropertyResp.success: object expected");
@@ -1941,8 +2048,12 @@ export const Basil = $root.Basil = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.transport = null;
                 object.success = null;
+            }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
@@ -1968,8 +2079,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an UpdateInstancePositionReq.
          * @memberof Basil
          * @interface IUpdateInstancePositionReq
+         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePositionReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] UpdateInstancePositionReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] UpdateInstancePositionReq trace
          * @property {BasilType.IInstanceIdentifier|null} [instanceId] UpdateInstancePositionReq instanceId
          * @property {BasilType.IInstancePositionInfo|null} [pos] UpdateInstancePositionReq pos
          */
@@ -1990,20 +2101,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * UpdateInstancePositionReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.UpdateInstancePositionReq
+         * @instance
+         */
+        UpdateInstancePositionReq.prototype.transport = null;
+
+        /**
          * UpdateInstancePositionReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.UpdateInstancePositionReq
          * @instance
          */
         UpdateInstancePositionReq.prototype.auth = null;
-
-        /**
-         * UpdateInstancePositionReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.UpdateInstancePositionReq
-         * @instance
-         */
-        UpdateInstancePositionReq.prototype.trace = null;
 
         /**
          * UpdateInstancePositionReq instanceId.
@@ -2045,10 +2156,10 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePositionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.pos != null && message.hasOwnProperty("pos"))
@@ -2088,10 +2199,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
@@ -2134,15 +2245,15 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePositionReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.instanceId != null && message.hasOwnProperty("instanceId")) {
                 let error = $root.BasilType.InstanceIdentifier.verify(message.instanceId);
@@ -2169,15 +2280,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.UpdateInstancePositionReq)
                 return object;
             let message = new $root.Basil.UpdateInstancePositionReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.UpdateInstancePositionReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.UpdateInstancePositionReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.instanceId != null) {
                 if (typeof object.instanceId !== "object")
@@ -2206,15 +2317,15 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.instanceId = null;
                 object.pos = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
                 object.instanceId = $root.BasilType.InstanceIdentifier.toObject(message.instanceId, options);
             if (message.pos != null && message.hasOwnProperty("pos"))
@@ -2242,6 +2353,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of an UpdateInstancePositionResp.
          * @memberof Basil
          * @interface IUpdateInstancePositionResp
+         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePositionResp transport
          * @property {BasilType.IBasilException|null} [success] UpdateInstancePositionResp success
          */
 
@@ -2259,6 +2371,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UpdateInstancePositionResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.UpdateInstancePositionResp
+         * @instance
+         */
+        UpdateInstancePositionResp.prototype.transport = null;
 
         /**
          * UpdateInstancePositionResp success.
@@ -2292,8 +2412,10 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePositionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -2329,6 +2451,9 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2366,6 +2491,11 @@ export const Basil = $root.Basil = (() => {
         UpdateInstancePositionResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -2386,6 +2516,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.UpdateInstancePositionResp)
                 return object;
             let message = new $root.Basil.UpdateInstancePositionResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.UpdateInstancePositionResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.UpdateInstancePositionResp.success: object expected");
@@ -2407,8 +2542,12 @@ export const Basil = $root.Basil = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.transport = null;
                 object.success = null;
+            }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
@@ -2434,8 +2573,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of a RequestObjectPropertiesReq.
          * @memberof Basil
          * @interface IRequestObjectPropertiesReq
+         * @property {BTransport.IBTransport|null} [transport] RequestObjectPropertiesReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] RequestObjectPropertiesReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] RequestObjectPropertiesReq trace
          * @property {number|null} [sequenceNumber] RequestObjectPropertiesReq sequenceNumber
          * @property {BasilType.IObjectIdentifier|null} [objectId] RequestObjectPropertiesReq objectId
          * @property {string|null} [propertyMatch] RequestObjectPropertiesReq propertyMatch
@@ -2457,20 +2596,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * RequestObjectPropertiesReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.RequestObjectPropertiesReq
+         * @instance
+         */
+        RequestObjectPropertiesReq.prototype.transport = null;
+
+        /**
          * RequestObjectPropertiesReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.RequestObjectPropertiesReq
          * @instance
          */
         RequestObjectPropertiesReq.prototype.auth = null;
-
-        /**
-         * RequestObjectPropertiesReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         */
-        RequestObjectPropertiesReq.prototype.trace = null;
 
         /**
          * RequestObjectPropertiesReq sequenceNumber.
@@ -2520,10 +2659,10 @@ export const Basil = $root.Basil = (() => {
         RequestObjectPropertiesReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                 writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sequenceNumber);
             if (message.objectId != null && message.hasOwnProperty("objectId"))
@@ -2565,10 +2704,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.sequenceNumber = reader.int32();
@@ -2614,15 +2753,15 @@ export const Basil = $root.Basil = (() => {
         RequestObjectPropertiesReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                 if (!$util.isInteger(message.sequenceNumber))
@@ -2650,15 +2789,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.RequestObjectPropertiesReq)
                 return object;
             let message = new $root.Basil.RequestObjectPropertiesReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.RequestObjectPropertiesReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.RequestObjectPropertiesReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.sequenceNumber != null)
                 message.sequenceNumber = object.sequenceNumber | 0;
@@ -2686,16 +2825,16 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.sequenceNumber = 0;
                 object.objectId = null;
                 object.propertyMatch = "";
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                 object.sequenceNumber = message.sequenceNumber;
             if (message.objectId != null && message.hasOwnProperty("objectId"))
@@ -2725,6 +2864,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of a RequestObjectPropertiesResp.
          * @memberof Basil
          * @interface IRequestObjectPropertiesResp
+         * @property {BTransport.IBTransport|null} [transport] RequestObjectPropertiesResp transport
          * @property {BasilType.IBasilException|null} [success] RequestObjectPropertiesResp success
          * @property {BasilType.IPropertyList|null} [properties] RequestObjectPropertiesResp properties
          */
@@ -2743,6 +2883,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * RequestObjectPropertiesResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.RequestObjectPropertiesResp
+         * @instance
+         */
+        RequestObjectPropertiesResp.prototype.transport = null;
 
         /**
          * RequestObjectPropertiesResp success.
@@ -2784,10 +2932,12 @@ export const Basil = $root.Basil = (() => {
         RequestObjectPropertiesResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.properties != null && message.hasOwnProperty("properties"))
-                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -2823,9 +2973,12 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.properties = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2863,6 +3016,11 @@ export const Basil = $root.Basil = (() => {
         RequestObjectPropertiesResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -2888,6 +3046,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.RequestObjectPropertiesResp)
                 return object;
             let message = new $root.Basil.RequestObjectPropertiesResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.RequestObjectPropertiesResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.RequestObjectPropertiesResp.success: object expected");
@@ -2915,9 +3078,12 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.success = null;
                 object.properties = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.properties != null && message.hasOwnProperty("properties"))
@@ -2945,8 +3111,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of a RequestInstancePropertiesReq.
          * @memberof Basil
          * @interface IRequestInstancePropertiesReq
+         * @property {BTransport.IBTransport|null} [transport] RequestInstancePropertiesReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] RequestInstancePropertiesReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] RequestInstancePropertiesReq trace
          * @property {number|null} [sequenceNumber] RequestInstancePropertiesReq sequenceNumber
          * @property {BasilType.IInstanceIdentifier|null} [instanceId] RequestInstancePropertiesReq instanceId
          * @property {string|null} [propertyMatch] RequestInstancePropertiesReq propertyMatch
@@ -2968,20 +3134,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * RequestInstancePropertiesReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.RequestInstancePropertiesReq
+         * @instance
+         */
+        RequestInstancePropertiesReq.prototype.transport = null;
+
+        /**
          * RequestInstancePropertiesReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.RequestInstancePropertiesReq
          * @instance
          */
         RequestInstancePropertiesReq.prototype.auth = null;
-
-        /**
-         * RequestInstancePropertiesReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         */
-        RequestInstancePropertiesReq.prototype.trace = null;
 
         /**
          * RequestInstancePropertiesReq sequenceNumber.
@@ -3031,10 +3197,10 @@ export const Basil = $root.Basil = (() => {
         RequestInstancePropertiesReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                 writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sequenceNumber);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
@@ -3076,10 +3242,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.sequenceNumber = reader.int32();
@@ -3125,15 +3291,15 @@ export const Basil = $root.Basil = (() => {
         RequestInstancePropertiesReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                 if (!$util.isInteger(message.sequenceNumber))
@@ -3161,15 +3327,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.RequestInstancePropertiesReq)
                 return object;
             let message = new $root.Basil.RequestInstancePropertiesReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.RequestInstancePropertiesReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.RequestInstancePropertiesReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.sequenceNumber != null)
                 message.sequenceNumber = object.sequenceNumber | 0;
@@ -3197,16 +3363,16 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.sequenceNumber = 0;
                 object.instanceId = null;
                 object.propertyMatch = "";
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                 object.sequenceNumber = message.sequenceNumber;
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
@@ -3236,6 +3402,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of a RequestInstancePropertiesResp.
          * @memberof Basil
          * @interface IRequestInstancePropertiesResp
+         * @property {BTransport.IBTransport|null} [transport] RequestInstancePropertiesResp transport
          * @property {BasilType.IBasilException|null} [success] RequestInstancePropertiesResp success
          * @property {BasilType.IPropertyList|null} [properties] RequestInstancePropertiesResp properties
          */
@@ -3254,6 +3421,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * RequestInstancePropertiesResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.RequestInstancePropertiesResp
+         * @instance
+         */
+        RequestInstancePropertiesResp.prototype.transport = null;
 
         /**
          * RequestInstancePropertiesResp success.
@@ -3295,10 +3470,12 @@ export const Basil = $root.Basil = (() => {
         RequestInstancePropertiesResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.properties != null && message.hasOwnProperty("properties"))
-                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -3334,9 +3511,12 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.properties = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -3374,6 +3554,11 @@ export const Basil = $root.Basil = (() => {
         RequestInstancePropertiesResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -3399,6 +3584,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.RequestInstancePropertiesResp)
                 return object;
             let message = new $root.Basil.RequestInstancePropertiesResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.RequestInstancePropertiesResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.RequestInstancePropertiesResp.success: object expected");
@@ -3426,9 +3616,12 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.success = null;
                 object.properties = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.properties != null && message.hasOwnProperty("properties"))
@@ -3456,8 +3649,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an OpenSessionReq.
          * @memberof Basil
          * @interface IOpenSessionReq
+         * @property {BTransport.IBTransport|null} [transport] OpenSessionReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] OpenSessionReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] OpenSessionReq trace
          * @property {BasilType.IPropertyList|null} [features] OpenSessionReq features
          */
 
@@ -3477,20 +3670,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * OpenSessionReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.OpenSessionReq
+         * @instance
+         */
+        OpenSessionReq.prototype.transport = null;
+
+        /**
          * OpenSessionReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.OpenSessionReq
          * @instance
          */
         OpenSessionReq.prototype.auth = null;
-
-        /**
-         * OpenSessionReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.OpenSessionReq
-         * @instance
-         */
-        OpenSessionReq.prototype.trace = null;
 
         /**
          * OpenSessionReq features.
@@ -3524,10 +3717,10 @@ export const Basil = $root.Basil = (() => {
         OpenSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.features != null && message.hasOwnProperty("features"))
                 $root.BasilType.PropertyList.encode(message.features, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
@@ -3565,10 +3758,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.features = $root.BasilType.PropertyList.decode(reader, reader.uint32());
@@ -3608,15 +3801,15 @@ export const Basil = $root.Basil = (() => {
         OpenSessionReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.features != null && message.hasOwnProperty("features")) {
                 let error = $root.BasilType.PropertyList.verify(message.features);
@@ -3638,15 +3831,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.OpenSessionReq)
                 return object;
             let message = new $root.Basil.OpenSessionReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.OpenSessionReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.OpenSessionReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.OpenSessionReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.features != null) {
                 if (typeof object.features !== "object")
@@ -3670,14 +3863,14 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.features = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.features != null && message.hasOwnProperty("features"))
                 object.features = $root.BasilType.PropertyList.toObject(message.features, options);
             return object;
@@ -3703,6 +3896,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of an OpenSessionResp.
          * @memberof Basil
          * @interface IOpenSessionResp
+         * @property {BTransport.IBTransport|null} [transport] OpenSessionResp transport
          * @property {BasilType.IBasilException|null} [success] OpenSessionResp success
          * @property {BasilType.IPropertyList|null} [properties] OpenSessionResp properties
          */
@@ -3721,6 +3915,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * OpenSessionResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.OpenSessionResp
+         * @instance
+         */
+        OpenSessionResp.prototype.transport = null;
 
         /**
          * OpenSessionResp success.
@@ -3762,10 +3964,12 @@ export const Basil = $root.Basil = (() => {
         OpenSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.properties != null && message.hasOwnProperty("properties"))
-                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -3801,9 +4005,12 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.properties = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -3841,6 +4048,11 @@ export const Basil = $root.Basil = (() => {
         OpenSessionResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -3866,6 +4078,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.OpenSessionResp)
                 return object;
             let message = new $root.Basil.OpenSessionResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.OpenSessionResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.OpenSessionResp.success: object expected");
@@ -3893,9 +4110,12 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.success = null;
                 object.properties = null;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.properties != null && message.hasOwnProperty("properties"))
@@ -3923,8 +4143,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of a CloseSessionReq.
          * @memberof Basil
          * @interface ICloseSessionReq
+         * @property {BTransport.IBTransport|null} [transport] CloseSessionReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] CloseSessionReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] CloseSessionReq trace
          * @property {string|null} [reason] CloseSessionReq reason
          */
 
@@ -3944,20 +4164,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * CloseSessionReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.CloseSessionReq
+         * @instance
+         */
+        CloseSessionReq.prototype.transport = null;
+
+        /**
          * CloseSessionReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.CloseSessionReq
          * @instance
          */
         CloseSessionReq.prototype.auth = null;
-
-        /**
-         * CloseSessionReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.CloseSessionReq
-         * @instance
-         */
-        CloseSessionReq.prototype.trace = null;
 
         /**
          * CloseSessionReq reason.
@@ -3991,10 +4211,10 @@ export const Basil = $root.Basil = (() => {
         CloseSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.reason != null && message.hasOwnProperty("reason"))
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.reason);
             return writer;
@@ -4032,10 +4252,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.reason = reader.string();
@@ -4075,15 +4295,15 @@ export const Basil = $root.Basil = (() => {
         CloseSessionReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.reason != null && message.hasOwnProperty("reason"))
                 if (!$util.isString(message.reason))
@@ -4103,15 +4323,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.CloseSessionReq)
                 return object;
             let message = new $root.Basil.CloseSessionReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.CloseSessionReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.CloseSessionReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.CloseSessionReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.reason != null)
                 message.reason = String(object.reason);
@@ -4132,14 +4352,14 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 object.reason = "";
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.reason != null && message.hasOwnProperty("reason"))
                 object.reason = message.reason;
             return object;
@@ -4165,6 +4385,7 @@ export const Basil = $root.Basil = (() => {
          * Properties of a CloseSessionResp.
          * @memberof Basil
          * @interface ICloseSessionResp
+         * @property {BTransport.IBTransport|null} [transport] CloseSessionResp transport
          * @property {BasilType.IBasilException|null} [success] CloseSessionResp success
          */
 
@@ -4182,6 +4403,14 @@ export const Basil = $root.Basil = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * CloseSessionResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.CloseSessionResp
+         * @instance
+         */
+        CloseSessionResp.prototype.transport = null;
 
         /**
          * CloseSessionResp success.
@@ -4215,8 +4444,10 @@ export const Basil = $root.Basil = (() => {
         CloseSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -4252,6 +4483,9 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -4289,6 +4523,11 @@ export const Basil = $root.Basil = (() => {
         CloseSessionResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -4309,6 +4548,11 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.CloseSessionResp)
                 return object;
             let message = new $root.Basil.CloseSessionResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.CloseSessionResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.success != null) {
                 if (typeof object.success !== "object")
                     throw TypeError(".Basil.CloseSessionResp.success: object expected");
@@ -4330,8 +4574,12 @@ export const Basil = $root.Basil = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.transport = null;
                 object.success = null;
+            }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
@@ -4357,8 +4605,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an AliveCheckReq.
          * @memberof Basil
          * @interface IAliveCheckReq
+         * @property {BTransport.IBTransport|null} [transport] AliveCheckReq transport
          * @property {BasilType.IAccessAuthorization|null} [auth] AliveCheckReq auth
-         * @property {BasilType.ITraceInfo|null} [trace] AliveCheckReq trace
          * @property {number|Long|null} [time] AliveCheckReq time
          * @property {number|null} [sequenceNumber] AliveCheckReq sequenceNumber
          */
@@ -4379,20 +4627,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * AliveCheckReq transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.AliveCheckReq
+         * @instance
+         */
+        AliveCheckReq.prototype.transport = null;
+
+        /**
          * AliveCheckReq auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.AliveCheckReq
          * @instance
          */
         AliveCheckReq.prototype.auth = null;
-
-        /**
-         * AliveCheckReq trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.AliveCheckReq
-         * @instance
-         */
-        AliveCheckReq.prototype.trace = null;
 
         /**
          * AliveCheckReq time.
@@ -4434,10 +4682,10 @@ export const Basil = $root.Basil = (() => {
         AliveCheckReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.time != null && message.hasOwnProperty("time"))
                 writer.uint32(/* id 3, wireType 0 =*/24).sint64(message.time);
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
@@ -4477,10 +4725,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.time = reader.sint64();
@@ -4523,15 +4771,15 @@ export const Basil = $root.Basil = (() => {
         AliveCheckReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.time != null && message.hasOwnProperty("time"))
                 if (!$util.isInteger(message.time) && !(message.time && $util.isInteger(message.time.low) && $util.isInteger(message.time.high)))
@@ -4554,15 +4802,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.AliveCheckReq)
                 return object;
             let message = new $root.Basil.AliveCheckReq();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.AliveCheckReq.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.AliveCheckReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.AliveCheckReq.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.time != null)
                 if ($util.Long)
@@ -4592,8 +4840,8 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.time = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -4601,10 +4849,10 @@ export const Basil = $root.Basil = (() => {
                     object.time = options.longs === String ? "0" : 0;
                 object.sequenceNumber = 0;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.time != null && message.hasOwnProperty("time"))
                 if (typeof message.time === "number")
                     object.time = options.longs === String ? String(message.time) : message.time;
@@ -4635,8 +4883,8 @@ export const Basil = $root.Basil = (() => {
          * Properties of an AliveCheckResp.
          * @memberof Basil
          * @interface IAliveCheckResp
+         * @property {BTransport.IBTransport|null} [transport] AliveCheckResp transport
          * @property {BasilType.IAccessAuthorization|null} [auth] AliveCheckResp auth
-         * @property {BasilType.ITraceInfo|null} [trace] AliveCheckResp trace
          * @property {number|Long|null} [time] AliveCheckResp time
          * @property {number|null} [sequenceNumber] AliveCheckResp sequenceNumber
          * @property {number|Long|null} [timeReceived] AliveCheckResp timeReceived
@@ -4659,20 +4907,20 @@ export const Basil = $root.Basil = (() => {
         }
 
         /**
+         * AliveCheckResp transport.
+         * @member {BTransport.IBTransport|null|undefined} transport
+         * @memberof Basil.AliveCheckResp
+         * @instance
+         */
+        AliveCheckResp.prototype.transport = null;
+
+        /**
          * AliveCheckResp auth.
          * @member {BasilType.IAccessAuthorization|null|undefined} auth
          * @memberof Basil.AliveCheckResp
          * @instance
          */
         AliveCheckResp.prototype.auth = null;
-
-        /**
-         * AliveCheckResp trace.
-         * @member {BasilType.ITraceInfo|null|undefined} trace
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
-        AliveCheckResp.prototype.trace = null;
 
         /**
          * AliveCheckResp time.
@@ -4730,10 +4978,10 @@ export const Basil = $root.Basil = (() => {
         AliveCheckResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                $root.BasilType.TraceInfo.encode(message.trace, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.time != null && message.hasOwnProperty("time"))
                 writer.uint32(/* id 3, wireType 0 =*/24).sint64(message.time);
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
@@ -4777,10 +5025,10 @@ export const Basil = $root.Basil = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.trace = $root.BasilType.TraceInfo.decode(reader, reader.uint32());
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 3:
                     message.time = reader.sint64();
@@ -4829,15 +5077,15 @@ export const Basil = $root.Basil = (() => {
         AliveCheckResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.transport != null && message.hasOwnProperty("transport")) {
+                let error = $root.BTransport.BTransport.verify(message.transport);
+                if (error)
+                    return "transport." + error;
+            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
                     return "auth." + error;
-            }
-            if (message.trace != null && message.hasOwnProperty("trace")) {
-                let error = $root.BasilType.TraceInfo.verify(message.trace);
-                if (error)
-                    return "trace." + error;
             }
             if (message.time != null && message.hasOwnProperty("time"))
                 if (!$util.isInteger(message.time) && !(message.time && $util.isInteger(message.time.low) && $util.isInteger(message.time.high)))
@@ -4866,15 +5114,15 @@ export const Basil = $root.Basil = (() => {
             if (object instanceof $root.Basil.AliveCheckResp)
                 return object;
             let message = new $root.Basil.AliveCheckResp();
+            if (object.transport != null) {
+                if (typeof object.transport !== "object")
+                    throw TypeError(".Basil.AliveCheckResp.transport: object expected");
+                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
+            }
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
                     throw TypeError(".Basil.AliveCheckResp.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.trace != null) {
-                if (typeof object.trace !== "object")
-                    throw TypeError(".Basil.AliveCheckResp.trace: object expected");
-                message.trace = $root.BasilType.TraceInfo.fromObject(object.trace);
             }
             if (object.time != null)
                 if ($util.Long)
@@ -4915,8 +5163,8 @@ export const Basil = $root.Basil = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
+                object.transport = null;
                 object.auth = null;
-                object.trace = null;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.time = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -4930,10 +5178,10 @@ export const Basil = $root.Basil = (() => {
                     object.timeReceived = options.longs === String ? "0" : 0;
                 object.sequenceNumberReceived = 0;
             }
+            if (message.transport != null && message.hasOwnProperty("transport"))
+                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.trace != null && message.hasOwnProperty("trace"))
-                object.trace = $root.BasilType.TraceInfo.toObject(message.trace, options);
             if (message.time != null && message.hasOwnProperty("time"))
                 if (typeof message.time === "number")
                     object.time = options.longs === String ? String(message.time) : message.time;
@@ -8727,6 +8975,452 @@ export const BasilType = $root.BasilType = (() => {
     })();
 
     return BasilType;
+})();
+
+export const BTransport = $root.BTransport = (() => {
+
+    /**
+     * Namespace BTransport.
+     * @exports BTransport
+     * @namespace
+     */
+    const BTransport = {};
+
+    BTransport.BTransport = (function() {
+
+        /**
+         * Properties of a BTransport.
+         * @memberof BTransport
+         * @interface IBTransport
+         * @property {number|null} [sequenceNum] BTransport sequenceNum
+         * @property {number|null} [stream] BTransport stream
+         * @property {number|Long|null} [queueTime] BTransport queueTime
+         * @property {number|Long|null} [sendTime] BTransport sendTime
+         * @property {number|null} [requestSession] BTransport requestSession
+         * @property {number|Long|null} [traceID] BTransport traceID
+         * @property {number|Long|null} [parentSpanID] BTransport parentSpanID
+         * @property {number|Long|null} [spanID] BTransport spanID
+         * @property {boolean|null} [sampled] BTransport sampled
+         */
+
+        /**
+         * Constructs a new BTransport.
+         * @memberof BTransport
+         * @classdesc Represents a BTransport.
+         * @implements IBTransport
+         * @constructor
+         * @param {BTransport.IBTransport=} [properties] Properties to set
+         */
+        function BTransport(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * BTransport sequenceNum.
+         * @member {number} sequenceNum
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.sequenceNum = 0;
+
+        /**
+         * BTransport stream.
+         * @member {number} stream
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.stream = 0;
+
+        /**
+         * BTransport queueTime.
+         * @member {number|Long} queueTime
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.queueTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+        /**
+         * BTransport sendTime.
+         * @member {number|Long} sendTime
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.sendTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+        /**
+         * BTransport requestSession.
+         * @member {number} requestSession
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.requestSession = 0;
+
+        /**
+         * BTransport traceID.
+         * @member {number|Long} traceID
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.traceID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+        /**
+         * BTransport parentSpanID.
+         * @member {number|Long} parentSpanID
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.parentSpanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+        /**
+         * BTransport spanID.
+         * @member {number|Long} spanID
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.spanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+        /**
+         * BTransport sampled.
+         * @member {boolean} sampled
+         * @memberof BTransport.BTransport
+         * @instance
+         */
+        BTransport.prototype.sampled = false;
+
+        /**
+         * Creates a new BTransport instance using the specified properties.
+         * @function create
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {BTransport.IBTransport=} [properties] Properties to set
+         * @returns {BTransport.BTransport} BTransport instance
+         */
+        BTransport.create = function create(properties) {
+            return new BTransport(properties);
+        };
+
+        /**
+         * Encodes the specified BTransport message. Does not implicitly {@link BTransport.BTransport.verify|verify} messages.
+         * @function encode
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {BTransport.IBTransport} message BTransport message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        BTransport.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.sequenceNum);
+            if (message.stream != null && message.hasOwnProperty("stream"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.stream);
+            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint64(message.queueTime);
+            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                writer.uint32(/* id 4, wireType 0 =*/32).uint64(message.sendTime);
+            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.requestSession);
+            if (message.traceID != null && message.hasOwnProperty("traceID"))
+                writer.uint32(/* id 10, wireType 0 =*/80).uint64(message.traceID);
+            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
+                writer.uint32(/* id 11, wireType 0 =*/88).uint64(message.parentSpanID);
+            if (message.spanID != null && message.hasOwnProperty("spanID"))
+                writer.uint32(/* id 12, wireType 0 =*/96).uint64(message.spanID);
+            if (message.sampled != null && message.hasOwnProperty("sampled"))
+                writer.uint32(/* id 13, wireType 0 =*/104).bool(message.sampled);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified BTransport message, length delimited. Does not implicitly {@link BTransport.BTransport.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {BTransport.IBTransport} message BTransport message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        BTransport.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a BTransport message from the specified reader or buffer.
+         * @function decode
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {BTransport.BTransport} BTransport
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        BTransport.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BTransport.BTransport();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.sequenceNum = reader.uint32();
+                    break;
+                case 2:
+                    message.stream = reader.uint32();
+                    break;
+                case 3:
+                    message.queueTime = reader.uint64();
+                    break;
+                case 4:
+                    message.sendTime = reader.uint64();
+                    break;
+                case 5:
+                    message.requestSession = reader.uint32();
+                    break;
+                case 10:
+                    message.traceID = reader.uint64();
+                    break;
+                case 11:
+                    message.parentSpanID = reader.uint64();
+                    break;
+                case 12:
+                    message.spanID = reader.uint64();
+                    break;
+                case 13:
+                    message.sampled = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a BTransport message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {BTransport.BTransport} BTransport
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        BTransport.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a BTransport message.
+         * @function verify
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        BTransport.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                if (!$util.isInteger(message.sequenceNum))
+                    return "sequenceNum: integer expected";
+            if (message.stream != null && message.hasOwnProperty("stream"))
+                if (!$util.isInteger(message.stream))
+                    return "stream: integer expected";
+            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
+                if (!$util.isInteger(message.queueTime) && !(message.queueTime && $util.isInteger(message.queueTime.low) && $util.isInteger(message.queueTime.high)))
+                    return "queueTime: integer|Long expected";
+            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                if (!$util.isInteger(message.sendTime) && !(message.sendTime && $util.isInteger(message.sendTime.low) && $util.isInteger(message.sendTime.high)))
+                    return "sendTime: integer|Long expected";
+            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
+                if (!$util.isInteger(message.requestSession))
+                    return "requestSession: integer expected";
+            if (message.traceID != null && message.hasOwnProperty("traceID"))
+                if (!$util.isInteger(message.traceID) && !(message.traceID && $util.isInteger(message.traceID.low) && $util.isInteger(message.traceID.high)))
+                    return "traceID: integer|Long expected";
+            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
+                if (!$util.isInteger(message.parentSpanID) && !(message.parentSpanID && $util.isInteger(message.parentSpanID.low) && $util.isInteger(message.parentSpanID.high)))
+                    return "parentSpanID: integer|Long expected";
+            if (message.spanID != null && message.hasOwnProperty("spanID"))
+                if (!$util.isInteger(message.spanID) && !(message.spanID && $util.isInteger(message.spanID.low) && $util.isInteger(message.spanID.high)))
+                    return "spanID: integer|Long expected";
+            if (message.sampled != null && message.hasOwnProperty("sampled"))
+                if (typeof message.sampled !== "boolean")
+                    return "sampled: boolean expected";
+            return null;
+        };
+
+        /**
+         * Creates a BTransport message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {BTransport.BTransport} BTransport
+         */
+        BTransport.fromObject = function fromObject(object) {
+            if (object instanceof $root.BTransport.BTransport)
+                return object;
+            let message = new $root.BTransport.BTransport();
+            if (object.sequenceNum != null)
+                message.sequenceNum = object.sequenceNum >>> 0;
+            if (object.stream != null)
+                message.stream = object.stream >>> 0;
+            if (object.queueTime != null)
+                if ($util.Long)
+                    (message.queueTime = $util.Long.fromValue(object.queueTime)).unsigned = true;
+                else if (typeof object.queueTime === "string")
+                    message.queueTime = parseInt(object.queueTime, 10);
+                else if (typeof object.queueTime === "number")
+                    message.queueTime = object.queueTime;
+                else if (typeof object.queueTime === "object")
+                    message.queueTime = new $util.LongBits(object.queueTime.low >>> 0, object.queueTime.high >>> 0).toNumber(true);
+            if (object.sendTime != null)
+                if ($util.Long)
+                    (message.sendTime = $util.Long.fromValue(object.sendTime)).unsigned = true;
+                else if (typeof object.sendTime === "string")
+                    message.sendTime = parseInt(object.sendTime, 10);
+                else if (typeof object.sendTime === "number")
+                    message.sendTime = object.sendTime;
+                else if (typeof object.sendTime === "object")
+                    message.sendTime = new $util.LongBits(object.sendTime.low >>> 0, object.sendTime.high >>> 0).toNumber(true);
+            if (object.requestSession != null)
+                message.requestSession = object.requestSession >>> 0;
+            if (object.traceID != null)
+                if ($util.Long)
+                    (message.traceID = $util.Long.fromValue(object.traceID)).unsigned = true;
+                else if (typeof object.traceID === "string")
+                    message.traceID = parseInt(object.traceID, 10);
+                else if (typeof object.traceID === "number")
+                    message.traceID = object.traceID;
+                else if (typeof object.traceID === "object")
+                    message.traceID = new $util.LongBits(object.traceID.low >>> 0, object.traceID.high >>> 0).toNumber(true);
+            if (object.parentSpanID != null)
+                if ($util.Long)
+                    (message.parentSpanID = $util.Long.fromValue(object.parentSpanID)).unsigned = true;
+                else if (typeof object.parentSpanID === "string")
+                    message.parentSpanID = parseInt(object.parentSpanID, 10);
+                else if (typeof object.parentSpanID === "number")
+                    message.parentSpanID = object.parentSpanID;
+                else if (typeof object.parentSpanID === "object")
+                    message.parentSpanID = new $util.LongBits(object.parentSpanID.low >>> 0, object.parentSpanID.high >>> 0).toNumber(true);
+            if (object.spanID != null)
+                if ($util.Long)
+                    (message.spanID = $util.Long.fromValue(object.spanID)).unsigned = true;
+                else if (typeof object.spanID === "string")
+                    message.spanID = parseInt(object.spanID, 10);
+                else if (typeof object.spanID === "number")
+                    message.spanID = object.spanID;
+                else if (typeof object.spanID === "object")
+                    message.spanID = new $util.LongBits(object.spanID.low >>> 0, object.spanID.high >>> 0).toNumber(true);
+            if (object.sampled != null)
+                message.sampled = Boolean(object.sampled);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a BTransport message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof BTransport.BTransport
+         * @static
+         * @param {BTransport.BTransport} message BTransport
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        BTransport.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.sequenceNum = 0;
+                object.stream = 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.queueTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.queueTime = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.sendTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.sendTime = options.longs === String ? "0" : 0;
+                object.requestSession = 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.traceID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.traceID = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.parentSpanID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.parentSpanID = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.spanID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.spanID = options.longs === String ? "0" : 0;
+                object.sampled = false;
+            }
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                object.sequenceNum = message.sequenceNum;
+            if (message.stream != null && message.hasOwnProperty("stream"))
+                object.stream = message.stream;
+            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
+                if (typeof message.queueTime === "number")
+                    object.queueTime = options.longs === String ? String(message.queueTime) : message.queueTime;
+                else
+                    object.queueTime = options.longs === String ? $util.Long.prototype.toString.call(message.queueTime) : options.longs === Number ? new $util.LongBits(message.queueTime.low >>> 0, message.queueTime.high >>> 0).toNumber(true) : message.queueTime;
+            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                if (typeof message.sendTime === "number")
+                    object.sendTime = options.longs === String ? String(message.sendTime) : message.sendTime;
+                else
+                    object.sendTime = options.longs === String ? $util.Long.prototype.toString.call(message.sendTime) : options.longs === Number ? new $util.LongBits(message.sendTime.low >>> 0, message.sendTime.high >>> 0).toNumber(true) : message.sendTime;
+            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
+                object.requestSession = message.requestSession;
+            if (message.traceID != null && message.hasOwnProperty("traceID"))
+                if (typeof message.traceID === "number")
+                    object.traceID = options.longs === String ? String(message.traceID) : message.traceID;
+                else
+                    object.traceID = options.longs === String ? $util.Long.prototype.toString.call(message.traceID) : options.longs === Number ? new $util.LongBits(message.traceID.low >>> 0, message.traceID.high >>> 0).toNumber(true) : message.traceID;
+            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
+                if (typeof message.parentSpanID === "number")
+                    object.parentSpanID = options.longs === String ? String(message.parentSpanID) : message.parentSpanID;
+                else
+                    object.parentSpanID = options.longs === String ? $util.Long.prototype.toString.call(message.parentSpanID) : options.longs === Number ? new $util.LongBits(message.parentSpanID.low >>> 0, message.parentSpanID.high >>> 0).toNumber(true) : message.parentSpanID;
+            if (message.spanID != null && message.hasOwnProperty("spanID"))
+                if (typeof message.spanID === "number")
+                    object.spanID = options.longs === String ? String(message.spanID) : message.spanID;
+                else
+                    object.spanID = options.longs === String ? $util.Long.prototype.toString.call(message.spanID) : options.longs === Number ? new $util.LongBits(message.spanID.low >>> 0, message.spanID.high >>> 0).toNumber(true) : message.spanID;
+            if (message.sampled != null && message.hasOwnProperty("sampled"))
+                object.sampled = message.sampled;
+            return object;
+        };
+
+        /**
+         * Converts this BTransport to JSON.
+         * @function toJSON
+         * @memberof BTransport.BTransport
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        BTransport.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return BTransport;
+    })();
+
+    return BTransport;
 })();
 
 export { $root as default };
