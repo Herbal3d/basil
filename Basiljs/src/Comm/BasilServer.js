@@ -51,7 +51,7 @@ export class BasilServiceConnection  {
                 if (msg.IdentifyDisplayableObjectReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilIdentifyDisplayableObjectReq.decode(msg.IdentifyDisplayableObjectReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'IdentifyDisplayableObjectRespMsg': procIdentifyDispalyableObject(cmdMsg) }
+                        { 'IdentifyDisplayableObjectRespMsg': this.procIdentifyDispalyableObject(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -59,7 +59,7 @@ export class BasilServiceConnection  {
                 else if (msg.CreateObjectInstanceReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilCreateObjectInstanceReq.decode(msg.CreateObjectInstanceReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'CreateObjectInstanceRespMsg': procCreateObjectInstance(cmdMsg) }
+                        { 'CreateObjectInstanceRespMsg': this.procCreateObjectInstance(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -67,7 +67,7 @@ export class BasilServiceConnection  {
                 else if (msg.UpdateObjectPropertyReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilUpdateObjectPropertyReq.decode(msg.UpdateObjectPropertyReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'UpdateObjectPropertyRespMsg': procUpdateObjectProperty(cmdMsg) }
+                        { 'UpdateObjectPropertyRespMsg': this.procUpdateObjectProperty(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -75,7 +75,7 @@ export class BasilServiceConnection  {
                 else if (msg.UpdateInstancePropertyReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilReqUpdateInstanceProperty.decode(msg.UpdateInstancePropertyReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'UpdateInstancePropertyRespMsg': procUpdateInstanceProperty(cmdMsg) }
+                        { 'UpdateInstancePropertyRespMsg': this.procUpdateInstanceProperty(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -83,7 +83,7 @@ export class BasilServiceConnection  {
                 else if (msg.UpdateInstancePositionReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilUpdateInstancePositionReq.decode(msg.UpdateInstancePositionReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'UpdateInstancePositionRespMsg': procUpdateInstancePosition(cmdMsg) }
+                        { 'UpdateInstancePositionRespMsg': this.procUpdateInstancePosition(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -91,7 +91,7 @@ export class BasilServiceConnection  {
                 else if (msg.RequestObjectPropertiesReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilRequestObjectPropertiesReq.decode(msg.RequestObjectPropertiesReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'RequestObjectPropertiesRespMsg': procRequestObjectProperties(cmdMsg) }
+                        { 'RequestObjectPropertiesRespMsg': this.procRequestObjectProperties(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -99,7 +99,7 @@ export class BasilServiceConnection  {
                 else if (msg.RequestInstancePropertiesReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilRequestInstancePropertiesReq.decode(msg.RequestInstancePropertiesReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'RequestInstancePropertiesRespMsg': procRequestInstanceProperties(cmdMsg) }
+                        { 'RequestInstancePropertiesRespMsg': this.procRequestInstanceProperties(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -107,7 +107,7 @@ export class BasilServiceConnection  {
                 else if (msg.OpenSessionReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilOpenSessionReq.decode(msg.OpenSessionReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'OpenSessionRespMsg': procOpenSession(cmdMsg) }
+                        { 'OpenSessionRespMsg': this.procOpenSession(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -115,7 +115,7 @@ export class BasilServiceConnection  {
                 else if (msg.CloseSessionReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilCloseSessionReq.decode(msg.CloseSessionReqMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'CloseSessionRespMsg': procCloseSession(cmdMsg) }
+                        { 'CloseSessionRespMsg': this.procCloseSession(cmdMsg) }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
