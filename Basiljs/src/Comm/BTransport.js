@@ -15,7 +15,7 @@ var TR = TR || {};
 GP.TR = TR;
 
 import BException from 'xBException';
-import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
+import { BTransport as BTransportMsgs } from 'xBasilServerMessages';
 
 // Template for transport implmentations.
 export class BTransport {
@@ -24,9 +24,10 @@ export class BTransport {
         this.messagesSent = 0;
         this.RPCmessagesSent = 0;
         this.messagesReceived = 0;
-        this.sequenceNum = 222;
-        this.RCPsession = 111;
+        this.sequenceNum = 111;
+        this.RCPsession = 900222;
         this.RCPSessionCallback = new Map();
+        this.aliveSequenceNum = 333;
     }
     Open(connectionString) {
     }
@@ -49,8 +50,9 @@ export class BTransport {
         GP.DebugLog('BTransport: call of undefined Receive()');
         throw new BException('BTransport: call of undefined Receive()');
     }
-    // Set a calback to be called whenever a message is received
-    SetReceiveCallback(callback) {
+    // Set a callback object for recevieving messages.
+    // The passed object must have a 'procMessage' method
+    SetReceiveCallbackObject(callback) {
         GP.DebugLog('BTransport: call of undefined SetReceiveCallback()');
         throw new BException('BTransport: call of undefined SetReceiveCallback()');
     }
@@ -89,14 +91,14 @@ export function EncodeMessage(data, tcontext, tthis) {
     if (tcontext) {
         if (tcontext.requestSession !== undefined && tcontext.requestSession != 0) {
             tmsg.requestSession = tcontext.requestSession;
-            GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum + ', reqSn=' + tmsg.requestSession);
+            // GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum + ', reqSn=' + tmsg.requestSession);
         }
     }
     else {
-        GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum);
+        // GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum);
     }
-    let cmsg = BasilServerMsgs.BasilServerMessage.create(tmsg);
-    return BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
+    let cmsg = BTransportMsgs.BTransport.create(tmsg);
+    return BTransportMsgs.BTransport.encode(cmsg).finish();
 }
 export function EncodeRPCMessage(data, resolve, reject, tthis) {
     let tester = tthis === undefined ? this : tthis;
@@ -107,6 +109,6 @@ export function EncodeRPCMessage(data, resolve, reject, tthis) {
     };
     this.RPCsessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
 
-    let cmsg = BasilServerMsgs.BasilServerMessage.create(tmsg);
-    return emsg = BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
+    let cmsg = BTransportMsgs.BTransport.create(tmsg);
+    return emsg = BTransportMsgs.BTransport.encode(cmsg).finish();
 }

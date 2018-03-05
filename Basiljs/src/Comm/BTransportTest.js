@@ -14,7 +14,7 @@
 // Test transport.
 
 import { BTransport, EncodeMessage, EncodeRPCMessage } from './BTransport.js';
-import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
+import { BasilServer as BasilServerMsgs, BTransport as BTransportMsgs } from 'xBasilServerMessages';
 import BException from 'xBException';
 
 // TransportTest uses some global variables to keep track of running tests
@@ -35,14 +35,12 @@ export default class BTransportTest extends BTransport {
 
         // Timer that generates Alive messages for testing
         if (GP.TR.TransportTestsAliveIntervalID === undefined) {
-            GP.DebugLog('BTransportTest: setting timer for alive messages');
             GP.TR.TransportTestsAliveIntervalID = setInterval(function() {
                 BTransportTest.ProcessAliveInterval();
             }, parms.testInterval ? parms.testInterval : 1000)
         }
         // Timer to poll message queue and process received messsages
         if (GP.TR.TransportTestsPollIntervalID === undefined) {
-            GP.DebugLog('BTransportTest: setting timer for message queue oplling');
             GP.TR.TransportTestsPollIntervalID = setInterval(function() {
                 BTransportTest.ProcessPollInterval();
             }, parms.testPollInterval ? parms.testPollInterval : 500)
@@ -52,19 +50,14 @@ export default class BTransportTest extends BTransport {
     // Check each of thet tests and have them generate an alive message
     static ProcessAliveInterval() {
         for (let test of GP.TR.TransportTestsRunning) {
-            console.log('BTransportTest: ProcessAliveInterval');
-            // test.Close();   // DEBUG DEBUG
-            let amsg = BasilServerMsgs.AliveCheckReq.create( {
-                'time': Date.now(),
-                'sequenceNum': test.aliveSequenceNum++
-            } );
-            let adata = BasilServerMsgs.AliveCheckReq.encode(amsg).finish();
-            console.log('BTransportTest: adata: ' + adata);
-            let bmsg =BasilServerMsgs.BasilServerMessage.create( {
-                'AliveCheckReqMsg': adata
-            })
+            let bmsg = {
+                'AliveCheckReqMsg': {
+                    'time': Date.now(),
+                    'sequenceNum': test.aliveSequenceNum++
+                }
+            }
+            // GP.DebugLog('TransportTest: creating msg: ' + JSON.stringify(bmsg));
             let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
-            console.log('BTransportTest: bdata: ' + bdata);
             test.Send(bdata, undefined, test);
         }
     }
@@ -72,23 +65,22 @@ export default class BTransportTest extends BTransport {
     // Check of the tests and see if they have messsages. Is so receive and callback.
     static ProcessPollInterval() {
         for (let test of GP.TR.TransportTestsRunning) {
-            console.log('BTransportTest: ProcessAliveInterval');
             let msg = test.messages.shift();
             if (msg) {
                 test.messagesReceived++;
-                let dmsg = BasilServerMsgs.BasilServerMessage.decode(msg)
+                let dmsg = BTransportMsgs.BTransport.decode(msg)
                 if (dmsg.requestSession) {
                     let session = test.RCPSessionCallback[dmsg.requestSession];
                     if (session) {
                         // the session entry is a tuple: [ time, resolve, reject, msgAsObject ]
                         test.RPCsessionCallback.delete(dmsg.requestSession);
-                        GP.DebugLog('BTransportTest: returning RPC: session=' + dmsg.requestSession);
+                        // GP.DebugLog('BTransportTest: returning RPC: session=' + dmsg.requestSession);
                         (session[1])(dmsg.message);
                     }
                 }
-                if (test.receiveCallback) {
-                    GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-                    test.receiveCallback(dmsg.message, dmsg);
+                if (test.receiveCallbackObject && test.receiveCallbackObject.procMessage) {
+                    // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
+                    test.receiveCallbackObject.procMessage(dmsg.message, dmsg);
                 }
             }
         }
@@ -108,12 +100,12 @@ export default class BTransportTest extends BTransport {
             GP.TR.TransportTestsPollIntervalID = undefined;
         }
     }
-    // Send the data. Places message in output queue
+    // Send the data. Places message in output queue.
+    // 'data' is the encoded binary types of the message.
     // 'tcontext' is optional and used for RPC responses.
     // One can pass a 'this' context for calling on timer threads, etc
     Send(data, tcontext, tthis) {
         let tester = tthis === undefined ? this : tthis;
-        console.log('BTransportTest: Send:' + data);
         let emsg = EncodeMessage(data, tcontext, tester);
         tester.messages.push(emsg);
         tester.messagesSent++;
@@ -136,10 +128,11 @@ export default class BTransportTest extends BTransport {
         GP.DebugLog('BTransportTest: call of undefined Receive()');
         throw new BException('BTransportTest: call of undefined Receive()');
     }
-    // Set a calback to be called whenever a message is received
-    SetReceiveCallback(callback) {
-        this.receiveCallback = callback;
-        GP.DebugLog('BTransportTest: set receiveCallback');
+    // Set a callback object for recevieving messages.
+    // The passed object must have a 'procMessage' method
+    SetReceiveCallbackObject(callback) {
+        this.receiveCallbackObject = callback;
+        // GP.DebugLog('BTransportTest: set receiveCallback');
     }
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {

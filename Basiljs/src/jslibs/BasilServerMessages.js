@@ -4817,4 +4817,298 @@ export const BasilType = $root.BasilType = (() => {
     return BasilType;
 })();
 
+export const BTransport = $root.BTransport = (() => {
+
+    const BTransport = {};
+
+    BTransport.BTransport = (function() {
+
+        function BTransport(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        BTransport.prototype.sequenceNum = 0;
+        BTransport.prototype.stream = 0;
+        BTransport.prototype.queueTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        BTransport.prototype.sendTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        BTransport.prototype.requestSession = 0;
+        BTransport.prototype.traceID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        BTransport.prototype.parentSpanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        BTransport.prototype.spanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        BTransport.prototype.sampled = false;
+        BTransport.prototype.message = $util.newBuffer([]);
+
+        BTransport.create = function create(properties) {
+            return new BTransport(properties);
+        };
+
+        BTransport.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                writer.uint32(8).uint32(message.sequenceNum);
+            if (message.stream != null && message.hasOwnProperty("stream"))
+                writer.uint32(16).uint32(message.stream);
+            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
+                writer.uint32(24).uint64(message.queueTime);
+            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                writer.uint32(32).uint64(message.sendTime);
+            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
+                writer.uint32(40).uint32(message.requestSession);
+            if (message.traceID != null && message.hasOwnProperty("traceID"))
+                writer.uint32(64).uint64(message.traceID);
+            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
+                writer.uint32(72).uint64(message.parentSpanID);
+            if (message.spanID != null && message.hasOwnProperty("spanID"))
+                writer.uint32(80).uint64(message.spanID);
+            if (message.sampled != null && message.hasOwnProperty("sampled"))
+                writer.uint32(88).bool(message.sampled);
+            if (message.message != null && message.hasOwnProperty("message"))
+                writer.uint32(122).bytes(message.message);
+            return writer;
+        };
+
+        BTransport.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        BTransport.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BTransport.BTransport();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.sequenceNum = reader.uint32();
+                    break;
+                case 2:
+                    message.stream = reader.uint32();
+                    break;
+                case 3:
+                    message.queueTime = reader.uint64();
+                    break;
+                case 4:
+                    message.sendTime = reader.uint64();
+                    break;
+                case 5:
+                    message.requestSession = reader.uint32();
+                    break;
+                case 8:
+                    message.traceID = reader.uint64();
+                    break;
+                case 9:
+                    message.parentSpanID = reader.uint64();
+                    break;
+                case 10:
+                    message.spanID = reader.uint64();
+                    break;
+                case 11:
+                    message.sampled = reader.bool();
+                    break;
+                case 15:
+                    message.message = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        BTransport.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        BTransport.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                if (!$util.isInteger(message.sequenceNum))
+                    return "sequenceNum: integer expected";
+            if (message.stream != null && message.hasOwnProperty("stream"))
+                if (!$util.isInteger(message.stream))
+                    return "stream: integer expected";
+            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
+                if (!$util.isInteger(message.queueTime) && !(message.queueTime && $util.isInteger(message.queueTime.low) && $util.isInteger(message.queueTime.high)))
+                    return "queueTime: integer|Long expected";
+            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                if (!$util.isInteger(message.sendTime) && !(message.sendTime && $util.isInteger(message.sendTime.low) && $util.isInteger(message.sendTime.high)))
+                    return "sendTime: integer|Long expected";
+            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
+                if (!$util.isInteger(message.requestSession))
+                    return "requestSession: integer expected";
+            if (message.traceID != null && message.hasOwnProperty("traceID"))
+                if (!$util.isInteger(message.traceID) && !(message.traceID && $util.isInteger(message.traceID.low) && $util.isInteger(message.traceID.high)))
+                    return "traceID: integer|Long expected";
+            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
+                if (!$util.isInteger(message.parentSpanID) && !(message.parentSpanID && $util.isInteger(message.parentSpanID.low) && $util.isInteger(message.parentSpanID.high)))
+                    return "parentSpanID: integer|Long expected";
+            if (message.spanID != null && message.hasOwnProperty("spanID"))
+                if (!$util.isInteger(message.spanID) && !(message.spanID && $util.isInteger(message.spanID.low) && $util.isInteger(message.spanID.high)))
+                    return "spanID: integer|Long expected";
+            if (message.sampled != null && message.hasOwnProperty("sampled"))
+                if (typeof message.sampled !== "boolean")
+                    return "sampled: boolean expected";
+            if (message.message != null && message.hasOwnProperty("message"))
+                if (!(message.message && typeof message.message.length === "number" || $util.isString(message.message)))
+                    return "message: buffer expected";
+            return null;
+        };
+
+        BTransport.fromObject = function fromObject(object) {
+            if (object instanceof $root.BTransport.BTransport)
+                return object;
+            let message = new $root.BTransport.BTransport();
+            if (object.sequenceNum != null)
+                message.sequenceNum = object.sequenceNum >>> 0;
+            if (object.stream != null)
+                message.stream = object.stream >>> 0;
+            if (object.queueTime != null)
+                if ($util.Long)
+                    (message.queueTime = $util.Long.fromValue(object.queueTime)).unsigned = true;
+                else if (typeof object.queueTime === "string")
+                    message.queueTime = parseInt(object.queueTime, 10);
+                else if (typeof object.queueTime === "number")
+                    message.queueTime = object.queueTime;
+                else if (typeof object.queueTime === "object")
+                    message.queueTime = new $util.LongBits(object.queueTime.low >>> 0, object.queueTime.high >>> 0).toNumber(true);
+            if (object.sendTime != null)
+                if ($util.Long)
+                    (message.sendTime = $util.Long.fromValue(object.sendTime)).unsigned = true;
+                else if (typeof object.sendTime === "string")
+                    message.sendTime = parseInt(object.sendTime, 10);
+                else if (typeof object.sendTime === "number")
+                    message.sendTime = object.sendTime;
+                else if (typeof object.sendTime === "object")
+                    message.sendTime = new $util.LongBits(object.sendTime.low >>> 0, object.sendTime.high >>> 0).toNumber(true);
+            if (object.requestSession != null)
+                message.requestSession = object.requestSession >>> 0;
+            if (object.traceID != null)
+                if ($util.Long)
+                    (message.traceID = $util.Long.fromValue(object.traceID)).unsigned = true;
+                else if (typeof object.traceID === "string")
+                    message.traceID = parseInt(object.traceID, 10);
+                else if (typeof object.traceID === "number")
+                    message.traceID = object.traceID;
+                else if (typeof object.traceID === "object")
+                    message.traceID = new $util.LongBits(object.traceID.low >>> 0, object.traceID.high >>> 0).toNumber(true);
+            if (object.parentSpanID != null)
+                if ($util.Long)
+                    (message.parentSpanID = $util.Long.fromValue(object.parentSpanID)).unsigned = true;
+                else if (typeof object.parentSpanID === "string")
+                    message.parentSpanID = parseInt(object.parentSpanID, 10);
+                else if (typeof object.parentSpanID === "number")
+                    message.parentSpanID = object.parentSpanID;
+                else if (typeof object.parentSpanID === "object")
+                    message.parentSpanID = new $util.LongBits(object.parentSpanID.low >>> 0, object.parentSpanID.high >>> 0).toNumber(true);
+            if (object.spanID != null)
+                if ($util.Long)
+                    (message.spanID = $util.Long.fromValue(object.spanID)).unsigned = true;
+                else if (typeof object.spanID === "string")
+                    message.spanID = parseInt(object.spanID, 10);
+                else if (typeof object.spanID === "number")
+                    message.spanID = object.spanID;
+                else if (typeof object.spanID === "object")
+                    message.spanID = new $util.LongBits(object.spanID.low >>> 0, object.spanID.high >>> 0).toNumber(true);
+            if (object.sampled != null)
+                message.sampled = Boolean(object.sampled);
+            if (object.message != null)
+                if (typeof object.message === "string")
+                    $util.base64.decode(object.message, message.message = $util.newBuffer($util.base64.length(object.message)), 0);
+                else if (object.message.length)
+                    message.message = object.message;
+            return message;
+        };
+
+        BTransport.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.sequenceNum = 0;
+                object.stream = 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.queueTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.queueTime = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.sendTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.sendTime = options.longs === String ? "0" : 0;
+                object.requestSession = 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.traceID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.traceID = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.parentSpanID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.parentSpanID = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, true);
+                    object.spanID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.spanID = options.longs === String ? "0" : 0;
+                object.sampled = false;
+                object.message = options.bytes === String ? "" : [];
+            }
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                object.sequenceNum = message.sequenceNum;
+            if (message.stream != null && message.hasOwnProperty("stream"))
+                object.stream = message.stream;
+            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
+                if (typeof message.queueTime === "number")
+                    object.queueTime = options.longs === String ? String(message.queueTime) : message.queueTime;
+                else
+                    object.queueTime = options.longs === String ? $util.Long.prototype.toString.call(message.queueTime) : options.longs === Number ? new $util.LongBits(message.queueTime.low >>> 0, message.queueTime.high >>> 0).toNumber(true) : message.queueTime;
+            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
+                if (typeof message.sendTime === "number")
+                    object.sendTime = options.longs === String ? String(message.sendTime) : message.sendTime;
+                else
+                    object.sendTime = options.longs === String ? $util.Long.prototype.toString.call(message.sendTime) : options.longs === Number ? new $util.LongBits(message.sendTime.low >>> 0, message.sendTime.high >>> 0).toNumber(true) : message.sendTime;
+            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
+                object.requestSession = message.requestSession;
+            if (message.traceID != null && message.hasOwnProperty("traceID"))
+                if (typeof message.traceID === "number")
+                    object.traceID = options.longs === String ? String(message.traceID) : message.traceID;
+                else
+                    object.traceID = options.longs === String ? $util.Long.prototype.toString.call(message.traceID) : options.longs === Number ? new $util.LongBits(message.traceID.low >>> 0, message.traceID.high >>> 0).toNumber(true) : message.traceID;
+            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
+                if (typeof message.parentSpanID === "number")
+                    object.parentSpanID = options.longs === String ? String(message.parentSpanID) : message.parentSpanID;
+                else
+                    object.parentSpanID = options.longs === String ? $util.Long.prototype.toString.call(message.parentSpanID) : options.longs === Number ? new $util.LongBits(message.parentSpanID.low >>> 0, message.parentSpanID.high >>> 0).toNumber(true) : message.parentSpanID;
+            if (message.spanID != null && message.hasOwnProperty("spanID"))
+                if (typeof message.spanID === "number")
+                    object.spanID = options.longs === String ? String(message.spanID) : message.spanID;
+                else
+                    object.spanID = options.longs === String ? $util.Long.prototype.toString.call(message.spanID) : options.longs === Number ? new $util.LongBits(message.spanID.low >>> 0, message.spanID.high >>> 0).toNumber(true) : message.spanID;
+            if (message.sampled != null && message.hasOwnProperty("sampled"))
+                object.sampled = message.sampled;
+            if (message.message != null && message.hasOwnProperty("message"))
+                object.message = options.bytes === String ? $util.base64.encode(message.message, 0, message.message.length) : options.bytes === Array ? Array.prototype.slice.call(message.message) : message.message;
+            return object;
+        };
+
+        BTransport.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return BTransport;
+    })();
+
+    return BTransport;
+})();
+
 export { $root as default };
