@@ -45,7 +45,9 @@ cd "${PROTOBUFJSDIR}"
 ./bin/pbjs -t static-module \
         --wrap es6 \
         --no-comments \
-        $BASILPROTDIR/protocol/Basil*.proto \
+        $BASILPROTDIR/protocol/BasilServer.proto \
+        $BASILPROTDIR/protocol/BasilTypes.proto \
+        $BASILPROTDIR/protocol/BTransport.proto \
         > "$JSLIBS/BasilServerMessages.js"
 
 # echo "=== Copy libraries into BasilJS"
