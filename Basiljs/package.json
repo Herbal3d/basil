@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "BSD-3-Clause",
+  "license": "MPL 2.0",
   "dependencies": {
     "@protobufjs/aspromise": "^1.1.2",
     "@protobufjs/base64": "^1.1.2",
