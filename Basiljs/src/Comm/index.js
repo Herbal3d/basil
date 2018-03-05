@@ -86,25 +86,31 @@ export function ConnectService(xport, parms) {
 };
 
 export function TestComm() {
-    GP.DebugLog('Comm.TestComm: here');
-    ConnectTransport( {
-        'transport': 'Test',
-        'transportURL': 'TESTTEST',
-        'testInterval': 1000,       // MS between alive checks
-    })
-    .then (xport => {
-        return ConnectService(xport, {
-            'service': 'BasilServer'
+    if (GP.TestCommService) {
+        GP.DebugLog('Comm.TestComm: stopping test');
+        GP.TestCommService.Close();
+        GP.TestCommService = undefined;
+    }
+    else {
+        GP.DebugLog('Comm.TestComm: starting test');
+        ConnectTransport( {
+            'transport': 'Test',
+            'transportURL': 'TESTTEST',
+            'testInterval': 1000,       // MS between alive checks
         })
-    })
-    .then (svc => {
-        GP.DebugLog('TestComm: service connected and running');
-        // do some testing
-    })
-    .catch ( e => {
-        GP.DebugLog('Comm.TestComm: failed test: ' + e);
-
-    })
+        .then (xport => {
+            return ConnectService(xport, {
+                'service': 'BasilServer'
+            })
+        })
+        .then (svc => {
+            GP.DebugLog('TestComm: service connected and running');
+            GP.TestCommService = svc;
+        })
+        .catch ( e => {
+            GP.DebugLog('Comm.TestComm: failed test: ' + e);
+        })
+    }
 }
 
 export function stats() {

@@ -43,7 +43,7 @@ export class BasilServiceConnection  {
     // @param buff raw bytes of the message that was transported
     // @param tcontext transport context. Could be undefined but, if present, used for RPC
     procMessage(buff, tcontext) {
-        if (transport) {
+        if (this.transport) {
             // the Buffer should be a BasilServerMessage
             try {
                 let msg = BasilServerMsgs.BasilBasilServerMessage.decode(buff);
@@ -53,7 +53,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'IdentifyDisplayableObjectRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('CreateObjectInstanceReqMsg')) {
@@ -62,7 +62,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'CreateObjectInstanceRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('UpdateObjectPropertyReqMsg')) {
@@ -71,7 +71,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'UpdateObjectPropertyRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('UpdateInstancePropertyReqMsg')) {
@@ -80,7 +80,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'UpdateInstancePropertyRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('UpdateInstancePositionReqMsg')) {
@@ -89,7 +89,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'UpdateInstancePositionRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('RequestObjectPropertiesReqMsg')) {
@@ -98,7 +98,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'RequestObjectPropertiesRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('RequestInstancePropertiesReqMsg')) {
@@ -107,7 +107,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'RequestInstancePropertiesRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('OpenSessionReqMsg')) {
@@ -116,7 +116,7 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'OpenSessionRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('CloseSessionReqMsg')) {
@@ -125,16 +125,17 @@ export class BasilServiceConnection  {
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'CloseSessionRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else if (msg.hasOwnPropery('AliveCheckReqMsg')) {
+                    GP.DebugLog('BasilServer: received AliveCheckReq');
                     let cmdMsg = BasilServerMsgs.BasilAliveCheckReq.decode(msg.AliveCheckReqMsg);
                     let resp = procAliveCheck(cmdMsg);
                     let reply = BasilServerMsgs.BasilBasilServerMessage.create(
                         { 'AliveCheckRespMsg': resp }
                     );
-                    transport.Send(reply.encode().finish(), tcontext);
+                    this.transport.Send(reply.encode().finish(), tcontext);
                     return;
                 }
                 else {

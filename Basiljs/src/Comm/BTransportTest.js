@@ -34,14 +34,14 @@ export default class BTransportTest extends BTransport {
         GP.TR.TransportTestsRunning.push(this);
 
         // Timer that generates Alive messages for testing
-        if (GP.TR.TransportTestsAliveIntervalID == undefined) {
+        if (GP.TR.TransportTestsAliveIntervalID === undefined) {
             GP.DebugLog('BTransportTest: setting timer for alive messages');
             GP.TR.TransportTestsAliveIntervalID = setInterval(function() {
                 BTransportTest.ProcessAliveInterval();
             }, parms.testInterval ? parms.testInterval : 1000)
         }
         // Timer to poll message queue and process received messsages
-        if (GP.TR.TransportTestsPollIntervalID == undefined) {
+        if (GP.TR.TransportTestsPollIntervalID === undefined) {
             GP.DebugLog('BTransportTest: setting timer for message queue oplling');
             GP.TR.TransportTestsPollIntervalID = setInterval(function() {
                 BTransportTest.ProcessPollInterval();
@@ -59,7 +59,13 @@ export default class BTransportTest extends BTransport {
                 'sequenceNum': test.aliveSequenceNum++
             } );
             let adata = BasilServerMsgs.AliveCheckReq.encode(amsg).finish();
-            test.Send(adata, undefined, test);
+            console.log('BTransportTest: adata: ' + adata);
+            let bmsg =BasilServerMsgs.BasilServerMessage.create( {
+                'AliveCheckReqMsg': adata
+            })
+            let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
+            console.log('BTransportTest: bdata: ' + bdata);
+            test.Send(bdata, undefined, test);
         }
     }
     // Static function called from timeReceived
@@ -98,8 +104,8 @@ export default class BTransportTest extends BTransport {
             GP.TR.TransportTestsAliveIntervalID = undefined;
         }
         if (GP.TR.TransportTestsPollIntervalID) {
-            clearInterval(BTransportTest.TransportTestsPollIntervalID);
-            BTransportTest.TransportTestsPollIntervalID = undefined;
+            clearInterval(GP.TR.TransportTestsPollIntervalID);
+            GP.TR.TransportTestsPollIntervalID = undefined;
         }
     }
     // Send the data. Places message in output queue
@@ -108,7 +114,7 @@ export default class BTransportTest extends BTransport {
     Send(data, tcontext, tthis) {
         let tester = tthis === undefined ? this : tthis;
         console.log('BTransportTest: Send:' + data);
-        let emsg = EncodeMessage(data, tcontext);
+        let emsg = EncodeMessage(data, tcontext, tester);
         tester.messages.push(emsg);
         tester.messagesSent++;
     }
@@ -119,7 +125,7 @@ export default class BTransportTest extends BTransport {
         let tester = tthis === undefined ? this : tthis;
         return new Promise((resolve, reject) => {
             console.log('BTransportTest: SendRPC:' + data);
-            let emsg = EncodeRPCMessage(data, resolve, reject);
+            let emsg = EncodeRPCMessage(data, resolve, reject, tester);
             tester.messages.push(emsg);
             tester.RPCmessagesSent++;
             tester.messagesSent++;
@@ -140,7 +146,7 @@ export default class BTransportTest extends BTransport {
         return this.messsages.length > 0;
     }
     get isConnected() {
-        return (this.TransportTestsPollIntervalID != undefined);
+        return (this.TransportTestsPollIntervalID !== undefined);
     }
     // Return a map with statistics
     get stats() {

@@ -80,9 +80,10 @@ export class BTransport {
 }
 
 // UTILITY FUNCTIONS USED BY children
-export function EncodeMesssage(data, tcontext) {
+export function EncodeMessage(data, tcontext, tthis) {
+    let tester = tthis === undefined ? this : tthis;
     let tmsg = {
-        'sequenceNum': this.sequenceNum++,
+        'sequenceNum': tester.sequenceNum++,
         'message': data,
     };
     if (tcontext) {
@@ -97,11 +98,12 @@ export function EncodeMesssage(data, tcontext) {
     let cmsg = BasilServerMsgs.BasilServerMessage.create(tmsg);
     return BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
 }
-export function EncodeRPCMessage(data, resolve, reject) {
+export function EncodeRPCMessage(data, resolve, reject, tthis) {
+    let tester = tthis === undefined ? this : tthis;
     let tmsg = {
-        'sequenceNum': this.sequenceNum++,
+        'sequenceNum': tester.sequenceNum++,
         'message': data,
-        'requestSession': this.RCPsession++
+        'requestSession': tester.RCPsession++
     };
     this.RPCsessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
 
