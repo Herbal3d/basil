@@ -4,12 +4,17 @@
 'use strict';
 
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
-module.exports = {
+export default {
+    'comm': {
+        'PestoURL': '',
+        'initSceneURL': '',
+        'noComma': 0
+    },
     // Parameters for the main display page
     'page': {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
-        'showDebug': false,
+        'showDebug': true,
         'noComma': 0
     },
     // Parameters for the webgl environment

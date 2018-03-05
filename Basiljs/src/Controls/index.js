@@ -17,6 +17,7 @@ var CO = CO || {};
 import Config from 'xConfig';
 import * as $ from 'jquery';
 import * as Graphics from 'xGraphics';
+import * as Comm from 'xComm';
 import * as Eventing from 'xEventing';
 // Classes that implement different types of UI controls
 import * as UIControls from './UIControls.js';
@@ -88,17 +89,6 @@ function internalOnClickable(evnt) {
     }
     if (buttonOp == 'loadAtropia') {
         GP.DebugLog('Controls: OnLoadAtropia');
-        var atropiaRegions = [
-            [ "testtest00.gltf", [0,0,512] ],
-            [ "testtest01.gltf", [0,0,256] ],
-            [ "testtest02.gltf", [0,0,0] ],
-            [ "testtest10.gltf", [256,0,512] ],
-            // [ "testtest11.gltf", [256,0,256] ],
-            [ "testtest12.gltf", [256,0,0] ],
-            [ "testtest20.gltf", [512,0,512] ],
-            [ "testtest21.gltf", [512,0,256] ],
-            [ "testtest22.gltf", [512,0,0] ]
-        ];
         var valueFromHTML = $(evnt.target).attr('value');
         if (valueFromHTML) {
             GP.DebugLog('Getting value for regions from HTML')
@@ -107,8 +97,12 @@ function internalOnClickable(evnt) {
             atropiaRegions = parsedInput.map(oneRegionInfo => {
                 return [ Config.assets.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
             });
+            internalDoLoadMultiple(atropiaRegions);
         }
-        internalDoLoadMultiple(atropiaRegions);
+    }
+    if (buttonOp == 'testComm') {
+        GP.DebugLog('Controls: OnTestComm');
+        Comm.TestComm();
     }
     if (buttonOp == 'addTest') {
         GP.DebugLog('Controls: OnAddTestObject');

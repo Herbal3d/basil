@@ -25,7 +25,11 @@ module.exports = {
     // Aliases so individual files don't reference the filenames
     alias: {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
+        'xBException': path.resolve(__dirname, 'src/BException.js'),
+
         'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
+        'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
+
         'xControls': path.resolve(__dirname, 'src/Controls/index.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
@@ -33,7 +37,7 @@ module.exports = {
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
         'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
-        'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
+
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
         'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
     },

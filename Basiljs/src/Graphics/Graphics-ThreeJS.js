@@ -84,68 +84,65 @@ function disposeScene(scene) {
 }
 
 export function Init(container, canvas, initializedCallback) {
-    return new Promise((resolve, reject) => {
-        GR.container = container;
-        GR.canvas = canvas;
+    GR.container = container;
+    GR.canvas = canvas;
 
-        GR.scene = new THREE.Scene();
+    GR.scene = new THREE.Scene();
 
-        internalInitializeCameraAndLights(GR.scene, GR.canvas);
+    internalInitializeCameraAndLights(GR.scene, GR.canvas);
 
-        var rendererParams = Config.webgl.renderer.ThreeJS;
-        rendererParams.canvas = canvas;
-        GR.renderer = new THREE.WebGLRenderer(rendererParams);
-        if (Config.webgl.renderer.clearColor) {
-            GR.renderer.setClearColor(colorFromArray(Config.webgl.renderer.clearColor));
-        }
-        GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+    var rendererParams = Config.webgl.renderer.ThreeJS;
+    rendererParams.canvas = canvas;
+    GR.renderer = new THREE.WebGLRenderer(rendererParams);
+    if (Config.webgl.renderer.clearColor) {
+        GR.renderer.setClearColor(colorFromArray(Config.webgl.renderer.clearColor));
+    }
+    GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-        if (Config.webgl.renderer.shadows) {
-            GR.renderer.shadowMap.enabled = true;
-            GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
-        }
+    if (Config.webgl.renderer.shadows) {
+        GR.renderer.shadowMap.enabled = true;
+        GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
+    }
 
-        internalInitializeCameraControl(GR.scene, GR.container);
-        container.addEventListener('resize', internalOnContainerResize, false);
+    internalInitializeCameraControl(GR.scene, GR.container);
+    container.addEventListener('resize', internalOnContainerResize, false);
 
-        // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
-        GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
+    // GR.eventEachFrame = Eventing.register('display.eachFrame', 'Graphics');
+    GR.eventObjectSelected = Eventing.register('display.objectSelected', 'Graphics');
 
-        // Generate subscribable periodic when camera info (position) changes
-        GR.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
-        GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, function(topic) {
-            if (GR.eventCameraInfo.hasSubscriptions) {
-                if (GR.eventCameraInfo.prevCamPosition == undefined) {
-                    GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
-                }
-                var oldPos = GR.eventCameraInfo.prevCamPosition;
-                // must clone or 'newPos' will be just a reference to the old value.
-                var newPos = GR.camera.position.clone();
-                if (!newPos.equals(oldPos)) {
-                    var camInfo = {
-                        'position': GR.camera.position.clone(),
-                        'rotation': GR.camera.rotation.clone()
-                    };
-                    Eventing.fire(GR.eventCameraInfo, camInfo);
-                    GR.eventCameraInfo.prevCamPosition = newPos;
-                }
+    // Generate subscribable periodic when camera info (position) changes
+    GR.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
+    GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, function(topic) {
+        if (GR.eventCameraInfo.hasSubscriptions) {
+            if (GR.eventCameraInfo.prevCamPosition == undefined) {
+                GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
             }
-        });
-
-        // Generate subscribable periodic events when display info changes
-        GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
-        GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, function(topic) {
-            if (GR.eventDisplayInfo.hasSubscriptions) {
-                // not general, but, for the moment, just return the WebGL info
-                var dispInfo = GR.renderer.info;
-                dispInfo.render.fps = GR.fps;
-                Eventing.fire(GR.eventDisplayInfo, dispInfo);
+            var oldPos = GR.eventCameraInfo.prevCamPosition;
+            // must clone or 'newPos' will be just a reference to the old value.
+            var newPos = GR.camera.position.clone();
+            if (!newPos.equals(oldPos)) {
+                var camInfo = {
+                    'position': GR.camera.position.clone(),
+                    'rotation': GR.camera.rotation.clone()
+                };
+                Eventing.fire(GR.eventCameraInfo, camInfo);
+                GR.eventCameraInfo.prevCamPosition = newPos;
             }
-        });
-        // start FPS computation
-        GR.lastFrameTime = new Date().getTime();
-        resolve();
+        }
     });
+
+    // Generate subscribable periodic events when display info changes
+    GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
+    GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo, function(topic) {
+        if (GR.eventDisplayInfo.hasSubscriptions) {
+            // not general, but, for the moment, just return the WebGL info
+            var dispInfo = GR.renderer.info;
+            dispInfo.render.fps = GR.fps;
+            Eventing.fire(GR.eventDisplayInfo, dispInfo);
+        }
+    });
+    // start FPS computation
+    GR.lastFrameTime = new Date().getTime();
 };
 
 export function Start() {

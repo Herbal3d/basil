@@ -11,25 +11,63 @@
 
 'use strict';
 
-// Template for transport implmentations.
-// Using 'functional pattern' from http://davidshariff.com/blog/javascript-inheritance-patterns/
-//     mostly because it isolates all the children and fixes closure overlaps.
-// To create a new instance: var newInstance = BTransportWebWorker();
+import { BTransport } from './BTransport.js';
 
-// open(transportSpecificParameters)
-// close()
-// write(data)
-// data = read()
-// dataAvailable(callBack)
-// isOpen()
+// There are two halfs: the 'service' and the 'worker'.
+export default class BTransportWW extends BTransport {
+    constructor(parms) {
+        super();
+    }
+    Open(connectionString) {
+    }
+    Close() {
+    }
+    // Send the data. Places message in output queue
+    // 'tcontext' is optional and used for RPC responses.
+    Send(data, tcontext) {
+        let emsg = super.EncodeMessage(data, tcontext);
+    }
+    // Send a messsage and expect a replay of some type.
+    // Returns a promise
+    SendRPC(data) {
+        return new Promise((resolve, reject) => {
+            let emsg = super.EncodeRPCMessage(data, resolve, reject);
+            // SEND MESSAGE
+         });
+        GP.DebugLog('BTransportWW: SendRPC()');
+    }
+    // Get data in the input queue. Returns a Promise as might wait for data.
+    Receive() {
+        GP.DebugLog('BTransportWW: call of undefined Receive()');
+        throw new BException('BTransportWW: call of undefined Receive()');
+    }
+    // Set a calback to be called whenever a message is received
+    SetReceiveCallback(callback) {
+        GP.DebugLog('BTransportWW: call of undefined SetReceiveCallback()');
+        throw new BException('BTransportWW: call of undefined SetReceiveCallback()');
+    }
+    // Return 'true' is there is data in the input queue
+    get isDataAvailable() {
+        return false;
+    }
+    get isConnected() {
+        return false;
+    }
+    // Return a map with statistics
+    get stats() {
+        return {};
+    }
+    // Returns type of the transport. Like 'WW' or 'WS'.
+    get type() {
+        return 'BTransportWW';
+    }
+    // Returns a longer identifying name of transport (usually includes endpoint name)
+    get info() {
+        return this.type + ' none';
+    }
 
-// context for BTransportWW
-// If inside a WebWorker, isWorker = true
-var BTW = BTW || {};
 
-define(['Config', 'BTransport'],
-            function( Config, BTransport ) {
-
+    /* OLD CODE
     BTW.isWorker = false;
 
     // WebWorker transport.
@@ -185,5 +223,6 @@ define(['Config', 'BTransport'],
         that.me = that;             // for referencing myself
 
         return that;
-    }
-});
+*/
+
+}

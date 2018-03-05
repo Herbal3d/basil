@@ -11,34 +11,100 @@
 
 'use strict';
 
+var TR = TR || {};
+GP.TR = TR;
+
+import BException from 'xBException';
+import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
+
 // Template for transport implmentations.
-// Using 'functional pattern' from http://davidshariff.com/blog/javascript-inheritance-patterns/
-//     mostly because it isolates all the children and fixes closure overlaps.
-
-// open(transportSpecificParameters)
-// close()
-// write(data)
-// data = read()
-// dataAvailable(callBack)
-// isOpen()
-
-define(['Config'],
-            function( Config ) {
-
-    return function() {
-        var that = {};
-
-        that.open = function(connectionString) {},
-        that.close = function() {},
-        that.send = function(data) {},
-        // Read a message and call the callback when received. Will hang if no input yet.
-        that.receive = function(completionCallback) {},
-        // Call callback when there is data in put input queue.
-        //    A way of getting called when data is available.
-        //    Pass 'undefined' to turn off the callbacks.
-        that.dataAvailable = function(callBack) {},
-        that.isOpen = function() {}
-
-        return that;
+export class BTransport {
+    constructor(parms) {
+        this.messages = [];
+        this.messagesSent = 0;
+        this.RPCmessagesSent = 0;
+        this.messagesReceived = 0;
+        this.sequenceNum = 222;
+        this.RCPsession = 111;
+        this.RCPSessionCallback = new Map();
     }
-});
+    Open(connectionString) {
+    }
+    Close() {
+    }
+    // Send the data. Places message in output queue
+    // 'tcontext' is optional and used for RPC responses.
+    Send(data, tcontext) {
+        GP.DebugLog('BTransport: call of undefined Send()');
+        throw new BException('BTransport: call of undefined Send()');
+    }
+    // Send a messsage and expect a replay of some type.
+    // Returns a promise
+    SendRPC(data) {
+        GP.DebugLog('BTransport: call of undefined SendRPC()');
+        throw new BException('BTransport: call of undefined SendRPC()');
+    }
+    // Get data in the input queue. Returns a Promise as might wait for data.
+    Receive() {
+        GP.DebugLog('BTransport: call of undefined Receive()');
+        throw new BException('BTransport: call of undefined Receive()');
+    }
+    // Set a calback to be called whenever a message is received
+    SetReceiveCallback(callback) {
+        GP.DebugLog('BTransport: call of undefined SetReceiveCallback()');
+        throw new BException('BTransport: call of undefined SetReceiveCallback()');
+    }
+    // Return 'true' is there is data in the input queue
+    get isDataAvailable() {
+        return false;
+    }
+    get isConnected() {
+        return false;
+    }
+    // Return a map with statistics
+    get stats() {
+        return {};
+    }
+    // Returns type of the transport. Like 'WW' or 'WS'.
+    get type() {
+        return 'unspecified';
+    }
+    // Returns a longer identifying name of transport (usually includes endpoint name)
+    get info() {
+        return this.type + ' none';
+    }
+    GetProperties(filter) {
+    }
+    SetProperty(prop, value) {
+    }
+}
+
+// UTILITY FUNCTIONS USED BY children
+export function EncodeMesssage(data, tcontext) {
+    let tmsg = {
+        'sequenceNum': this.sequenceNum++,
+        'message': data,
+    };
+    if (tcontext) {
+        if (tcontext.requestSession !== undefined && tcontext.requestSession != 0) {
+            tmsg.requestSession = tcontext.requestSession;
+            GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum + ', reqSn=' + tmsg.requestSession);
+        }
+    }
+    else {
+        GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum);
+    }
+    let cmsg = BasilServerMsgs.BasilServerMessage.create(tmsg);
+    return BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
+}
+export function EncodeRPCMessage(data, resolve, reject) {
+    let tmsg = {
+        'sequenceNum': this.sequenceNum++,
+        'message': data,
+        'requestSession': this.RCPsession++
+    };
+    this.RPCsessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
+
+    let cmsg = BasilServerMsgs.BasilServerMessage.create(tmsg);
+    return emsg = BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
+}

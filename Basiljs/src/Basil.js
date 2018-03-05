@@ -10,6 +10,7 @@
 // limitations under the License.
 
 'use strict';
+/* global GP */ // debugging global context (ESlint)
 
 // Global parameters and variables. "GP.variable"
 // var GP = GP || {};
@@ -20,12 +21,12 @@ import * as $ from 'jquery';
 GP.Config = Config;
 
 // Force the processing of the CSS format file
-require('./Basiljs.less');
+import './Basiljs.less';
 
 // From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
 // Used to fetch invocation parameters. The request better be well formed as
 //     parsing is pretty unforgiving.
-function configGetQueryVariable(variable) {
+GP.ConfigGetQueryVariable = function (variable) {
     var query = window.location.search.substring(1);
     var vars = query.split('&');
     for (var i = 0; i < vars.length; i++) {
@@ -35,7 +36,7 @@ function configGetQueryVariable(variable) {
         }
     }
     return undefined;
-}
+};
 
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
@@ -55,13 +56,13 @@ GP.LogMessage = function LogMessage(msg, classs) {
 };
 GP.DebugLog = function DebugLog(msg) {
     GP.LogMessage(msg, undefined);
-}
+};
 
 GP.ReportError = function ReportError(msg) {
     GP.LogMessage(msg, 'errorMsg');
 };
 
-// ===================================================== 
+// =====================================================
 /*
     Pattern for Basil is for each package to define a global variable to hold
     local state. This is two character (GR, EV, CM, CO, ...). There is one
@@ -69,25 +70,20 @@ GP.ReportError = function ReportError(msg) {
     for use in debugging.
 */
 
-import * as Comm from 'xComm';
 import * as Graphics from 'xGraphics';
 import * as Controls from 'xControls';
+import * as Comm from 'xComm';
 
 GP.Ready = false;
 
 var container = document.getElementById(Config.page.webGLcontainerId);
 var canvas = document.getElementById(Config.page.webGLcanvasId);
 
-Graphics.Init(container, canvas)
-.then(() => {
-    Controls.Init();
+Graphics.Init(container, canvas);
+Controls.Init();
+Comm.Init();
 
-    Graphics.Start();
-    Comm.Start();
+Graphics.Start();
+Comm.Start();
 
-    GP.Ready = true;
-})
-.catch ((e) => {
-    GP.DebugLog('Basil.main: failure initializing:' + e);
-});
-
+GP.Ready = true;

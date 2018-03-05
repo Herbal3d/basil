@@ -44,6 +44,7 @@ echo "=== Build JS code for Basil-protocol"
 cd "${PROTOBUFJSDIR}"
 ./bin/pbjs -t static-module \
         --wrap es6 \
+        --no-comments \
         $BASILPROTDIR/protocol/Basil*.proto \
         > "$JSLIBS/BasilServerMessages.js"
 

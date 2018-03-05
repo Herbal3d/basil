@@ -1,42 +1,16 @@
 /*eslint-disable block-scoped-var, no-redeclare, no-control-regex, no-prototype-builtins*/
 import * as $protobuf from "protobufjs/minimal";
 
-// Common aliases
 const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
 
-// Exported root namespace
 const $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
 
-export const Basil = $root.Basil = (() => {
+export const BasilServer = $root.BasilServer = (() => {
 
-    /**
-     * Namespace Basil.
-     * @exports Basil
-     * @namespace
-     */
-    const Basil = {};
+    const BasilServer = {};
 
-    Basil.IdentifyDisplayableObjectReq = (function() {
+    BasilServer.IdentifyDisplayableObjectReq = (function() {
 
-        /**
-         * Properties of an IdentifyDisplayableObjectReq.
-         * @memberof Basil
-         * @interface IIdentifyDisplayableObjectReq
-         * @property {BTransport.IBTransport|null} [transport] IdentifyDisplayableObjectReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] IdentifyDisplayableObjectReq auth
-         * @property {BasilType.IObjectIdentifier|null} [id] IdentifyDisplayableObjectReq id
-         * @property {BasilType.IAssetInformation|null} [assetInfo] IdentifyDisplayableObjectReq assetInfo
-         * @property {BasilType.IAaBoundingBox|null} [aabb] IdentifyDisplayableObjectReq aabb
-         */
-
-        /**
-         * Constructs a new IdentifyDisplayableObjectReq.
-         * @memberof Basil
-         * @classdesc Represents an IdentifyDisplayableObjectReq.
-         * @implements IIdentifyDisplayableObjectReq
-         * @constructor
-         * @param {Basil.IIdentifyDisplayableObjectReq=} [properties] Properties to set
-         */
         function IdentifyDisplayableObjectReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -44,127 +18,50 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * IdentifyDisplayableObjectReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         */
-        IdentifyDisplayableObjectReq.prototype.transport = null;
-
-        /**
-         * IdentifyDisplayableObjectReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         */
         IdentifyDisplayableObjectReq.prototype.auth = null;
-
-        /**
-         * IdentifyDisplayableObjectReq id.
-         * @member {BasilType.IObjectIdentifier|null|undefined} id
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         */
         IdentifyDisplayableObjectReq.prototype.id = null;
-
-        /**
-         * IdentifyDisplayableObjectReq assetInfo.
-         * @member {BasilType.IAssetInformation|null|undefined} assetInfo
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         */
         IdentifyDisplayableObjectReq.prototype.assetInfo = null;
-
-        /**
-         * IdentifyDisplayableObjectReq aabb.
-         * @member {BasilType.IAaBoundingBox|null|undefined} aabb
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         */
         IdentifyDisplayableObjectReq.prototype.aabb = null;
 
-        /**
-         * Creates a new IdentifyDisplayableObjectReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {Basil.IIdentifyDisplayableObjectReq=} [properties] Properties to set
-         * @returns {Basil.IdentifyDisplayableObjectReq} IdentifyDisplayableObjectReq instance
-         */
         IdentifyDisplayableObjectReq.create = function create(properties) {
             return new IdentifyDisplayableObjectReq(properties);
         };
 
-        /**
-         * Encodes the specified IdentifyDisplayableObjectReq message. Does not implicitly {@link Basil.IdentifyDisplayableObjectReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {Basil.IIdentifyDisplayableObjectReq} message IdentifyDisplayableObjectReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         IdentifyDisplayableObjectReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
-                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(18).fork()).ldelim();
             if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
-                $root.BasilType.AssetInformation.encode(message.assetInfo, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.AssetInformation.encode(message.assetInfo, writer.uint32(26).fork()).ldelim();
             if (message.aabb != null && message.hasOwnProperty("aabb"))
-                $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(34).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified IdentifyDisplayableObjectReq message, length delimited. Does not implicitly {@link Basil.IdentifyDisplayableObjectReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {Basil.IIdentifyDisplayableObjectReq} message IdentifyDisplayableObjectReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         IdentifyDisplayableObjectReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an IdentifyDisplayableObjectReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.IdentifyDisplayableObjectReq} IdentifyDisplayableObjectReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         IdentifyDisplayableObjectReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.IdentifyDisplayableObjectReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.IdentifyDisplayableObjectReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.assetInfo = $root.BasilType.AssetInformation.decode(reader, reader.uint32());
                     break;
-                case 5:
+                case 4:
                     message.aabb = $root.BasilType.AaBoundingBox.decode(reader, reader.uint32());
                     break;
                 default:
@@ -175,38 +72,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an IdentifyDisplayableObjectReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.IdentifyDisplayableObjectReq} IdentifyDisplayableObjectReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         IdentifyDisplayableObjectReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an IdentifyDisplayableObjectReq message.
-         * @function verify
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         IdentifyDisplayableObjectReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -230,68 +104,43 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an IdentifyDisplayableObjectReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.IdentifyDisplayableObjectReq} IdentifyDisplayableObjectReq
-         */
         IdentifyDisplayableObjectReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.IdentifyDisplayableObjectReq)
+            if (object instanceof $root.BasilServer.IdentifyDisplayableObjectReq)
                 return object;
-            let message = new $root.Basil.IdentifyDisplayableObjectReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.IdentifyDisplayableObjectReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.auth: object expected");
+                    throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.id != null) {
                 if (typeof object.id !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.id: object expected");
+                    throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.id: object expected");
                 message.id = $root.BasilType.ObjectIdentifier.fromObject(object.id);
             }
             if (object.assetInfo != null) {
                 if (typeof object.assetInfo !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.assetInfo: object expected");
+                    throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.assetInfo: object expected");
                 message.assetInfo = $root.BasilType.AssetInformation.fromObject(object.assetInfo);
             }
             if (object.aabb != null) {
                 if (typeof object.aabb !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectReq.aabb: object expected");
+                    throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.aabb: object expected");
                 message.aabb = $root.BasilType.AaBoundingBox.fromObject(object.aabb);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an IdentifyDisplayableObjectReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @static
-         * @param {Basil.IdentifyDisplayableObjectReq} message IdentifyDisplayableObjectReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         IdentifyDisplayableObjectReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.id = null;
                 object.assetInfo = null;
                 object.aabb = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.id != null && message.hasOwnProperty("id"))
@@ -303,13 +152,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this IdentifyDisplayableObjectReq to JSON.
-         * @function toJSON
-         * @memberof Basil.IdentifyDisplayableObjectReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         IdentifyDisplayableObjectReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -317,24 +159,8 @@ export const Basil = $root.Basil = (() => {
         return IdentifyDisplayableObjectReq;
     })();
 
-    Basil.IdentifyDisplayableObjectResp = (function() {
+    BasilServer.IdentifyDisplayableObjectResp = (function() {
 
-        /**
-         * Properties of an IdentifyDisplayableObjectResp.
-         * @memberof Basil
-         * @interface IIdentifyDisplayableObjectResp
-         * @property {BTransport.IBTransport|null} [transport] IdentifyDisplayableObjectResp transport
-         * @property {BasilType.IBasilException|null} [success] IdentifyDisplayableObjectResp success
-         */
-
-        /**
-         * Constructs a new IdentifyDisplayableObjectResp.
-         * @memberof Basil
-         * @classdesc Represents an IdentifyDisplayableObjectResp.
-         * @implements IIdentifyDisplayableObjectResp
-         * @constructor
-         * @param {Basil.IIdentifyDisplayableObjectResp=} [properties] Properties to set
-         */
         function IdentifyDisplayableObjectResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -342,88 +168,32 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * IdentifyDisplayableObjectResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @instance
-         */
-        IdentifyDisplayableObjectResp.prototype.transport = null;
-
-        /**
-         * IdentifyDisplayableObjectResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @instance
-         */
         IdentifyDisplayableObjectResp.prototype.success = null;
 
-        /**
-         * Creates a new IdentifyDisplayableObjectResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {Basil.IIdentifyDisplayableObjectResp=} [properties] Properties to set
-         * @returns {Basil.IdentifyDisplayableObjectResp} IdentifyDisplayableObjectResp instance
-         */
         IdentifyDisplayableObjectResp.create = function create(properties) {
             return new IdentifyDisplayableObjectResp(properties);
         };
 
-        /**
-         * Encodes the specified IdentifyDisplayableObjectResp message. Does not implicitly {@link Basil.IdentifyDisplayableObjectResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {Basil.IIdentifyDisplayableObjectResp} message IdentifyDisplayableObjectResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         IdentifyDisplayableObjectResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified IdentifyDisplayableObjectResp message, length delimited. Does not implicitly {@link Basil.IdentifyDisplayableObjectResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {Basil.IIdentifyDisplayableObjectResp} message IdentifyDisplayableObjectResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         IdentifyDisplayableObjectResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an IdentifyDisplayableObjectResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.IdentifyDisplayableObjectResp} IdentifyDisplayableObjectResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         IdentifyDisplayableObjectResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.IdentifyDisplayableObjectResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.IdentifyDisplayableObjectResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -434,38 +204,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an IdentifyDisplayableObjectResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.IdentifyDisplayableObjectResp} IdentifyDisplayableObjectResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         IdentifyDisplayableObjectResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an IdentifyDisplayableObjectResp message.
-         * @function verify
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         IdentifyDisplayableObjectResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -474,62 +221,29 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an IdentifyDisplayableObjectResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.IdentifyDisplayableObjectResp} IdentifyDisplayableObjectResp
-         */
         IdentifyDisplayableObjectResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.IdentifyDisplayableObjectResp)
+            if (object instanceof $root.BasilServer.IdentifyDisplayableObjectResp)
                 return object;
-            let message = new $root.Basil.IdentifyDisplayableObjectResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.IdentifyDisplayableObjectResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.IdentifyDisplayableObjectResp.success: object expected");
+                    throw TypeError(".BasilServer.IdentifyDisplayableObjectResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an IdentifyDisplayableObjectResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @static
-         * @param {Basil.IdentifyDisplayableObjectResp} message IdentifyDisplayableObjectResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         IdentifyDisplayableObjectResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.transport = null;
+            if (options.defaults)
                 object.success = null;
-            }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
         };
 
-        /**
-         * Converts this IdentifyDisplayableObjectResp to JSON.
-         * @function toJSON
-         * @memberof Basil.IdentifyDisplayableObjectResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         IdentifyDisplayableObjectResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -537,27 +251,8 @@ export const Basil = $root.Basil = (() => {
         return IdentifyDisplayableObjectResp;
     })();
 
-    Basil.CreateObjectInstanceReq = (function() {
+    BasilServer.CreateObjectInstanceReq = (function() {
 
-        /**
-         * Properties of a CreateObjectInstanceReq.
-         * @memberof Basil
-         * @interface ICreateObjectInstanceReq
-         * @property {BTransport.IBTransport|null} [transport] CreateObjectInstanceReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] CreateObjectInstanceReq auth
-         * @property {BasilType.IObjectIdentifier|null} [id] CreateObjectInstanceReq id
-         * @property {BasilType.IInstancePositionInfo|null} [pos] CreateObjectInstanceReq pos
-         * @property {BasilType.IPropertyList|null} [propertiesToSet] CreateObjectInstanceReq propertiesToSet
-         */
-
-        /**
-         * Constructs a new CreateObjectInstanceReq.
-         * @memberof Basil
-         * @classdesc Represents a CreateObjectInstanceReq.
-         * @implements ICreateObjectInstanceReq
-         * @constructor
-         * @param {Basil.ICreateObjectInstanceReq=} [properties] Properties to set
-         */
         function CreateObjectInstanceReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -565,127 +260,50 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * CreateObjectInstanceReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         */
-        CreateObjectInstanceReq.prototype.transport = null;
-
-        /**
-         * CreateObjectInstanceReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         */
         CreateObjectInstanceReq.prototype.auth = null;
-
-        /**
-         * CreateObjectInstanceReq id.
-         * @member {BasilType.IObjectIdentifier|null|undefined} id
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         */
         CreateObjectInstanceReq.prototype.id = null;
-
-        /**
-         * CreateObjectInstanceReq pos.
-         * @member {BasilType.IInstancePositionInfo|null|undefined} pos
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         */
         CreateObjectInstanceReq.prototype.pos = null;
-
-        /**
-         * CreateObjectInstanceReq propertiesToSet.
-         * @member {BasilType.IPropertyList|null|undefined} propertiesToSet
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         */
         CreateObjectInstanceReq.prototype.propertiesToSet = null;
 
-        /**
-         * Creates a new CreateObjectInstanceReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {Basil.ICreateObjectInstanceReq=} [properties] Properties to set
-         * @returns {Basil.CreateObjectInstanceReq} CreateObjectInstanceReq instance
-         */
         CreateObjectInstanceReq.create = function create(properties) {
             return new CreateObjectInstanceReq(properties);
         };
 
-        /**
-         * Encodes the specified CreateObjectInstanceReq message. Does not implicitly {@link Basil.CreateObjectInstanceReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {Basil.ICreateObjectInstanceReq} message CreateObjectInstanceReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CreateObjectInstanceReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
-                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(18).fork()).ldelim();
             if (message.pos != null && message.hasOwnProperty("pos"))
-                $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(26).fork()).ldelim();
             if (message.propertiesToSet != null && message.hasOwnProperty("propertiesToSet"))
-                $root.BasilType.PropertyList.encode(message.propertiesToSet, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.propertiesToSet, writer.uint32(34).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified CreateObjectInstanceReq message, length delimited. Does not implicitly {@link Basil.CreateObjectInstanceReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {Basil.ICreateObjectInstanceReq} message CreateObjectInstanceReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CreateObjectInstanceReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a CreateObjectInstanceReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.CreateObjectInstanceReq} CreateObjectInstanceReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CreateObjectInstanceReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.CreateObjectInstanceReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CreateObjectInstanceReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.pos = $root.BasilType.InstancePositionInfo.decode(reader, reader.uint32());
                     break;
-                case 5:
+                case 4:
                     message.propertiesToSet = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -696,38 +314,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a CreateObjectInstanceReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.CreateObjectInstanceReq} CreateObjectInstanceReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CreateObjectInstanceReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a CreateObjectInstanceReq message.
-         * @function verify
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         CreateObjectInstanceReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -751,68 +346,43 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a CreateObjectInstanceReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.CreateObjectInstanceReq} CreateObjectInstanceReq
-         */
         CreateObjectInstanceReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.CreateObjectInstanceReq)
+            if (object instanceof $root.BasilServer.CreateObjectInstanceReq)
                 return object;
-            let message = new $root.Basil.CreateObjectInstanceReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.CreateObjectInstanceReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceReq.auth: object expected");
+                    throw TypeError(".BasilServer.CreateObjectInstanceReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.id != null) {
                 if (typeof object.id !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceReq.id: object expected");
+                    throw TypeError(".BasilServer.CreateObjectInstanceReq.id: object expected");
                 message.id = $root.BasilType.ObjectIdentifier.fromObject(object.id);
             }
             if (object.pos != null) {
                 if (typeof object.pos !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceReq.pos: object expected");
+                    throw TypeError(".BasilServer.CreateObjectInstanceReq.pos: object expected");
                 message.pos = $root.BasilType.InstancePositionInfo.fromObject(object.pos);
             }
             if (object.propertiesToSet != null) {
                 if (typeof object.propertiesToSet !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceReq.propertiesToSet: object expected");
+                    throw TypeError(".BasilServer.CreateObjectInstanceReq.propertiesToSet: object expected");
                 message.propertiesToSet = $root.BasilType.PropertyList.fromObject(object.propertiesToSet);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from a CreateObjectInstanceReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.CreateObjectInstanceReq
-         * @static
-         * @param {Basil.CreateObjectInstanceReq} message CreateObjectInstanceReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         CreateObjectInstanceReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.id = null;
                 object.pos = null;
                 object.propertiesToSet = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.id != null && message.hasOwnProperty("id"))
@@ -824,13 +394,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this CreateObjectInstanceReq to JSON.
-         * @function toJSON
-         * @memberof Basil.CreateObjectInstanceReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         CreateObjectInstanceReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -838,25 +401,8 @@ export const Basil = $root.Basil = (() => {
         return CreateObjectInstanceReq;
     })();
 
-    Basil.CreateObjectInstanceResp = (function() {
+    BasilServer.CreateObjectInstanceResp = (function() {
 
-        /**
-         * Properties of a CreateObjectInstanceResp.
-         * @memberof Basil
-         * @interface ICreateObjectInstanceResp
-         * @property {BTransport.IBTransport|null} [transport] CreateObjectInstanceResp transport
-         * @property {BasilType.IBasilException|null} [success] CreateObjectInstanceResp success
-         * @property {BasilType.IInstanceIdentifier|null} [createInstanceId] CreateObjectInstanceResp createInstanceId
-         */
-
-        /**
-         * Constructs a new CreateObjectInstanceResp.
-         * @memberof Basil
-         * @classdesc Represents a CreateObjectInstanceResp.
-         * @implements ICreateObjectInstanceResp
-         * @constructor
-         * @param {Basil.ICreateObjectInstanceResp=} [properties] Properties to set
-         */
         function CreateObjectInstanceResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -864,101 +410,38 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * CreateObjectInstanceResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.CreateObjectInstanceResp
-         * @instance
-         */
-        CreateObjectInstanceResp.prototype.transport = null;
-
-        /**
-         * CreateObjectInstanceResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.CreateObjectInstanceResp
-         * @instance
-         */
         CreateObjectInstanceResp.prototype.success = null;
-
-        /**
-         * CreateObjectInstanceResp createInstanceId.
-         * @member {BasilType.IInstanceIdentifier|null|undefined} createInstanceId
-         * @memberof Basil.CreateObjectInstanceResp
-         * @instance
-         */
         CreateObjectInstanceResp.prototype.createInstanceId = null;
 
-        /**
-         * Creates a new CreateObjectInstanceResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {Basil.ICreateObjectInstanceResp=} [properties] Properties to set
-         * @returns {Basil.CreateObjectInstanceResp} CreateObjectInstanceResp instance
-         */
         CreateObjectInstanceResp.create = function create(properties) {
             return new CreateObjectInstanceResp(properties);
         };
 
-        /**
-         * Encodes the specified CreateObjectInstanceResp message. Does not implicitly {@link Basil.CreateObjectInstanceResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {Basil.ICreateObjectInstanceResp} message CreateObjectInstanceResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CreateObjectInstanceResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             if (message.createInstanceId != null && message.hasOwnProperty("createInstanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.createInstanceId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.createInstanceId, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified CreateObjectInstanceResp message, length delimited. Does not implicitly {@link Basil.CreateObjectInstanceResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {Basil.ICreateObjectInstanceResp} message CreateObjectInstanceResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CreateObjectInstanceResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a CreateObjectInstanceResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.CreateObjectInstanceResp} CreateObjectInstanceResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CreateObjectInstanceResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.CreateObjectInstanceResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CreateObjectInstanceResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.createInstanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
                     break;
                 default:
@@ -969,38 +452,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a CreateObjectInstanceResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.CreateObjectInstanceResp} CreateObjectInstanceResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CreateObjectInstanceResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a CreateObjectInstanceResp message.
-         * @function verify
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         CreateObjectInstanceResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -1014,56 +474,31 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a CreateObjectInstanceResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.CreateObjectInstanceResp} CreateObjectInstanceResp
-         */
         CreateObjectInstanceResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.CreateObjectInstanceResp)
+            if (object instanceof $root.BasilServer.CreateObjectInstanceResp)
                 return object;
-            let message = new $root.Basil.CreateObjectInstanceResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.CreateObjectInstanceResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceResp.success: object expected");
+                    throw TypeError(".BasilServer.CreateObjectInstanceResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             if (object.createInstanceId != null) {
                 if (typeof object.createInstanceId !== "object")
-                    throw TypeError(".Basil.CreateObjectInstanceResp.createInstanceId: object expected");
+                    throw TypeError(".BasilServer.CreateObjectInstanceResp.createInstanceId: object expected");
                 message.createInstanceId = $root.BasilType.InstanceIdentifier.fromObject(object.createInstanceId);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from a CreateObjectInstanceResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.CreateObjectInstanceResp
-         * @static
-         * @param {Basil.CreateObjectInstanceResp} message CreateObjectInstanceResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         CreateObjectInstanceResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.success = null;
                 object.createInstanceId = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.createInstanceId != null && message.hasOwnProperty("createInstanceId"))
@@ -1071,13 +506,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this CreateObjectInstanceResp to JSON.
-         * @function toJSON
-         * @memberof Basil.CreateObjectInstanceResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         CreateObjectInstanceResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -1085,26 +513,8 @@ export const Basil = $root.Basil = (() => {
         return CreateObjectInstanceResp;
     })();
 
-    Basil.UpdateObjectPropertyReq = (function() {
+    BasilServer.UpdateObjectPropertyReq = (function() {
 
-        /**
-         * Properties of an UpdateObjectPropertyReq.
-         * @memberof Basil
-         * @interface IUpdateObjectPropertyReq
-         * @property {BTransport.IBTransport|null} [transport] UpdateObjectPropertyReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] UpdateObjectPropertyReq auth
-         * @property {BasilType.IObjectIdentifier|null} [objectId] UpdateObjectPropertyReq objectId
-         * @property {BasilType.IPropertyList|null} [props] UpdateObjectPropertyReq props
-         */
-
-        /**
-         * Constructs a new UpdateObjectPropertyReq.
-         * @memberof Basil
-         * @classdesc Represents an UpdateObjectPropertyReq.
-         * @implements IUpdateObjectPropertyReq
-         * @constructor
-         * @param {Basil.IUpdateObjectPropertyReq=} [properties] Properties to set
-         */
         function UpdateObjectPropertyReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -1112,114 +522,44 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * UpdateObjectPropertyReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @instance
-         */
-        UpdateObjectPropertyReq.prototype.transport = null;
-
-        /**
-         * UpdateObjectPropertyReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @instance
-         */
         UpdateObjectPropertyReq.prototype.auth = null;
-
-        /**
-         * UpdateObjectPropertyReq objectId.
-         * @member {BasilType.IObjectIdentifier|null|undefined} objectId
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @instance
-         */
         UpdateObjectPropertyReq.prototype.objectId = null;
-
-        /**
-         * UpdateObjectPropertyReq props.
-         * @member {BasilType.IPropertyList|null|undefined} props
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @instance
-         */
         UpdateObjectPropertyReq.prototype.props = null;
 
-        /**
-         * Creates a new UpdateObjectPropertyReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {Basil.IUpdateObjectPropertyReq=} [properties] Properties to set
-         * @returns {Basil.UpdateObjectPropertyReq} UpdateObjectPropertyReq instance
-         */
         UpdateObjectPropertyReq.create = function create(properties) {
             return new UpdateObjectPropertyReq(properties);
         };
 
-        /**
-         * Encodes the specified UpdateObjectPropertyReq message. Does not implicitly {@link Basil.UpdateObjectPropertyReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {Basil.IUpdateObjectPropertyReq} message UpdateObjectPropertyReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateObjectPropertyReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.objectId != null && message.hasOwnProperty("objectId"))
-                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
             if (message.props != null && message.hasOwnProperty("props"))
-                $root.BasilType.PropertyList.encode(message.props, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.props, writer.uint32(26).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified UpdateObjectPropertyReq message, length delimited. Does not implicitly {@link Basil.UpdateObjectPropertyReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {Basil.IUpdateObjectPropertyReq} message UpdateObjectPropertyReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateObjectPropertyReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an UpdateObjectPropertyReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.UpdateObjectPropertyReq} UpdateObjectPropertyReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateObjectPropertyReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.UpdateObjectPropertyReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateObjectPropertyReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.props = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1230,38 +570,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an UpdateObjectPropertyReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.UpdateObjectPropertyReq} UpdateObjectPropertyReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateObjectPropertyReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an UpdateObjectPropertyReq message.
-         * @function verify
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         UpdateObjectPropertyReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -1280,62 +597,37 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an UpdateObjectPropertyReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.UpdateObjectPropertyReq} UpdateObjectPropertyReq
-         */
         UpdateObjectPropertyReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.UpdateObjectPropertyReq)
+            if (object instanceof $root.BasilServer.UpdateObjectPropertyReq)
                 return object;
-            let message = new $root.Basil.UpdateObjectPropertyReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.UpdateObjectPropertyReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyReq.auth: object expected");
+                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.objectId != null) {
                 if (typeof object.objectId !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyReq.objectId: object expected");
+                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.objectId: object expected");
                 message.objectId = $root.BasilType.ObjectIdentifier.fromObject(object.objectId);
             }
             if (object.props != null) {
                 if (typeof object.props !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyReq.props: object expected");
+                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.props: object expected");
                 message.props = $root.BasilType.PropertyList.fromObject(object.props);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an UpdateObjectPropertyReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @static
-         * @param {Basil.UpdateObjectPropertyReq} message UpdateObjectPropertyReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         UpdateObjectPropertyReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.objectId = null;
                 object.props = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.objectId != null && message.hasOwnProperty("objectId"))
@@ -1345,13 +637,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this UpdateObjectPropertyReq to JSON.
-         * @function toJSON
-         * @memberof Basil.UpdateObjectPropertyReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         UpdateObjectPropertyReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -1359,24 +644,8 @@ export const Basil = $root.Basil = (() => {
         return UpdateObjectPropertyReq;
     })();
 
-    Basil.UpdateObjectPropertyResp = (function() {
+    BasilServer.UpdateObjectPropertyResp = (function() {
 
-        /**
-         * Properties of an UpdateObjectPropertyResp.
-         * @memberof Basil
-         * @interface IUpdateObjectPropertyResp
-         * @property {BTransport.IBTransport|null} [transport] UpdateObjectPropertyResp transport
-         * @property {BasilType.IBasilException|null} [success] UpdateObjectPropertyResp success
-         */
-
-        /**
-         * Constructs a new UpdateObjectPropertyResp.
-         * @memberof Basil
-         * @classdesc Represents an UpdateObjectPropertyResp.
-         * @implements IUpdateObjectPropertyResp
-         * @constructor
-         * @param {Basil.IUpdateObjectPropertyResp=} [properties] Properties to set
-         */
         function UpdateObjectPropertyResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -1384,88 +653,32 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * UpdateObjectPropertyResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @instance
-         */
-        UpdateObjectPropertyResp.prototype.transport = null;
-
-        /**
-         * UpdateObjectPropertyResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @instance
-         */
         UpdateObjectPropertyResp.prototype.success = null;
 
-        /**
-         * Creates a new UpdateObjectPropertyResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {Basil.IUpdateObjectPropertyResp=} [properties] Properties to set
-         * @returns {Basil.UpdateObjectPropertyResp} UpdateObjectPropertyResp instance
-         */
         UpdateObjectPropertyResp.create = function create(properties) {
             return new UpdateObjectPropertyResp(properties);
         };
 
-        /**
-         * Encodes the specified UpdateObjectPropertyResp message. Does not implicitly {@link Basil.UpdateObjectPropertyResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {Basil.IUpdateObjectPropertyResp} message UpdateObjectPropertyResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateObjectPropertyResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified UpdateObjectPropertyResp message, length delimited. Does not implicitly {@link Basil.UpdateObjectPropertyResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {Basil.IUpdateObjectPropertyResp} message UpdateObjectPropertyResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateObjectPropertyResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an UpdateObjectPropertyResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.UpdateObjectPropertyResp} UpdateObjectPropertyResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateObjectPropertyResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.UpdateObjectPropertyResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateObjectPropertyResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1476,38 +689,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an UpdateObjectPropertyResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.UpdateObjectPropertyResp} UpdateObjectPropertyResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateObjectPropertyResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an UpdateObjectPropertyResp message.
-         * @function verify
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         UpdateObjectPropertyResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -1516,62 +706,29 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an UpdateObjectPropertyResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.UpdateObjectPropertyResp} UpdateObjectPropertyResp
-         */
         UpdateObjectPropertyResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.UpdateObjectPropertyResp)
+            if (object instanceof $root.BasilServer.UpdateObjectPropertyResp)
                 return object;
-            let message = new $root.Basil.UpdateObjectPropertyResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.UpdateObjectPropertyResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.UpdateObjectPropertyResp.success: object expected");
+                    throw TypeError(".BasilServer.UpdateObjectPropertyResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an UpdateObjectPropertyResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @static
-         * @param {Basil.UpdateObjectPropertyResp} message UpdateObjectPropertyResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         UpdateObjectPropertyResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.transport = null;
+            if (options.defaults)
                 object.success = null;
-            }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
         };
 
-        /**
-         * Converts this UpdateObjectPropertyResp to JSON.
-         * @function toJSON
-         * @memberof Basil.UpdateObjectPropertyResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         UpdateObjectPropertyResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -1579,26 +736,8 @@ export const Basil = $root.Basil = (() => {
         return UpdateObjectPropertyResp;
     })();
 
-    Basil.UpdateInstancePropertyReq = (function() {
+    BasilServer.UpdateInstancePropertyReq = (function() {
 
-        /**
-         * Properties of an UpdateInstancePropertyReq.
-         * @memberof Basil
-         * @interface IUpdateInstancePropertyReq
-         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePropertyReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] UpdateInstancePropertyReq auth
-         * @property {BasilType.IInstanceIdentifier|null} [instanceId] UpdateInstancePropertyReq instanceId
-         * @property {BasilType.IPropertyList|null} [props] UpdateInstancePropertyReq props
-         */
-
-        /**
-         * Constructs a new UpdateInstancePropertyReq.
-         * @memberof Basil
-         * @classdesc Represents an UpdateInstancePropertyReq.
-         * @implements IUpdateInstancePropertyReq
-         * @constructor
-         * @param {Basil.IUpdateInstancePropertyReq=} [properties] Properties to set
-         */
         function UpdateInstancePropertyReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -1606,114 +745,44 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * UpdateInstancePropertyReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @instance
-         */
-        UpdateInstancePropertyReq.prototype.transport = null;
-
-        /**
-         * UpdateInstancePropertyReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @instance
-         */
         UpdateInstancePropertyReq.prototype.auth = null;
-
-        /**
-         * UpdateInstancePropertyReq instanceId.
-         * @member {BasilType.IInstanceIdentifier|null|undefined} instanceId
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @instance
-         */
         UpdateInstancePropertyReq.prototype.instanceId = null;
-
-        /**
-         * UpdateInstancePropertyReq props.
-         * @member {BasilType.IPropertyList|null|undefined} props
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @instance
-         */
         UpdateInstancePropertyReq.prototype.props = null;
 
-        /**
-         * Creates a new UpdateInstancePropertyReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {Basil.IUpdateInstancePropertyReq=} [properties] Properties to set
-         * @returns {Basil.UpdateInstancePropertyReq} UpdateInstancePropertyReq instance
-         */
         UpdateInstancePropertyReq.create = function create(properties) {
             return new UpdateInstancePropertyReq(properties);
         };
 
-        /**
-         * Encodes the specified UpdateInstancePropertyReq message. Does not implicitly {@link Basil.UpdateInstancePropertyReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {Basil.IUpdateInstancePropertyReq} message UpdateInstancePropertyReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePropertyReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
             if (message.props != null && message.hasOwnProperty("props"))
-                $root.BasilType.PropertyList.encode(message.props, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.props, writer.uint32(26).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified UpdateInstancePropertyReq message, length delimited. Does not implicitly {@link Basil.UpdateInstancePropertyReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {Basil.IUpdateInstancePropertyReq} message UpdateInstancePropertyReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePropertyReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an UpdateInstancePropertyReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.UpdateInstancePropertyReq} UpdateInstancePropertyReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePropertyReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.UpdateInstancePropertyReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateInstancePropertyReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.props = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1724,38 +793,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an UpdateInstancePropertyReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.UpdateInstancePropertyReq} UpdateInstancePropertyReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePropertyReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an UpdateInstancePropertyReq message.
-         * @function verify
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         UpdateInstancePropertyReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -1774,62 +820,37 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an UpdateInstancePropertyReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.UpdateInstancePropertyReq} UpdateInstancePropertyReq
-         */
         UpdateInstancePropertyReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.UpdateInstancePropertyReq)
+            if (object instanceof $root.BasilServer.UpdateInstancePropertyReq)
                 return object;
-            let message = new $root.Basil.UpdateInstancePropertyReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.UpdateInstancePropertyReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyReq.auth: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePropertyReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.instanceId != null) {
                 if (typeof object.instanceId !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyReq.instanceId: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePropertyReq.instanceId: object expected");
                 message.instanceId = $root.BasilType.InstanceIdentifier.fromObject(object.instanceId);
             }
             if (object.props != null) {
                 if (typeof object.props !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyReq.props: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePropertyReq.props: object expected");
                 message.props = $root.BasilType.PropertyList.fromObject(object.props);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an UpdateInstancePropertyReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @static
-         * @param {Basil.UpdateInstancePropertyReq} message UpdateInstancePropertyReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         UpdateInstancePropertyReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.instanceId = null;
                 object.props = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
@@ -1839,13 +860,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this UpdateInstancePropertyReq to JSON.
-         * @function toJSON
-         * @memberof Basil.UpdateInstancePropertyReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         UpdateInstancePropertyReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -1853,24 +867,8 @@ export const Basil = $root.Basil = (() => {
         return UpdateInstancePropertyReq;
     })();
 
-    Basil.UpdateInstancePropertyResp = (function() {
+    BasilServer.UpdateInstancePropertyResp = (function() {
 
-        /**
-         * Properties of an UpdateInstancePropertyResp.
-         * @memberof Basil
-         * @interface IUpdateInstancePropertyResp
-         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePropertyResp transport
-         * @property {BasilType.IBasilException|null} [success] UpdateInstancePropertyResp success
-         */
-
-        /**
-         * Constructs a new UpdateInstancePropertyResp.
-         * @memberof Basil
-         * @classdesc Represents an UpdateInstancePropertyResp.
-         * @implements IUpdateInstancePropertyResp
-         * @constructor
-         * @param {Basil.IUpdateInstancePropertyResp=} [properties] Properties to set
-         */
         function UpdateInstancePropertyResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -1878,88 +876,32 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * UpdateInstancePropertyResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @instance
-         */
-        UpdateInstancePropertyResp.prototype.transport = null;
-
-        /**
-         * UpdateInstancePropertyResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @instance
-         */
         UpdateInstancePropertyResp.prototype.success = null;
 
-        /**
-         * Creates a new UpdateInstancePropertyResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {Basil.IUpdateInstancePropertyResp=} [properties] Properties to set
-         * @returns {Basil.UpdateInstancePropertyResp} UpdateInstancePropertyResp instance
-         */
         UpdateInstancePropertyResp.create = function create(properties) {
             return new UpdateInstancePropertyResp(properties);
         };
 
-        /**
-         * Encodes the specified UpdateInstancePropertyResp message. Does not implicitly {@link Basil.UpdateInstancePropertyResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {Basil.IUpdateInstancePropertyResp} message UpdateInstancePropertyResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePropertyResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified UpdateInstancePropertyResp message, length delimited. Does not implicitly {@link Basil.UpdateInstancePropertyResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {Basil.IUpdateInstancePropertyResp} message UpdateInstancePropertyResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePropertyResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an UpdateInstancePropertyResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.UpdateInstancePropertyResp} UpdateInstancePropertyResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePropertyResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.UpdateInstancePropertyResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateInstancePropertyResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1970,38 +912,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an UpdateInstancePropertyResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.UpdateInstancePropertyResp} UpdateInstancePropertyResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePropertyResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an UpdateInstancePropertyResp message.
-         * @function verify
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         UpdateInstancePropertyResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -2010,62 +929,29 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an UpdateInstancePropertyResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.UpdateInstancePropertyResp} UpdateInstancePropertyResp
-         */
         UpdateInstancePropertyResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.UpdateInstancePropertyResp)
+            if (object instanceof $root.BasilServer.UpdateInstancePropertyResp)
                 return object;
-            let message = new $root.Basil.UpdateInstancePropertyResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.UpdateInstancePropertyResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.UpdateInstancePropertyResp.success: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePropertyResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an UpdateInstancePropertyResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @static
-         * @param {Basil.UpdateInstancePropertyResp} message UpdateInstancePropertyResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         UpdateInstancePropertyResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.transport = null;
+            if (options.defaults)
                 object.success = null;
-            }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
         };
 
-        /**
-         * Converts this UpdateInstancePropertyResp to JSON.
-         * @function toJSON
-         * @memberof Basil.UpdateInstancePropertyResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         UpdateInstancePropertyResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -2073,26 +959,8 @@ export const Basil = $root.Basil = (() => {
         return UpdateInstancePropertyResp;
     })();
 
-    Basil.UpdateInstancePositionReq = (function() {
+    BasilServer.UpdateInstancePositionReq = (function() {
 
-        /**
-         * Properties of an UpdateInstancePositionReq.
-         * @memberof Basil
-         * @interface IUpdateInstancePositionReq
-         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePositionReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] UpdateInstancePositionReq auth
-         * @property {BasilType.IInstanceIdentifier|null} [instanceId] UpdateInstancePositionReq instanceId
-         * @property {BasilType.IInstancePositionInfo|null} [pos] UpdateInstancePositionReq pos
-         */
-
-        /**
-         * Constructs a new UpdateInstancePositionReq.
-         * @memberof Basil
-         * @classdesc Represents an UpdateInstancePositionReq.
-         * @implements IUpdateInstancePositionReq
-         * @constructor
-         * @param {Basil.IUpdateInstancePositionReq=} [properties] Properties to set
-         */
         function UpdateInstancePositionReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -2100,114 +968,44 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * UpdateInstancePositionReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.UpdateInstancePositionReq
-         * @instance
-         */
-        UpdateInstancePositionReq.prototype.transport = null;
-
-        /**
-         * UpdateInstancePositionReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.UpdateInstancePositionReq
-         * @instance
-         */
         UpdateInstancePositionReq.prototype.auth = null;
-
-        /**
-         * UpdateInstancePositionReq instanceId.
-         * @member {BasilType.IInstanceIdentifier|null|undefined} instanceId
-         * @memberof Basil.UpdateInstancePositionReq
-         * @instance
-         */
         UpdateInstancePositionReq.prototype.instanceId = null;
-
-        /**
-         * UpdateInstancePositionReq pos.
-         * @member {BasilType.IInstancePositionInfo|null|undefined} pos
-         * @memberof Basil.UpdateInstancePositionReq
-         * @instance
-         */
         UpdateInstancePositionReq.prototype.pos = null;
 
-        /**
-         * Creates a new UpdateInstancePositionReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {Basil.IUpdateInstancePositionReq=} [properties] Properties to set
-         * @returns {Basil.UpdateInstancePositionReq} UpdateInstancePositionReq instance
-         */
         UpdateInstancePositionReq.create = function create(properties) {
             return new UpdateInstancePositionReq(properties);
         };
 
-        /**
-         * Encodes the specified UpdateInstancePositionReq message. Does not implicitly {@link Basil.UpdateInstancePositionReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {Basil.IUpdateInstancePositionReq} message UpdateInstancePositionReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePositionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
             if (message.pos != null && message.hasOwnProperty("pos"))
-                $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(26).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified UpdateInstancePositionReq message, length delimited. Does not implicitly {@link Basil.UpdateInstancePositionReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {Basil.IUpdateInstancePositionReq} message UpdateInstancePositionReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePositionReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an UpdateInstancePositionReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.UpdateInstancePositionReq} UpdateInstancePositionReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePositionReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.UpdateInstancePositionReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateInstancePositionReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.pos = $root.BasilType.InstancePositionInfo.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2218,38 +1016,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an UpdateInstancePositionReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.UpdateInstancePositionReq} UpdateInstancePositionReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePositionReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an UpdateInstancePositionReq message.
-         * @function verify
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         UpdateInstancePositionReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -2268,62 +1043,37 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an UpdateInstancePositionReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.UpdateInstancePositionReq} UpdateInstancePositionReq
-         */
         UpdateInstancePositionReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.UpdateInstancePositionReq)
+            if (object instanceof $root.BasilServer.UpdateInstancePositionReq)
                 return object;
-            let message = new $root.Basil.UpdateInstancePositionReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.UpdateInstancePositionReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionReq.auth: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePositionReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.instanceId != null) {
                 if (typeof object.instanceId !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionReq.instanceId: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePositionReq.instanceId: object expected");
                 message.instanceId = $root.BasilType.InstanceIdentifier.fromObject(object.instanceId);
             }
             if (object.pos != null) {
                 if (typeof object.pos !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionReq.pos: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePositionReq.pos: object expected");
                 message.pos = $root.BasilType.InstancePositionInfo.fromObject(object.pos);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an UpdateInstancePositionReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.UpdateInstancePositionReq
-         * @static
-         * @param {Basil.UpdateInstancePositionReq} message UpdateInstancePositionReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         UpdateInstancePositionReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.instanceId = null;
                 object.pos = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
@@ -2333,13 +1083,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this UpdateInstancePositionReq to JSON.
-         * @function toJSON
-         * @memberof Basil.UpdateInstancePositionReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         UpdateInstancePositionReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -2347,24 +1090,8 @@ export const Basil = $root.Basil = (() => {
         return UpdateInstancePositionReq;
     })();
 
-    Basil.UpdateInstancePositionResp = (function() {
+    BasilServer.UpdateInstancePositionResp = (function() {
 
-        /**
-         * Properties of an UpdateInstancePositionResp.
-         * @memberof Basil
-         * @interface IUpdateInstancePositionResp
-         * @property {BTransport.IBTransport|null} [transport] UpdateInstancePositionResp transport
-         * @property {BasilType.IBasilException|null} [success] UpdateInstancePositionResp success
-         */
-
-        /**
-         * Constructs a new UpdateInstancePositionResp.
-         * @memberof Basil
-         * @classdesc Represents an UpdateInstancePositionResp.
-         * @implements IUpdateInstancePositionResp
-         * @constructor
-         * @param {Basil.IUpdateInstancePositionResp=} [properties] Properties to set
-         */
         function UpdateInstancePositionResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -2372,88 +1099,32 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * UpdateInstancePositionResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.UpdateInstancePositionResp
-         * @instance
-         */
-        UpdateInstancePositionResp.prototype.transport = null;
-
-        /**
-         * UpdateInstancePositionResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.UpdateInstancePositionResp
-         * @instance
-         */
         UpdateInstancePositionResp.prototype.success = null;
 
-        /**
-         * Creates a new UpdateInstancePositionResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {Basil.IUpdateInstancePositionResp=} [properties] Properties to set
-         * @returns {Basil.UpdateInstancePositionResp} UpdateInstancePositionResp instance
-         */
         UpdateInstancePositionResp.create = function create(properties) {
             return new UpdateInstancePositionResp(properties);
         };
 
-        /**
-         * Encodes the specified UpdateInstancePositionResp message. Does not implicitly {@link Basil.UpdateInstancePositionResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {Basil.IUpdateInstancePositionResp} message UpdateInstancePositionResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePositionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified UpdateInstancePositionResp message, length delimited. Does not implicitly {@link Basil.UpdateInstancePositionResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {Basil.IUpdateInstancePositionResp} message UpdateInstancePositionResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         UpdateInstancePositionResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an UpdateInstancePositionResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.UpdateInstancePositionResp} UpdateInstancePositionResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePositionResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.UpdateInstancePositionResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateInstancePositionResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2464,38 +1135,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an UpdateInstancePositionResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.UpdateInstancePositionResp} UpdateInstancePositionResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         UpdateInstancePositionResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an UpdateInstancePositionResp message.
-         * @function verify
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         UpdateInstancePositionResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -2504,62 +1152,29 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an UpdateInstancePositionResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.UpdateInstancePositionResp} UpdateInstancePositionResp
-         */
         UpdateInstancePositionResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.UpdateInstancePositionResp)
+            if (object instanceof $root.BasilServer.UpdateInstancePositionResp)
                 return object;
-            let message = new $root.Basil.UpdateInstancePositionResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.UpdateInstancePositionResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.UpdateInstancePositionResp.success: object expected");
+                    throw TypeError(".BasilServer.UpdateInstancePositionResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an UpdateInstancePositionResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.UpdateInstancePositionResp
-         * @static
-         * @param {Basil.UpdateInstancePositionResp} message UpdateInstancePositionResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         UpdateInstancePositionResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.transport = null;
+            if (options.defaults)
                 object.success = null;
-            }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
         };
 
-        /**
-         * Converts this UpdateInstancePositionResp to JSON.
-         * @function toJSON
-         * @memberof Basil.UpdateInstancePositionResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         UpdateInstancePositionResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -2567,27 +1182,8 @@ export const Basil = $root.Basil = (() => {
         return UpdateInstancePositionResp;
     })();
 
-    Basil.RequestObjectPropertiesReq = (function() {
+    BasilServer.RequestObjectPropertiesReq = (function() {
 
-        /**
-         * Properties of a RequestObjectPropertiesReq.
-         * @memberof Basil
-         * @interface IRequestObjectPropertiesReq
-         * @property {BTransport.IBTransport|null} [transport] RequestObjectPropertiesReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] RequestObjectPropertiesReq auth
-         * @property {number|null} [sequenceNumber] RequestObjectPropertiesReq sequenceNumber
-         * @property {BasilType.IObjectIdentifier|null} [objectId] RequestObjectPropertiesReq objectId
-         * @property {string|null} [propertyMatch] RequestObjectPropertiesReq propertyMatch
-         */
-
-        /**
-         * Constructs a new RequestObjectPropertiesReq.
-         * @memberof Basil
-         * @classdesc Represents a RequestObjectPropertiesReq.
-         * @implements IRequestObjectPropertiesReq
-         * @constructor
-         * @param {Basil.IRequestObjectPropertiesReq=} [properties] Properties to set
-         */
         function RequestObjectPropertiesReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -2595,127 +1191,50 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * RequestObjectPropertiesReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         */
-        RequestObjectPropertiesReq.prototype.transport = null;
-
-        /**
-         * RequestObjectPropertiesReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         */
         RequestObjectPropertiesReq.prototype.auth = null;
-
-        /**
-         * RequestObjectPropertiesReq sequenceNumber.
-         * @member {number} sequenceNumber
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         */
         RequestObjectPropertiesReq.prototype.sequenceNumber = 0;
-
-        /**
-         * RequestObjectPropertiesReq objectId.
-         * @member {BasilType.IObjectIdentifier|null|undefined} objectId
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         */
         RequestObjectPropertiesReq.prototype.objectId = null;
-
-        /**
-         * RequestObjectPropertiesReq propertyMatch.
-         * @member {string} propertyMatch
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         */
         RequestObjectPropertiesReq.prototype.propertyMatch = "";
 
-        /**
-         * Creates a new RequestObjectPropertiesReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {Basil.IRequestObjectPropertiesReq=} [properties] Properties to set
-         * @returns {Basil.RequestObjectPropertiesReq} RequestObjectPropertiesReq instance
-         */
         RequestObjectPropertiesReq.create = function create(properties) {
             return new RequestObjectPropertiesReq(properties);
         };
 
-        /**
-         * Encodes the specified RequestObjectPropertiesReq message. Does not implicitly {@link Basil.RequestObjectPropertiesReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {Basil.IRequestObjectPropertiesReq} message RequestObjectPropertiesReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestObjectPropertiesReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sequenceNumber);
+                writer.uint32(16).int32(message.sequenceNumber);
             if (message.objectId != null && message.hasOwnProperty("objectId"))
-                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(26).fork()).ldelim();
             if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
-                writer.uint32(/* id 5, wireType 2 =*/42).string(message.propertyMatch);
+                writer.uint32(34).string(message.propertyMatch);
             return writer;
         };
 
-        /**
-         * Encodes the specified RequestObjectPropertiesReq message, length delimited. Does not implicitly {@link Basil.RequestObjectPropertiesReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {Basil.IRequestObjectPropertiesReq} message RequestObjectPropertiesReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestObjectPropertiesReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a RequestObjectPropertiesReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.RequestObjectPropertiesReq} RequestObjectPropertiesReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestObjectPropertiesReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.RequestObjectPropertiesReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestObjectPropertiesReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.sequenceNumber = reader.int32();
                     break;
-                case 4:
+                case 3:
                     message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
-                case 5:
+                case 4:
                     message.propertyMatch = reader.string();
                     break;
                 default:
@@ -2726,38 +1245,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a RequestObjectPropertiesReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.RequestObjectPropertiesReq} RequestObjectPropertiesReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestObjectPropertiesReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a RequestObjectPropertiesReq message.
-         * @function verify
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         RequestObjectPropertiesReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -2777,33 +1273,20 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a RequestObjectPropertiesReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.RequestObjectPropertiesReq} RequestObjectPropertiesReq
-         */
         RequestObjectPropertiesReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.RequestObjectPropertiesReq)
+            if (object instanceof $root.BasilServer.RequestObjectPropertiesReq)
                 return object;
-            let message = new $root.Basil.RequestObjectPropertiesReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.RequestObjectPropertiesReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesReq.auth: object expected");
+                    throw TypeError(".BasilServer.RequestObjectPropertiesReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.sequenceNumber != null)
                 message.sequenceNumber = object.sequenceNumber | 0;
             if (object.objectId != null) {
                 if (typeof object.objectId !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesReq.objectId: object expected");
+                    throw TypeError(".BasilServer.RequestObjectPropertiesReq.objectId: object expected");
                 message.objectId = $root.BasilType.ObjectIdentifier.fromObject(object.objectId);
             }
             if (object.propertyMatch != null)
@@ -2811,28 +1294,16 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a RequestObjectPropertiesReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @static
-         * @param {Basil.RequestObjectPropertiesReq} message RequestObjectPropertiesReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         RequestObjectPropertiesReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.sequenceNumber = 0;
                 object.objectId = null;
                 object.propertyMatch = "";
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
@@ -2844,13 +1315,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this RequestObjectPropertiesReq to JSON.
-         * @function toJSON
-         * @memberof Basil.RequestObjectPropertiesReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         RequestObjectPropertiesReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -2858,25 +1322,8 @@ export const Basil = $root.Basil = (() => {
         return RequestObjectPropertiesReq;
     })();
 
-    Basil.RequestObjectPropertiesResp = (function() {
+    BasilServer.RequestObjectPropertiesResp = (function() {
 
-        /**
-         * Properties of a RequestObjectPropertiesResp.
-         * @memberof Basil
-         * @interface IRequestObjectPropertiesResp
-         * @property {BTransport.IBTransport|null} [transport] RequestObjectPropertiesResp transport
-         * @property {BasilType.IBasilException|null} [success] RequestObjectPropertiesResp success
-         * @property {BasilType.IPropertyList|null} [properties] RequestObjectPropertiesResp properties
-         */
-
-        /**
-         * Constructs a new RequestObjectPropertiesResp.
-         * @memberof Basil
-         * @classdesc Represents a RequestObjectPropertiesResp.
-         * @implements IRequestObjectPropertiesResp
-         * @constructor
-         * @param {Basil.IRequestObjectPropertiesResp=} [properties] Properties to set
-         */
         function RequestObjectPropertiesResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -2884,101 +1331,38 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * RequestObjectPropertiesResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @instance
-         */
-        RequestObjectPropertiesResp.prototype.transport = null;
-
-        /**
-         * RequestObjectPropertiesResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @instance
-         */
         RequestObjectPropertiesResp.prototype.success = null;
-
-        /**
-         * RequestObjectPropertiesResp properties.
-         * @member {BasilType.IPropertyList|null|undefined} properties
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @instance
-         */
         RequestObjectPropertiesResp.prototype.properties = null;
 
-        /**
-         * Creates a new RequestObjectPropertiesResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {Basil.IRequestObjectPropertiesResp=} [properties] Properties to set
-         * @returns {Basil.RequestObjectPropertiesResp} RequestObjectPropertiesResp instance
-         */
         RequestObjectPropertiesResp.create = function create(properties) {
             return new RequestObjectPropertiesResp(properties);
         };
 
-        /**
-         * Encodes the specified RequestObjectPropertiesResp message. Does not implicitly {@link Basil.RequestObjectPropertiesResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {Basil.IRequestObjectPropertiesResp} message RequestObjectPropertiesResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestObjectPropertiesResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             if (message.properties != null && message.hasOwnProperty("properties"))
-                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified RequestObjectPropertiesResp message, length delimited. Does not implicitly {@link Basil.RequestObjectPropertiesResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {Basil.IRequestObjectPropertiesResp} message RequestObjectPropertiesResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestObjectPropertiesResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a RequestObjectPropertiesResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.RequestObjectPropertiesResp} RequestObjectPropertiesResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestObjectPropertiesResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.RequestObjectPropertiesResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestObjectPropertiesResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.properties = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2989,38 +1373,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a RequestObjectPropertiesResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.RequestObjectPropertiesResp} RequestObjectPropertiesResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestObjectPropertiesResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a RequestObjectPropertiesResp message.
-         * @function verify
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         RequestObjectPropertiesResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -3034,56 +1395,31 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a RequestObjectPropertiesResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.RequestObjectPropertiesResp} RequestObjectPropertiesResp
-         */
         RequestObjectPropertiesResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.RequestObjectPropertiesResp)
+            if (object instanceof $root.BasilServer.RequestObjectPropertiesResp)
                 return object;
-            let message = new $root.Basil.RequestObjectPropertiesResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.RequestObjectPropertiesResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesResp.success: object expected");
+                    throw TypeError(".BasilServer.RequestObjectPropertiesResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             if (object.properties != null) {
                 if (typeof object.properties !== "object")
-                    throw TypeError(".Basil.RequestObjectPropertiesResp.properties: object expected");
+                    throw TypeError(".BasilServer.RequestObjectPropertiesResp.properties: object expected");
                 message.properties = $root.BasilType.PropertyList.fromObject(object.properties);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from a RequestObjectPropertiesResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @static
-         * @param {Basil.RequestObjectPropertiesResp} message RequestObjectPropertiesResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         RequestObjectPropertiesResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.success = null;
                 object.properties = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.properties != null && message.hasOwnProperty("properties"))
@@ -3091,13 +1427,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this RequestObjectPropertiesResp to JSON.
-         * @function toJSON
-         * @memberof Basil.RequestObjectPropertiesResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         RequestObjectPropertiesResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -3105,27 +1434,8 @@ export const Basil = $root.Basil = (() => {
         return RequestObjectPropertiesResp;
     })();
 
-    Basil.RequestInstancePropertiesReq = (function() {
+    BasilServer.RequestInstancePropertiesReq = (function() {
 
-        /**
-         * Properties of a RequestInstancePropertiesReq.
-         * @memberof Basil
-         * @interface IRequestInstancePropertiesReq
-         * @property {BTransport.IBTransport|null} [transport] RequestInstancePropertiesReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] RequestInstancePropertiesReq auth
-         * @property {number|null} [sequenceNumber] RequestInstancePropertiesReq sequenceNumber
-         * @property {BasilType.IInstanceIdentifier|null} [instanceId] RequestInstancePropertiesReq instanceId
-         * @property {string|null} [propertyMatch] RequestInstancePropertiesReq propertyMatch
-         */
-
-        /**
-         * Constructs a new RequestInstancePropertiesReq.
-         * @memberof Basil
-         * @classdesc Represents a RequestInstancePropertiesReq.
-         * @implements IRequestInstancePropertiesReq
-         * @constructor
-         * @param {Basil.IRequestInstancePropertiesReq=} [properties] Properties to set
-         */
         function RequestInstancePropertiesReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -3133,127 +1443,50 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * RequestInstancePropertiesReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         */
-        RequestInstancePropertiesReq.prototype.transport = null;
-
-        /**
-         * RequestInstancePropertiesReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         */
         RequestInstancePropertiesReq.prototype.auth = null;
-
-        /**
-         * RequestInstancePropertiesReq sequenceNumber.
-         * @member {number} sequenceNumber
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         */
         RequestInstancePropertiesReq.prototype.sequenceNumber = 0;
-
-        /**
-         * RequestInstancePropertiesReq instanceId.
-         * @member {BasilType.IInstanceIdentifier|null|undefined} instanceId
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         */
         RequestInstancePropertiesReq.prototype.instanceId = null;
-
-        /**
-         * RequestInstancePropertiesReq propertyMatch.
-         * @member {string} propertyMatch
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         */
         RequestInstancePropertiesReq.prototype.propertyMatch = "";
 
-        /**
-         * Creates a new RequestInstancePropertiesReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {Basil.IRequestInstancePropertiesReq=} [properties] Properties to set
-         * @returns {Basil.RequestInstancePropertiesReq} RequestInstancePropertiesReq instance
-         */
         RequestInstancePropertiesReq.create = function create(properties) {
             return new RequestInstancePropertiesReq(properties);
         };
 
-        /**
-         * Encodes the specified RequestInstancePropertiesReq message. Does not implicitly {@link Basil.RequestInstancePropertiesReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {Basil.IRequestInstancePropertiesReq} message RequestInstancePropertiesReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestInstancePropertiesReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sequenceNumber);
+                writer.uint32(16).int32(message.sequenceNumber);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(26).fork()).ldelim();
             if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
-                writer.uint32(/* id 5, wireType 2 =*/42).string(message.propertyMatch);
+                writer.uint32(34).string(message.propertyMatch);
             return writer;
         };
 
-        /**
-         * Encodes the specified RequestInstancePropertiesReq message, length delimited. Does not implicitly {@link Basil.RequestInstancePropertiesReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {Basil.IRequestInstancePropertiesReq} message RequestInstancePropertiesReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestInstancePropertiesReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a RequestInstancePropertiesReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.RequestInstancePropertiesReq} RequestInstancePropertiesReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestInstancePropertiesReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.RequestInstancePropertiesReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestInstancePropertiesReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.sequenceNumber = reader.int32();
                     break;
-                case 4:
+                case 3:
                     message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
                     break;
-                case 5:
+                case 4:
                     message.propertyMatch = reader.string();
                     break;
                 default:
@@ -3264,38 +1497,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a RequestInstancePropertiesReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.RequestInstancePropertiesReq} RequestInstancePropertiesReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestInstancePropertiesReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a RequestInstancePropertiesReq message.
-         * @function verify
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         RequestInstancePropertiesReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -3315,33 +1525,20 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a RequestInstancePropertiesReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.RequestInstancePropertiesReq} RequestInstancePropertiesReq
-         */
         RequestInstancePropertiesReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.RequestInstancePropertiesReq)
+            if (object instanceof $root.BasilServer.RequestInstancePropertiesReq)
                 return object;
-            let message = new $root.Basil.RequestInstancePropertiesReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.RequestInstancePropertiesReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesReq.auth: object expected");
+                    throw TypeError(".BasilServer.RequestInstancePropertiesReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.sequenceNumber != null)
                 message.sequenceNumber = object.sequenceNumber | 0;
             if (object.instanceId != null) {
                 if (typeof object.instanceId !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesReq.instanceId: object expected");
+                    throw TypeError(".BasilServer.RequestInstancePropertiesReq.instanceId: object expected");
                 message.instanceId = $root.BasilType.InstanceIdentifier.fromObject(object.instanceId);
             }
             if (object.propertyMatch != null)
@@ -3349,28 +1546,16 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a RequestInstancePropertiesReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @static
-         * @param {Basil.RequestInstancePropertiesReq} message RequestInstancePropertiesReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         RequestInstancePropertiesReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.sequenceNumber = 0;
                 object.instanceId = null;
                 object.propertyMatch = "";
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
@@ -3382,13 +1567,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this RequestInstancePropertiesReq to JSON.
-         * @function toJSON
-         * @memberof Basil.RequestInstancePropertiesReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         RequestInstancePropertiesReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -3396,25 +1574,8 @@ export const Basil = $root.Basil = (() => {
         return RequestInstancePropertiesReq;
     })();
 
-    Basil.RequestInstancePropertiesResp = (function() {
+    BasilServer.RequestInstancePropertiesResp = (function() {
 
-        /**
-         * Properties of a RequestInstancePropertiesResp.
-         * @memberof Basil
-         * @interface IRequestInstancePropertiesResp
-         * @property {BTransport.IBTransport|null} [transport] RequestInstancePropertiesResp transport
-         * @property {BasilType.IBasilException|null} [success] RequestInstancePropertiesResp success
-         * @property {BasilType.IPropertyList|null} [properties] RequestInstancePropertiesResp properties
-         */
-
-        /**
-         * Constructs a new RequestInstancePropertiesResp.
-         * @memberof Basil
-         * @classdesc Represents a RequestInstancePropertiesResp.
-         * @implements IRequestInstancePropertiesResp
-         * @constructor
-         * @param {Basil.IRequestInstancePropertiesResp=} [properties] Properties to set
-         */
         function RequestInstancePropertiesResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -3422,101 +1583,38 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * RequestInstancePropertiesResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @instance
-         */
-        RequestInstancePropertiesResp.prototype.transport = null;
-
-        /**
-         * RequestInstancePropertiesResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @instance
-         */
         RequestInstancePropertiesResp.prototype.success = null;
-
-        /**
-         * RequestInstancePropertiesResp properties.
-         * @member {BasilType.IPropertyList|null|undefined} properties
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @instance
-         */
         RequestInstancePropertiesResp.prototype.properties = null;
 
-        /**
-         * Creates a new RequestInstancePropertiesResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {Basil.IRequestInstancePropertiesResp=} [properties] Properties to set
-         * @returns {Basil.RequestInstancePropertiesResp} RequestInstancePropertiesResp instance
-         */
         RequestInstancePropertiesResp.create = function create(properties) {
             return new RequestInstancePropertiesResp(properties);
         };
 
-        /**
-         * Encodes the specified RequestInstancePropertiesResp message. Does not implicitly {@link Basil.RequestInstancePropertiesResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {Basil.IRequestInstancePropertiesResp} message RequestInstancePropertiesResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestInstancePropertiesResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             if (message.properties != null && message.hasOwnProperty("properties"))
-                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified RequestInstancePropertiesResp message, length delimited. Does not implicitly {@link Basil.RequestInstancePropertiesResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {Basil.IRequestInstancePropertiesResp} message RequestInstancePropertiesResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         RequestInstancePropertiesResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a RequestInstancePropertiesResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.RequestInstancePropertiesResp} RequestInstancePropertiesResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestInstancePropertiesResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.RequestInstancePropertiesResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestInstancePropertiesResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.properties = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -3527,38 +1625,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a RequestInstancePropertiesResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.RequestInstancePropertiesResp} RequestInstancePropertiesResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         RequestInstancePropertiesResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a RequestInstancePropertiesResp message.
-         * @function verify
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         RequestInstancePropertiesResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -3572,56 +1647,31 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a RequestInstancePropertiesResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.RequestInstancePropertiesResp} RequestInstancePropertiesResp
-         */
         RequestInstancePropertiesResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.RequestInstancePropertiesResp)
+            if (object instanceof $root.BasilServer.RequestInstancePropertiesResp)
                 return object;
-            let message = new $root.Basil.RequestInstancePropertiesResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.RequestInstancePropertiesResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesResp.success: object expected");
+                    throw TypeError(".BasilServer.RequestInstancePropertiesResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             if (object.properties != null) {
                 if (typeof object.properties !== "object")
-                    throw TypeError(".Basil.RequestInstancePropertiesResp.properties: object expected");
+                    throw TypeError(".BasilServer.RequestInstancePropertiesResp.properties: object expected");
                 message.properties = $root.BasilType.PropertyList.fromObject(object.properties);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from a RequestInstancePropertiesResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @static
-         * @param {Basil.RequestInstancePropertiesResp} message RequestInstancePropertiesResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         RequestInstancePropertiesResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.success = null;
                 object.properties = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.properties != null && message.hasOwnProperty("properties"))
@@ -3629,13 +1679,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this RequestInstancePropertiesResp to JSON.
-         * @function toJSON
-         * @memberof Basil.RequestInstancePropertiesResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         RequestInstancePropertiesResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -3643,25 +1686,8 @@ export const Basil = $root.Basil = (() => {
         return RequestInstancePropertiesResp;
     })();
 
-    Basil.OpenSessionReq = (function() {
+    BasilServer.OpenSessionReq = (function() {
 
-        /**
-         * Properties of an OpenSessionReq.
-         * @memberof Basil
-         * @interface IOpenSessionReq
-         * @property {BTransport.IBTransport|null} [transport] OpenSessionReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] OpenSessionReq auth
-         * @property {BasilType.IPropertyList|null} [features] OpenSessionReq features
-         */
-
-        /**
-         * Constructs a new OpenSessionReq.
-         * @memberof Basil
-         * @classdesc Represents an OpenSessionReq.
-         * @implements IOpenSessionReq
-         * @constructor
-         * @param {Basil.IOpenSessionReq=} [properties] Properties to set
-         */
         function OpenSessionReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -3669,101 +1695,38 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * OpenSessionReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.OpenSessionReq
-         * @instance
-         */
-        OpenSessionReq.prototype.transport = null;
-
-        /**
-         * OpenSessionReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.OpenSessionReq
-         * @instance
-         */
         OpenSessionReq.prototype.auth = null;
-
-        /**
-         * OpenSessionReq features.
-         * @member {BasilType.IPropertyList|null|undefined} features
-         * @memberof Basil.OpenSessionReq
-         * @instance
-         */
         OpenSessionReq.prototype.features = null;
 
-        /**
-         * Creates a new OpenSessionReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {Basil.IOpenSessionReq=} [properties] Properties to set
-         * @returns {Basil.OpenSessionReq} OpenSessionReq instance
-         */
         OpenSessionReq.create = function create(properties) {
             return new OpenSessionReq(properties);
         };
 
-        /**
-         * Encodes the specified OpenSessionReq message. Does not implicitly {@link Basil.OpenSessionReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {Basil.IOpenSessionReq} message OpenSessionReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         OpenSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.features != null && message.hasOwnProperty("features"))
-                $root.BasilType.PropertyList.encode(message.features, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.features, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified OpenSessionReq message, length delimited. Does not implicitly {@link Basil.OpenSessionReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {Basil.IOpenSessionReq} message OpenSessionReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         OpenSessionReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an OpenSessionReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.OpenSessionReq} OpenSessionReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         OpenSessionReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.OpenSessionReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.OpenSessionReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.features = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -3774,38 +1737,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an OpenSessionReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.OpenSessionReq} OpenSessionReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         OpenSessionReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an OpenSessionReq message.
-         * @function verify
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         OpenSessionReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -3819,56 +1759,31 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an OpenSessionReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.OpenSessionReq} OpenSessionReq
-         */
         OpenSessionReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.OpenSessionReq)
+            if (object instanceof $root.BasilServer.OpenSessionReq)
                 return object;
-            let message = new $root.Basil.OpenSessionReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.OpenSessionReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.OpenSessionReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.OpenSessionReq.auth: object expected");
+                    throw TypeError(".BasilServer.OpenSessionReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.features != null) {
                 if (typeof object.features !== "object")
-                    throw TypeError(".Basil.OpenSessionReq.features: object expected");
+                    throw TypeError(".BasilServer.OpenSessionReq.features: object expected");
                 message.features = $root.BasilType.PropertyList.fromObject(object.features);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an OpenSessionReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.OpenSessionReq
-         * @static
-         * @param {Basil.OpenSessionReq} message OpenSessionReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         OpenSessionReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.features = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.features != null && message.hasOwnProperty("features"))
@@ -3876,13 +1791,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this OpenSessionReq to JSON.
-         * @function toJSON
-         * @memberof Basil.OpenSessionReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         OpenSessionReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -3890,25 +1798,8 @@ export const Basil = $root.Basil = (() => {
         return OpenSessionReq;
     })();
 
-    Basil.OpenSessionResp = (function() {
+    BasilServer.OpenSessionResp = (function() {
 
-        /**
-         * Properties of an OpenSessionResp.
-         * @memberof Basil
-         * @interface IOpenSessionResp
-         * @property {BTransport.IBTransport|null} [transport] OpenSessionResp transport
-         * @property {BasilType.IBasilException|null} [success] OpenSessionResp success
-         * @property {BasilType.IPropertyList|null} [properties] OpenSessionResp properties
-         */
-
-        /**
-         * Constructs a new OpenSessionResp.
-         * @memberof Basil
-         * @classdesc Represents an OpenSessionResp.
-         * @implements IOpenSessionResp
-         * @constructor
-         * @param {Basil.IOpenSessionResp=} [properties] Properties to set
-         */
         function OpenSessionResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -3916,101 +1807,38 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * OpenSessionResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.OpenSessionResp
-         * @instance
-         */
-        OpenSessionResp.prototype.transport = null;
-
-        /**
-         * OpenSessionResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.OpenSessionResp
-         * @instance
-         */
         OpenSessionResp.prototype.success = null;
-
-        /**
-         * OpenSessionResp properties.
-         * @member {BasilType.IPropertyList|null|undefined} properties
-         * @memberof Basil.OpenSessionResp
-         * @instance
-         */
         OpenSessionResp.prototype.properties = null;
 
-        /**
-         * Creates a new OpenSessionResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {Basil.IOpenSessionResp=} [properties] Properties to set
-         * @returns {Basil.OpenSessionResp} OpenSessionResp instance
-         */
         OpenSessionResp.create = function create(properties) {
             return new OpenSessionResp(properties);
         };
 
-        /**
-         * Encodes the specified OpenSessionResp message. Does not implicitly {@link Basil.OpenSessionResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {Basil.IOpenSessionResp} message OpenSessionResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         OpenSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             if (message.properties != null && message.hasOwnProperty("properties"))
-                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.properties, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified OpenSessionResp message, length delimited. Does not implicitly {@link Basil.OpenSessionResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {Basil.IOpenSessionResp} message OpenSessionResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         OpenSessionResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an OpenSessionResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.OpenSessionResp} OpenSessionResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         OpenSessionResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.OpenSessionResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.OpenSessionResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.properties = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
@@ -4021,38 +1849,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an OpenSessionResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.OpenSessionResp} OpenSessionResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         OpenSessionResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an OpenSessionResp message.
-         * @function verify
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         OpenSessionResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -4066,56 +1871,31 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates an OpenSessionResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.OpenSessionResp} OpenSessionResp
-         */
         OpenSessionResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.OpenSessionResp)
+            if (object instanceof $root.BasilServer.OpenSessionResp)
                 return object;
-            let message = new $root.Basil.OpenSessionResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.OpenSessionResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.OpenSessionResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.OpenSessionResp.success: object expected");
+                    throw TypeError(".BasilServer.OpenSessionResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             if (object.properties != null) {
                 if (typeof object.properties !== "object")
-                    throw TypeError(".Basil.OpenSessionResp.properties: object expected");
+                    throw TypeError(".BasilServer.OpenSessionResp.properties: object expected");
                 message.properties = $root.BasilType.PropertyList.fromObject(object.properties);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from an OpenSessionResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.OpenSessionResp
-         * @static
-         * @param {Basil.OpenSessionResp} message OpenSessionResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         OpenSessionResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.success = null;
                 object.properties = null;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             if (message.properties != null && message.hasOwnProperty("properties"))
@@ -4123,13 +1903,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this OpenSessionResp to JSON.
-         * @function toJSON
-         * @memberof Basil.OpenSessionResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         OpenSessionResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -4137,25 +1910,8 @@ export const Basil = $root.Basil = (() => {
         return OpenSessionResp;
     })();
 
-    Basil.CloseSessionReq = (function() {
+    BasilServer.CloseSessionReq = (function() {
 
-        /**
-         * Properties of a CloseSessionReq.
-         * @memberof Basil
-         * @interface ICloseSessionReq
-         * @property {BTransport.IBTransport|null} [transport] CloseSessionReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] CloseSessionReq auth
-         * @property {string|null} [reason] CloseSessionReq reason
-         */
-
-        /**
-         * Constructs a new CloseSessionReq.
-         * @memberof Basil
-         * @classdesc Represents a CloseSessionReq.
-         * @implements ICloseSessionReq
-         * @constructor
-         * @param {Basil.ICloseSessionReq=} [properties] Properties to set
-         */
         function CloseSessionReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -4163,101 +1919,38 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * CloseSessionReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.CloseSessionReq
-         * @instance
-         */
-        CloseSessionReq.prototype.transport = null;
-
-        /**
-         * CloseSessionReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.CloseSessionReq
-         * @instance
-         */
         CloseSessionReq.prototype.auth = null;
-
-        /**
-         * CloseSessionReq reason.
-         * @member {string} reason
-         * @memberof Basil.CloseSessionReq
-         * @instance
-         */
         CloseSessionReq.prototype.reason = "";
 
-        /**
-         * Creates a new CloseSessionReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {Basil.ICloseSessionReq=} [properties] Properties to set
-         * @returns {Basil.CloseSessionReq} CloseSessionReq instance
-         */
         CloseSessionReq.create = function create(properties) {
             return new CloseSessionReq(properties);
         };
 
-        /**
-         * Encodes the specified CloseSessionReq message. Does not implicitly {@link Basil.CloseSessionReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {Basil.ICloseSessionReq} message CloseSessionReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CloseSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.reason != null && message.hasOwnProperty("reason"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.reason);
+                writer.uint32(18).string(message.reason);
             return writer;
         };
 
-        /**
-         * Encodes the specified CloseSessionReq message, length delimited. Does not implicitly {@link Basil.CloseSessionReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {Basil.ICloseSessionReq} message CloseSessionReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CloseSessionReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a CloseSessionReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.CloseSessionReq} CloseSessionReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CloseSessionReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.CloseSessionReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CloseSessionReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.reason = reader.string();
                     break;
                 default:
@@ -4268,38 +1961,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a CloseSessionReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.CloseSessionReq} CloseSessionReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CloseSessionReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a CloseSessionReq message.
-         * @function verify
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         CloseSessionReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -4311,26 +1981,13 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a CloseSessionReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.CloseSessionReq} CloseSessionReq
-         */
         CloseSessionReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.CloseSessionReq)
+            if (object instanceof $root.BasilServer.CloseSessionReq)
                 return object;
-            let message = new $root.Basil.CloseSessionReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.CloseSessionReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.CloseSessionReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.CloseSessionReq.auth: object expected");
+                    throw TypeError(".BasilServer.CloseSessionReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.reason != null)
@@ -4338,26 +1995,14 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a CloseSessionReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.CloseSessionReq
-         * @static
-         * @param {Basil.CloseSessionReq} message CloseSessionReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         CloseSessionReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 object.reason = "";
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.reason != null && message.hasOwnProperty("reason"))
@@ -4365,13 +2010,6 @@ export const Basil = $root.Basil = (() => {
             return object;
         };
 
-        /**
-         * Converts this CloseSessionReq to JSON.
-         * @function toJSON
-         * @memberof Basil.CloseSessionReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         CloseSessionReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -4379,24 +2017,8 @@ export const Basil = $root.Basil = (() => {
         return CloseSessionReq;
     })();
 
-    Basil.CloseSessionResp = (function() {
+    BasilServer.CloseSessionResp = (function() {
 
-        /**
-         * Properties of a CloseSessionResp.
-         * @memberof Basil
-         * @interface ICloseSessionResp
-         * @property {BTransport.IBTransport|null} [transport] CloseSessionResp transport
-         * @property {BasilType.IBasilException|null} [success] CloseSessionResp success
-         */
-
-        /**
-         * Constructs a new CloseSessionResp.
-         * @memberof Basil
-         * @classdesc Represents a CloseSessionResp.
-         * @implements ICloseSessionResp
-         * @constructor
-         * @param {Basil.ICloseSessionResp=} [properties] Properties to set
-         */
         function CloseSessionResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -4404,88 +2026,32 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * CloseSessionResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.CloseSessionResp
-         * @instance
-         */
-        CloseSessionResp.prototype.transport = null;
-
-        /**
-         * CloseSessionResp success.
-         * @member {BasilType.IBasilException|null|undefined} success
-         * @memberof Basil.CloseSessionResp
-         * @instance
-         */
         CloseSessionResp.prototype.success = null;
 
-        /**
-         * Creates a new CloseSessionResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {Basil.ICloseSessionResp=} [properties] Properties to set
-         * @returns {Basil.CloseSessionResp} CloseSessionResp instance
-         */
         CloseSessionResp.create = function create(properties) {
             return new CloseSessionResp(properties);
         };
 
-        /**
-         * Encodes the specified CloseSessionResp message. Does not implicitly {@link Basil.CloseSessionResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {Basil.ICloseSessionResp} message CloseSessionResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CloseSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.success != null && message.hasOwnProperty("success"))
-                $root.BasilType.BasilException.encode(message.success, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified CloseSessionResp message, length delimited. Does not implicitly {@link Basil.CloseSessionResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {Basil.ICloseSessionResp} message CloseSessionResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CloseSessionResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a CloseSessionResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.CloseSessionResp} CloseSessionResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CloseSessionResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.CloseSessionResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CloseSessionResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
                     break;
                 default:
@@ -4496,38 +2062,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes a CloseSessionResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.CloseSessionResp} CloseSessionResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CloseSessionResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a CloseSessionResp message.
-         * @function verify
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         CloseSessionResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.success != null && message.hasOwnProperty("success")) {
                 let error = $root.BasilType.BasilException.verify(message.success);
                 if (error)
@@ -4536,62 +2079,29 @@ export const Basil = $root.Basil = (() => {
             return null;
         };
 
-        /**
-         * Creates a CloseSessionResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.CloseSessionResp} CloseSessionResp
-         */
         CloseSessionResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.CloseSessionResp)
+            if (object instanceof $root.BasilServer.CloseSessionResp)
                 return object;
-            let message = new $root.Basil.CloseSessionResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.CloseSessionResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.CloseSessionResp();
             if (object.success != null) {
                 if (typeof object.success !== "object")
-                    throw TypeError(".Basil.CloseSessionResp.success: object expected");
+                    throw TypeError(".BasilServer.CloseSessionResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
             return message;
         };
 
-        /**
-         * Creates a plain object from a CloseSessionResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.CloseSessionResp
-         * @static
-         * @param {Basil.CloseSessionResp} message CloseSessionResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         CloseSessionResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.transport = null;
+            if (options.defaults)
                 object.success = null;
-            }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
             return object;
         };
 
-        /**
-         * Converts this CloseSessionResp to JSON.
-         * @function toJSON
-         * @memberof Basil.CloseSessionResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         CloseSessionResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -4599,26 +2109,8 @@ export const Basil = $root.Basil = (() => {
         return CloseSessionResp;
     })();
 
-    Basil.AliveCheckReq = (function() {
+    BasilServer.AliveCheckReq = (function() {
 
-        /**
-         * Properties of an AliveCheckReq.
-         * @memberof Basil
-         * @interface IAliveCheckReq
-         * @property {BTransport.IBTransport|null} [transport] AliveCheckReq transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] AliveCheckReq auth
-         * @property {number|Long|null} [time] AliveCheckReq time
-         * @property {number|null} [sequenceNumber] AliveCheckReq sequenceNumber
-         */
-
-        /**
-         * Constructs a new AliveCheckReq.
-         * @memberof Basil
-         * @classdesc Represents an AliveCheckReq.
-         * @implements IAliveCheckReq
-         * @constructor
-         * @param {Basil.IAliveCheckReq=} [properties] Properties to set
-         */
         function AliveCheckReq(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -4626,115 +2118,45 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * AliveCheckReq transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.AliveCheckReq
-         * @instance
-         */
-        AliveCheckReq.prototype.transport = null;
-
-        /**
-         * AliveCheckReq auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.AliveCheckReq
-         * @instance
-         */
         AliveCheckReq.prototype.auth = null;
-
-        /**
-         * AliveCheckReq time.
-         * @member {number|Long} time
-         * @memberof Basil.AliveCheckReq
-         * @instance
-         */
         AliveCheckReq.prototype.time = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        AliveCheckReq.prototype.sequenceNum = 0;
 
-        /**
-         * AliveCheckReq sequenceNumber.
-         * @member {number} sequenceNumber
-         * @memberof Basil.AliveCheckReq
-         * @instance
-         */
-        AliveCheckReq.prototype.sequenceNumber = 0;
-
-        /**
-         * Creates a new AliveCheckReq instance using the specified properties.
-         * @function create
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {Basil.IAliveCheckReq=} [properties] Properties to set
-         * @returns {Basil.AliveCheckReq} AliveCheckReq instance
-         */
         AliveCheckReq.create = function create(properties) {
             return new AliveCheckReq(properties);
         };
 
-        /**
-         * Encodes the specified AliveCheckReq message. Does not implicitly {@link Basil.AliveCheckReq.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {Basil.IAliveCheckReq} message AliveCheckReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AliveCheckReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.time != null && message.hasOwnProperty("time"))
-                writer.uint32(/* id 3, wireType 0 =*/24).sint64(message.time);
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.sequenceNumber);
+                writer.uint32(16).sint64(message.time);
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                writer.uint32(24).int32(message.sequenceNum);
             return writer;
         };
 
-        /**
-         * Encodes the specified AliveCheckReq message, length delimited. Does not implicitly {@link Basil.AliveCheckReq.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {Basil.IAliveCheckReq} message AliveCheckReq message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AliveCheckReq.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an AliveCheckReq message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.AliveCheckReq} AliveCheckReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AliveCheckReq.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.AliveCheckReq();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.AliveCheckReq();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
-                case 3:
+                case 2:
                     message.time = reader.sint64();
                     break;
-                case 4:
-                    message.sequenceNumber = reader.int32();
+                case 3:
+                    message.sequenceNum = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4744,38 +2166,15 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an AliveCheckReq message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.AliveCheckReq} AliveCheckReq
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AliveCheckReq.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an AliveCheckReq message.
-         * @function verify
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         AliveCheckReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
             if (message.auth != null && message.hasOwnProperty("auth")) {
                 let error = $root.BasilType.AccessAuthorization.verify(message.auth);
                 if (error)
@@ -4784,32 +2183,19 @@ export const Basil = $root.Basil = (() => {
             if (message.time != null && message.hasOwnProperty("time"))
                 if (!$util.isInteger(message.time) && !(message.time && $util.isInteger(message.time.low) && $util.isInteger(message.time.high)))
                     return "time: integer|Long expected";
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                if (!$util.isInteger(message.sequenceNumber))
-                    return "sequenceNumber: integer expected";
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                if (!$util.isInteger(message.sequenceNum))
+                    return "sequenceNum: integer expected";
             return null;
         };
 
-        /**
-         * Creates an AliveCheckReq message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.AliveCheckReq} AliveCheckReq
-         */
         AliveCheckReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.AliveCheckReq)
+            if (object instanceof $root.BasilServer.AliveCheckReq)
                 return object;
-            let message = new $root.Basil.AliveCheckReq();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.AliveCheckReq.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
+            let message = new $root.BasilServer.AliveCheckReq();
             if (object.auth != null) {
                 if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.AliveCheckReq.auth: object expected");
+                    throw TypeError(".BasilServer.AliveCheckReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
             if (object.time != null)
@@ -4821,36 +2207,24 @@ export const Basil = $root.Basil = (() => {
                     message.time = object.time;
                 else if (typeof object.time === "object")
                     message.time = new $util.LongBits(object.time.low >>> 0, object.time.high >>> 0).toNumber();
-            if (object.sequenceNumber != null)
-                message.sequenceNumber = object.sequenceNumber | 0;
+            if (object.sequenceNum != null)
+                message.sequenceNum = object.sequenceNum | 0;
             return message;
         };
 
-        /**
-         * Creates a plain object from an AliveCheckReq message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.AliveCheckReq
-         * @static
-         * @param {Basil.AliveCheckReq} message AliveCheckReq
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         AliveCheckReq.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
                 object.auth = null;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.time = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.time = options.longs === String ? "0" : 0;
-                object.sequenceNumber = 0;
+                object.sequenceNum = 0;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.time != null && message.hasOwnProperty("time"))
@@ -4858,18 +2232,11 @@ export const Basil = $root.Basil = (() => {
                     object.time = options.longs === String ? String(message.time) : message.time;
                 else
                     object.time = options.longs === String ? $util.Long.prototype.toString.call(message.time) : options.longs === Number ? new $util.LongBits(message.time.low >>> 0, message.time.high >>> 0).toNumber() : message.time;
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                object.sequenceNumber = message.sequenceNumber;
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                object.sequenceNum = message.sequenceNum;
             return object;
         };
 
-        /**
-         * Converts this AliveCheckReq to JSON.
-         * @function toJSON
-         * @memberof Basil.AliveCheckReq
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         AliveCheckReq.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -4877,28 +2244,8 @@ export const Basil = $root.Basil = (() => {
         return AliveCheckReq;
     })();
 
-    Basil.AliveCheckResp = (function() {
+    BasilServer.AliveCheckResp = (function() {
 
-        /**
-         * Properties of an AliveCheckResp.
-         * @memberof Basil
-         * @interface IAliveCheckResp
-         * @property {BTransport.IBTransport|null} [transport] AliveCheckResp transport
-         * @property {BasilType.IAccessAuthorization|null} [auth] AliveCheckResp auth
-         * @property {number|Long|null} [time] AliveCheckResp time
-         * @property {number|null} [sequenceNumber] AliveCheckResp sequenceNumber
-         * @property {number|Long|null} [timeReceived] AliveCheckResp timeReceived
-         * @property {number|null} [sequenceNumberReceived] AliveCheckResp sequenceNumberReceived
-         */
-
-        /**
-         * Constructs a new AliveCheckResp.
-         * @memberof Basil
-         * @classdesc Represents an AliveCheckResp.
-         * @implements IAliveCheckResp
-         * @constructor
-         * @param {Basil.IAliveCheckResp=} [properties] Properties to set
-         */
         function AliveCheckResp(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -4906,141 +2253,51 @@ export const Basil = $root.Basil = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * AliveCheckResp transport.
-         * @member {BTransport.IBTransport|null|undefined} transport
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
-        AliveCheckResp.prototype.transport = null;
-
-        /**
-         * AliveCheckResp auth.
-         * @member {BasilType.IAccessAuthorization|null|undefined} auth
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
-        AliveCheckResp.prototype.auth = null;
-
-        /**
-         * AliveCheckResp time.
-         * @member {number|Long} time
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
         AliveCheckResp.prototype.time = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * AliveCheckResp sequenceNumber.
-         * @member {number} sequenceNumber
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
-        AliveCheckResp.prototype.sequenceNumber = 0;
-
-        /**
-         * AliveCheckResp timeReceived.
-         * @member {number|Long} timeReceived
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
+        AliveCheckResp.prototype.sequenceNum = 0;
         AliveCheckResp.prototype.timeReceived = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        AliveCheckResp.prototype.sequenceNumReceived = 0;
 
-        /**
-         * AliveCheckResp sequenceNumberReceived.
-         * @member {number} sequenceNumberReceived
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         */
-        AliveCheckResp.prototype.sequenceNumberReceived = 0;
-
-        /**
-         * Creates a new AliveCheckResp instance using the specified properties.
-         * @function create
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {Basil.IAliveCheckResp=} [properties] Properties to set
-         * @returns {Basil.AliveCheckResp} AliveCheckResp instance
-         */
         AliveCheckResp.create = function create(properties) {
             return new AliveCheckResp(properties);
         };
 
-        /**
-         * Encodes the specified AliveCheckResp message. Does not implicitly {@link Basil.AliveCheckResp.verify|verify} messages.
-         * @function encode
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {Basil.IAliveCheckResp} message AliveCheckResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AliveCheckResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                $root.BTransport.BTransport.encode(message.transport, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.auth != null && message.hasOwnProperty("auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.time != null && message.hasOwnProperty("time"))
-                writer.uint32(/* id 3, wireType 0 =*/24).sint64(message.time);
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.sequenceNumber);
+                writer.uint32(8).sint64(message.time);
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                writer.uint32(16).int32(message.sequenceNum);
             if (message.timeReceived != null && message.hasOwnProperty("timeReceived"))
-                writer.uint32(/* id 5, wireType 0 =*/40).sint64(message.timeReceived);
-            if (message.sequenceNumberReceived != null && message.hasOwnProperty("sequenceNumberReceived"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.sequenceNumberReceived);
+                writer.uint32(24).sint64(message.timeReceived);
+            if (message.sequenceNumReceived != null && message.hasOwnProperty("sequenceNumReceived"))
+                writer.uint32(32).int32(message.sequenceNumReceived);
             return writer;
         };
 
-        /**
-         * Encodes the specified AliveCheckResp message, length delimited. Does not implicitly {@link Basil.AliveCheckResp.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {Basil.IAliveCheckResp} message AliveCheckResp message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AliveCheckResp.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an AliveCheckResp message from the specified reader or buffer.
-         * @function decode
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Basil.AliveCheckResp} AliveCheckResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AliveCheckResp.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.Basil.AliveCheckResp();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.AliveCheckResp();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.transport = $root.BTransport.BTransport.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
-                    break;
-                case 3:
                     message.time = reader.sint64();
                     break;
-                case 4:
-                    message.sequenceNumber = reader.int32();
+                case 2:
+                    message.sequenceNum = reader.int32();
                     break;
-                case 5:
+                case 3:
                     message.timeReceived = reader.sint64();
                     break;
-                case 6:
-                    message.sequenceNumberReceived = reader.int32();
+                case 4:
+                    message.sequenceNumReceived = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -5050,80 +2307,34 @@ export const Basil = $root.Basil = (() => {
             return message;
         };
 
-        /**
-         * Decodes an AliveCheckResp message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Basil.AliveCheckResp} AliveCheckResp
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AliveCheckResp.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an AliveCheckResp message.
-         * @function verify
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         AliveCheckResp.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.transport != null && message.hasOwnProperty("transport")) {
-                let error = $root.BTransport.BTransport.verify(message.transport);
-                if (error)
-                    return "transport." + error;
-            }
-            if (message.auth != null && message.hasOwnProperty("auth")) {
-                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
-                if (error)
-                    return "auth." + error;
-            }
             if (message.time != null && message.hasOwnProperty("time"))
                 if (!$util.isInteger(message.time) && !(message.time && $util.isInteger(message.time.low) && $util.isInteger(message.time.high)))
                     return "time: integer|Long expected";
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                if (!$util.isInteger(message.sequenceNumber))
-                    return "sequenceNumber: integer expected";
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                if (!$util.isInteger(message.sequenceNum))
+                    return "sequenceNum: integer expected";
             if (message.timeReceived != null && message.hasOwnProperty("timeReceived"))
                 if (!$util.isInteger(message.timeReceived) && !(message.timeReceived && $util.isInteger(message.timeReceived.low) && $util.isInteger(message.timeReceived.high)))
                     return "timeReceived: integer|Long expected";
-            if (message.sequenceNumberReceived != null && message.hasOwnProperty("sequenceNumberReceived"))
-                if (!$util.isInteger(message.sequenceNumberReceived))
-                    return "sequenceNumberReceived: integer expected";
+            if (message.sequenceNumReceived != null && message.hasOwnProperty("sequenceNumReceived"))
+                if (!$util.isInteger(message.sequenceNumReceived))
+                    return "sequenceNumReceived: integer expected";
             return null;
         };
 
-        /**
-         * Creates an AliveCheckResp message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Basil.AliveCheckResp} AliveCheckResp
-         */
         AliveCheckResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.Basil.AliveCheckResp)
+            if (object instanceof $root.BasilServer.AliveCheckResp)
                 return object;
-            let message = new $root.Basil.AliveCheckResp();
-            if (object.transport != null) {
-                if (typeof object.transport !== "object")
-                    throw TypeError(".Basil.AliveCheckResp.transport: object expected");
-                message.transport = $root.BTransport.BTransport.fromObject(object.transport);
-            }
-            if (object.auth != null) {
-                if (typeof object.auth !== "object")
-                    throw TypeError(".Basil.AliveCheckResp.auth: object expected");
-                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
+            let message = new $root.BasilServer.AliveCheckResp();
             if (object.time != null)
                 if ($util.Long)
                     (message.time = $util.Long.fromValue(object.time)).unsigned = false;
@@ -5133,8 +2344,8 @@ export const Basil = $root.Basil = (() => {
                     message.time = object.time;
                 else if (typeof object.time === "object")
                     message.time = new $util.LongBits(object.time.low >>> 0, object.time.high >>> 0).toNumber();
-            if (object.sequenceNumber != null)
-                message.sequenceNumber = object.sequenceNumber | 0;
+            if (object.sequenceNum != null)
+                message.sequenceNum = object.sequenceNum | 0;
             if (object.timeReceived != null)
                 if ($util.Long)
                     (message.timeReceived = $util.Long.fromValue(object.timeReceived)).unsigned = false;
@@ -5144,68 +2355,46 @@ export const Basil = $root.Basil = (() => {
                     message.timeReceived = object.timeReceived;
                 else if (typeof object.timeReceived === "object")
                     message.timeReceived = new $util.LongBits(object.timeReceived.low >>> 0, object.timeReceived.high >>> 0).toNumber();
-            if (object.sequenceNumberReceived != null)
-                message.sequenceNumberReceived = object.sequenceNumberReceived | 0;
+            if (object.sequenceNumReceived != null)
+                message.sequenceNumReceived = object.sequenceNumReceived | 0;
             return message;
         };
 
-        /**
-         * Creates a plain object from an AliveCheckResp message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Basil.AliveCheckResp
-         * @static
-         * @param {Basil.AliveCheckResp} message AliveCheckResp
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         AliveCheckResp.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.transport = null;
-                object.auth = null;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.time = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.time = options.longs === String ? "0" : 0;
-                object.sequenceNumber = 0;
+                object.sequenceNum = 0;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.timeReceived = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.timeReceived = options.longs === String ? "0" : 0;
-                object.sequenceNumberReceived = 0;
+                object.sequenceNumReceived = 0;
             }
-            if (message.transport != null && message.hasOwnProperty("transport"))
-                object.transport = $root.BTransport.BTransport.toObject(message.transport, options);
-            if (message.auth != null && message.hasOwnProperty("auth"))
-                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
             if (message.time != null && message.hasOwnProperty("time"))
                 if (typeof message.time === "number")
                     object.time = options.longs === String ? String(message.time) : message.time;
                 else
                     object.time = options.longs === String ? $util.Long.prototype.toString.call(message.time) : options.longs === Number ? new $util.LongBits(message.time.low >>> 0, message.time.high >>> 0).toNumber() : message.time;
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                object.sequenceNumber = message.sequenceNumber;
+            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+                object.sequenceNum = message.sequenceNum;
             if (message.timeReceived != null && message.hasOwnProperty("timeReceived"))
                 if (typeof message.timeReceived === "number")
                     object.timeReceived = options.longs === String ? String(message.timeReceived) : message.timeReceived;
                 else
                     object.timeReceived = options.longs === String ? $util.Long.prototype.toString.call(message.timeReceived) : options.longs === Number ? new $util.LongBits(message.timeReceived.low >>> 0, message.timeReceived.high >>> 0).toNumber() : message.timeReceived;
-            if (message.sequenceNumberReceived != null && message.hasOwnProperty("sequenceNumberReceived"))
-                object.sequenceNumberReceived = message.sequenceNumberReceived;
+            if (message.sequenceNumReceived != null && message.hasOwnProperty("sequenceNumReceived"))
+                object.sequenceNumReceived = message.sequenceNumReceived;
             return object;
         };
 
-        /**
-         * Converts this AliveCheckResp to JSON.
-         * @function toJSON
-         * @memberof Basil.AliveCheckResp
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         AliveCheckResp.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -5213,402 +2402,678 @@ export const Basil = $root.Basil = (() => {
         return AliveCheckResp;
     })();
 
-    Basil.BasilServer = (function() {
+    BasilServer.BasilServerMessage = (function() {
 
-        /**
-         * Constructs a new BasilServer service.
-         * @memberof Basil
-         * @classdesc Represents a BasilServer
-         * @extends $protobuf.rpc.Service
-         * @constructor
-         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
-         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
-         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
-         */
+        function BasilServerMessage(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        BasilServerMessage.prototype.IdentifyDisplayableObjectReqMsg = null;
+        BasilServerMessage.prototype.IdentifyDisplayableObjectRespMsg = null;
+        BasilServerMessage.prototype.CreateObjectInstanceReqMsg = null;
+        BasilServerMessage.prototype.CreateObjectInstanceRespMsg = null;
+        BasilServerMessage.prototype.UpdateObjectPropertyReqMsg = null;
+        BasilServerMessage.prototype.UpdateObjectPropertyRespMsg = null;
+        BasilServerMessage.prototype.UpdateInstancePropertyReqMsg = null;
+        BasilServerMessage.prototype.UpdateInstancePropertyRespMsg = null;
+        BasilServerMessage.prototype.UpdateInstancePositionReqMsg = null;
+        BasilServerMessage.prototype.UpdateInstancePositionRespMsg = null;
+        BasilServerMessage.prototype.RequestObjectPropertiesReqMsg = null;
+        BasilServerMessage.prototype.RequestObjectPropertiesRespMsg = null;
+        BasilServerMessage.prototype.RequestInstancePropertiesReqMsg = null;
+        BasilServerMessage.prototype.RequestInstancePropertiesRespMsg = null;
+        BasilServerMessage.prototype.OpenSessionReqMsg = null;
+        BasilServerMessage.prototype.OpenSessionRespMsg = null;
+        BasilServerMessage.prototype.CloseSessionReqMsg = null;
+        BasilServerMessage.prototype.CloseSessionRespMsg = null;
+        BasilServerMessage.prototype.AliveCheckReqMsg = null;
+        BasilServerMessage.prototype.AliveCheckRespMsg = null;
+
+        let $oneOfFields;
+
+        Object.defineProperty(BasilServerMessage.prototype, "msg", {
+            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectReqMsg", "IdentifyDisplayableObjectRespMsg", "CreateObjectInstanceReqMsg", "CreateObjectInstanceRespMsg", "UpdateObjectPropertyReqMsg", "UpdateObjectPropertyRespMsg", "UpdateInstancePropertyReqMsg", "UpdateInstancePropertyRespMsg", "UpdateInstancePositionReqMsg", "UpdateInstancePositionRespMsg", "RequestObjectPropertiesReqMsg", "RequestObjectPropertiesRespMsg", "RequestInstancePropertiesReqMsg", "RequestInstancePropertiesRespMsg", "OpenSessionReqMsg", "OpenSessionRespMsg", "CloseSessionReqMsg", "CloseSessionRespMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        BasilServerMessage.create = function create(properties) {
+            return new BasilServerMessage(properties);
+        };
+
+        BasilServerMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.IdentifyDisplayableObjectReqMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectReqMsg"))
+                $root.BasilServer.IdentifyDisplayableObjectReq.encode(message.IdentifyDisplayableObjectReqMsg, writer.uint32(10).fork()).ldelim();
+            if (message.IdentifyDisplayableObjectRespMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectRespMsg"))
+                $root.BasilServer.IdentifyDisplayableObjectResp.encode(message.IdentifyDisplayableObjectRespMsg, writer.uint32(18).fork()).ldelim();
+            if (message.CreateObjectInstanceReqMsg != null && message.hasOwnProperty("CreateObjectInstanceReqMsg"))
+                $root.BasilServer.CreateObjectInstanceReq.encode(message.CreateObjectInstanceReqMsg, writer.uint32(26).fork()).ldelim();
+            if (message.CreateObjectInstanceRespMsg != null && message.hasOwnProperty("CreateObjectInstanceRespMsg"))
+                $root.BasilServer.CreateObjectInstanceResp.encode(message.CreateObjectInstanceRespMsg, writer.uint32(34).fork()).ldelim();
+            if (message.UpdateObjectPropertyReqMsg != null && message.hasOwnProperty("UpdateObjectPropertyReqMsg"))
+                $root.BasilServer.UpdateObjectPropertyReq.encode(message.UpdateObjectPropertyReqMsg, writer.uint32(42).fork()).ldelim();
+            if (message.UpdateObjectPropertyRespMsg != null && message.hasOwnProperty("UpdateObjectPropertyRespMsg"))
+                $root.BasilServer.UpdateObjectPropertyResp.encode(message.UpdateObjectPropertyRespMsg, writer.uint32(50).fork()).ldelim();
+            if (message.UpdateInstancePropertyReqMsg != null && message.hasOwnProperty("UpdateInstancePropertyReqMsg"))
+                $root.BasilServer.UpdateInstancePropertyReq.encode(message.UpdateInstancePropertyReqMsg, writer.uint32(58).fork()).ldelim();
+            if (message.UpdateInstancePropertyRespMsg != null && message.hasOwnProperty("UpdateInstancePropertyRespMsg"))
+                $root.BasilServer.UpdateInstancePropertyResp.encode(message.UpdateInstancePropertyRespMsg, writer.uint32(66).fork()).ldelim();
+            if (message.UpdateInstancePositionReqMsg != null && message.hasOwnProperty("UpdateInstancePositionReqMsg"))
+                $root.BasilServer.UpdateInstancePositionReq.encode(message.UpdateInstancePositionReqMsg, writer.uint32(74).fork()).ldelim();
+            if (message.UpdateInstancePositionRespMsg != null && message.hasOwnProperty("UpdateInstancePositionRespMsg"))
+                $root.BasilServer.UpdateInstancePositionResp.encode(message.UpdateInstancePositionRespMsg, writer.uint32(82).fork()).ldelim();
+            if (message.RequestObjectPropertiesReqMsg != null && message.hasOwnProperty("RequestObjectPropertiesReqMsg"))
+                $root.BasilServer.RequestObjectPropertiesReq.encode(message.RequestObjectPropertiesReqMsg, writer.uint32(90).fork()).ldelim();
+            if (message.RequestObjectPropertiesRespMsg != null && message.hasOwnProperty("RequestObjectPropertiesRespMsg"))
+                $root.BasilServer.RequestObjectPropertiesResp.encode(message.RequestObjectPropertiesRespMsg, writer.uint32(98).fork()).ldelim();
+            if (message.RequestInstancePropertiesReqMsg != null && message.hasOwnProperty("RequestInstancePropertiesReqMsg"))
+                $root.BasilServer.RequestInstancePropertiesReq.encode(message.RequestInstancePropertiesReqMsg, writer.uint32(106).fork()).ldelim();
+            if (message.RequestInstancePropertiesRespMsg != null && message.hasOwnProperty("RequestInstancePropertiesRespMsg"))
+                $root.BasilServer.RequestInstancePropertiesResp.encode(message.RequestInstancePropertiesRespMsg, writer.uint32(114).fork()).ldelim();
+            if (message.OpenSessionReqMsg != null && message.hasOwnProperty("OpenSessionReqMsg"))
+                $root.BasilServer.OpenSessionReq.encode(message.OpenSessionReqMsg, writer.uint32(122).fork()).ldelim();
+            if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg"))
+                $root.BasilServer.OpenSessionResp.encode(message.OpenSessionRespMsg, writer.uint32(130).fork()).ldelim();
+            if (message.CloseSessionReqMsg != null && message.hasOwnProperty("CloseSessionReqMsg"))
+                $root.BasilServer.CloseSessionReq.encode(message.CloseSessionReqMsg, writer.uint32(138).fork()).ldelim();
+            if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg"))
+                $root.BasilServer.CloseSessionResp.encode(message.CloseSessionRespMsg, writer.uint32(146).fork()).ldelim();
+            if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg"))
+                $root.BasilServer.AliveCheckReq.encode(message.AliveCheckReqMsg, writer.uint32(154).fork()).ldelim();
+            if (message.AliveCheckRespMsg != null && message.hasOwnProperty("AliveCheckRespMsg"))
+                $root.BasilServer.AliveCheckResp.encode(message.AliveCheckRespMsg, writer.uint32(162).fork()).ldelim();
+            return writer;
+        };
+
+        BasilServerMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        BasilServerMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.BasilServerMessage();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.IdentifyDisplayableObjectReqMsg = $root.BasilServer.IdentifyDisplayableObjectReq.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.IdentifyDisplayableObjectRespMsg = $root.BasilServer.IdentifyDisplayableObjectResp.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.CreateObjectInstanceReqMsg = $root.BasilServer.CreateObjectInstanceReq.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.UpdateObjectPropertyReqMsg = $root.BasilServer.UpdateObjectPropertyReq.decode(reader, reader.uint32());
+                    break;
+                case 6:
+                    message.UpdateObjectPropertyRespMsg = $root.BasilServer.UpdateObjectPropertyResp.decode(reader, reader.uint32());
+                    break;
+                case 7:
+                    message.UpdateInstancePropertyReqMsg = $root.BasilServer.UpdateInstancePropertyReq.decode(reader, reader.uint32());
+                    break;
+                case 8:
+                    message.UpdateInstancePropertyRespMsg = $root.BasilServer.UpdateInstancePropertyResp.decode(reader, reader.uint32());
+                    break;
+                case 9:
+                    message.UpdateInstancePositionReqMsg = $root.BasilServer.UpdateInstancePositionReq.decode(reader, reader.uint32());
+                    break;
+                case 10:
+                    message.UpdateInstancePositionRespMsg = $root.BasilServer.UpdateInstancePositionResp.decode(reader, reader.uint32());
+                    break;
+                case 11:
+                    message.RequestObjectPropertiesReqMsg = $root.BasilServer.RequestObjectPropertiesReq.decode(reader, reader.uint32());
+                    break;
+                case 12:
+                    message.RequestObjectPropertiesRespMsg = $root.BasilServer.RequestObjectPropertiesResp.decode(reader, reader.uint32());
+                    break;
+                case 13:
+                    message.RequestInstancePropertiesReqMsg = $root.BasilServer.RequestInstancePropertiesReq.decode(reader, reader.uint32());
+                    break;
+                case 14:
+                    message.RequestInstancePropertiesRespMsg = $root.BasilServer.RequestInstancePropertiesResp.decode(reader, reader.uint32());
+                    break;
+                case 15:
+                    message.OpenSessionReqMsg = $root.BasilServer.OpenSessionReq.decode(reader, reader.uint32());
+                    break;
+                case 16:
+                    message.OpenSessionRespMsg = $root.BasilServer.OpenSessionResp.decode(reader, reader.uint32());
+                    break;
+                case 17:
+                    message.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.decode(reader, reader.uint32());
+                    break;
+                case 18:
+                    message.CloseSessionRespMsg = $root.BasilServer.CloseSessionResp.decode(reader, reader.uint32());
+                    break;
+                case 19:
+                    message.AliveCheckReqMsg = $root.BasilServer.AliveCheckReq.decode(reader, reader.uint32());
+                    break;
+                case 20:
+                    message.AliveCheckRespMsg = $root.BasilServer.AliveCheckResp.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        BasilServerMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        BasilServerMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            let properties = {};
+            if (message.IdentifyDisplayableObjectReqMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectReqMsg")) {
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.IdentifyDisplayableObjectReq.verify(message.IdentifyDisplayableObjectReqMsg);
+                    if (error)
+                        return "IdentifyDisplayableObjectReqMsg." + error;
+                }
+            }
+            if (message.IdentifyDisplayableObjectRespMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.IdentifyDisplayableObjectResp.verify(message.IdentifyDisplayableObjectRespMsg);
+                    if (error)
+                        return "IdentifyDisplayableObjectRespMsg." + error;
+                }
+            }
+            if (message.CreateObjectInstanceReqMsg != null && message.hasOwnProperty("CreateObjectInstanceReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.CreateObjectInstanceReq.verify(message.CreateObjectInstanceReqMsg);
+                    if (error)
+                        return "CreateObjectInstanceReqMsg." + error;
+                }
+            }
+            if (message.CreateObjectInstanceRespMsg != null && message.hasOwnProperty("CreateObjectInstanceRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.CreateObjectInstanceResp.verify(message.CreateObjectInstanceRespMsg);
+                    if (error)
+                        return "CreateObjectInstanceRespMsg." + error;
+                }
+            }
+            if (message.UpdateObjectPropertyReqMsg != null && message.hasOwnProperty("UpdateObjectPropertyReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.UpdateObjectPropertyReq.verify(message.UpdateObjectPropertyReqMsg);
+                    if (error)
+                        return "UpdateObjectPropertyReqMsg." + error;
+                }
+            }
+            if (message.UpdateObjectPropertyRespMsg != null && message.hasOwnProperty("UpdateObjectPropertyRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.UpdateObjectPropertyResp.verify(message.UpdateObjectPropertyRespMsg);
+                    if (error)
+                        return "UpdateObjectPropertyRespMsg." + error;
+                }
+            }
+            if (message.UpdateInstancePropertyReqMsg != null && message.hasOwnProperty("UpdateInstancePropertyReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.UpdateInstancePropertyReq.verify(message.UpdateInstancePropertyReqMsg);
+                    if (error)
+                        return "UpdateInstancePropertyReqMsg." + error;
+                }
+            }
+            if (message.UpdateInstancePropertyRespMsg != null && message.hasOwnProperty("UpdateInstancePropertyRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.UpdateInstancePropertyResp.verify(message.UpdateInstancePropertyRespMsg);
+                    if (error)
+                        return "UpdateInstancePropertyRespMsg." + error;
+                }
+            }
+            if (message.UpdateInstancePositionReqMsg != null && message.hasOwnProperty("UpdateInstancePositionReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.UpdateInstancePositionReq.verify(message.UpdateInstancePositionReqMsg);
+                    if (error)
+                        return "UpdateInstancePositionReqMsg." + error;
+                }
+            }
+            if (message.UpdateInstancePositionRespMsg != null && message.hasOwnProperty("UpdateInstancePositionRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.UpdateInstancePositionResp.verify(message.UpdateInstancePositionRespMsg);
+                    if (error)
+                        return "UpdateInstancePositionRespMsg." + error;
+                }
+            }
+            if (message.RequestObjectPropertiesReqMsg != null && message.hasOwnProperty("RequestObjectPropertiesReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.RequestObjectPropertiesReq.verify(message.RequestObjectPropertiesReqMsg);
+                    if (error)
+                        return "RequestObjectPropertiesReqMsg." + error;
+                }
+            }
+            if (message.RequestObjectPropertiesRespMsg != null && message.hasOwnProperty("RequestObjectPropertiesRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.RequestObjectPropertiesResp.verify(message.RequestObjectPropertiesRespMsg);
+                    if (error)
+                        return "RequestObjectPropertiesRespMsg." + error;
+                }
+            }
+            if (message.RequestInstancePropertiesReqMsg != null && message.hasOwnProperty("RequestInstancePropertiesReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.RequestInstancePropertiesReq.verify(message.RequestInstancePropertiesReqMsg);
+                    if (error)
+                        return "RequestInstancePropertiesReqMsg." + error;
+                }
+            }
+            if (message.RequestInstancePropertiesRespMsg != null && message.hasOwnProperty("RequestInstancePropertiesRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.RequestInstancePropertiesResp.verify(message.RequestInstancePropertiesRespMsg);
+                    if (error)
+                        return "RequestInstancePropertiesRespMsg." + error;
+                }
+            }
+            if (message.OpenSessionReqMsg != null && message.hasOwnProperty("OpenSessionReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.OpenSessionReq.verify(message.OpenSessionReqMsg);
+                    if (error)
+                        return "OpenSessionReqMsg." + error;
+                }
+            }
+            if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.OpenSessionResp.verify(message.OpenSessionRespMsg);
+                    if (error)
+                        return "OpenSessionRespMsg." + error;
+                }
+            }
+            if (message.CloseSessionReqMsg != null && message.hasOwnProperty("CloseSessionReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.CloseSessionReq.verify(message.CloseSessionReqMsg);
+                    if (error)
+                        return "CloseSessionReqMsg." + error;
+                }
+            }
+            if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.CloseSessionResp.verify(message.CloseSessionRespMsg);
+                    if (error)
+                        return "CloseSessionRespMsg." + error;
+                }
+            }
+            if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.AliveCheckReq.verify(message.AliveCheckReqMsg);
+                    if (error)
+                        return "AliveCheckReqMsg." + error;
+                }
+            }
+            if (message.AliveCheckRespMsg != null && message.hasOwnProperty("AliveCheckRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.AliveCheckResp.verify(message.AliveCheckRespMsg);
+                    if (error)
+                        return "AliveCheckRespMsg." + error;
+                }
+            }
+            return null;
+        };
+
+        BasilServerMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.BasilServerMessage)
+                return object;
+            let message = new $root.BasilServer.BasilServerMessage();
+            if (object.IdentifyDisplayableObjectReqMsg != null) {
+                if (typeof object.IdentifyDisplayableObjectReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.IdentifyDisplayableObjectReqMsg: object expected");
+                message.IdentifyDisplayableObjectReqMsg = $root.BasilServer.IdentifyDisplayableObjectReq.fromObject(object.IdentifyDisplayableObjectReqMsg);
+            }
+            if (object.IdentifyDisplayableObjectRespMsg != null) {
+                if (typeof object.IdentifyDisplayableObjectRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.IdentifyDisplayableObjectRespMsg: object expected");
+                message.IdentifyDisplayableObjectRespMsg = $root.BasilServer.IdentifyDisplayableObjectResp.fromObject(object.IdentifyDisplayableObjectRespMsg);
+            }
+            if (object.CreateObjectInstanceReqMsg != null) {
+                if (typeof object.CreateObjectInstanceReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.CreateObjectInstanceReqMsg: object expected");
+                message.CreateObjectInstanceReqMsg = $root.BasilServer.CreateObjectInstanceReq.fromObject(object.CreateObjectInstanceReqMsg);
+            }
+            if (object.CreateObjectInstanceRespMsg != null) {
+                if (typeof object.CreateObjectInstanceRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.CreateObjectInstanceRespMsg: object expected");
+                message.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.fromObject(object.CreateObjectInstanceRespMsg);
+            }
+            if (object.UpdateObjectPropertyReqMsg != null) {
+                if (typeof object.UpdateObjectPropertyReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.UpdateObjectPropertyReqMsg: object expected");
+                message.UpdateObjectPropertyReqMsg = $root.BasilServer.UpdateObjectPropertyReq.fromObject(object.UpdateObjectPropertyReqMsg);
+            }
+            if (object.UpdateObjectPropertyRespMsg != null) {
+                if (typeof object.UpdateObjectPropertyRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.UpdateObjectPropertyRespMsg: object expected");
+                message.UpdateObjectPropertyRespMsg = $root.BasilServer.UpdateObjectPropertyResp.fromObject(object.UpdateObjectPropertyRespMsg);
+            }
+            if (object.UpdateInstancePropertyReqMsg != null) {
+                if (typeof object.UpdateInstancePropertyReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.UpdateInstancePropertyReqMsg: object expected");
+                message.UpdateInstancePropertyReqMsg = $root.BasilServer.UpdateInstancePropertyReq.fromObject(object.UpdateInstancePropertyReqMsg);
+            }
+            if (object.UpdateInstancePropertyRespMsg != null) {
+                if (typeof object.UpdateInstancePropertyRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.UpdateInstancePropertyRespMsg: object expected");
+                message.UpdateInstancePropertyRespMsg = $root.BasilServer.UpdateInstancePropertyResp.fromObject(object.UpdateInstancePropertyRespMsg);
+            }
+            if (object.UpdateInstancePositionReqMsg != null) {
+                if (typeof object.UpdateInstancePositionReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.UpdateInstancePositionReqMsg: object expected");
+                message.UpdateInstancePositionReqMsg = $root.BasilServer.UpdateInstancePositionReq.fromObject(object.UpdateInstancePositionReqMsg);
+            }
+            if (object.UpdateInstancePositionRespMsg != null) {
+                if (typeof object.UpdateInstancePositionRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.UpdateInstancePositionRespMsg: object expected");
+                message.UpdateInstancePositionRespMsg = $root.BasilServer.UpdateInstancePositionResp.fromObject(object.UpdateInstancePositionRespMsg);
+            }
+            if (object.RequestObjectPropertiesReqMsg != null) {
+                if (typeof object.RequestObjectPropertiesReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.RequestObjectPropertiesReqMsg: object expected");
+                message.RequestObjectPropertiesReqMsg = $root.BasilServer.RequestObjectPropertiesReq.fromObject(object.RequestObjectPropertiesReqMsg);
+            }
+            if (object.RequestObjectPropertiesRespMsg != null) {
+                if (typeof object.RequestObjectPropertiesRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.RequestObjectPropertiesRespMsg: object expected");
+                message.RequestObjectPropertiesRespMsg = $root.BasilServer.RequestObjectPropertiesResp.fromObject(object.RequestObjectPropertiesRespMsg);
+            }
+            if (object.RequestInstancePropertiesReqMsg != null) {
+                if (typeof object.RequestInstancePropertiesReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.RequestInstancePropertiesReqMsg: object expected");
+                message.RequestInstancePropertiesReqMsg = $root.BasilServer.RequestInstancePropertiesReq.fromObject(object.RequestInstancePropertiesReqMsg);
+            }
+            if (object.RequestInstancePropertiesRespMsg != null) {
+                if (typeof object.RequestInstancePropertiesRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.RequestInstancePropertiesRespMsg: object expected");
+                message.RequestInstancePropertiesRespMsg = $root.BasilServer.RequestInstancePropertiesResp.fromObject(object.RequestInstancePropertiesRespMsg);
+            }
+            if (object.OpenSessionReqMsg != null) {
+                if (typeof object.OpenSessionReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.OpenSessionReqMsg: object expected");
+                message.OpenSessionReqMsg = $root.BasilServer.OpenSessionReq.fromObject(object.OpenSessionReqMsg);
+            }
+            if (object.OpenSessionRespMsg != null) {
+                if (typeof object.OpenSessionRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.OpenSessionRespMsg: object expected");
+                message.OpenSessionRespMsg = $root.BasilServer.OpenSessionResp.fromObject(object.OpenSessionRespMsg);
+            }
+            if (object.CloseSessionReqMsg != null) {
+                if (typeof object.CloseSessionReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.CloseSessionReqMsg: object expected");
+                message.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.fromObject(object.CloseSessionReqMsg);
+            }
+            if (object.CloseSessionRespMsg != null) {
+                if (typeof object.CloseSessionRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.CloseSessionRespMsg: object expected");
+                message.CloseSessionRespMsg = $root.BasilServer.CloseSessionResp.fromObject(object.CloseSessionRespMsg);
+            }
+            if (object.AliveCheckReqMsg != null) {
+                if (typeof object.AliveCheckReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.AliveCheckReqMsg: object expected");
+                message.AliveCheckReqMsg = $root.BasilServer.AliveCheckReq.fromObject(object.AliveCheckReqMsg);
+            }
+            if (object.AliveCheckRespMsg != null) {
+                if (typeof object.AliveCheckRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.AliveCheckRespMsg: object expected");
+                message.AliveCheckRespMsg = $root.BasilServer.AliveCheckResp.fromObject(object.AliveCheckRespMsg);
+            }
+            return message;
+        };
+
+        BasilServerMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (message.IdentifyDisplayableObjectReqMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectReqMsg")) {
+                object.IdentifyDisplayableObjectReqMsg = $root.BasilServer.IdentifyDisplayableObjectReq.toObject(message.IdentifyDisplayableObjectReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "IdentifyDisplayableObjectReqMsg";
+            }
+            if (message.IdentifyDisplayableObjectRespMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectRespMsg")) {
+                object.IdentifyDisplayableObjectRespMsg = $root.BasilServer.IdentifyDisplayableObjectResp.toObject(message.IdentifyDisplayableObjectRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "IdentifyDisplayableObjectRespMsg";
+            }
+            if (message.CreateObjectInstanceReqMsg != null && message.hasOwnProperty("CreateObjectInstanceReqMsg")) {
+                object.CreateObjectInstanceReqMsg = $root.BasilServer.CreateObjectInstanceReq.toObject(message.CreateObjectInstanceReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "CreateObjectInstanceReqMsg";
+            }
+            if (message.CreateObjectInstanceRespMsg != null && message.hasOwnProperty("CreateObjectInstanceRespMsg")) {
+                object.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.toObject(message.CreateObjectInstanceRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "CreateObjectInstanceRespMsg";
+            }
+            if (message.UpdateObjectPropertyReqMsg != null && message.hasOwnProperty("UpdateObjectPropertyReqMsg")) {
+                object.UpdateObjectPropertyReqMsg = $root.BasilServer.UpdateObjectPropertyReq.toObject(message.UpdateObjectPropertyReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "UpdateObjectPropertyReqMsg";
+            }
+            if (message.UpdateObjectPropertyRespMsg != null && message.hasOwnProperty("UpdateObjectPropertyRespMsg")) {
+                object.UpdateObjectPropertyRespMsg = $root.BasilServer.UpdateObjectPropertyResp.toObject(message.UpdateObjectPropertyRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "UpdateObjectPropertyRespMsg";
+            }
+            if (message.UpdateInstancePropertyReqMsg != null && message.hasOwnProperty("UpdateInstancePropertyReqMsg")) {
+                object.UpdateInstancePropertyReqMsg = $root.BasilServer.UpdateInstancePropertyReq.toObject(message.UpdateInstancePropertyReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "UpdateInstancePropertyReqMsg";
+            }
+            if (message.UpdateInstancePropertyRespMsg != null && message.hasOwnProperty("UpdateInstancePropertyRespMsg")) {
+                object.UpdateInstancePropertyRespMsg = $root.BasilServer.UpdateInstancePropertyResp.toObject(message.UpdateInstancePropertyRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "UpdateInstancePropertyRespMsg";
+            }
+            if (message.UpdateInstancePositionReqMsg != null && message.hasOwnProperty("UpdateInstancePositionReqMsg")) {
+                object.UpdateInstancePositionReqMsg = $root.BasilServer.UpdateInstancePositionReq.toObject(message.UpdateInstancePositionReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "UpdateInstancePositionReqMsg";
+            }
+            if (message.UpdateInstancePositionRespMsg != null && message.hasOwnProperty("UpdateInstancePositionRespMsg")) {
+                object.UpdateInstancePositionRespMsg = $root.BasilServer.UpdateInstancePositionResp.toObject(message.UpdateInstancePositionRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "UpdateInstancePositionRespMsg";
+            }
+            if (message.RequestObjectPropertiesReqMsg != null && message.hasOwnProperty("RequestObjectPropertiesReqMsg")) {
+                object.RequestObjectPropertiesReqMsg = $root.BasilServer.RequestObjectPropertiesReq.toObject(message.RequestObjectPropertiesReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "RequestObjectPropertiesReqMsg";
+            }
+            if (message.RequestObjectPropertiesRespMsg != null && message.hasOwnProperty("RequestObjectPropertiesRespMsg")) {
+                object.RequestObjectPropertiesRespMsg = $root.BasilServer.RequestObjectPropertiesResp.toObject(message.RequestObjectPropertiesRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "RequestObjectPropertiesRespMsg";
+            }
+            if (message.RequestInstancePropertiesReqMsg != null && message.hasOwnProperty("RequestInstancePropertiesReqMsg")) {
+                object.RequestInstancePropertiesReqMsg = $root.BasilServer.RequestInstancePropertiesReq.toObject(message.RequestInstancePropertiesReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "RequestInstancePropertiesReqMsg";
+            }
+            if (message.RequestInstancePropertiesRespMsg != null && message.hasOwnProperty("RequestInstancePropertiesRespMsg")) {
+                object.RequestInstancePropertiesRespMsg = $root.BasilServer.RequestInstancePropertiesResp.toObject(message.RequestInstancePropertiesRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "RequestInstancePropertiesRespMsg";
+            }
+            if (message.OpenSessionReqMsg != null && message.hasOwnProperty("OpenSessionReqMsg")) {
+                object.OpenSessionReqMsg = $root.BasilServer.OpenSessionReq.toObject(message.OpenSessionReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "OpenSessionReqMsg";
+            }
+            if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg")) {
+                object.OpenSessionRespMsg = $root.BasilServer.OpenSessionResp.toObject(message.OpenSessionRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "OpenSessionRespMsg";
+            }
+            if (message.CloseSessionReqMsg != null && message.hasOwnProperty("CloseSessionReqMsg")) {
+                object.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.toObject(message.CloseSessionReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "CloseSessionReqMsg";
+            }
+            if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg")) {
+                object.CloseSessionRespMsg = $root.BasilServer.CloseSessionResp.toObject(message.CloseSessionRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "CloseSessionRespMsg";
+            }
+            if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg")) {
+                object.AliveCheckReqMsg = $root.BasilServer.AliveCheckReq.toObject(message.AliveCheckReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "AliveCheckReqMsg";
+            }
+            if (message.AliveCheckRespMsg != null && message.hasOwnProperty("AliveCheckRespMsg")) {
+                object.AliveCheckRespMsg = $root.BasilServer.AliveCheckResp.toObject(message.AliveCheckRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "AliveCheckRespMsg";
+            }
+            return object;
+        };
+
+        BasilServerMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return BasilServerMessage;
+    })();
+
+    BasilServer.BasilServer = (function() {
+
         function BasilServer(rpcImpl, requestDelimited, responseDelimited) {
             $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
         }
 
         (BasilServer.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = BasilServer;
 
-        /**
-         * Creates new BasilServer service using the specified rpc implementation.
-         * @function create
-         * @memberof Basil.BasilServer
-         * @static
-         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
-         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
-         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
-         * @returns {BasilServer} RPC service. Useful where requests and/or responses are streamed.
-         */
         BasilServer.create = function create(rpcImpl, requestDelimited, responseDelimited) {
             return new this(rpcImpl, requestDelimited, responseDelimited);
         };
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#identifyDisplayableObject}.
-         * @memberof Basil.BasilServer
-         * @typedef IdentifyDisplayableObjectCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.IdentifyDisplayableObjectResp} [response] IdentifyDisplayableObjectResp
-         */
 
-        /**
-         * Calls IdentifyDisplayableObject.
-         * @function identifyDisplayableObject
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IIdentifyDisplayableObjectReq} request IdentifyDisplayableObjectReq message or plain object
-         * @param {Basil.BasilServer.IdentifyDisplayableObjectCallback} callback Node-style callback called with the error, if any, and IdentifyDisplayableObjectResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.identifyDisplayableObject = function identifyDisplayableObject(request, callback) {
-            return this.rpcCall(identifyDisplayableObject, $root.Basil.IdentifyDisplayableObjectReq, $root.Basil.IdentifyDisplayableObjectResp, request, callback);
+            return this.rpcCall(identifyDisplayableObject, $root.BasilServer.IdentifyDisplayableObjectReq, $root.BasilServer.IdentifyDisplayableObjectResp, request, callback);
         };
 
-        /**
-         * Calls IdentifyDisplayableObject.
-         * @function identifyDisplayableObject
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IIdentifyDisplayableObjectReq} request IdentifyDisplayableObjectReq message or plain object
-         * @returns {Promise<Basil.IdentifyDisplayableObjectResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#createObjectInstance}.
-         * @memberof Basil.BasilServer
-         * @typedef CreateObjectInstanceCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.CreateObjectInstanceResp} [response] CreateObjectInstanceResp
-         */
-
-        /**
-         * Calls CreateObjectInstance.
-         * @function createObjectInstance
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.ICreateObjectInstanceReq} request CreateObjectInstanceReq message or plain object
-         * @param {Basil.BasilServer.CreateObjectInstanceCallback} callback Node-style callback called with the error, if any, and CreateObjectInstanceResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.createObjectInstance = function createObjectInstance(request, callback) {
-            return this.rpcCall(createObjectInstance, $root.Basil.CreateObjectInstanceReq, $root.Basil.CreateObjectInstanceResp, request, callback);
+            return this.rpcCall(createObjectInstance, $root.BasilServer.CreateObjectInstanceReq, $root.BasilServer.CreateObjectInstanceResp, request, callback);
         };
 
-        /**
-         * Calls CreateObjectInstance.
-         * @function createObjectInstance
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.ICreateObjectInstanceReq} request CreateObjectInstanceReq message or plain object
-         * @returns {Promise<Basil.CreateObjectInstanceResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#updateObjectProperty}.
-         * @memberof Basil.BasilServer
-         * @typedef UpdateObjectPropertyCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.UpdateObjectPropertyResp} [response] UpdateObjectPropertyResp
-         */
-
-        /**
-         * Calls UpdateObjectProperty.
-         * @function updateObjectProperty
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IUpdateObjectPropertyReq} request UpdateObjectPropertyReq message or plain object
-         * @param {Basil.BasilServer.UpdateObjectPropertyCallback} callback Node-style callback called with the error, if any, and UpdateObjectPropertyResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.updateObjectProperty = function updateObjectProperty(request, callback) {
-            return this.rpcCall(updateObjectProperty, $root.Basil.UpdateObjectPropertyReq, $root.Basil.UpdateObjectPropertyResp, request, callback);
+            return this.rpcCall(updateObjectProperty, $root.BasilServer.UpdateObjectPropertyReq, $root.BasilServer.UpdateObjectPropertyResp, request, callback);
         };
 
-        /**
-         * Calls UpdateObjectProperty.
-         * @function updateObjectProperty
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IUpdateObjectPropertyReq} request UpdateObjectPropertyReq message or plain object
-         * @returns {Promise<Basil.UpdateObjectPropertyResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#updateInstanceProperty}.
-         * @memberof Basil.BasilServer
-         * @typedef UpdateInstancePropertyCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.UpdateInstancePropertyResp} [response] UpdateInstancePropertyResp
-         */
-
-        /**
-         * Calls UpdateInstanceProperty.
-         * @function updateInstanceProperty
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IUpdateInstancePropertyReq} request UpdateInstancePropertyReq message or plain object
-         * @param {Basil.BasilServer.UpdateInstancePropertyCallback} callback Node-style callback called with the error, if any, and UpdateInstancePropertyResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.updateInstanceProperty = function updateInstanceProperty(request, callback) {
-            return this.rpcCall(updateInstanceProperty, $root.Basil.UpdateInstancePropertyReq, $root.Basil.UpdateInstancePropertyResp, request, callback);
+            return this.rpcCall(updateInstanceProperty, $root.BasilServer.UpdateInstancePropertyReq, $root.BasilServer.UpdateInstancePropertyResp, request, callback);
         };
 
-        /**
-         * Calls UpdateInstanceProperty.
-         * @function updateInstanceProperty
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IUpdateInstancePropertyReq} request UpdateInstancePropertyReq message or plain object
-         * @returns {Promise<Basil.UpdateInstancePropertyResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#updateInstancePosition}.
-         * @memberof Basil.BasilServer
-         * @typedef UpdateInstancePositionCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.UpdateInstancePositionResp} [response] UpdateInstancePositionResp
-         */
-
-        /**
-         * Calls UpdateInstancePosition.
-         * @function updateInstancePosition
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IUpdateInstancePositionReq} request UpdateInstancePositionReq message or plain object
-         * @param {Basil.BasilServer.UpdateInstancePositionCallback} callback Node-style callback called with the error, if any, and UpdateInstancePositionResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.updateInstancePosition = function updateInstancePosition(request, callback) {
-            return this.rpcCall(updateInstancePosition, $root.Basil.UpdateInstancePositionReq, $root.Basil.UpdateInstancePositionResp, request, callback);
+            return this.rpcCall(updateInstancePosition, $root.BasilServer.UpdateInstancePositionReq, $root.BasilServer.UpdateInstancePositionResp, request, callback);
         };
 
-        /**
-         * Calls UpdateInstancePosition.
-         * @function updateInstancePosition
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IUpdateInstancePositionReq} request UpdateInstancePositionReq message or plain object
-         * @returns {Promise<Basil.UpdateInstancePositionResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#requestObjectProperties}.
-         * @memberof Basil.BasilServer
-         * @typedef RequestObjectPropertiesCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.RequestObjectPropertiesResp} [response] RequestObjectPropertiesResp
-         */
-
-        /**
-         * Calls RequestObjectProperties.
-         * @function requestObjectProperties
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IRequestObjectPropertiesReq} request RequestObjectPropertiesReq message or plain object
-         * @param {Basil.BasilServer.RequestObjectPropertiesCallback} callback Node-style callback called with the error, if any, and RequestObjectPropertiesResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.requestObjectProperties = function requestObjectProperties(request, callback) {
-            return this.rpcCall(requestObjectProperties, $root.Basil.RequestObjectPropertiesReq, $root.Basil.RequestObjectPropertiesResp, request, callback);
+            return this.rpcCall(requestObjectProperties, $root.BasilServer.RequestObjectPropertiesReq, $root.BasilServer.RequestObjectPropertiesResp, request, callback);
         };
 
-        /**
-         * Calls RequestObjectProperties.
-         * @function requestObjectProperties
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IRequestObjectPropertiesReq} request RequestObjectPropertiesReq message or plain object
-         * @returns {Promise<Basil.RequestObjectPropertiesResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#requestInstanceProperties}.
-         * @memberof Basil.BasilServer
-         * @typedef RequestInstancePropertiesCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.RequestInstancePropertiesResp} [response] RequestInstancePropertiesResp
-         */
-
-        /**
-         * Calls RequestInstanceProperties.
-         * @function requestInstanceProperties
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IRequestInstancePropertiesReq} request RequestInstancePropertiesReq message or plain object
-         * @param {Basil.BasilServer.RequestInstancePropertiesCallback} callback Node-style callback called with the error, if any, and RequestInstancePropertiesResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.requestInstanceProperties = function requestInstanceProperties(request, callback) {
-            return this.rpcCall(requestInstanceProperties, $root.Basil.RequestInstancePropertiesReq, $root.Basil.RequestInstancePropertiesResp, request, callback);
+            return this.rpcCall(requestInstanceProperties, $root.BasilServer.RequestInstancePropertiesReq, $root.BasilServer.RequestInstancePropertiesResp, request, callback);
         };
 
-        /**
-         * Calls RequestInstanceProperties.
-         * @function requestInstanceProperties
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IRequestInstancePropertiesReq} request RequestInstancePropertiesReq message or plain object
-         * @returns {Promise<Basil.RequestInstancePropertiesResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#openSession}.
-         * @memberof Basil.BasilServer
-         * @typedef OpenSessionCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.OpenSessionResp} [response] OpenSessionResp
-         */
-
-        /**
-         * Calls OpenSession.
-         * @function openSession
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IOpenSessionReq} request OpenSessionReq message or plain object
-         * @param {Basil.BasilServer.OpenSessionCallback} callback Node-style callback called with the error, if any, and OpenSessionResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.openSession = function openSession(request, callback) {
-            return this.rpcCall(openSession, $root.Basil.OpenSessionReq, $root.Basil.OpenSessionResp, request, callback);
+            return this.rpcCall(openSession, $root.BasilServer.OpenSessionReq, $root.BasilServer.OpenSessionResp, request, callback);
         };
 
-        /**
-         * Calls OpenSession.
-         * @function openSession
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IOpenSessionReq} request OpenSessionReq message or plain object
-         * @returns {Promise<Basil.OpenSessionResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#closeSession}.
-         * @memberof Basil.BasilServer
-         * @typedef CloseSessionCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.CloseSessionResp} [response] CloseSessionResp
-         */
-
-        /**
-         * Calls CloseSession.
-         * @function closeSession
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.ICloseSessionReq} request CloseSessionReq message or plain object
-         * @param {Basil.BasilServer.CloseSessionCallback} callback Node-style callback called with the error, if any, and CloseSessionResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.closeSession = function closeSession(request, callback) {
-            return this.rpcCall(closeSession, $root.Basil.CloseSessionReq, $root.Basil.CloseSessionResp, request, callback);
+            return this.rpcCall(closeSession, $root.BasilServer.CloseSessionReq, $root.BasilServer.CloseSessionResp, request, callback);
         };
 
-        /**
-         * Calls CloseSession.
-         * @function closeSession
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.ICloseSessionReq} request CloseSessionReq message or plain object
-         * @returns {Promise<Basil.CloseSessionResp>} Promise
-         * @variation 2
-         */
 
-        /**
-         * Callback as used by {@link Basil.BasilServer#aliveCheck}.
-         * @memberof Basil.BasilServer
-         * @typedef AliveCheckCallback
-         * @type {function}
-         * @param {Error|null} error Error, if any
-         * @param {Basil.AliveCheckResp} [response] AliveCheckResp
-         */
-
-        /**
-         * Calls AliveCheck.
-         * @function aliveCheck
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IAliveCheckReq} request AliveCheckReq message or plain object
-         * @param {Basil.BasilServer.AliveCheckCallback} callback Node-style callback called with the error, if any, and AliveCheckResp
-         * @returns {undefined}
-         * @variation 1
-         */
         BasilServer.prototype.aliveCheck = function aliveCheck(request, callback) {
-            return this.rpcCall(aliveCheck, $root.Basil.AliveCheckReq, $root.Basil.AliveCheckResp, request, callback);
+            return this.rpcCall(aliveCheck, $root.BasilServer.AliveCheckReq, $root.BasilServer.AliveCheckResp, request, callback);
         };
-
-        /**
-         * Calls AliveCheck.
-         * @function aliveCheck
-         * @memberof Basil.BasilServer
-         * @instance
-         * @param {Basil.IAliveCheckReq} request AliveCheckReq message or plain object
-         * @returns {Promise<Basil.AliveCheckResp>} Promise
-         * @variation 2
-         */
 
         return BasilServer;
     })();
 
-    return Basil;
+    return BasilServer;
 })();
 
 export const BasilType = $root.BasilType = (() => {
 
-    /**
-     * Namespace BasilType.
-     * @exports BasilType
-     * @namespace
-     */
     const BasilType = {};
 
     BasilType.Vector3 = (function() {
 
-        /**
-         * Properties of a Vector3.
-         * @memberof BasilType
-         * @interface IVector3
-         * @property {number|null} [X] Vector3 X
-         * @property {number|null} [Y] Vector3 Y
-         * @property {number|null} [Z] Vector3 Z
-         */
-
-        /**
-         * Constructs a new Vector3.
-         * @memberof BasilType
-         * @classdesc Represents a Vector3.
-         * @implements IVector3
-         * @constructor
-         * @param {BasilType.IVector3=} [properties] Properties to set
-         */
         function Vector3(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -5616,87 +3081,30 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * Vector3 X.
-         * @member {number} X
-         * @memberof BasilType.Vector3
-         * @instance
-         */
         Vector3.prototype.X = 0;
-
-        /**
-         * Vector3 Y.
-         * @member {number} Y
-         * @memberof BasilType.Vector3
-         * @instance
-         */
         Vector3.prototype.Y = 0;
-
-        /**
-         * Vector3 Z.
-         * @member {number} Z
-         * @memberof BasilType.Vector3
-         * @instance
-         */
         Vector3.prototype.Z = 0;
 
-        /**
-         * Creates a new Vector3 instance using the specified properties.
-         * @function create
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {BasilType.IVector3=} [properties] Properties to set
-         * @returns {BasilType.Vector3} Vector3 instance
-         */
         Vector3.create = function create(properties) {
             return new Vector3(properties);
         };
 
-        /**
-         * Encodes the specified Vector3 message. Does not implicitly {@link BasilType.Vector3.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {BasilType.IVector3} message Vector3 message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         Vector3.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.X != null && message.hasOwnProperty("X"))
-                writer.uint32(/* id 1, wireType 1 =*/9).double(message.X);
+                writer.uint32(9).double(message.X);
             if (message.Y != null && message.hasOwnProperty("Y"))
-                writer.uint32(/* id 2, wireType 1 =*/17).double(message.Y);
+                writer.uint32(17).double(message.Y);
             if (message.Z != null && message.hasOwnProperty("Z"))
-                writer.uint32(/* id 3, wireType 1 =*/25).double(message.Z);
+                writer.uint32(25).double(message.Z);
             return writer;
         };
 
-        /**
-         * Encodes the specified Vector3 message, length delimited. Does not implicitly {@link BasilType.Vector3.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {BasilType.IVector3} message Vector3 message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         Vector3.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a Vector3 message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.Vector3} Vector3
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         Vector3.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -5721,30 +3129,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a Vector3 message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.Vector3} Vector3
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         Vector3.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a Vector3 message.
-         * @function verify
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         Vector3.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -5760,14 +3150,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a Vector3 message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.Vector3} Vector3
-         */
         Vector3.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.Vector3)
                 return object;
@@ -5781,15 +3163,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a Vector3 message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.Vector3
-         * @static
-         * @param {BasilType.Vector3} message Vector3
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         Vector3.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -5808,13 +3181,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this Vector3 to JSON.
-         * @function toJSON
-         * @memberof BasilType.Vector3
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         Vector3.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -5824,24 +3190,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.Quaternion = (function() {
 
-        /**
-         * Properties of a Quaternion.
-         * @memberof BasilType
-         * @interface IQuaternion
-         * @property {number|null} [X] Quaternion X
-         * @property {number|null} [Y] Quaternion Y
-         * @property {number|null} [Z] Quaternion Z
-         * @property {number|null} [W] Quaternion W
-         */
-
-        /**
-         * Constructs a new Quaternion.
-         * @memberof BasilType
-         * @classdesc Represents a Quaternion.
-         * @implements IQuaternion
-         * @constructor
-         * @param {BasilType.IQuaternion=} [properties] Properties to set
-         */
         function Quaternion(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -5849,97 +3197,33 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * Quaternion X.
-         * @member {number} X
-         * @memberof BasilType.Quaternion
-         * @instance
-         */
         Quaternion.prototype.X = 0;
-
-        /**
-         * Quaternion Y.
-         * @member {number} Y
-         * @memberof BasilType.Quaternion
-         * @instance
-         */
         Quaternion.prototype.Y = 0;
-
-        /**
-         * Quaternion Z.
-         * @member {number} Z
-         * @memberof BasilType.Quaternion
-         * @instance
-         */
         Quaternion.prototype.Z = 0;
-
-        /**
-         * Quaternion W.
-         * @member {number} W
-         * @memberof BasilType.Quaternion
-         * @instance
-         */
         Quaternion.prototype.W = 0;
 
-        /**
-         * Creates a new Quaternion instance using the specified properties.
-         * @function create
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {BasilType.IQuaternion=} [properties] Properties to set
-         * @returns {BasilType.Quaternion} Quaternion instance
-         */
         Quaternion.create = function create(properties) {
             return new Quaternion(properties);
         };
 
-        /**
-         * Encodes the specified Quaternion message. Does not implicitly {@link BasilType.Quaternion.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {BasilType.IQuaternion} message Quaternion message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         Quaternion.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.X != null && message.hasOwnProperty("X"))
-                writer.uint32(/* id 1, wireType 1 =*/9).double(message.X);
+                writer.uint32(9).double(message.X);
             if (message.Y != null && message.hasOwnProperty("Y"))
-                writer.uint32(/* id 2, wireType 1 =*/17).double(message.Y);
+                writer.uint32(17).double(message.Y);
             if (message.Z != null && message.hasOwnProperty("Z"))
-                writer.uint32(/* id 3, wireType 1 =*/25).double(message.Z);
+                writer.uint32(25).double(message.Z);
             if (message.W != null && message.hasOwnProperty("W"))
-                writer.uint32(/* id 4, wireType 1 =*/33).double(message.W);
+                writer.uint32(33).double(message.W);
             return writer;
         };
 
-        /**
-         * Encodes the specified Quaternion message, length delimited. Does not implicitly {@link BasilType.Quaternion.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {BasilType.IQuaternion} message Quaternion message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         Quaternion.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a Quaternion message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.Quaternion} Quaternion
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         Quaternion.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -5967,30 +3251,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a Quaternion message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.Quaternion} Quaternion
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         Quaternion.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a Quaternion message.
-         * @function verify
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         Quaternion.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -6009,14 +3275,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a Quaternion message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.Quaternion} Quaternion
-         */
         Quaternion.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.Quaternion)
                 return object;
@@ -6032,15 +3290,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a Quaternion message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.Quaternion
-         * @static
-         * @param {BasilType.Quaternion} message Quaternion
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         Quaternion.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -6062,13 +3311,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this Quaternion to JSON.
-         * @function toJSON
-         * @memberof BasilType.Quaternion
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         Quaternion.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -6078,22 +3320,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.Transform = (function() {
 
-        /**
-         * Properties of a Transform.
-         * @memberof BasilType
-         * @interface ITransform
-         * @property {Array.<number>|null} [matrix] Transform matrix
-         * @property {BasilType.IVector3|null} [origin] Transform origin
-         */
-
-        /**
-         * Constructs a new Transform.
-         * @memberof BasilType
-         * @classdesc Represents a Transform.
-         * @implements ITransform
-         * @constructor
-         * @param {BasilType.ITransform=} [properties] Properties to set
-         */
         function Transform(properties) {
             this.matrix = [];
             if (properties)
@@ -6102,81 +3328,31 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * Transform matrix.
-         * @member {Array.<number>} matrix
-         * @memberof BasilType.Transform
-         * @instance
-         */
         Transform.prototype.matrix = $util.emptyArray;
-
-        /**
-         * Transform origin.
-         * @member {BasilType.IVector3|null|undefined} origin
-         * @memberof BasilType.Transform
-         * @instance
-         */
         Transform.prototype.origin = null;
 
-        /**
-         * Creates a new Transform instance using the specified properties.
-         * @function create
-         * @memberof BasilType.Transform
-         * @static
-         * @param {BasilType.ITransform=} [properties] Properties to set
-         * @returns {BasilType.Transform} Transform instance
-         */
         Transform.create = function create(properties) {
             return new Transform(properties);
         };
 
-        /**
-         * Encodes the specified Transform message. Does not implicitly {@link BasilType.Transform.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.Transform
-         * @static
-         * @param {BasilType.ITransform} message Transform message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         Transform.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.matrix != null && message.matrix.length) {
-                writer.uint32(/* id 1, wireType 2 =*/10).fork();
+                writer.uint32(10).fork();
                 for (let i = 0; i < message.matrix.length; ++i)
                     writer.double(message.matrix[i]);
                 writer.ldelim();
             }
             if (message.origin != null && message.hasOwnProperty("origin"))
-                $root.BasilType.Vector3.encode(message.origin, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.Vector3.encode(message.origin, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified Transform message, length delimited. Does not implicitly {@link BasilType.Transform.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.Transform
-         * @static
-         * @param {BasilType.ITransform} message Transform message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         Transform.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a Transform message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.Transform
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.Transform} Transform
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         Transform.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -6205,30 +3381,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a Transform message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.Transform
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.Transform} Transform
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         Transform.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a Transform message.
-         * @function verify
-         * @memberof BasilType.Transform
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         Transform.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -6247,14 +3405,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a Transform message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.Transform
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.Transform} Transform
-         */
         Transform.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.Transform)
                 return object;
@@ -6274,15 +3424,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a Transform message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.Transform
-         * @static
-         * @param {BasilType.Transform} message Transform
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         Transform.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -6301,13 +3442,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this Transform to JSON.
-         * @function toJSON
-         * @memberof BasilType.Transform
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         Transform.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -6317,21 +3451,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.PropertyList = (function() {
 
-        /**
-         * Properties of a PropertyList.
-         * @memberof BasilType
-         * @interface IPropertyList
-         * @property {Object.<string,string>|null} [list] PropertyList list
-         */
-
-        /**
-         * Constructs a new PropertyList.
-         * @memberof BasilType
-         * @classdesc Represents a PropertyList.
-         * @implements IPropertyList
-         * @constructor
-         * @param {BasilType.IPropertyList=} [properties] Properties to set
-         */
         function PropertyList(properties) {
             this.list = {};
             if (properties)
@@ -6340,68 +3459,25 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * PropertyList list.
-         * @member {Object.<string,string>} list
-         * @memberof BasilType.PropertyList
-         * @instance
-         */
         PropertyList.prototype.list = $util.emptyObject;
 
-        /**
-         * Creates a new PropertyList instance using the specified properties.
-         * @function create
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {BasilType.IPropertyList=} [properties] Properties to set
-         * @returns {BasilType.PropertyList} PropertyList instance
-         */
         PropertyList.create = function create(properties) {
             return new PropertyList(properties);
         };
 
-        /**
-         * Encodes the specified PropertyList message. Does not implicitly {@link BasilType.PropertyList.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {BasilType.IPropertyList} message PropertyList message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         PropertyList.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.list != null && message.hasOwnProperty("list"))
                 for (let keys = Object.keys(message.list), i = 0; i < keys.length; ++i)
-                    writer.uint32(/* id 1, wireType 2 =*/10).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.list[keys[i]]).ldelim();
+                    writer.uint32(10).fork().uint32(10).string(keys[i]).uint32(18).string(message.list[keys[i]]).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified PropertyList message, length delimited. Does not implicitly {@link BasilType.PropertyList.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {BasilType.IPropertyList} message PropertyList message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         PropertyList.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a PropertyList message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.PropertyList} PropertyList
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         PropertyList.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -6425,30 +3501,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a PropertyList message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.PropertyList} PropertyList
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         PropertyList.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a PropertyList message.
-         * @function verify
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         PropertyList.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -6463,14 +3521,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a PropertyList message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.PropertyList} PropertyList
-         */
         PropertyList.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.PropertyList)
                 return object;
@@ -6485,15 +3535,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a PropertyList message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.PropertyList
-         * @static
-         * @param {BasilType.PropertyList} message PropertyList
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         PropertyList.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -6509,13 +3550,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this PropertyList to JSON.
-         * @function toJSON
-         * @memberof BasilType.PropertyList
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         PropertyList.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -6525,22 +3559,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.BasilException = (function() {
 
-        /**
-         * Properties of a BasilException.
-         * @memberof BasilType
-         * @interface IBasilException
-         * @property {number|null} [reason] BasilException reason
-         * @property {Object.<string,string>|null} [hints] BasilException hints
-         */
-
-        /**
-         * Constructs a new BasilException.
-         * @memberof BasilType
-         * @classdesc Represents a BasilException.
-         * @implements IBasilException
-         * @constructor
-         * @param {BasilType.IBasilException=} [properties] Properties to set
-         */
         function BasilException(properties) {
             this.hints = {};
             if (properties)
@@ -6549,78 +3567,28 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * BasilException reason.
-         * @member {number} reason
-         * @memberof BasilType.BasilException
-         * @instance
-         */
         BasilException.prototype.reason = 0;
-
-        /**
-         * BasilException hints.
-         * @member {Object.<string,string>} hints
-         * @memberof BasilType.BasilException
-         * @instance
-         */
         BasilException.prototype.hints = $util.emptyObject;
 
-        /**
-         * Creates a new BasilException instance using the specified properties.
-         * @function create
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {BasilType.IBasilException=} [properties] Properties to set
-         * @returns {BasilType.BasilException} BasilException instance
-         */
         BasilException.create = function create(properties) {
             return new BasilException(properties);
         };
 
-        /**
-         * Encodes the specified BasilException message. Does not implicitly {@link BasilType.BasilException.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {BasilType.IBasilException} message BasilException message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         BasilException.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.reason != null && message.hasOwnProperty("reason"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.reason);
+                writer.uint32(8).int32(message.reason);
             if (message.hints != null && message.hasOwnProperty("hints"))
                 for (let keys = Object.keys(message.hints), i = 0; i < keys.length; ++i)
-                    writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.hints[keys[i]]).ldelim();
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.hints[keys[i]]).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified BasilException message, length delimited. Does not implicitly {@link BasilType.BasilException.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {BasilType.IBasilException} message BasilException message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         BasilException.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a BasilException message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.BasilException} BasilException
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         BasilException.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -6647,30 +3615,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a BasilException message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.BasilException} BasilException
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         BasilException.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a BasilException message.
-         * @function verify
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         BasilException.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -6688,14 +3638,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a BasilException message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.BasilException} BasilException
-         */
         BasilException.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.BasilException)
                 return object;
@@ -6712,15 +3654,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a BasilException message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.BasilException
-         * @static
-         * @param {BasilType.BasilException} message BasilException
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         BasilException.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -6740,13 +3673,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this BasilException to JSON.
-         * @function toJSON
-         * @memberof BasilType.BasilException
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         BasilException.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -6754,20 +3680,6 @@ export const BasilType = $root.BasilType = (() => {
         return BasilException;
     })();
 
-    /**
-     * CoordSystem enum.
-     * @name BasilType.CoordSystem
-     * @enum {string}
-     * @property {number} WGS86=0 WGS86 value
-     * @property {number} CAMERA=1 CAMERA value
-     * @property {number} CAMERAABS=2 CAMERAABS value
-     * @property {number} VIRTUAL=3 VIRTUAL value
-     * @property {number} MOON=4 MOON value
-     * @property {number} MARS=5 MARS value
-     * @property {number} REL1=6 REL1 value
-     * @property {number} REL2=7 REL2 value
-     * @property {number} REL3=8 REL3 value
-     */
     BasilType.CoordSystem = (function() {
         const valuesById = {}, values = Object.create(valuesById);
         values[valuesById[0] = "WGS86"] = 0;
@@ -6782,14 +3694,6 @@ export const BasilType = $root.BasilType = (() => {
         return values;
     })();
 
-    /**
-     * RotationSystem enum.
-     * @name BasilType.RotationSystem
-     * @enum {string}
-     * @property {number} WORLDR=0 WORLDR value
-     * @property {number} FORR=1 FORR value
-     * @property {number} CAMERAR=2 CAMERAR value
-     */
     BasilType.RotationSystem = (function() {
         const valuesById = {}, values = Object.create(valuesById);
         values[valuesById[0] = "WORLDR"] = 0;
@@ -6800,24 +3704,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.CoordPosition = (function() {
 
-        /**
-         * Properties of a CoordPosition.
-         * @memberof BasilType
-         * @interface ICoordPosition
-         * @property {BasilType.IVector3|null} [pos] CoordPosition pos
-         * @property {BasilType.IQuaternion|null} [rot] CoordPosition rot
-         * @property {BasilType.CoordSystem|null} [posRef] CoordPosition posRef
-         * @property {BasilType.RotationSystem|null} [rotRef] CoordPosition rotRef
-         */
-
-        /**
-         * Constructs a new CoordPosition.
-         * @memberof BasilType
-         * @classdesc Represents a CoordPosition.
-         * @implements ICoordPosition
-         * @constructor
-         * @param {BasilType.ICoordPosition=} [properties] Properties to set
-         */
         function CoordPosition(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -6825,97 +3711,33 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * CoordPosition pos.
-         * @member {BasilType.IVector3|null|undefined} pos
-         * @memberof BasilType.CoordPosition
-         * @instance
-         */
         CoordPosition.prototype.pos = null;
-
-        /**
-         * CoordPosition rot.
-         * @member {BasilType.IQuaternion|null|undefined} rot
-         * @memberof BasilType.CoordPosition
-         * @instance
-         */
         CoordPosition.prototype.rot = null;
-
-        /**
-         * CoordPosition posRef.
-         * @member {BasilType.CoordSystem} posRef
-         * @memberof BasilType.CoordPosition
-         * @instance
-         */
         CoordPosition.prototype.posRef = 0;
-
-        /**
-         * CoordPosition rotRef.
-         * @member {BasilType.RotationSystem} rotRef
-         * @memberof BasilType.CoordPosition
-         * @instance
-         */
         CoordPosition.prototype.rotRef = 0;
 
-        /**
-         * Creates a new CoordPosition instance using the specified properties.
-         * @function create
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {BasilType.ICoordPosition=} [properties] Properties to set
-         * @returns {BasilType.CoordPosition} CoordPosition instance
-         */
         CoordPosition.create = function create(properties) {
             return new CoordPosition(properties);
         };
 
-        /**
-         * Encodes the specified CoordPosition message. Does not implicitly {@link BasilType.CoordPosition.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {BasilType.ICoordPosition} message CoordPosition message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CoordPosition.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.pos != null && message.hasOwnProperty("pos"))
-                $root.BasilType.Vector3.encode(message.pos, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.Vector3.encode(message.pos, writer.uint32(10).fork()).ldelim();
             if (message.rot != null && message.hasOwnProperty("rot"))
-                $root.BasilType.Quaternion.encode(message.rot, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.Quaternion.encode(message.rot, writer.uint32(18).fork()).ldelim();
             if (message.posRef != null && message.hasOwnProperty("posRef"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.posRef);
+                writer.uint32(24).int32(message.posRef);
             if (message.rotRef != null && message.hasOwnProperty("rotRef"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.rotRef);
+                writer.uint32(32).int32(message.rotRef);
             return writer;
         };
 
-        /**
-         * Encodes the specified CoordPosition message, length delimited. Does not implicitly {@link BasilType.CoordPosition.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {BasilType.ICoordPosition} message CoordPosition message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         CoordPosition.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a CoordPosition message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.CoordPosition} CoordPosition
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CoordPosition.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -6943,30 +3765,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a CoordPosition message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.CoordPosition} CoordPosition
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         CoordPosition.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a CoordPosition message.
-         * @function verify
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         CoordPosition.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -7007,14 +3811,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a CoordPosition message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.CoordPosition} CoordPosition
-         */
         CoordPosition.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.CoordPosition)
                 return object;
@@ -7084,15 +3880,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a CoordPosition message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.CoordPosition
-         * @static
-         * @param {BasilType.CoordPosition} message CoordPosition
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         CoordPosition.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -7114,13 +3901,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this CoordPosition to JSON.
-         * @function toJSON
-         * @memberof BasilType.CoordPosition
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         CoordPosition.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -7130,21 +3910,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.ObjectIdentifier = (function() {
 
-        /**
-         * Properties of an ObjectIdentifier.
-         * @memberof BasilType
-         * @interface IObjectIdentifier
-         * @property {string|null} [id] ObjectIdentifier id
-         */
-
-        /**
-         * Constructs a new ObjectIdentifier.
-         * @memberof BasilType
-         * @classdesc Represents an ObjectIdentifier.
-         * @implements IObjectIdentifier
-         * @constructor
-         * @param {BasilType.IObjectIdentifier=} [properties] Properties to set
-         */
         function ObjectIdentifier(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -7152,67 +3917,24 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * ObjectIdentifier id.
-         * @member {string} id
-         * @memberof BasilType.ObjectIdentifier
-         * @instance
-         */
         ObjectIdentifier.prototype.id = "";
 
-        /**
-         * Creates a new ObjectIdentifier instance using the specified properties.
-         * @function create
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {BasilType.IObjectIdentifier=} [properties] Properties to set
-         * @returns {BasilType.ObjectIdentifier} ObjectIdentifier instance
-         */
         ObjectIdentifier.create = function create(properties) {
             return new ObjectIdentifier(properties);
         };
 
-        /**
-         * Encodes the specified ObjectIdentifier message. Does not implicitly {@link BasilType.ObjectIdentifier.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {BasilType.IObjectIdentifier} message ObjectIdentifier message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         ObjectIdentifier.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
+                writer.uint32(10).string(message.id);
             return writer;
         };
 
-        /**
-         * Encodes the specified ObjectIdentifier message, length delimited. Does not implicitly {@link BasilType.ObjectIdentifier.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {BasilType.IObjectIdentifier} message ObjectIdentifier message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         ObjectIdentifier.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an ObjectIdentifier message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.ObjectIdentifier} ObjectIdentifier
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         ObjectIdentifier.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -7231,30 +3953,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an ObjectIdentifier message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.ObjectIdentifier} ObjectIdentifier
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         ObjectIdentifier.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an ObjectIdentifier message.
-         * @function verify
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         ObjectIdentifier.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -7264,14 +3968,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an ObjectIdentifier message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.ObjectIdentifier} ObjectIdentifier
-         */
         ObjectIdentifier.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.ObjectIdentifier)
                 return object;
@@ -7281,15 +3977,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an ObjectIdentifier message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.ObjectIdentifier
-         * @static
-         * @param {BasilType.ObjectIdentifier} message ObjectIdentifier
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         ObjectIdentifier.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -7301,13 +3988,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this ObjectIdentifier to JSON.
-         * @function toJSON
-         * @memberof BasilType.ObjectIdentifier
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         ObjectIdentifier.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -7317,21 +3997,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.InstanceIdentifier = (function() {
 
-        /**
-         * Properties of an InstanceIdentifier.
-         * @memberof BasilType
-         * @interface IInstanceIdentifier
-         * @property {number|null} [id] InstanceIdentifier id
-         */
-
-        /**
-         * Constructs a new InstanceIdentifier.
-         * @memberof BasilType
-         * @classdesc Represents an InstanceIdentifier.
-         * @implements IInstanceIdentifier
-         * @constructor
-         * @param {BasilType.IInstanceIdentifier=} [properties] Properties to set
-         */
         function InstanceIdentifier(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -7339,67 +4004,24 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * InstanceIdentifier id.
-         * @member {number} id
-         * @memberof BasilType.InstanceIdentifier
-         * @instance
-         */
         InstanceIdentifier.prototype.id = 0;
 
-        /**
-         * Creates a new InstanceIdentifier instance using the specified properties.
-         * @function create
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {BasilType.IInstanceIdentifier=} [properties] Properties to set
-         * @returns {BasilType.InstanceIdentifier} InstanceIdentifier instance
-         */
         InstanceIdentifier.create = function create(properties) {
             return new InstanceIdentifier(properties);
         };
 
-        /**
-         * Encodes the specified InstanceIdentifier message. Does not implicitly {@link BasilType.InstanceIdentifier.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {BasilType.IInstanceIdentifier} message InstanceIdentifier message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         InstanceIdentifier.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 0 =*/8).sint32(message.id);
+                writer.uint32(8).sint32(message.id);
             return writer;
         };
 
-        /**
-         * Encodes the specified InstanceIdentifier message, length delimited. Does not implicitly {@link BasilType.InstanceIdentifier.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {BasilType.IInstanceIdentifier} message InstanceIdentifier message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         InstanceIdentifier.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an InstanceIdentifier message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.InstanceIdentifier} InstanceIdentifier
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         InstanceIdentifier.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -7418,30 +4040,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an InstanceIdentifier message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.InstanceIdentifier} InstanceIdentifier
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         InstanceIdentifier.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an InstanceIdentifier message.
-         * @function verify
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         InstanceIdentifier.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -7451,14 +4055,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an InstanceIdentifier message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.InstanceIdentifier} InstanceIdentifier
-         */
         InstanceIdentifier.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.InstanceIdentifier)
                 return object;
@@ -7468,15 +4064,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an InstanceIdentifier message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.InstanceIdentifier
-         * @static
-         * @param {BasilType.InstanceIdentifier} message InstanceIdentifier
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         InstanceIdentifier.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -7488,13 +4075,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this InstanceIdentifier to JSON.
-         * @function toJSON
-         * @memberof BasilType.InstanceIdentifier
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         InstanceIdentifier.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -7504,22 +4084,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.AaBoundingBox = (function() {
 
-        /**
-         * Properties of an AaBoundingBox.
-         * @memberof BasilType
-         * @interface IAaBoundingBox
-         * @property {BasilType.IVector3|null} [upperFrontLeft] AaBoundingBox upperFrontLeft
-         * @property {BasilType.IVector3|null} [lowerBackRight] AaBoundingBox lowerBackRight
-         */
-
-        /**
-         * Constructs a new AaBoundingBox.
-         * @memberof BasilType
-         * @classdesc Represents an AaBoundingBox.
-         * @implements IAaBoundingBox
-         * @constructor
-         * @param {BasilType.IAaBoundingBox=} [properties] Properties to set
-         */
         function AaBoundingBox(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -7527,77 +4091,27 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * AaBoundingBox upperFrontLeft.
-         * @member {BasilType.IVector3|null|undefined} upperFrontLeft
-         * @memberof BasilType.AaBoundingBox
-         * @instance
-         */
         AaBoundingBox.prototype.upperFrontLeft = null;
-
-        /**
-         * AaBoundingBox lowerBackRight.
-         * @member {BasilType.IVector3|null|undefined} lowerBackRight
-         * @memberof BasilType.AaBoundingBox
-         * @instance
-         */
         AaBoundingBox.prototype.lowerBackRight = null;
 
-        /**
-         * Creates a new AaBoundingBox instance using the specified properties.
-         * @function create
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {BasilType.IAaBoundingBox=} [properties] Properties to set
-         * @returns {BasilType.AaBoundingBox} AaBoundingBox instance
-         */
         AaBoundingBox.create = function create(properties) {
             return new AaBoundingBox(properties);
         };
 
-        /**
-         * Encodes the specified AaBoundingBox message. Does not implicitly {@link BasilType.AaBoundingBox.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {BasilType.IAaBoundingBox} message AaBoundingBox message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AaBoundingBox.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.upperFrontLeft != null && message.hasOwnProperty("upperFrontLeft"))
-                $root.BasilType.Vector3.encode(message.upperFrontLeft, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.Vector3.encode(message.upperFrontLeft, writer.uint32(10).fork()).ldelim();
             if (message.lowerBackRight != null && message.hasOwnProperty("lowerBackRight"))
-                $root.BasilType.Vector3.encode(message.lowerBackRight, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.Vector3.encode(message.lowerBackRight, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified AaBoundingBox message, length delimited. Does not implicitly {@link BasilType.AaBoundingBox.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {BasilType.IAaBoundingBox} message AaBoundingBox message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AaBoundingBox.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an AaBoundingBox message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.AaBoundingBox} AaBoundingBox
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AaBoundingBox.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -7619,30 +4133,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an AaBoundingBox message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.AaBoundingBox} AaBoundingBox
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AaBoundingBox.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an AaBoundingBox message.
-         * @function verify
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         AaBoundingBox.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -7659,14 +4155,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an AaBoundingBox message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.AaBoundingBox} AaBoundingBox
-         */
         AaBoundingBox.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.AaBoundingBox)
                 return object;
@@ -7684,15 +4172,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an AaBoundingBox message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.AaBoundingBox
-         * @static
-         * @param {BasilType.AaBoundingBox} message AaBoundingBox
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         AaBoundingBox.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -7708,13 +4187,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this AaBoundingBox to JSON.
-         * @function toJSON
-         * @memberof BasilType.AaBoundingBox
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         AaBoundingBox.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -7724,21 +4196,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.ObjectDisplayInfo = (function() {
 
-        /**
-         * Properties of an ObjectDisplayInfo.
-         * @memberof BasilType
-         * @interface IObjectDisplayInfo
-         * @property {BasilType.IAaBoundingBox|null} [aabb] ObjectDisplayInfo aabb
-         */
-
-        /**
-         * Constructs a new ObjectDisplayInfo.
-         * @memberof BasilType
-         * @classdesc Represents an ObjectDisplayInfo.
-         * @implements IObjectDisplayInfo
-         * @constructor
-         * @param {BasilType.IObjectDisplayInfo=} [properties] Properties to set
-         */
         function ObjectDisplayInfo(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -7746,67 +4203,24 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * ObjectDisplayInfo aabb.
-         * @member {BasilType.IAaBoundingBox|null|undefined} aabb
-         * @memberof BasilType.ObjectDisplayInfo
-         * @instance
-         */
         ObjectDisplayInfo.prototype.aabb = null;
 
-        /**
-         * Creates a new ObjectDisplayInfo instance using the specified properties.
-         * @function create
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {BasilType.IObjectDisplayInfo=} [properties] Properties to set
-         * @returns {BasilType.ObjectDisplayInfo} ObjectDisplayInfo instance
-         */
         ObjectDisplayInfo.create = function create(properties) {
             return new ObjectDisplayInfo(properties);
         };
 
-        /**
-         * Encodes the specified ObjectDisplayInfo message. Does not implicitly {@link BasilType.ObjectDisplayInfo.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {BasilType.IObjectDisplayInfo} message ObjectDisplayInfo message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         ObjectDisplayInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.aabb != null && message.hasOwnProperty("aabb"))
-                $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified ObjectDisplayInfo message, length delimited. Does not implicitly {@link BasilType.ObjectDisplayInfo.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {BasilType.IObjectDisplayInfo} message ObjectDisplayInfo message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         ObjectDisplayInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an ObjectDisplayInfo message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.ObjectDisplayInfo} ObjectDisplayInfo
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         ObjectDisplayInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -7825,30 +4239,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an ObjectDisplayInfo message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.ObjectDisplayInfo} ObjectDisplayInfo
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         ObjectDisplayInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an ObjectDisplayInfo message.
-         * @function verify
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         ObjectDisplayInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -7860,14 +4256,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an ObjectDisplayInfo message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.ObjectDisplayInfo} ObjectDisplayInfo
-         */
         ObjectDisplayInfo.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.ObjectDisplayInfo)
                 return object;
@@ -7880,15 +4268,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an ObjectDisplayInfo message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.ObjectDisplayInfo
-         * @static
-         * @param {BasilType.ObjectDisplayInfo} message ObjectDisplayInfo
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         ObjectDisplayInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -7900,13 +4279,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this ObjectDisplayInfo to JSON.
-         * @function toJSON
-         * @memberof BasilType.ObjectDisplayInfo
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         ObjectDisplayInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -7916,22 +4288,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.AssetInformation = (function() {
 
-        /**
-         * Properties of an AssetInformation.
-         * @memberof BasilType
-         * @interface IAssetInformation
-         * @property {BasilType.IObjectIdentifier|null} [id] AssetInformation id
-         * @property {BasilType.IObjectDisplayInfo|null} [displayInfo] AssetInformation displayInfo
-         */
-
-        /**
-         * Constructs a new AssetInformation.
-         * @memberof BasilType
-         * @classdesc Represents an AssetInformation.
-         * @implements IAssetInformation
-         * @constructor
-         * @param {BasilType.IAssetInformation=} [properties] Properties to set
-         */
         function AssetInformation(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -7939,77 +4295,27 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * AssetInformation id.
-         * @member {BasilType.IObjectIdentifier|null|undefined} id
-         * @memberof BasilType.AssetInformation
-         * @instance
-         */
         AssetInformation.prototype.id = null;
-
-        /**
-         * AssetInformation displayInfo.
-         * @member {BasilType.IObjectDisplayInfo|null|undefined} displayInfo
-         * @memberof BasilType.AssetInformation
-         * @instance
-         */
         AssetInformation.prototype.displayInfo = null;
 
-        /**
-         * Creates a new AssetInformation instance using the specified properties.
-         * @function create
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {BasilType.IAssetInformation=} [properties] Properties to set
-         * @returns {BasilType.AssetInformation} AssetInformation instance
-         */
         AssetInformation.create = function create(properties) {
             return new AssetInformation(properties);
         };
 
-        /**
-         * Encodes the specified AssetInformation message. Does not implicitly {@link BasilType.AssetInformation.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {BasilType.IAssetInformation} message AssetInformation message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AssetInformation.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && message.hasOwnProperty("id"))
-                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(10).fork()).ldelim();
             if (message.displayInfo != null && message.hasOwnProperty("displayInfo"))
-                $root.BasilType.ObjectDisplayInfo.encode(message.displayInfo, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.ObjectDisplayInfo.encode(message.displayInfo, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified AssetInformation message, length delimited. Does not implicitly {@link BasilType.AssetInformation.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {BasilType.IAssetInformation} message AssetInformation message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AssetInformation.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an AssetInformation message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.AssetInformation} AssetInformation
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AssetInformation.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -8031,30 +4337,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an AssetInformation message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.AssetInformation} AssetInformation
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AssetInformation.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an AssetInformation message.
-         * @function verify
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         AssetInformation.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -8071,14 +4359,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an AssetInformation message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.AssetInformation} AssetInformation
-         */
         AssetInformation.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.AssetInformation)
                 return object;
@@ -8096,15 +4376,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an AssetInformation message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.AssetInformation
-         * @static
-         * @param {BasilType.AssetInformation} message AssetInformation
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         AssetInformation.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -8120,13 +4391,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this AssetInformation to JSON.
-         * @function toJSON
-         * @memberof BasilType.AssetInformation
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         AssetInformation.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -8136,21 +4400,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.PathDescription = (function() {
 
-        /**
-         * Properties of a PathDescription.
-         * @memberof BasilType
-         * @interface IPathDescription
-         * @property {string|null} [pathType] PathDescription pathType
-         */
-
-        /**
-         * Constructs a new PathDescription.
-         * @memberof BasilType
-         * @classdesc Represents a PathDescription.
-         * @implements IPathDescription
-         * @constructor
-         * @param {BasilType.IPathDescription=} [properties] Properties to set
-         */
         function PathDescription(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -8158,67 +4407,24 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * PathDescription pathType.
-         * @member {string} pathType
-         * @memberof BasilType.PathDescription
-         * @instance
-         */
         PathDescription.prototype.pathType = "";
 
-        /**
-         * Creates a new PathDescription instance using the specified properties.
-         * @function create
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {BasilType.IPathDescription=} [properties] Properties to set
-         * @returns {BasilType.PathDescription} PathDescription instance
-         */
         PathDescription.create = function create(properties) {
             return new PathDescription(properties);
         };
 
-        /**
-         * Encodes the specified PathDescription message. Does not implicitly {@link BasilType.PathDescription.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {BasilType.IPathDescription} message PathDescription message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         PathDescription.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.pathType != null && message.hasOwnProperty("pathType"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.pathType);
+                writer.uint32(10).string(message.pathType);
             return writer;
         };
 
-        /**
-         * Encodes the specified PathDescription message, length delimited. Does not implicitly {@link BasilType.PathDescription.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {BasilType.IPathDescription} message PathDescription message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         PathDescription.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a PathDescription message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.PathDescription} PathDescription
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         PathDescription.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -8237,30 +4443,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a PathDescription message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.PathDescription} PathDescription
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         PathDescription.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a PathDescription message.
-         * @function verify
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         PathDescription.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -8270,14 +4458,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a PathDescription message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.PathDescription} PathDescription
-         */
         PathDescription.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.PathDescription)
                 return object;
@@ -8287,15 +4467,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a PathDescription message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.PathDescription
-         * @static
-         * @param {BasilType.PathDescription} message PathDescription
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         PathDescription.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -8307,13 +4478,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this PathDescription to JSON.
-         * @function toJSON
-         * @memberof BasilType.PathDescription
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         PathDescription.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -8323,24 +4487,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.InstancePositionInfo = (function() {
 
-        /**
-         * Properties of an InstancePositionInfo.
-         * @memberof BasilType
-         * @interface IInstancePositionInfo
-         * @property {BasilType.IInstanceIdentifier|null} [id] InstancePositionInfo id
-         * @property {BasilType.ICoordPosition|null} [pos] InstancePositionInfo pos
-         * @property {BasilType.IVector3|null} [vel] InstancePositionInfo vel
-         * @property {BasilType.IPathDescription|null} [path] InstancePositionInfo path
-         */
-
-        /**
-         * Constructs a new InstancePositionInfo.
-         * @memberof BasilType
-         * @classdesc Represents an InstancePositionInfo.
-         * @implements IInstancePositionInfo
-         * @constructor
-         * @param {BasilType.IInstancePositionInfo=} [properties] Properties to set
-         */
         function InstancePositionInfo(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -8348,97 +4494,33 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * InstancePositionInfo id.
-         * @member {BasilType.IInstanceIdentifier|null|undefined} id
-         * @memberof BasilType.InstancePositionInfo
-         * @instance
-         */
         InstancePositionInfo.prototype.id = null;
-
-        /**
-         * InstancePositionInfo pos.
-         * @member {BasilType.ICoordPosition|null|undefined} pos
-         * @memberof BasilType.InstancePositionInfo
-         * @instance
-         */
         InstancePositionInfo.prototype.pos = null;
-
-        /**
-         * InstancePositionInfo vel.
-         * @member {BasilType.IVector3|null|undefined} vel
-         * @memberof BasilType.InstancePositionInfo
-         * @instance
-         */
         InstancePositionInfo.prototype.vel = null;
-
-        /**
-         * InstancePositionInfo path.
-         * @member {BasilType.IPathDescription|null|undefined} path
-         * @memberof BasilType.InstancePositionInfo
-         * @instance
-         */
         InstancePositionInfo.prototype.path = null;
 
-        /**
-         * Creates a new InstancePositionInfo instance using the specified properties.
-         * @function create
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {BasilType.IInstancePositionInfo=} [properties] Properties to set
-         * @returns {BasilType.InstancePositionInfo} InstancePositionInfo instance
-         */
         InstancePositionInfo.create = function create(properties) {
             return new InstancePositionInfo(properties);
         };
 
-        /**
-         * Encodes the specified InstancePositionInfo message. Does not implicitly {@link BasilType.InstancePositionInfo.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {BasilType.IInstancePositionInfo} message InstancePositionInfo message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         InstancePositionInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && message.hasOwnProperty("id"))
-                $root.BasilType.InstanceIdentifier.encode(message.id, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.id, writer.uint32(10).fork()).ldelim();
             if (message.pos != null && message.hasOwnProperty("pos"))
-                $root.BasilType.CoordPosition.encode(message.pos, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.BasilType.CoordPosition.encode(message.pos, writer.uint32(18).fork()).ldelim();
             if (message.vel != null && message.hasOwnProperty("vel"))
-                $root.BasilType.Vector3.encode(message.vel, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.BasilType.Vector3.encode(message.vel, writer.uint32(26).fork()).ldelim();
             if (message.path != null && message.hasOwnProperty("path"))
-                $root.BasilType.PathDescription.encode(message.path, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.BasilType.PathDescription.encode(message.path, writer.uint32(34).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified InstancePositionInfo message, length delimited. Does not implicitly {@link BasilType.InstancePositionInfo.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {BasilType.IInstancePositionInfo} message InstancePositionInfo message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         InstancePositionInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an InstancePositionInfo message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.InstancePositionInfo} InstancePositionInfo
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         InstancePositionInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -8466,30 +4548,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an InstancePositionInfo message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.InstancePositionInfo} InstancePositionInfo
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         InstancePositionInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an InstancePositionInfo message.
-         * @function verify
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         InstancePositionInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -8516,14 +4580,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an InstancePositionInfo message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.InstancePositionInfo} InstancePositionInfo
-         */
         InstancePositionInfo.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.InstancePositionInfo)
                 return object;
@@ -8551,15 +4607,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an InstancePositionInfo message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.InstancePositionInfo
-         * @static
-         * @param {BasilType.InstancePositionInfo} message InstancePositionInfo
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         InstancePositionInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -8581,13 +4628,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this InstancePositionInfo to JSON.
-         * @function toJSON
-         * @memberof BasilType.InstancePositionInfo
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         InstancePositionInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -8597,21 +4637,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.AccessAuthorization = (function() {
 
-        /**
-         * Properties of an AccessAuthorization.
-         * @memberof BasilType
-         * @interface IAccessAuthorization
-         * @property {BasilType.IPropertyList|null} [accessProperties] AccessAuthorization accessProperties
-         */
-
-        /**
-         * Constructs a new AccessAuthorization.
-         * @memberof BasilType
-         * @classdesc Represents an AccessAuthorization.
-         * @implements IAccessAuthorization
-         * @constructor
-         * @param {BasilType.IAccessAuthorization=} [properties] Properties to set
-         */
         function AccessAuthorization(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -8619,67 +4644,24 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * AccessAuthorization accessProperties.
-         * @member {BasilType.IPropertyList|null|undefined} accessProperties
-         * @memberof BasilType.AccessAuthorization
-         * @instance
-         */
         AccessAuthorization.prototype.accessProperties = null;
 
-        /**
-         * Creates a new AccessAuthorization instance using the specified properties.
-         * @function create
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {BasilType.IAccessAuthorization=} [properties] Properties to set
-         * @returns {BasilType.AccessAuthorization} AccessAuthorization instance
-         */
         AccessAuthorization.create = function create(properties) {
             return new AccessAuthorization(properties);
         };
 
-        /**
-         * Encodes the specified AccessAuthorization message. Does not implicitly {@link BasilType.AccessAuthorization.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {BasilType.IAccessAuthorization} message AccessAuthorization message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AccessAuthorization.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.accessProperties != null && message.hasOwnProperty("accessProperties"))
-                $root.BasilType.PropertyList.encode(message.accessProperties, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.BasilType.PropertyList.encode(message.accessProperties, writer.uint32(10).fork()).ldelim();
             return writer;
         };
 
-        /**
-         * Encodes the specified AccessAuthorization message, length delimited. Does not implicitly {@link BasilType.AccessAuthorization.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {BasilType.IAccessAuthorization} message AccessAuthorization message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         AccessAuthorization.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes an AccessAuthorization message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.AccessAuthorization} AccessAuthorization
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AccessAuthorization.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -8698,30 +4680,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes an AccessAuthorization message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.AccessAuthorization} AccessAuthorization
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         AccessAuthorization.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies an AccessAuthorization message.
-         * @function verify
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         AccessAuthorization.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -8733,14 +4697,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates an AccessAuthorization message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.AccessAuthorization} AccessAuthorization
-         */
         AccessAuthorization.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.AccessAuthorization)
                 return object;
@@ -8753,15 +4709,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from an AccessAuthorization message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.AccessAuthorization
-         * @static
-         * @param {BasilType.AccessAuthorization} message AccessAuthorization
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         AccessAuthorization.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -8773,13 +4720,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this AccessAuthorization to JSON.
-         * @function toJSON
-         * @memberof BasilType.AccessAuthorization
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         AccessAuthorization.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -8789,21 +4729,6 @@ export const BasilType = $root.BasilType = (() => {
 
     BasilType.TraceInfo = (function() {
 
-        /**
-         * Properties of a TraceInfo.
-         * @memberof BasilType
-         * @interface ITraceInfo
-         * @property {string|null} [info] TraceInfo info
-         */
-
-        /**
-         * Constructs a new TraceInfo.
-         * @memberof BasilType
-         * @classdesc Represents a TraceInfo.
-         * @implements ITraceInfo
-         * @constructor
-         * @param {BasilType.ITraceInfo=} [properties] Properties to set
-         */
         function TraceInfo(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -8811,67 +4736,24 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        /**
-         * TraceInfo info.
-         * @member {string} info
-         * @memberof BasilType.TraceInfo
-         * @instance
-         */
         TraceInfo.prototype.info = "";
 
-        /**
-         * Creates a new TraceInfo instance using the specified properties.
-         * @function create
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {BasilType.ITraceInfo=} [properties] Properties to set
-         * @returns {BasilType.TraceInfo} TraceInfo instance
-         */
         TraceInfo.create = function create(properties) {
             return new TraceInfo(properties);
         };
 
-        /**
-         * Encodes the specified TraceInfo message. Does not implicitly {@link BasilType.TraceInfo.verify|verify} messages.
-         * @function encode
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {BasilType.ITraceInfo} message TraceInfo message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         TraceInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.info != null && message.hasOwnProperty("info"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.info);
+                writer.uint32(10).string(message.info);
             return writer;
         };
 
-        /**
-         * Encodes the specified TraceInfo message, length delimited. Does not implicitly {@link BasilType.TraceInfo.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {BasilType.ITraceInfo} message TraceInfo message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
         TraceInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        /**
-         * Decodes a TraceInfo message from the specified reader or buffer.
-         * @function decode
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BasilType.TraceInfo} TraceInfo
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         TraceInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
@@ -8890,30 +4772,12 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Decodes a TraceInfo message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BasilType.TraceInfo} TraceInfo
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
         TraceInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        /**
-         * Verifies a TraceInfo message.
-         * @function verify
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
         TraceInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
@@ -8923,14 +4787,6 @@ export const BasilType = $root.BasilType = (() => {
             return null;
         };
 
-        /**
-         * Creates a TraceInfo message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BasilType.TraceInfo} TraceInfo
-         */
         TraceInfo.fromObject = function fromObject(object) {
             if (object instanceof $root.BasilType.TraceInfo)
                 return object;
@@ -8940,15 +4796,6 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        /**
-         * Creates a plain object from a TraceInfo message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BasilType.TraceInfo
-         * @static
-         * @param {BasilType.TraceInfo} message TraceInfo
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
         TraceInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
@@ -8960,13 +4807,6 @@ export const BasilType = $root.BasilType = (() => {
             return object;
         };
 
-        /**
-         * Converts this TraceInfo to JSON.
-         * @function toJSON
-         * @memberof BasilType.TraceInfo
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
         TraceInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
@@ -8975,452 +4815,6 @@ export const BasilType = $root.BasilType = (() => {
     })();
 
     return BasilType;
-})();
-
-export const BTransport = $root.BTransport = (() => {
-
-    /**
-     * Namespace BTransport.
-     * @exports BTransport
-     * @namespace
-     */
-    const BTransport = {};
-
-    BTransport.BTransport = (function() {
-
-        /**
-         * Properties of a BTransport.
-         * @memberof BTransport
-         * @interface IBTransport
-         * @property {number|null} [sequenceNum] BTransport sequenceNum
-         * @property {number|null} [stream] BTransport stream
-         * @property {number|Long|null} [queueTime] BTransport queueTime
-         * @property {number|Long|null} [sendTime] BTransport sendTime
-         * @property {number|null} [requestSession] BTransport requestSession
-         * @property {number|Long|null} [traceID] BTransport traceID
-         * @property {number|Long|null} [parentSpanID] BTransport parentSpanID
-         * @property {number|Long|null} [spanID] BTransport spanID
-         * @property {boolean|null} [sampled] BTransport sampled
-         */
-
-        /**
-         * Constructs a new BTransport.
-         * @memberof BTransport
-         * @classdesc Represents a BTransport.
-         * @implements IBTransport
-         * @constructor
-         * @param {BTransport.IBTransport=} [properties] Properties to set
-         */
-        function BTransport(properties) {
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * BTransport sequenceNum.
-         * @member {number} sequenceNum
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.sequenceNum = 0;
-
-        /**
-         * BTransport stream.
-         * @member {number} stream
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.stream = 0;
-
-        /**
-         * BTransport queueTime.
-         * @member {number|Long} queueTime
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.queueTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-        /**
-         * BTransport sendTime.
-         * @member {number|Long} sendTime
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.sendTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-        /**
-         * BTransport requestSession.
-         * @member {number} requestSession
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.requestSession = 0;
-
-        /**
-         * BTransport traceID.
-         * @member {number|Long} traceID
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.traceID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-        /**
-         * BTransport parentSpanID.
-         * @member {number|Long} parentSpanID
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.parentSpanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-        /**
-         * BTransport spanID.
-         * @member {number|Long} spanID
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.spanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-        /**
-         * BTransport sampled.
-         * @member {boolean} sampled
-         * @memberof BTransport.BTransport
-         * @instance
-         */
-        BTransport.prototype.sampled = false;
-
-        /**
-         * Creates a new BTransport instance using the specified properties.
-         * @function create
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {BTransport.IBTransport=} [properties] Properties to set
-         * @returns {BTransport.BTransport} BTransport instance
-         */
-        BTransport.create = function create(properties) {
-            return new BTransport(properties);
-        };
-
-        /**
-         * Encodes the specified BTransport message. Does not implicitly {@link BTransport.BTransport.verify|verify} messages.
-         * @function encode
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {BTransport.IBTransport} message BTransport message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        BTransport.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
-                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.sequenceNum);
-            if (message.stream != null && message.hasOwnProperty("stream"))
-                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.stream);
-            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint64(message.queueTime);
-            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
-                writer.uint32(/* id 4, wireType 0 =*/32).uint64(message.sendTime);
-            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
-                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.requestSession);
-            if (message.traceID != null && message.hasOwnProperty("traceID"))
-                writer.uint32(/* id 10, wireType 0 =*/80).uint64(message.traceID);
-            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
-                writer.uint32(/* id 11, wireType 0 =*/88).uint64(message.parentSpanID);
-            if (message.spanID != null && message.hasOwnProperty("spanID"))
-                writer.uint32(/* id 12, wireType 0 =*/96).uint64(message.spanID);
-            if (message.sampled != null && message.hasOwnProperty("sampled"))
-                writer.uint32(/* id 13, wireType 0 =*/104).bool(message.sampled);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified BTransport message, length delimited. Does not implicitly {@link BTransport.BTransport.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {BTransport.IBTransport} message BTransport message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        BTransport.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a BTransport message from the specified reader or buffer.
-         * @function decode
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {BTransport.BTransport} BTransport
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        BTransport.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BTransport.BTransport();
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.sequenceNum = reader.uint32();
-                    break;
-                case 2:
-                    message.stream = reader.uint32();
-                    break;
-                case 3:
-                    message.queueTime = reader.uint64();
-                    break;
-                case 4:
-                    message.sendTime = reader.uint64();
-                    break;
-                case 5:
-                    message.requestSession = reader.uint32();
-                    break;
-                case 10:
-                    message.traceID = reader.uint64();
-                    break;
-                case 11:
-                    message.parentSpanID = reader.uint64();
-                    break;
-                case 12:
-                    message.spanID = reader.uint64();
-                    break;
-                case 13:
-                    message.sampled = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a BTransport message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {BTransport.BTransport} BTransport
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        BTransport.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a BTransport message.
-         * @function verify
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        BTransport.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
-                if (!$util.isInteger(message.sequenceNum))
-                    return "sequenceNum: integer expected";
-            if (message.stream != null && message.hasOwnProperty("stream"))
-                if (!$util.isInteger(message.stream))
-                    return "stream: integer expected";
-            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
-                if (!$util.isInteger(message.queueTime) && !(message.queueTime && $util.isInteger(message.queueTime.low) && $util.isInteger(message.queueTime.high)))
-                    return "queueTime: integer|Long expected";
-            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
-                if (!$util.isInteger(message.sendTime) && !(message.sendTime && $util.isInteger(message.sendTime.low) && $util.isInteger(message.sendTime.high)))
-                    return "sendTime: integer|Long expected";
-            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
-                if (!$util.isInteger(message.requestSession))
-                    return "requestSession: integer expected";
-            if (message.traceID != null && message.hasOwnProperty("traceID"))
-                if (!$util.isInteger(message.traceID) && !(message.traceID && $util.isInteger(message.traceID.low) && $util.isInteger(message.traceID.high)))
-                    return "traceID: integer|Long expected";
-            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
-                if (!$util.isInteger(message.parentSpanID) && !(message.parentSpanID && $util.isInteger(message.parentSpanID.low) && $util.isInteger(message.parentSpanID.high)))
-                    return "parentSpanID: integer|Long expected";
-            if (message.spanID != null && message.hasOwnProperty("spanID"))
-                if (!$util.isInteger(message.spanID) && !(message.spanID && $util.isInteger(message.spanID.low) && $util.isInteger(message.spanID.high)))
-                    return "spanID: integer|Long expected";
-            if (message.sampled != null && message.hasOwnProperty("sampled"))
-                if (typeof message.sampled !== "boolean")
-                    return "sampled: boolean expected";
-            return null;
-        };
-
-        /**
-         * Creates a BTransport message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {BTransport.BTransport} BTransport
-         */
-        BTransport.fromObject = function fromObject(object) {
-            if (object instanceof $root.BTransport.BTransport)
-                return object;
-            let message = new $root.BTransport.BTransport();
-            if (object.sequenceNum != null)
-                message.sequenceNum = object.sequenceNum >>> 0;
-            if (object.stream != null)
-                message.stream = object.stream >>> 0;
-            if (object.queueTime != null)
-                if ($util.Long)
-                    (message.queueTime = $util.Long.fromValue(object.queueTime)).unsigned = true;
-                else if (typeof object.queueTime === "string")
-                    message.queueTime = parseInt(object.queueTime, 10);
-                else if (typeof object.queueTime === "number")
-                    message.queueTime = object.queueTime;
-                else if (typeof object.queueTime === "object")
-                    message.queueTime = new $util.LongBits(object.queueTime.low >>> 0, object.queueTime.high >>> 0).toNumber(true);
-            if (object.sendTime != null)
-                if ($util.Long)
-                    (message.sendTime = $util.Long.fromValue(object.sendTime)).unsigned = true;
-                else if (typeof object.sendTime === "string")
-                    message.sendTime = parseInt(object.sendTime, 10);
-                else if (typeof object.sendTime === "number")
-                    message.sendTime = object.sendTime;
-                else if (typeof object.sendTime === "object")
-                    message.sendTime = new $util.LongBits(object.sendTime.low >>> 0, object.sendTime.high >>> 0).toNumber(true);
-            if (object.requestSession != null)
-                message.requestSession = object.requestSession >>> 0;
-            if (object.traceID != null)
-                if ($util.Long)
-                    (message.traceID = $util.Long.fromValue(object.traceID)).unsigned = true;
-                else if (typeof object.traceID === "string")
-                    message.traceID = parseInt(object.traceID, 10);
-                else if (typeof object.traceID === "number")
-                    message.traceID = object.traceID;
-                else if (typeof object.traceID === "object")
-                    message.traceID = new $util.LongBits(object.traceID.low >>> 0, object.traceID.high >>> 0).toNumber(true);
-            if (object.parentSpanID != null)
-                if ($util.Long)
-                    (message.parentSpanID = $util.Long.fromValue(object.parentSpanID)).unsigned = true;
-                else if (typeof object.parentSpanID === "string")
-                    message.parentSpanID = parseInt(object.parentSpanID, 10);
-                else if (typeof object.parentSpanID === "number")
-                    message.parentSpanID = object.parentSpanID;
-                else if (typeof object.parentSpanID === "object")
-                    message.parentSpanID = new $util.LongBits(object.parentSpanID.low >>> 0, object.parentSpanID.high >>> 0).toNumber(true);
-            if (object.spanID != null)
-                if ($util.Long)
-                    (message.spanID = $util.Long.fromValue(object.spanID)).unsigned = true;
-                else if (typeof object.spanID === "string")
-                    message.spanID = parseInt(object.spanID, 10);
-                else if (typeof object.spanID === "number")
-                    message.spanID = object.spanID;
-                else if (typeof object.spanID === "object")
-                    message.spanID = new $util.LongBits(object.spanID.low >>> 0, object.spanID.high >>> 0).toNumber(true);
-            if (object.sampled != null)
-                message.sampled = Boolean(object.sampled);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a BTransport message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof BTransport.BTransport
-         * @static
-         * @param {BTransport.BTransport} message BTransport
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        BTransport.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.defaults) {
-                object.sequenceNum = 0;
-                object.stream = 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, true);
-                    object.queueTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.queueTime = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, true);
-                    object.sendTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.sendTime = options.longs === String ? "0" : 0;
-                object.requestSession = 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, true);
-                    object.traceID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.traceID = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, true);
-                    object.parentSpanID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.parentSpanID = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, true);
-                    object.spanID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.spanID = options.longs === String ? "0" : 0;
-                object.sampled = false;
-            }
-            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
-                object.sequenceNum = message.sequenceNum;
-            if (message.stream != null && message.hasOwnProperty("stream"))
-                object.stream = message.stream;
-            if (message.queueTime != null && message.hasOwnProperty("queueTime"))
-                if (typeof message.queueTime === "number")
-                    object.queueTime = options.longs === String ? String(message.queueTime) : message.queueTime;
-                else
-                    object.queueTime = options.longs === String ? $util.Long.prototype.toString.call(message.queueTime) : options.longs === Number ? new $util.LongBits(message.queueTime.low >>> 0, message.queueTime.high >>> 0).toNumber(true) : message.queueTime;
-            if (message.sendTime != null && message.hasOwnProperty("sendTime"))
-                if (typeof message.sendTime === "number")
-                    object.sendTime = options.longs === String ? String(message.sendTime) : message.sendTime;
-                else
-                    object.sendTime = options.longs === String ? $util.Long.prototype.toString.call(message.sendTime) : options.longs === Number ? new $util.LongBits(message.sendTime.low >>> 0, message.sendTime.high >>> 0).toNumber(true) : message.sendTime;
-            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
-                object.requestSession = message.requestSession;
-            if (message.traceID != null && message.hasOwnProperty("traceID"))
-                if (typeof message.traceID === "number")
-                    object.traceID = options.longs === String ? String(message.traceID) : message.traceID;
-                else
-                    object.traceID = options.longs === String ? $util.Long.prototype.toString.call(message.traceID) : options.longs === Number ? new $util.LongBits(message.traceID.low >>> 0, message.traceID.high >>> 0).toNumber(true) : message.traceID;
-            if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
-                if (typeof message.parentSpanID === "number")
-                    object.parentSpanID = options.longs === String ? String(message.parentSpanID) : message.parentSpanID;
-                else
-                    object.parentSpanID = options.longs === String ? $util.Long.prototype.toString.call(message.parentSpanID) : options.longs === Number ? new $util.LongBits(message.parentSpanID.low >>> 0, message.parentSpanID.high >>> 0).toNumber(true) : message.parentSpanID;
-            if (message.spanID != null && message.hasOwnProperty("spanID"))
-                if (typeof message.spanID === "number")
-                    object.spanID = options.longs === String ? String(message.spanID) : message.spanID;
-                else
-                    object.spanID = options.longs === String ? $util.Long.prototype.toString.call(message.spanID) : options.longs === Number ? new $util.LongBits(message.spanID.low >>> 0, message.spanID.high >>> 0).toNumber(true) : message.spanID;
-            if (message.sampled != null && message.hasOwnProperty("sampled"))
-                object.sampled = message.sampled;
-            return object;
-        };
-
-        /**
-         * Converts this BTransport to JSON.
-         * @function toJSON
-         * @memberof BTransport.BTransport
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        BTransport.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return BTransport;
-    })();
-
-    return BTransport;
 })();
 
 export { $root as default };
