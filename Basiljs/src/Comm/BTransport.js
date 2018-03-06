@@ -29,8 +29,6 @@ export class BTransport {
         this.RCPSessionCallback = new Map();
         this.aliveSequenceNum = 333;
     }
-    Open(connectionString) {
-    }
     Close() {
     }
     // Send the data. Places message in output queue
@@ -44,11 +42,6 @@ export class BTransport {
     SendRPC(data) {
         GP.DebugLog('BTransport: call of undefined SendRPC()');
         throw new BException('BTransport: call of undefined SendRPC()');
-    }
-    // Get data in the input queue. Returns a Promise as might wait for data.
-    Receive() {
-        GP.DebugLog('BTransport: call of undefined Receive()');
-        throw new BException('BTransport: call of undefined Receive()');
     }
     // Set a callback object for recevieving messages.
     // The passed object must have a 'procMessage' method
@@ -82,6 +75,8 @@ export class BTransport {
 }
 
 // UTILITY FUNCTIONS USED BY children
+// Wrap the passed 'data' into a transport message.
+// If 'tcontext' is passed and there are RPC settings, add RPC to the transport.
 export function EncodeMessage(data, tcontext, tthis) {
     let tester = tthis === undefined ? this : tthis;
     let tmsg = {
@@ -100,6 +95,8 @@ export function EncodeMessage(data, tcontext, tthis) {
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return BTransportMsgs.BTransport.encode(cmsg).finish();
 }
+// Wrap the passed 'data' into a RPC transport message.
+// 'resolve' and 'reject' are functions for processing the reception of the response.
 export function EncodeRPCMessage(data, resolve, reject, tthis) {
     let tester = tthis === undefined ? this : tthis;
     let tmsg = {
@@ -111,4 +108,27 @@ export function EncodeRPCMessage(data, resolve, reject, tthis) {
 
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return emsg = BTransportMsgs.BTransport.encode(cmsg).finish();
+}
+// Check the input queue for messages and, if present, process one.
+// If 'tthis' is passed, it is used as the BTransport to push reception for.
+export function PushReception(tthis) {
+    let tester = tthis === undefined ? this : tthis;
+    let msg = tester.messages.shift();
+    if (msg) {
+        tester.messagesReceived++;
+        let dmsg = BTransportMsgs.BTransport.decode(msg)
+        if (dmsg.requestSession) {
+            let session = tester.RCPSessionCallback[dmsg.requestSession];
+            if (session) {
+                // the session entry is a tuple: [ time, resolve, reject, msgAsObject ]
+                tester.RPCsessionCallback.delete(dmsg.requestSession);
+                // GP.DebugLog('BTransportTest: returning RPC: session=' + dmsg.requestSession);
+                (session[1])(dmsg.message);
+            }
+        }
+        if (tester.receiveCallbackObject && tester.receiveCallbackObject.procMessage) {
+            // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
+            tester.receiveCallbackObject.procMessage(dmsg.message, dmsg);
+        }
+    }
 }

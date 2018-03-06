@@ -11,47 +11,97 @@
 
 'use strict';
 
-import { BTransport } from './BTransport.js';
+import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './BTransport.js';
+import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
+import { BException } from 'xBException';
 
 // There are two halfs: the 'service' and the 'worker'.
 export default class BTransportWW extends BTransport {
     constructor(parms) {
-        super();
-    }
-    Open(connectionString) {
+        super(parms);
+        if (window.Worker) {
+            // We're the master
+            // parms.transportURL is WebWorker URL to connect to
+            try {
+                this.worker = new Worker(parms.transportURL);
+                this.isWorker = false;
+                let xport = this;   // for closeure of message function
+                worker.onmessage = function(d) {
+                    xport.messages.push(d.data);
+                    PushReception(xport);
+                }
+                worker.onerror = function(e) {
+                    GP.DebugLog('BTransportWW: worker error:'
+                                + ' ln: ' + e.lineno
+                                + ', reason: ' + e.message);
+                    xport.Close();
+                }
+            }
+            catch(e) {
+                GP.DebugLog('BTransportWW: exception initializing worker: ' + e);
+                throw new BException('Exception initializing worker: ' + e);
+            }
+        }
+        else {
+            // We're the worker
+            this.isWorker = true;
+            let xport = this;   // for closeure of message function
+            onmessage = function(d) {
+                xport.messages.push(d.data);
+                PushReception(xport);
+            }
+        }
     }
     Close() {
+        if (this.worker) {
+            this.worker.terminate();
+            this.worker = undefined;
+        }
     }
     // Send the data. Places message in output queue
     // 'tcontext' is optional and used for RPC responses.
-    Send(data, tcontext) {
-        let emsg = super.EncodeMessage(data, tcontext);
+    Send(data, tcontext, tthis) {
+        let tester = tthis === undefined ? this : tthis;
+        let emsg = EncodeMessage(data, tcontext, tester);
+        if (tester.worker) {
+            tester.worker.postMessage(emsg, [emsg]);
+        }
+        else {
+            postMessage(emsg, [emsg]);
+        }
+        tester.messagesSent++;
+        PushReception(tester);
     }
     // Send a messsage and expect a replay of some type.
     // Returns a promise
-    SendRPC(data) {
+    SendRPC(data, tthis) {
+        let tester = tthis === undefined ? this : tthis;
         return new Promise((resolve, reject) => {
-            let emsg = super.EncodeRPCMessage(data, resolve, reject);
-            // SEND MESSAGE
+            console.log('BTransportWW: SendRPC:' + JSON.stringify(data));
+            let emsg = EncodeRPCMessage(data, resolve, reject, tester);
+            if (tester.worker) {
+                tester.worker.postMessage(emsg, [emsg]);
+            }
+            else {
+                postMessage(emsg, [emsg]);
+            }
+            tester.RPCmessagesSent++;
+            tester.messagesSent++;
          });
-        GP.DebugLog('BTransportWW: SendRPC()');
-    }
-    // Get data in the input queue. Returns a Promise as might wait for data.
-    Receive() {
-        GP.DebugLog('BTransportWW: call of undefined Receive()');
-        throw new BException('BTransportWW: call of undefined Receive()');
+        PushReception(tester);
     }
     // Set a calback to be called whenever a message is received
-    SetReceiveCallback(callback) {
-        GP.DebugLog('BTransportWW: call of undefined SetReceiveCallback()');
-        throw new BException('BTransportWW: call of undefined SetReceiveCallback()');
+    SetReceiveCallbackObject(callback) {
+        this.receiveCallbackObject = callback;
+        // GP.DebugLog('BTransportWW: set receiveCallback');
     }
+
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {
-        return false;
+        return this.messsages.length > 0;
     }
     get isConnected() {
-        return false;
+        return this.worker !== undefined;
     }
     // Return a map with statistics
     get stats() {
@@ -65,164 +115,4 @@ export default class BTransportWW extends BTransport {
     get info() {
         return this.type + ' none';
     }
-
-
-    /* OLD CODE
-    BTW.isWorker = false;
-
-    // WebWorker transport.
-    // @param {boolean} true if called by the WebWorker
-    return function(isWorker) {
-        var that = BTransport();
-
-        that.msgCode = {
-            Raw: 12,
-            BasilServerMsg: 23
-        };
-
-        if (isWorker != undefined && isWorker) {
-            BTW.isWorker = true;
-            // Operation if we're the web worker
-            that.open = function() {
-                GP.DebugLog('transport.worker.open');
-                this.worker = undefined;
-                var me = this;
-                onmessage = function(msg) {
-                    me.processMessage(msg, me);
-                };
-                this.connected = true;
-            };
-            that.close = function() {
-                GP.DebugLog('transport.worker.close');
-                this.connected = false;
-                this.flushInQueue();
-                this.availableCallback = undefined;
-                this.receiveCallback = undefined;
-            };
-            that.send = function(data) {
-                GP.DebugLog('transport.worker.send');
-                postMessage(
-                    { 'op': this.msgCode.BasilServerMsg, 'data': data },
-                    [ data.buffer ]
-                );
-            };
-            that.receive = function(completionCallback) {
-                GP.DebugLog('transport.worker.receive');
-                this.receiveCallback = completionCallback;
-                // Apply the callback to anything already in the queue
-                this.flushInQueue();
-            };
-            that.dataAvailable = function(callback) {
-                GP.DebugLog('transport.worker.dataAvailable');
-                this.availableCallback = callback;
-                // Apply the callback to anything already in the queue
-                this.flushInQueue();
-            };
-            // Return 'true' if this transport is open and running
-            that.isOpen = function() {
-                return this.connected;
-            };
-        }
-        else {
-            // Operations if we're the main browser
-            BTW.isWorker = false;
-
-            that.open = function(worker, connectionString) {
-                this.worker = worker;
-                this.connectionString = connectionString;
-                var me = this;
-                worker.onmessage = function(msg) {
-                    me.processMessage(msg, me);
-                };
-                this.connected = true;
-            };
-            that.close = function() {
-                this.connected = false;
-                if (this.worker != undefined) {
-                    this.worker.onmessage = undefined;
-                }
-                this.flushInQueue();
-                this.availableCallback = undefined;
-                this.receiveCallback = undefined;
-            };
-            that.send = function(data) {
-                GP.DebugLog('transport.main.send');
-                this.worker.postMessage(
-                    { 'op': this.msgCode.BasilServerMsg, 'data': data},
-                    [ data.buffer ]
-                );
-            };
-            that.receive = function(completionCallback) {
-                GP.DebugLog('transport.main.receive');
-                this.receiveCallback = completionCallback;
-                // Apply the callback to anything already in the queue
-                this.flushInQueue();
-            };
-            that.dataAvailable = function(callback) {
-                GP.DebugLog('transport.main.dataAvailable');
-                this.availableCallback = callback;
-                // Apply the callback to anything already in the queue
-                this.flushInQueue();
-            };
-            // Return 'true' if this transport is open and running
-            that.isOpen = function() {
-                return this.connected;
-            };
-        }
-
-        // Push as many queued messages as we can
-        that.flushInQueue = function() {
-            while (this.inQueue.length > 0
-                    && (this.availableCallback != null || this.receiveCallback != null)) {
-                if (this.receiveCallback != undefined) {
-                    var msgData = this.inQueue.shift();
-                    this.receiveCallback( msgData[0] );
-                    this.receiveCallback = undefined;
-                }
-                if (this.inQueue.length > 0 && this.availableCallback != undefined) {
-                    var msgData = this.inQueue.shift();
-                    this.availableCallback( msgData[0] );
-                }
-            }
-        };
-        // Receive massage from the other end of the WebWorker connection.
-        that.processMessage = function(msg, context) {
-            var op = msg.data.op;
-            var data = msg.data.data;
-            if (context.inQueue.length == 0
-                    && (context.availableCallback != null || context.receiveCallback != null)) {
-                // Nothing in the queue and there is a listener. Just send the message
-                if (context.receiveCallback != undefined) {
-                    GP.DebugLog('transport.onMessage: Empty queue. Sending for receiveCallback. op=' + op);
-                    var cb = context.receiveCallback;
-                    context.receiveCallback = undefined;
-                    cb(data);
-                }
-                else {
-                    if (context.availableCallback != undefined) {
-                        GP.DebugLog('transport.onMessage: Empty queue. Sending for availableCallback. op=' + msg.op);
-                        context.availableCallback(data);
-                    }
-                    else {
-                        GP.DebugLog('transport.onMessage: queuing data. op=' + msg.op);
-                        context.inQueue.push( [ data ] );
-                    }
-                }
-            }
-            else {
-                GP.DebugLog('transport.onMessage: Stuff in queue. Queuing. len=' + this.inQueue.length);
-                context.inQueue.push( [ data ] );
-            }
-        };
-
-        that.worker = undefined;    // no worker yet
-        that.inQueue = [];
-        that.availableCallback = undefined;
-        that.receiveCallback = undefined;
-        that.connected = false;
-        that.me = that;             // for referencing myself
-
-        return that;
-*/
-
 }

@@ -13,9 +13,9 @@
 
 // Test transport.
 
-import { BTransport, EncodeMessage, EncodeRPCMessage } from './BTransport.js';
-import { BasilServer as BasilServerMsgs, BTransport as BTransportMsgs } from 'xBasilServerMessages';
-import BException from 'xBException';
+import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './BTransport.js';
+import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
+import { BException } from 'xBException';
 
 // TransportTest uses some global variables to keep track of running tests
 GP.TR.TransportTestsRunning = [];
@@ -65,28 +65,8 @@ export default class BTransportTest extends BTransport {
     // Check of the tests and see if they have messsages. Is so receive and callback.
     static ProcessPollInterval() {
         for (let test of GP.TR.TransportTestsRunning) {
-            let msg = test.messages.shift();
-            if (msg) {
-                test.messagesReceived++;
-                let dmsg = BTransportMsgs.BTransport.decode(msg)
-                if (dmsg.requestSession) {
-                    let session = test.RCPSessionCallback[dmsg.requestSession];
-                    if (session) {
-                        // the session entry is a tuple: [ time, resolve, reject, msgAsObject ]
-                        test.RPCsessionCallback.delete(dmsg.requestSession);
-                        // GP.DebugLog('BTransportTest: returning RPC: session=' + dmsg.requestSession);
-                        (session[1])(dmsg.message);
-                    }
-                }
-                if (test.receiveCallbackObject && test.receiveCallbackObject.procMessage) {
-                    // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-                    test.receiveCallbackObject.procMessage(dmsg.message, dmsg);
-                }
-            }
+            PushReception(test);
         }
-    }
-    // BTransport.Open(connectionString)
-    Open(connectionString) {
     }
     // BTransport.Close()
     Close() {
@@ -100,6 +80,7 @@ export default class BTransportTest extends BTransport {
             GP.TR.TransportTestsPollIntervalID = undefined;
         }
     }
+    // BTransport.Send()
     // Send the data. Places message in output queue.
     // 'data' is the encoded binary types of the message.
     // 'tcontext' is optional and used for RPC responses.
@@ -122,11 +103,6 @@ export default class BTransportTest extends BTransport {
             tester.RPCmessagesSent++;
             tester.messagesSent++;
          });
-    }
-    // Get data in the input queue. Returns a Promise as might wait for data.
-    Receive() {
-        GP.DebugLog('BTransportTest: call of undefined Receive()');
-        throw new BException('BTransportTest: call of undefined Receive()');
     }
     // Set a callback object for recevieving messages.
     // The passed object must have a 'procMessage' method
