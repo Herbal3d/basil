@@ -89,10 +89,10 @@ function internalOnClickable(evnt) {
     }
     if (buttonOp == 'loadAtropia') {
         GP.DebugLog('Controls: OnLoadAtropia');
-        var valueFromHTML = $(evnt.target).attr('value');
-        if (valueFromHTML) {
+        let atropiaValue = Config.Atropia;
+        if (atropiaValue) {
             GP.DebugLog('Getting value for regions from HTML')
-            let parsedInput = JSON.parse(valueFromHTML);
+            let parsedInput = JSON.parse(atropiaValue);
             // Add the url base for GLTF files (since it changes with the GLTF version)
             atropiaRegions = parsedInput.map(oneRegionInfo => {
                 return [ Config.assets.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
