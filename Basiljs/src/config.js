@@ -75,6 +75,18 @@ export default {
         'eventPollIntervalMS': 500,
         'noComma': 0
     },
+    // Information for loading multiple Atropia regions with filename and displacement
+    'Atropia': [
+            [ "convoar/Atropia_00.gltf", [0,0,512] ],
+            [ "convoar/Atropia_01.gltf", [0,0,256] ],
+            [ "convoar/Atropia_02.gltf", [0,0,0] ],
+            [ "convoar/Atropia_10.gltf", [256,0,512] ],
+            [ "convoar/Atropia_11.gltf", [256,0,256] ],
+            [ "convoar/Atropia_12.gltf", [256,0,0] ],
+            [ "convoar/Atropia_20.gltf", [512,0,512] ],
+            [ "convoar/Atropia_21.gltf", [512,0,256] ],
+            [ "convoar/Atropia_22.gltf", [512,0,0] ]
+    ],
     'noComma': 0
 }
 ;

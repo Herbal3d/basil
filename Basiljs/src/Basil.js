@@ -18,6 +18,8 @@
 import Config from 'xConfig';
 import * as $ from 'jquery';
 
+import { Base64 } from 'js-base64';
+
 GP.Config = Config;
 
 // Force the processing of the CSS format file
@@ -76,8 +78,34 @@ import * as Comm from 'xComm';
 
 GP.Ready = false;
 
-var container = document.getElementById(Config.page.webGLcontainerId);
-var canvas = document.getElementById(Config.page.webGLcanvasId);
+// Can be called with communication configuration parameters in the URL
+let configParams = GP.ConfigGetQueryVariable('c');
+if (configParams === undefined) {
+    // If no communication parameters are given, use testing parameters
+    let testConfigParams = {
+        'comm': {
+            'testmode': 'true',
+            'transportURL': 'wwtester.js'
+        }
+    };
+    configParams = Base64.encode(JSON.stringify(testConfigParams));
+}
+if (configParams) {
+    try {
+        let unpacked = Base64.decode(configParams);
+        console.log('Basiljs: c params: ' + unpacked);
+        let newParams = JSON.parse(unpacked);
+        if (newParams) {
+            Object.assign(Config, newParams);    // property merge of unpacked into Config
+        }
+    }
+    catch(e) {
+        GP.DebugLog('Basiljs: failed parsing option config: ' + e);
+    }
+}
+
+let container = document.getElementById(Config.page.webGLcontainerId);
+let canvas = document.getElementById(Config.page.webGLcanvasId);
 
 Graphics.Init(container, canvas);
 Controls.Init();
