@@ -11,6 +11,8 @@
 
 'use strict';
 
+import GP from 'GP';
+
 import Config from 'xConfig';
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
 
@@ -50,8 +52,9 @@ export class BasilServiceConnection  {
                 GP.DebugLog('BasilServer: procMessage: ' + JSON.stringify(msg));
                 if (msg.IdentifyDisplayableObjectReqMsg) {
                     let cmdMsg = BasilServerMsgs.BasilIdentifyDisplayableObjectReq.decode(msg.IdentifyDisplayableObjectReqMsg);
+                    let replyContents = this.procIdentifyDispalyableObject(cmdMsg);
                     let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'IdentifyDisplayableObjectRespMsg': this.procIdentifyDispalyableObject(cmdMsg) }
+                        { 'IdentifyDisplayableObjectRespMsg': replyContents }
                     );
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     return;
@@ -141,11 +144,6 @@ export class BasilServiceConnection  {
         }
     }
     // Given an object with recieved parameters, do operation and return response object
-    procIdentifyDisplayableObject(req) {
-        return {
-            'success': 1
-        };
-    }
     procCreateObjectInstance(req) {
         return {
             'success': 1,

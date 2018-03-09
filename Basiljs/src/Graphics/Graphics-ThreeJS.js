@@ -18,6 +18,7 @@
 //      display.info
 var GR = GR || {};
 
+import GP from 'GP';
 import Config from 'xConfig';
 import * as Eventing from 'xEventing';
 

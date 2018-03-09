@@ -52,7 +52,7 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor'
     }),
-    // Creates a global alias for ThreeJS (needed for example/modules)
+    // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
         'THREE': 'xThreeJS'
     }),
@@ -71,6 +71,10 @@ module.exports = {
     }),
     new ExtractTextPlugin('Basiljs.css')
   ],
+  externals: {
+      // Hack for creating the GP global variable
+      'GP': '{}'
+  },
   module: {
     rules: [
         {

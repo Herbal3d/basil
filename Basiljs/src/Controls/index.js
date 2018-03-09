@@ -14,6 +14,7 @@
 // holds the controls context for this threejs instance
 var CO = CO || {};
 
+import GP from 'GP';
 import Config from 'xConfig';
 import * as $ from 'jquery';
 import * as Graphics from 'xGraphics';

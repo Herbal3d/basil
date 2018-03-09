@@ -13,17 +13,44 @@
 /* global GP */ // debugging global context (ESlint)
 
 // Global parameters and variables. "GP.variable"
-// var GP = GP || {};
+import GP from 'GP';
 
 import Config from 'xConfig';
 
 GP.Config = Config;
 
-import { BTransportWW } from './Comm/BTransportWW.js';
+// Debug function to mimic the non-WebWorker one
+GP.DebugLog = function(msg) {};
+
+import BTransportWW from './Comm/BTransportWW.js';
+import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './Comm/BTransport.js';
+import { BasilServer as BasilServerMsgs } from './jslibs/BasilServerMessages.js';
+import { BException } from './BException.js';
 
 GP.Ready = false;
 
 let parms  = {};
-let xport = new BTrasportWW(parms);
-
+GP.wwTransport = new BTransportWW(parms);
+xport.SetReceiveCallbackObject( {
+    'procMessage': function(buff, tcontext) {
+        let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
+        // Do something with the messsage
+    }
+})
 GP.Ready = true;
+
+GP.aliveIntervalID = setInterval(function() {
+    SendAliveCheckReq(GP.wwTransport);
+}, Config.WWTester.AliveCheckPollMS);
+
+// Send an AliveCheckReq message
+function SendAliveCheckReq(xport) {
+    let bmsg = {
+        'AliveCheckReqMsg': {
+            'time': Date.now(),
+            'sequenceNum': test.aliveSequenceNum++
+        }
+    }
+    let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
+    xport.Send(bdata, undefined, xport);
+}

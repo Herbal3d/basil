@@ -11,6 +11,8 @@
 
 'use strict';
 
+import GP from 'GP';
+
 var TR = TR || {};
 GP.TR = TR;
 

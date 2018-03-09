@@ -11,6 +11,8 @@
 
 'use strict';
 
+import GP from 'GP';
+
 import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
 import { BException } from 'xBException';
@@ -19,18 +21,19 @@ import { BException } from 'xBException';
 export default class BTransportWW extends BTransport {
     constructor(parms) {
         super(parms);
-        if (window.Worker) {
+        if (typeof WorkerGlobalScope === undefined) {
             // We're the master
             // parms.transportURL is WebWorker URL to connect to
             try {
                 this.worker = new Worker(parms.transportURL);
                 this.isWorker = false;
                 let xport = this;   // for closeure of message function
-                worker.onmessage = function(d) {
+                this.worker.onmessage = function(d) {
                     xport.messages.push(d.data);
+                    GP.DebugLog('BTransportWW: data type = ' + typeof d.data);
                     PushReception(xport);
                 }
-                worker.onerror = function(e) {
+                this.worker.onerror = function(e) {
                     GP.DebugLog('BTransportWW: worker error:'
                                 + ' ln: ' + e.lineno
                                 + ', reason: ' + e.message);

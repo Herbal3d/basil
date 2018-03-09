@@ -8,7 +8,7 @@ module.exports = {
     wwtester: './src/WWTester.js',
   },
   output: {
-    filename: '[name].[chunkhash].js',
+    filename: 'wwtester.js',
     path: path.resolve(__dirname, 'dist')
   },
   // devtool: 'inline-source-map',
@@ -29,17 +29,11 @@ module.exports = {
     extensions: [ '.js', '.jsx' ]
   },
   plugins: [
-    // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
-    new webpack.HashedModuleIdsPlugin(),
-    // Causes a separate bundle for the entry.vendor modules
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor'
-    }),
-    // Causes the runtime to be put in a separate bundle rather than included in each bundle
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'wwtest-runtime'
-    })
   ],
+  externals: {
+      // Hack for creating the GP global variable
+      'GP': '{}'
+  },
   module: {
     rules: [
         {

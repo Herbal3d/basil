@@ -12,6 +12,7 @@
 'use strict';
 
 // Test transport.
+import GP from 'GP';
 
 import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';

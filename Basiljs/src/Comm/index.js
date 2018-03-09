@@ -11,6 +11,7 @@
 
 'use strict';
 
+import GP from 'GP';
 import Config from 'xConfig';
 import * as BasilServer from './BasilServer.js';
 import * as PestoClient from './PestoClient.js';
@@ -25,9 +26,45 @@ CM.transports = [];
 CM.services = [];
 
 export function Init(parms) {
+    return new Promise((resolve, reject) => {
+        if (Config.comm.testmode && Config.comm.testmode == true) {
+            Config.comm.transport = 'WW';
+            Config.comm.transportURL = Config.comm.testWWURL;
+        }
+        if (Config.comm.transport && Config.comm.transportURL) {
+            GP.DebugLog('Comm.Init: first transport: ' + Config.comm.transport
+                        + '=>' + Config.comm.transportURL);
+            ConnectTransport(Config.comm)
+            .then (xport => {
+                GP.DebugLog('Comm.Init: transport connected');
+                CM.transports.push(xport);
+                if (Config.comm.service) {
+                    GP.DebugLog('Comm.Init: first service: ' + Config.comm.service);
+                    return ConnectService(xport, Config.comm);
+                }
+                else {
+                    return null;
+                }
+            })
+            .then (svc => {
+                if (svc) {
+                    CM.services.push(svc);
+                    GP.DebugLog('Comm.Init: service connected');
+                }
+                resolve();
+            })
+            .catch ( e => {
+                GP.DebugLog('Comm.Init: failed initialization: ' + e);
+                reject(e);
+            })
+        }
+    })
 };
 
 export function Start() {
+    for (let svc in CM.services) {
+        svc.Start();
+    }
 };
 
 // Make a connection to a service.
@@ -39,24 +76,29 @@ export function Start() {
 export function ConnectTransport(parms) {
     return new Promise((resolve, reject) => {
         var xport;
-        if (parms.transport) {
-            switch (parms.transport) {
-                case 'WW':
-                    xport = new BTransportWW(parms);
-                    break;
-                case 'WS':
-                    xport = new BTransportWS(parms);
-                    break;
-                case 'Test':
-                    xport = new BTransportTest(parms);
-                    break;
-                default:
-                    GP.DebugLog('Comm.Connect: transport type unknown: ' + parms.transport)
-                    reject('Comm.Connect: transport type unknown: ' + parms.transport)
+        try {
+            if (parms.transport) {
+                switch (parms.transport) {
+                    case 'WW':
+                        xport = new BTransportWW(parms);
+                        break;
+                    case 'WS':
+                        xport = new BTransportWS(parms);
+                        break;
+                    case 'Test':
+                        xport = new BTransportTest(parms);
+                        break;
+                    default:
+                        GP.DebugLog('Comm.Connect: transport type unknown: ' + parms.transport)
+                        reject('Comm.Connect: transport type unknown: ' + parms.transport)
+                }
+            }
+            else {
+                xport = new BTransportWS(parms);
             }
         }
-        else {
-            xport = new BTransportWS(parms);
+        catch(e) {
+            reject('Comm.Connect: exception opening transport: ' + e);
         }
         GP.DebugLog('Comm.Connect: created transport ' + xport.type)
         resolve(xport);

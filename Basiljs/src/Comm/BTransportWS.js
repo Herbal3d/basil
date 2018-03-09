@@ -12,6 +12,7 @@
 
 'use strict';
 
+import GP from 'GP';
 import { BTransport } from './BTransport.js';
 
 // There are two halfs: the 'service' and the 'worker'.

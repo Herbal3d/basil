@@ -11,6 +11,7 @@
 
 'use strict';
 
+import GP from 'GP';
 import Config from 'xConfig';
 
 export function Init() {
@@ -18,4 +19,3 @@ export function Init() {
 
 export function Start() {
 }
-

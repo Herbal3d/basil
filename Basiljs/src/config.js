@@ -75,6 +75,11 @@ export default {
         'eventPollIntervalMS': 500,
         'noComma': 0
     },
+    'WWTester': {
+        'AliveCheckPollMS': 10000,
+        'noComma': 0
+
+    },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [
             [ "convoar/Atropia_00.gltf", [0,0,512] ],

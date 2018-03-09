@@ -13,13 +13,14 @@
 /* global GP */ // debugging global context (ESlint)
 
 // Global parameters and variables. "GP.variable"
-// var GP = GP || {};
+import GP from 'GP';
 
 import Config from 'xConfig';
 import * as $ from 'jquery';
 
 import { Base64 } from 'js-base64';
 
+GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
 
 // Force the processing of the CSS format file
@@ -84,8 +85,8 @@ if (configParams === undefined) {
     // If no communication parameters are given, use testing parameters
     let testConfigParams = {
         'comm': {
-            'testmode': 'true',
-            'transportURL': 'wwtester.js'
+            'testmode': true,
+            'testWWURL': './wwtester.js'
         }
     };
     configParams = Base64.encode(JSON.stringify(testConfigParams));
@@ -93,7 +94,6 @@ if (configParams === undefined) {
 if (configParams) {
     try {
         let unpacked = Base64.decode(configParams);
-        console.log('Basiljs: c params: ' + unpacked);
         let newParams = JSON.parse(unpacked);
         if (newParams) {
             Object.assign(Config, newParams);    // property merge of unpacked into Config
@@ -109,9 +109,12 @@ let canvas = document.getElementById(Config.page.webGLcanvasId);
 
 Graphics.Init(container, canvas);
 Controls.Init();
-Comm.Init();
-
-Graphics.Start();
-Comm.Start();
-
-GP.Ready = true;
+Comm.Init()
+.then( () => {
+    Graphics.Start();
+    Comm.Start();
+    GP.Ready = true;
+})
+.catch( e => {
+    GP.DebugLog('Basil.js: exception initializing comm' + e);
+});

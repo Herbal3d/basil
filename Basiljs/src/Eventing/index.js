@@ -14,6 +14,7 @@
 // Global holding event subscription state
 var EV = EV || {};
 
+import GP from 'GP';
 import Config from 'xConfig';
 
 // A simple pub/sub system. An event producer registers a topic

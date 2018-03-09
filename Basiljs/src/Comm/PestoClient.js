@@ -11,6 +11,8 @@
 
 'use strict';
 
+import GP from 'GP';
+
 import Config from 'xConfig';
 
 class PestoClient {

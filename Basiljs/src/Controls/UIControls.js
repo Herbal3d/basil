@@ -13,6 +13,7 @@
 
 var UC = UC || {};
 
+import GP from 'GP';
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
 import * as $ from 'jquery';
 
@@ -88,7 +89,7 @@ export class UI_Quat {
             GP.DebugLog('Did not create UI_Quat element because ' + areaID + ' not in document');
         }
     }
-    
+
     // Update with four values or one value with a .x, .y, .z and .w
     Update(xx, yy, zz, ww) {
         if (this.areaID) {
