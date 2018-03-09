@@ -27,8 +27,8 @@ export class BTransport {
         this.RPCmessagesSent = 0;
         this.messagesReceived = 0;
         this.sequenceNum = 111;
-        this.RCPsession = 900222;
-        this.RCPSessionCallback = new Map();
+        this.RPCsession = 900222;
+        this.RPCSessionCallback = new Map();
         this.aliveSequenceNum = 333;
     }
     Close() {
@@ -91,9 +91,10 @@ export function EncodeMessage(data, tcontext, tthis) {
             // GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum + ', reqSn=' + tmsg.requestSession);
         }
     }
-    else {
+    // else {
         // GP.DebugLog('BTransport: Send(). Seq=' + tmsg.sequenceNum);
-    }
+    // }
+    // GP.DebugLog('BTransport.EncodeMessage: msg=' + JSON.stringify(tmsg));
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return BTransportMsgs.BTransport.encode(cmsg).finish();
 }
@@ -104,12 +105,13 @@ export function EncodeRPCMessage(data, resolve, reject, tthis) {
     let tmsg = {
         'sequenceNum': tester.sequenceNum++,
         'message': data,
-        'requestSession': tester.RCPsession++
+        'requestSession': tester.RPCsession++
     };
-    this.RPCsessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
+    // Remember callback information for the response to the message being sent
+    tester.RPCSessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
 
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
-    return emsg = BTransportMsgs.BTransport.encode(cmsg).finish();
+    return BTransportMsgs.BTransport.encode(cmsg).finish();
 }
 // Check the input queue for messages and, if present, process one.
 // If 'tthis' is passed, it is used as the BTransport to push reception for.
@@ -119,11 +121,12 @@ export function PushReception(tthis) {
     if (msg) {
         tester.messagesReceived++;
         let dmsg = BTransportMsgs.BTransport.decode(msg)
+        GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
         if (dmsg.requestSession) {
-            let session = tester.RCPSessionCallback[dmsg.requestSession];
+            let session = tester.RPCSessionCallback[dmsg.requestSession];
             if (session) {
                 // the session entry is a tuple: [ time, resolve, reject, msgAsObject ]
-                tester.RPCsessionCallback.delete(dmsg.requestSession);
+                tester.RPCSessionCallback.delete(dmsg.requestSession);
                 // GP.DebugLog('BTransportTest: returning RPC: session=' + dmsg.requestSession);
                 (session[1])(dmsg.message);
             }

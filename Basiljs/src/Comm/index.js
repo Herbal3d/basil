@@ -28,8 +28,10 @@ CM.services = [];
 export function Init(parms) {
     return new Promise((resolve, reject) => {
         if (Config.comm.testmode && Config.comm.testmode == true) {
+            // Test mode sets up the WebWorker transport and a BasilServer here
             Config.comm.transport = 'WW';
             Config.comm.transportURL = Config.comm.testWWURL;
+            Config.comm.service = 'BasilServer';
         }
         if (Config.comm.transport && Config.comm.transportURL) {
             GP.DebugLog('Comm.Init: first transport: ' + Config.comm.transport
@@ -62,7 +64,7 @@ export function Init(parms) {
 };
 
 export function Start() {
-    for (let svc in CM.services) {
+    for (let svc of CM.services) {
         svc.Start();
     }
 };

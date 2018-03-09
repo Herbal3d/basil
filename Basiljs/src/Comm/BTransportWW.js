@@ -21,16 +21,18 @@ import { BException } from 'xBException';
 export default class BTransportWW extends BTransport {
     constructor(parms) {
         super(parms);
-        if (typeof WorkerGlobalScope === undefined) {
+        if (typeof WorkerGlobalScope === 'undefined') {
             // We're the master
             // parms.transportURL is WebWorker URL to connect to
+            GP.DebugLog('BTransportWW: setting up server');
             try {
                 this.worker = new Worker(parms.transportURL);
                 this.isWorker = false;
                 let xport = this;   // for closeure of message function
                 this.worker.onmessage = function(d) {
-                    xport.messages.push(d.data);
+                    GP.rmsg = d;    // DEBUG DEBUG
                     GP.DebugLog('BTransportWW: data type = ' + typeof d.data);
+                    xport.messages.push(d.data);
                     PushReception(xport);
                 }
                 this.worker.onerror = function(e) {
@@ -47,6 +49,7 @@ export default class BTransportWW extends BTransport {
         }
         else {
             // We're the worker
+            GP.DebugLog('BTransportWW: setting up worker');
             this.isWorker = true;
             let xport = this;   // for closeure of message function
             onmessage = function(d) {
@@ -67,10 +70,10 @@ export default class BTransportWW extends BTransport {
         let tester = tthis === undefined ? this : tthis;
         let emsg = EncodeMessage(data, tcontext, tester);
         if (tester.worker) {
-            tester.worker.postMessage(emsg, [emsg]);
+            tester.worker.postMessage(emsg);
         }
         else {
-            postMessage(emsg, [emsg]);
+            postMessage(emsg);
         }
         tester.messagesSent++;
         PushReception(tester);
@@ -80,13 +83,12 @@ export default class BTransportWW extends BTransport {
     SendRPC(data, tthis) {
         let tester = tthis === undefined ? this : tthis;
         return new Promise((resolve, reject) => {
-            console.log('BTransportWW: SendRPC:' + JSON.stringify(data));
             let emsg = EncodeRPCMessage(data, resolve, reject, tester);
             if (tester.worker) {
-                tester.worker.postMessage(emsg, [emsg]);
+                tester.worker.postMessage(emsg);
             }
             else {
-                postMessage(emsg, [emsg]);
+                postMessage(emsg);
             }
             tester.RPCmessagesSent++;
             tester.messagesSent++;

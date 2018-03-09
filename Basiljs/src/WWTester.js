@@ -28,10 +28,11 @@ import { BasilServer as BasilServerMsgs } from './jslibs/BasilServerMessages.js'
 import { BException } from './BException.js';
 
 GP.Ready = false;
+GP.aliveSequenceNum = 444;
 
 let parms  = {};
 GP.wwTransport = new BTransportWW(parms);
-xport.SetReceiveCallbackObject( {
+GP.wwTransport.SetReceiveCallbackObject( {
     'procMessage': function(buff, tcontext) {
         let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
         // Do something with the messsage
@@ -48,9 +49,9 @@ function SendAliveCheckReq(xport) {
     let bmsg = {
         'AliveCheckReqMsg': {
             'time': Date.now(),
-            'sequenceNum': test.aliveSequenceNum++
+            'sequenceNum': GP.aliveSequenceNum++
         }
     }
     let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
-    xport.Send(bdata, undefined, xport);
+    xport.SendRPC(bdata, undefined, xport);
 }

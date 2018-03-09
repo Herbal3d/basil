@@ -28,6 +28,20 @@ export class BasilServiceConnection  {
         this.transport = transp;
         this.aliveReplySerquenceNum = 2000;
         this.serverID = undefined;
+        // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
+        this.receptionMessages = [
+            [ 'IdentifyDisplayableObjectReqMsg', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg'],
+            [ 'CreateOjbectInstanceReqMsg', this.procCreateOjbectInstance, 'CreateOjbectInstanceRespMsg'],
+            [ 'UpdateObjectPropertyReqMsg', this.procUpdateObjectProperty, 'UpdateObjectPropertyRespMsg'],
+            [ 'UpdateInstancePropertyReqMsg', this.procUpdateInstanceProperty, 'UpdateInstancePropertyRespMsg'],
+            [ 'UpdateInstancePositionReqMsg', this.procUpdateInstancePosition, 'UpdateInstancePositionRespMsg'],
+            [ 'RequestObjectPropertiesReqMsg', this.procRequestObjectProperties, 'RequestObjectPropertiesRespMsg'],
+            [ 'RequestInstancePropertiesReqMsg', this.procRequestInstanceProperties, 'RequestInstancePropertiesRespMsg'],
+            [ 'OpenSessionReqMsg', this.procOpenSession, 'OpenSessionRespMsg'],
+            [ 'CloseSessionReqMsg', this.procCloseSession, 'CloseSessionRespMsg'],
+            [ 'AliveCheckReqMsg', this.procAliveCheck, 'AliveCheckRespMsg'],
+            [ 'AliveCheckRespMsg', this.procAliveCheckResp, undefined]
+        ];
     }
     Start() {
         if (this.transport) {
@@ -50,92 +64,21 @@ export class BasilServiceConnection  {
             try {
                 let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
                 GP.DebugLog('BasilServer: procMessage: ' + JSON.stringify(msg));
-                if (msg.IdentifyDisplayableObjectReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilIdentifyDisplayableObjectReq.decode(msg.IdentifyDisplayableObjectReqMsg);
-                    let replyContents = this.procIdentifyDispalyableObject(cmdMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'IdentifyDisplayableObjectRespMsg': replyContents }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
+                let replyContents = undefined;
+                for (const template of this.receptionMessages) {
+                    if (msg.hasOwnProperty(template[0])) {
+                        replyContents = template[1](msg[template[0]]);
+                        if (replyContents != undefined && template[2] !== undefined) {
+                            let rmsg = {};
+                            rmsg[template[2]] = replyContents;
+                            let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
+                            this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
+                        }
+                        break;
+                    }
                 }
-                else if (msg.CreateObjectInstanceReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilCreateObjectInstanceReq.decode(msg.CreateObjectInstanceReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'CreateObjectInstanceRespMsg': this.procCreateObjectInstance(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.UpdateObjectPropertyReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilUpdateObjectPropertyReq.decode(msg.UpdateObjectPropertyReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'UpdateObjectPropertyRespMsg': this.procUpdateObjectProperty(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.UpdateInstancePropertyReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilReqUpdateInstanceProperty.decode(msg.UpdateInstancePropertyReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'UpdateInstancePropertyRespMsg': this.procUpdateInstanceProperty(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.UpdateInstancePositionReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilUpdateInstancePositionReq.decode(msg.UpdateInstancePositionReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'UpdateInstancePositionRespMsg': this.procUpdateInstancePosition(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.RequestObjectPropertiesReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilRequestObjectPropertiesReq.decode(msg.RequestObjectPropertiesReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'RequestObjectPropertiesRespMsg': this.procRequestObjectProperties(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.RequestInstancePropertiesReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilRequestInstancePropertiesReq.decode(msg.RequestInstancePropertiesReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'RequestInstancePropertiesRespMsg': this.procRequestInstanceProperties(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.OpenSessionReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilOpenSessionReq.decode(msg.OpenSessionReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'OpenSessionRespMsg': this.procOpenSession(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.CloseSessionReqMsg) {
-                    let cmdMsg = BasilServerMsgs.BasilCloseSessionReq.decode(msg.CloseSessionReqMsg);
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'CloseSessionRespMsg': this.procCloseSession(cmdMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.AliveCheckReqMsg) {
-                    let reply = BasilServerMsgs.BasilServerMessage.create(
-                        { 'AliveCheckRespMsg': this.procAliveCheck(msg.AliveCheckReqMsg) }
-                    );
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                    return;
-                }
-                else if (msg.AliveCheckRespMsg) {
-                    // pair with a sent alive request
-                    return;
-                }
-                else {
-                    GP.DebugLog('BasilServer: did not decode message in :' + msg);
+                if (replyContents === undefined) {
+                    GP.DebugLog('BasilServer: did not process message in :' + JSON.stringify(msg));
                 }
             }
             catch(e) {
@@ -203,6 +146,11 @@ export class BasilServiceConnection  {
             'sequenceNum': this.aliveReplySerquenceNum++,
             'timeReceived': req.time,
             'sequenceNumReceived': req.sequenceNum
+        };
+    }
+    procAliveCheckResp(req) {
+        // Match response with sent alive check
+        return {
         };
     }
 
