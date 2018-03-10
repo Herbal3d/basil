@@ -64,9 +64,6 @@ export function Init(parms) {
 };
 
 export function Start() {
-    for (let svc of CM.services) {
-        svc.Start();
-    }
 };
 
 // Make a connection to a service.

@@ -17,6 +17,10 @@ import Config from 'xConfig';
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
 
 var BS = BS || {};
+GP.BS = BS;
+
+// All of the servers that have been connected
+BS.servers = {};
 
 // The browser is the Basil server so requests are sent to us
 export class BasilServiceConnection  {
@@ -31,7 +35,9 @@ export class BasilServiceConnection  {
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
         this.receptionMessages = [
             [ 'IdentifyDisplayableObjectReqMsg', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg'],
-            [ 'CreateOjbectInstanceReqMsg', this.procCreateOjbectInstance, 'CreateOjbectInstanceRespMsg'],
+            [ 'ForgetDisplayableObjectReqMsg', this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg'],
+            [ 'CreateObjectInstanceReqMsg', this.procCreateObjectInstance, 'CreateObjectInstanceRespMsg'],
+            [ 'DeleteObjectInstanceReqMsg', this.procDeleteObjectInstance, 'DeleteObjectInstanceRespMsg'],
             [ 'UpdateObjectPropertyReqMsg', this.procUpdateObjectProperty, 'UpdateObjectPropertyRespMsg'],
             [ 'UpdateInstancePropertyReqMsg', this.procUpdateInstanceProperty, 'UpdateInstancePropertyRespMsg'],
             [ 'UpdateInstancePositionReqMsg', this.procUpdateInstancePosition, 'UpdateInstancePositionRespMsg'],
@@ -70,7 +76,7 @@ export class BasilServiceConnection  {
                         replyContents = template[1](msg[template[0]]);
                         if (replyContents != undefined && template[2] !== undefined) {
                             let rmsg = {};
-                            rmsg[template[2]] = replyContents;
+                            rmsg[template[0]] = replyContents;
                             let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
                             this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                         }
@@ -86,11 +92,26 @@ export class BasilServiceConnection  {
             }
         }
     }
+    procIdentifyDisplayableObject(req) {
+        return {
+            'success': 1,
+        };
+    }
+    procForgetDisplayableObject(req) {
+        return {
+            'success': 1,
+        };
+    }
     // Given an object with recieved parameters, do operation and return response object
     procCreateObjectInstance(req) {
         return {
             'success': 1,
             'createdInstanceId': 122334
+        };
+    }
+    procDeleteObjectInstance(req) {
+        return {
+            'success': 1,
         };
     }
     procUpdateObjectProperty(req) {
@@ -162,14 +183,11 @@ export class BasilServiceConnection  {
 
 }
 
-GP.BS = BS;
-// All of the servers that have been connected
-BS.servers = {};
-
 // Create a new server connection and return same
+// Returns a BasilServiceConnection or undefined if an error.
 export function NewBasilServerConnection(serverID, transport, parms) {
     if (BS.servers[serverID] != undefined) {
-        GP.DebugLog('BasilServer: not creating service is existing ID:' + serverID);
+        GP.DebugLog('BasilServer: Not creating service. Existing ID:' + serverID);
         return undefined;
     }
     let newConnection = new BasilServiceConnection(serverID, transport, parms);
