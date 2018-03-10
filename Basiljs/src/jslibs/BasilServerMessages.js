@@ -251,6 +251,210 @@ export const BasilServer = $root.BasilServer = (() => {
         return IdentifyDisplayableObjectResp;
     })();
 
+    BasilServer.ForgetDisplayableObjectReq = (function() {
+
+        function ForgetDisplayableObjectReq(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        ForgetDisplayableObjectReq.prototype.auth = null;
+        ForgetDisplayableObjectReq.prototype.id = null;
+
+        ForgetDisplayableObjectReq.create = function create(properties) {
+            return new ForgetDisplayableObjectReq(properties);
+        };
+
+        ForgetDisplayableObjectReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
+            if (message.id != null && message.hasOwnProperty("id"))
+                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(18).fork()).ldelim();
+            return writer;
+        };
+
+        ForgetDisplayableObjectReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        ForgetDisplayableObjectReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.ForgetDisplayableObjectReq();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        ForgetDisplayableObjectReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        ForgetDisplayableObjectReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth")) {
+                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
+                if (error)
+                    return "auth." + error;
+            }
+            if (message.id != null && message.hasOwnProperty("id")) {
+                let error = $root.BasilType.ObjectIdentifier.verify(message.id);
+                if (error)
+                    return "id." + error;
+            }
+            return null;
+        };
+
+        ForgetDisplayableObjectReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.ForgetDisplayableObjectReq)
+                return object;
+            let message = new $root.BasilServer.ForgetDisplayableObjectReq();
+            if (object.auth != null) {
+                if (typeof object.auth !== "object")
+                    throw TypeError(".BasilServer.ForgetDisplayableObjectReq.auth: object expected");
+                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            if (object.id != null) {
+                if (typeof object.id !== "object")
+                    throw TypeError(".BasilServer.ForgetDisplayableObjectReq.id: object expected");
+                message.id = $root.BasilType.ObjectIdentifier.fromObject(object.id);
+            }
+            return message;
+        };
+
+        ForgetDisplayableObjectReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.auth = null;
+                object.id = null;
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = $root.BasilType.ObjectIdentifier.toObject(message.id, options);
+            return object;
+        };
+
+        ForgetDisplayableObjectReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ForgetDisplayableObjectReq;
+    })();
+
+    BasilServer.ForgetDisplayableObjectResp = (function() {
+
+        function ForgetDisplayableObjectResp(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        ForgetDisplayableObjectResp.prototype.success = null;
+
+        ForgetDisplayableObjectResp.create = function create(properties) {
+            return new ForgetDisplayableObjectResp(properties);
+        };
+
+        ForgetDisplayableObjectResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.success != null && message.hasOwnProperty("success"))
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
+            return writer;
+        };
+
+        ForgetDisplayableObjectResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        ForgetDisplayableObjectResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.ForgetDisplayableObjectResp();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        ForgetDisplayableObjectResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        ForgetDisplayableObjectResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.success != null && message.hasOwnProperty("success")) {
+                let error = $root.BasilType.BasilException.verify(message.success);
+                if (error)
+                    return "success." + error;
+            }
+            return null;
+        };
+
+        ForgetDisplayableObjectResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.ForgetDisplayableObjectResp)
+                return object;
+            let message = new $root.BasilServer.ForgetDisplayableObjectResp();
+            if (object.success != null) {
+                if (typeof object.success !== "object")
+                    throw TypeError(".BasilServer.ForgetDisplayableObjectResp.success: object expected");
+                message.success = $root.BasilType.BasilException.fromObject(object.success);
+            }
+            return message;
+        };
+
+        ForgetDisplayableObjectResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.success = null;
+            if (message.success != null && message.hasOwnProperty("success"))
+                object.success = $root.BasilType.BasilException.toObject(message.success, options);
+            return object;
+        };
+
+        ForgetDisplayableObjectResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ForgetDisplayableObjectResp;
+    })();
+
     BasilServer.CreateObjectInstanceReq = (function() {
 
         function CreateObjectInstanceReq(properties) {
@@ -511,6 +715,210 @@ export const BasilServer = $root.BasilServer = (() => {
         };
 
         return CreateObjectInstanceResp;
+    })();
+
+    BasilServer.DeleteObjectInstanceReq = (function() {
+
+        function DeleteObjectInstanceReq(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        DeleteObjectInstanceReq.prototype.auth = null;
+        DeleteObjectInstanceReq.prototype.id = null;
+
+        DeleteObjectInstanceReq.create = function create(properties) {
+            return new DeleteObjectInstanceReq(properties);
+        };
+
+        DeleteObjectInstanceReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
+            if (message.id != null && message.hasOwnProperty("id"))
+                $root.BasilType.InstanceIdentifier.encode(message.id, writer.uint32(18).fork()).ldelim();
+            return writer;
+        };
+
+        DeleteObjectInstanceReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        DeleteObjectInstanceReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.DeleteObjectInstanceReq();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.id = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        DeleteObjectInstanceReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        DeleteObjectInstanceReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth")) {
+                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
+                if (error)
+                    return "auth." + error;
+            }
+            if (message.id != null && message.hasOwnProperty("id")) {
+                let error = $root.BasilType.InstanceIdentifier.verify(message.id);
+                if (error)
+                    return "id." + error;
+            }
+            return null;
+        };
+
+        DeleteObjectInstanceReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.DeleteObjectInstanceReq)
+                return object;
+            let message = new $root.BasilServer.DeleteObjectInstanceReq();
+            if (object.auth != null) {
+                if (typeof object.auth !== "object")
+                    throw TypeError(".BasilServer.DeleteObjectInstanceReq.auth: object expected");
+                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            if (object.id != null) {
+                if (typeof object.id !== "object")
+                    throw TypeError(".BasilServer.DeleteObjectInstanceReq.id: object expected");
+                message.id = $root.BasilType.InstanceIdentifier.fromObject(object.id);
+            }
+            return message;
+        };
+
+        DeleteObjectInstanceReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.auth = null;
+                object.id = null;
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = $root.BasilType.InstanceIdentifier.toObject(message.id, options);
+            return object;
+        };
+
+        DeleteObjectInstanceReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DeleteObjectInstanceReq;
+    })();
+
+    BasilServer.DeleteObjectInstanceResp = (function() {
+
+        function DeleteObjectInstanceResp(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        DeleteObjectInstanceResp.prototype.success = null;
+
+        DeleteObjectInstanceResp.create = function create(properties) {
+            return new DeleteObjectInstanceResp(properties);
+        };
+
+        DeleteObjectInstanceResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.success != null && message.hasOwnProperty("success"))
+                $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
+            return writer;
+        };
+
+        DeleteObjectInstanceResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        DeleteObjectInstanceResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.DeleteObjectInstanceResp();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        DeleteObjectInstanceResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        DeleteObjectInstanceResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.success != null && message.hasOwnProperty("success")) {
+                let error = $root.BasilType.BasilException.verify(message.success);
+                if (error)
+                    return "success." + error;
+            }
+            return null;
+        };
+
+        DeleteObjectInstanceResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.DeleteObjectInstanceResp)
+                return object;
+            let message = new $root.BasilServer.DeleteObjectInstanceResp();
+            if (object.success != null) {
+                if (typeof object.success !== "object")
+                    throw TypeError(".BasilServer.DeleteObjectInstanceResp.success: object expected");
+                message.success = $root.BasilType.BasilException.fromObject(object.success);
+            }
+            return message;
+        };
+
+        DeleteObjectInstanceResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.success = null;
+            if (message.success != null && message.hasOwnProperty("success"))
+                object.success = $root.BasilType.BasilException.toObject(message.success, options);
+            return object;
+        };
+
+        DeleteObjectInstanceResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DeleteObjectInstanceResp;
     })();
 
     BasilServer.UpdateObjectPropertyReq = (function() {
@@ -1192,7 +1600,6 @@ export const BasilServer = $root.BasilServer = (() => {
         }
 
         RequestObjectPropertiesReq.prototype.auth = null;
-        RequestObjectPropertiesReq.prototype.sequenceNumber = 0;
         RequestObjectPropertiesReq.prototype.objectId = null;
         RequestObjectPropertiesReq.prototype.propertyMatch = "";
 
@@ -1205,12 +1612,10 @@ export const BasilServer = $root.BasilServer = (() => {
                 writer = $Writer.create();
             if (message.auth != null && message.hasOwnProperty("auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                writer.uint32(16).int32(message.sequenceNumber);
             if (message.objectId != null && message.hasOwnProperty("objectId"))
-                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(26).fork()).ldelim();
+                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
             if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
-                writer.uint32(34).string(message.propertyMatch);
+                writer.uint32(26).string(message.propertyMatch);
             return writer;
         };
 
@@ -1229,12 +1634,9 @@ export const BasilServer = $root.BasilServer = (() => {
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.sequenceNumber = reader.int32();
-                    break;
-                case 3:
                     message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.propertyMatch = reader.string();
                     break;
                 default:
@@ -1259,9 +1661,6 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (error)
                     return "auth." + error;
             }
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                if (!$util.isInteger(message.sequenceNumber))
-                    return "sequenceNumber: integer expected";
             if (message.objectId != null && message.hasOwnProperty("objectId")) {
                 let error = $root.BasilType.ObjectIdentifier.verify(message.objectId);
                 if (error)
@@ -1282,8 +1681,6 @@ export const BasilServer = $root.BasilServer = (() => {
                     throw TypeError(".BasilServer.RequestObjectPropertiesReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
-            if (object.sequenceNumber != null)
-                message.sequenceNumber = object.sequenceNumber | 0;
             if (object.objectId != null) {
                 if (typeof object.objectId !== "object")
                     throw TypeError(".BasilServer.RequestObjectPropertiesReq.objectId: object expected");
@@ -1300,14 +1697,11 @@ export const BasilServer = $root.BasilServer = (() => {
             let object = {};
             if (options.defaults) {
                 object.auth = null;
-                object.sequenceNumber = 0;
                 object.objectId = null;
                 object.propertyMatch = "";
             }
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                object.sequenceNumber = message.sequenceNumber;
             if (message.objectId != null && message.hasOwnProperty("objectId"))
                 object.objectId = $root.BasilType.ObjectIdentifier.toObject(message.objectId, options);
             if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
@@ -1444,7 +1838,6 @@ export const BasilServer = $root.BasilServer = (() => {
         }
 
         RequestInstancePropertiesReq.prototype.auth = null;
-        RequestInstancePropertiesReq.prototype.sequenceNumber = 0;
         RequestInstancePropertiesReq.prototype.instanceId = null;
         RequestInstancePropertiesReq.prototype.propertyMatch = "";
 
@@ -1457,12 +1850,10 @@ export const BasilServer = $root.BasilServer = (() => {
                 writer = $Writer.create();
             if (message.auth != null && message.hasOwnProperty("auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                writer.uint32(16).int32(message.sequenceNumber);
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(26).fork()).ldelim();
+                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
             if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
-                writer.uint32(34).string(message.propertyMatch);
+                writer.uint32(26).string(message.propertyMatch);
             return writer;
         };
 
@@ -1481,12 +1872,9 @@ export const BasilServer = $root.BasilServer = (() => {
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.sequenceNumber = reader.int32();
-                    break;
-                case 3:
                     message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.propertyMatch = reader.string();
                     break;
                 default:
@@ -1511,9 +1899,6 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (error)
                     return "auth." + error;
             }
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                if (!$util.isInteger(message.sequenceNumber))
-                    return "sequenceNumber: integer expected";
             if (message.instanceId != null && message.hasOwnProperty("instanceId")) {
                 let error = $root.BasilType.InstanceIdentifier.verify(message.instanceId);
                 if (error)
@@ -1534,8 +1919,6 @@ export const BasilServer = $root.BasilServer = (() => {
                     throw TypeError(".BasilServer.RequestInstancePropertiesReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
-            if (object.sequenceNumber != null)
-                message.sequenceNumber = object.sequenceNumber | 0;
             if (object.instanceId != null) {
                 if (typeof object.instanceId !== "object")
                     throw TypeError(".BasilServer.RequestInstancePropertiesReq.instanceId: object expected");
@@ -1552,14 +1935,11 @@ export const BasilServer = $root.BasilServer = (() => {
             let object = {};
             if (options.defaults) {
                 object.auth = null;
-                object.sequenceNumber = 0;
                 object.instanceId = null;
                 object.propertyMatch = "";
             }
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                object.sequenceNumber = message.sequenceNumber;
             if (message.instanceId != null && message.hasOwnProperty("instanceId"))
                 object.instanceId = $root.BasilType.InstanceIdentifier.toObject(message.instanceId, options);
             if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
@@ -2413,8 +2793,12 @@ export const BasilServer = $root.BasilServer = (() => {
 
         BasilServerMessage.prototype.IdentifyDisplayableObjectReqMsg = null;
         BasilServerMessage.prototype.IdentifyDisplayableObjectRespMsg = null;
+        BasilServerMessage.prototype.ForgetDisplayableObjectReqMsg = null;
+        BasilServerMessage.prototype.ForgetDisplayableObjectRespMsg = null;
         BasilServerMessage.prototype.CreateObjectInstanceReqMsg = null;
         BasilServerMessage.prototype.CreateObjectInstanceRespMsg = null;
+        BasilServerMessage.prototype.DeleteObjectInstanceReqMsg = null;
+        BasilServerMessage.prototype.DeleteObjectInstanceRespMsg = null;
         BasilServerMessage.prototype.UpdateObjectPropertyReqMsg = null;
         BasilServerMessage.prototype.UpdateObjectPropertyRespMsg = null;
         BasilServerMessage.prototype.UpdateInstancePropertyReqMsg = null;
@@ -2435,7 +2819,7 @@ export const BasilServer = $root.BasilServer = (() => {
         let $oneOfFields;
 
         Object.defineProperty(BasilServerMessage.prototype, "msg", {
-            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectReqMsg", "IdentifyDisplayableObjectRespMsg", "CreateObjectInstanceReqMsg", "CreateObjectInstanceRespMsg", "UpdateObjectPropertyReqMsg", "UpdateObjectPropertyRespMsg", "UpdateInstancePropertyReqMsg", "UpdateInstancePropertyRespMsg", "UpdateInstancePositionReqMsg", "UpdateInstancePositionRespMsg", "RequestObjectPropertiesReqMsg", "RequestObjectPropertiesRespMsg", "RequestInstancePropertiesReqMsg", "RequestInstancePropertiesRespMsg", "OpenSessionReqMsg", "OpenSessionRespMsg", "CloseSessionReqMsg", "CloseSessionRespMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectReqMsg", "IdentifyDisplayableObjectRespMsg", "ForgetDisplayableObjectReqMsg", "ForgetDisplayableObjectRespMsg", "CreateObjectInstanceReqMsg", "CreateObjectInstanceRespMsg", "DeleteObjectInstanceReqMsg", "DeleteObjectInstanceRespMsg", "UpdateObjectPropertyReqMsg", "UpdateObjectPropertyRespMsg", "UpdateInstancePropertyReqMsg", "UpdateInstancePropertyRespMsg", "UpdateInstancePositionReqMsg", "UpdateInstancePositionRespMsg", "RequestObjectPropertiesReqMsg", "RequestObjectPropertiesRespMsg", "RequestInstancePropertiesReqMsg", "RequestInstancePropertiesRespMsg", "OpenSessionReqMsg", "OpenSessionRespMsg", "CloseSessionReqMsg", "CloseSessionRespMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -2450,42 +2834,50 @@ export const BasilServer = $root.BasilServer = (() => {
                 $root.BasilServer.IdentifyDisplayableObjectReq.encode(message.IdentifyDisplayableObjectReqMsg, writer.uint32(10).fork()).ldelim();
             if (message.IdentifyDisplayableObjectRespMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectRespMsg"))
                 $root.BasilServer.IdentifyDisplayableObjectResp.encode(message.IdentifyDisplayableObjectRespMsg, writer.uint32(18).fork()).ldelim();
+            if (message.ForgetDisplayableObjectReqMsg != null && message.hasOwnProperty("ForgetDisplayableObjectReqMsg"))
+                $root.BasilServer.ForgetDisplayableObjectReq.encode(message.ForgetDisplayableObjectReqMsg, writer.uint32(26).fork()).ldelim();
+            if (message.ForgetDisplayableObjectRespMsg != null && message.hasOwnProperty("ForgetDisplayableObjectRespMsg"))
+                $root.BasilServer.ForgetDisplayableObjectResp.encode(message.ForgetDisplayableObjectRespMsg, writer.uint32(34).fork()).ldelim();
             if (message.CreateObjectInstanceReqMsg != null && message.hasOwnProperty("CreateObjectInstanceReqMsg"))
-                $root.BasilServer.CreateObjectInstanceReq.encode(message.CreateObjectInstanceReqMsg, writer.uint32(26).fork()).ldelim();
+                $root.BasilServer.CreateObjectInstanceReq.encode(message.CreateObjectInstanceReqMsg, writer.uint32(42).fork()).ldelim();
             if (message.CreateObjectInstanceRespMsg != null && message.hasOwnProperty("CreateObjectInstanceRespMsg"))
-                $root.BasilServer.CreateObjectInstanceResp.encode(message.CreateObjectInstanceRespMsg, writer.uint32(34).fork()).ldelim();
+                $root.BasilServer.CreateObjectInstanceResp.encode(message.CreateObjectInstanceRespMsg, writer.uint32(50).fork()).ldelim();
+            if (message.DeleteObjectInstanceReqMsg != null && message.hasOwnProperty("DeleteObjectInstanceReqMsg"))
+                $root.BasilServer.DeleteObjectInstanceReq.encode(message.DeleteObjectInstanceReqMsg, writer.uint32(58).fork()).ldelim();
+            if (message.DeleteObjectInstanceRespMsg != null && message.hasOwnProperty("DeleteObjectInstanceRespMsg"))
+                $root.BasilServer.DeleteObjectInstanceResp.encode(message.DeleteObjectInstanceRespMsg, writer.uint32(66).fork()).ldelim();
             if (message.UpdateObjectPropertyReqMsg != null && message.hasOwnProperty("UpdateObjectPropertyReqMsg"))
-                $root.BasilServer.UpdateObjectPropertyReq.encode(message.UpdateObjectPropertyReqMsg, writer.uint32(42).fork()).ldelim();
+                $root.BasilServer.UpdateObjectPropertyReq.encode(message.UpdateObjectPropertyReqMsg, writer.uint32(74).fork()).ldelim();
             if (message.UpdateObjectPropertyRespMsg != null && message.hasOwnProperty("UpdateObjectPropertyRespMsg"))
-                $root.BasilServer.UpdateObjectPropertyResp.encode(message.UpdateObjectPropertyRespMsg, writer.uint32(50).fork()).ldelim();
+                $root.BasilServer.UpdateObjectPropertyResp.encode(message.UpdateObjectPropertyRespMsg, writer.uint32(82).fork()).ldelim();
             if (message.UpdateInstancePropertyReqMsg != null && message.hasOwnProperty("UpdateInstancePropertyReqMsg"))
-                $root.BasilServer.UpdateInstancePropertyReq.encode(message.UpdateInstancePropertyReqMsg, writer.uint32(58).fork()).ldelim();
+                $root.BasilServer.UpdateInstancePropertyReq.encode(message.UpdateInstancePropertyReqMsg, writer.uint32(90).fork()).ldelim();
             if (message.UpdateInstancePropertyRespMsg != null && message.hasOwnProperty("UpdateInstancePropertyRespMsg"))
-                $root.BasilServer.UpdateInstancePropertyResp.encode(message.UpdateInstancePropertyRespMsg, writer.uint32(66).fork()).ldelim();
+                $root.BasilServer.UpdateInstancePropertyResp.encode(message.UpdateInstancePropertyRespMsg, writer.uint32(98).fork()).ldelim();
             if (message.UpdateInstancePositionReqMsg != null && message.hasOwnProperty("UpdateInstancePositionReqMsg"))
-                $root.BasilServer.UpdateInstancePositionReq.encode(message.UpdateInstancePositionReqMsg, writer.uint32(74).fork()).ldelim();
+                $root.BasilServer.UpdateInstancePositionReq.encode(message.UpdateInstancePositionReqMsg, writer.uint32(106).fork()).ldelim();
             if (message.UpdateInstancePositionRespMsg != null && message.hasOwnProperty("UpdateInstancePositionRespMsg"))
-                $root.BasilServer.UpdateInstancePositionResp.encode(message.UpdateInstancePositionRespMsg, writer.uint32(82).fork()).ldelim();
+                $root.BasilServer.UpdateInstancePositionResp.encode(message.UpdateInstancePositionRespMsg, writer.uint32(114).fork()).ldelim();
             if (message.RequestObjectPropertiesReqMsg != null && message.hasOwnProperty("RequestObjectPropertiesReqMsg"))
-                $root.BasilServer.RequestObjectPropertiesReq.encode(message.RequestObjectPropertiesReqMsg, writer.uint32(90).fork()).ldelim();
+                $root.BasilServer.RequestObjectPropertiesReq.encode(message.RequestObjectPropertiesReqMsg, writer.uint32(122).fork()).ldelim();
             if (message.RequestObjectPropertiesRespMsg != null && message.hasOwnProperty("RequestObjectPropertiesRespMsg"))
-                $root.BasilServer.RequestObjectPropertiesResp.encode(message.RequestObjectPropertiesRespMsg, writer.uint32(98).fork()).ldelim();
+                $root.BasilServer.RequestObjectPropertiesResp.encode(message.RequestObjectPropertiesRespMsg, writer.uint32(130).fork()).ldelim();
             if (message.RequestInstancePropertiesReqMsg != null && message.hasOwnProperty("RequestInstancePropertiesReqMsg"))
-                $root.BasilServer.RequestInstancePropertiesReq.encode(message.RequestInstancePropertiesReqMsg, writer.uint32(106).fork()).ldelim();
+                $root.BasilServer.RequestInstancePropertiesReq.encode(message.RequestInstancePropertiesReqMsg, writer.uint32(138).fork()).ldelim();
             if (message.RequestInstancePropertiesRespMsg != null && message.hasOwnProperty("RequestInstancePropertiesRespMsg"))
-                $root.BasilServer.RequestInstancePropertiesResp.encode(message.RequestInstancePropertiesRespMsg, writer.uint32(114).fork()).ldelim();
+                $root.BasilServer.RequestInstancePropertiesResp.encode(message.RequestInstancePropertiesRespMsg, writer.uint32(146).fork()).ldelim();
             if (message.OpenSessionReqMsg != null && message.hasOwnProperty("OpenSessionReqMsg"))
-                $root.BasilServer.OpenSessionReq.encode(message.OpenSessionReqMsg, writer.uint32(122).fork()).ldelim();
+                $root.BasilServer.OpenSessionReq.encode(message.OpenSessionReqMsg, writer.uint32(154).fork()).ldelim();
             if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg"))
-                $root.BasilServer.OpenSessionResp.encode(message.OpenSessionRespMsg, writer.uint32(130).fork()).ldelim();
+                $root.BasilServer.OpenSessionResp.encode(message.OpenSessionRespMsg, writer.uint32(162).fork()).ldelim();
             if (message.CloseSessionReqMsg != null && message.hasOwnProperty("CloseSessionReqMsg"))
-                $root.BasilServer.CloseSessionReq.encode(message.CloseSessionReqMsg, writer.uint32(138).fork()).ldelim();
+                $root.BasilServer.CloseSessionReq.encode(message.CloseSessionReqMsg, writer.uint32(170).fork()).ldelim();
             if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg"))
-                $root.BasilServer.CloseSessionResp.encode(message.CloseSessionRespMsg, writer.uint32(146).fork()).ldelim();
+                $root.BasilServer.CloseSessionResp.encode(message.CloseSessionRespMsg, writer.uint32(178).fork()).ldelim();
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg"))
-                $root.BasilServer.AliveCheckReq.encode(message.AliveCheckReqMsg, writer.uint32(154).fork()).ldelim();
+                $root.BasilServer.AliveCheckReq.encode(message.AliveCheckReqMsg, writer.uint32(186).fork()).ldelim();
             if (message.AliveCheckRespMsg != null && message.hasOwnProperty("AliveCheckRespMsg"))
-                $root.BasilServer.AliveCheckResp.encode(message.AliveCheckRespMsg, writer.uint32(162).fork()).ldelim();
+                $root.BasilServer.AliveCheckResp.encode(message.AliveCheckRespMsg, writer.uint32(194).fork()).ldelim();
             return writer;
         };
 
@@ -2507,57 +2899,69 @@ export const BasilServer = $root.BasilServer = (() => {
                     message.IdentifyDisplayableObjectRespMsg = $root.BasilServer.IdentifyDisplayableObjectResp.decode(reader, reader.uint32());
                     break;
                 case 3:
-                    message.CreateObjectInstanceReqMsg = $root.BasilServer.CreateObjectInstanceReq.decode(reader, reader.uint32());
+                    message.ForgetDisplayableObjectReqMsg = $root.BasilServer.ForgetDisplayableObjectReq.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.decode(reader, reader.uint32());
+                    message.ForgetDisplayableObjectRespMsg = $root.BasilServer.ForgetDisplayableObjectResp.decode(reader, reader.uint32());
                     break;
                 case 5:
-                    message.UpdateObjectPropertyReqMsg = $root.BasilServer.UpdateObjectPropertyReq.decode(reader, reader.uint32());
+                    message.CreateObjectInstanceReqMsg = $root.BasilServer.CreateObjectInstanceReq.decode(reader, reader.uint32());
                     break;
                 case 6:
-                    message.UpdateObjectPropertyRespMsg = $root.BasilServer.UpdateObjectPropertyResp.decode(reader, reader.uint32());
+                    message.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.decode(reader, reader.uint32());
                     break;
                 case 7:
-                    message.UpdateInstancePropertyReqMsg = $root.BasilServer.UpdateInstancePropertyReq.decode(reader, reader.uint32());
+                    message.DeleteObjectInstanceReqMsg = $root.BasilServer.DeleteObjectInstanceReq.decode(reader, reader.uint32());
                     break;
                 case 8:
-                    message.UpdateInstancePropertyRespMsg = $root.BasilServer.UpdateInstancePropertyResp.decode(reader, reader.uint32());
+                    message.DeleteObjectInstanceRespMsg = $root.BasilServer.DeleteObjectInstanceResp.decode(reader, reader.uint32());
                     break;
                 case 9:
-                    message.UpdateInstancePositionReqMsg = $root.BasilServer.UpdateInstancePositionReq.decode(reader, reader.uint32());
+                    message.UpdateObjectPropertyReqMsg = $root.BasilServer.UpdateObjectPropertyReq.decode(reader, reader.uint32());
                     break;
                 case 10:
-                    message.UpdateInstancePositionRespMsg = $root.BasilServer.UpdateInstancePositionResp.decode(reader, reader.uint32());
+                    message.UpdateObjectPropertyRespMsg = $root.BasilServer.UpdateObjectPropertyResp.decode(reader, reader.uint32());
                     break;
                 case 11:
-                    message.RequestObjectPropertiesReqMsg = $root.BasilServer.RequestObjectPropertiesReq.decode(reader, reader.uint32());
+                    message.UpdateInstancePropertyReqMsg = $root.BasilServer.UpdateInstancePropertyReq.decode(reader, reader.uint32());
                     break;
                 case 12:
-                    message.RequestObjectPropertiesRespMsg = $root.BasilServer.RequestObjectPropertiesResp.decode(reader, reader.uint32());
+                    message.UpdateInstancePropertyRespMsg = $root.BasilServer.UpdateInstancePropertyResp.decode(reader, reader.uint32());
                     break;
                 case 13:
-                    message.RequestInstancePropertiesReqMsg = $root.BasilServer.RequestInstancePropertiesReq.decode(reader, reader.uint32());
+                    message.UpdateInstancePositionReqMsg = $root.BasilServer.UpdateInstancePositionReq.decode(reader, reader.uint32());
                     break;
                 case 14:
-                    message.RequestInstancePropertiesRespMsg = $root.BasilServer.RequestInstancePropertiesResp.decode(reader, reader.uint32());
+                    message.UpdateInstancePositionRespMsg = $root.BasilServer.UpdateInstancePositionResp.decode(reader, reader.uint32());
                     break;
                 case 15:
-                    message.OpenSessionReqMsg = $root.BasilServer.OpenSessionReq.decode(reader, reader.uint32());
+                    message.RequestObjectPropertiesReqMsg = $root.BasilServer.RequestObjectPropertiesReq.decode(reader, reader.uint32());
                     break;
                 case 16:
-                    message.OpenSessionRespMsg = $root.BasilServer.OpenSessionResp.decode(reader, reader.uint32());
+                    message.RequestObjectPropertiesRespMsg = $root.BasilServer.RequestObjectPropertiesResp.decode(reader, reader.uint32());
                     break;
                 case 17:
-                    message.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.decode(reader, reader.uint32());
+                    message.RequestInstancePropertiesReqMsg = $root.BasilServer.RequestInstancePropertiesReq.decode(reader, reader.uint32());
                     break;
                 case 18:
-                    message.CloseSessionRespMsg = $root.BasilServer.CloseSessionResp.decode(reader, reader.uint32());
+                    message.RequestInstancePropertiesRespMsg = $root.BasilServer.RequestInstancePropertiesResp.decode(reader, reader.uint32());
                     break;
                 case 19:
-                    message.AliveCheckReqMsg = $root.BasilServer.AliveCheckReq.decode(reader, reader.uint32());
+                    message.OpenSessionReqMsg = $root.BasilServer.OpenSessionReq.decode(reader, reader.uint32());
                     break;
                 case 20:
+                    message.OpenSessionRespMsg = $root.BasilServer.OpenSessionResp.decode(reader, reader.uint32());
+                    break;
+                case 21:
+                    message.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.decode(reader, reader.uint32());
+                    break;
+                case 22:
+                    message.CloseSessionRespMsg = $root.BasilServer.CloseSessionResp.decode(reader, reader.uint32());
+                    break;
+                case 23:
+                    message.AliveCheckReqMsg = $root.BasilServer.AliveCheckReq.decode(reader, reader.uint32());
+                    break;
+                case 24:
                     message.AliveCheckRespMsg = $root.BasilServer.AliveCheckResp.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2596,6 +3000,26 @@ export const BasilServer = $root.BasilServer = (() => {
                         return "IdentifyDisplayableObjectRespMsg." + error;
                 }
             }
+            if (message.ForgetDisplayableObjectReqMsg != null && message.hasOwnProperty("ForgetDisplayableObjectReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.ForgetDisplayableObjectReq.verify(message.ForgetDisplayableObjectReqMsg);
+                    if (error)
+                        return "ForgetDisplayableObjectReqMsg." + error;
+                }
+            }
+            if (message.ForgetDisplayableObjectRespMsg != null && message.hasOwnProperty("ForgetDisplayableObjectRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.ForgetDisplayableObjectResp.verify(message.ForgetDisplayableObjectRespMsg);
+                    if (error)
+                        return "ForgetDisplayableObjectRespMsg." + error;
+                }
+            }
             if (message.CreateObjectInstanceReqMsg != null && message.hasOwnProperty("CreateObjectInstanceReqMsg")) {
                 if (properties.msg === 1)
                     return "msg: multiple values";
@@ -2614,6 +3038,26 @@ export const BasilServer = $root.BasilServer = (() => {
                     let error = $root.BasilServer.CreateObjectInstanceResp.verify(message.CreateObjectInstanceRespMsg);
                     if (error)
                         return "CreateObjectInstanceRespMsg." + error;
+                }
+            }
+            if (message.DeleteObjectInstanceReqMsg != null && message.hasOwnProperty("DeleteObjectInstanceReqMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.DeleteObjectInstanceReq.verify(message.DeleteObjectInstanceReqMsg);
+                    if (error)
+                        return "DeleteObjectInstanceReqMsg." + error;
+                }
+            }
+            if (message.DeleteObjectInstanceRespMsg != null && message.hasOwnProperty("DeleteObjectInstanceRespMsg")) {
+                if (properties.msg === 1)
+                    return "msg: multiple values";
+                properties.msg = 1;
+                {
+                    let error = $root.BasilServer.DeleteObjectInstanceResp.verify(message.DeleteObjectInstanceRespMsg);
+                    if (error)
+                        return "DeleteObjectInstanceRespMsg." + error;
                 }
             }
             if (message.UpdateObjectPropertyReqMsg != null && message.hasOwnProperty("UpdateObjectPropertyReqMsg")) {
@@ -2793,6 +3237,16 @@ export const BasilServer = $root.BasilServer = (() => {
                     throw TypeError(".BasilServer.BasilServerMessage.IdentifyDisplayableObjectRespMsg: object expected");
                 message.IdentifyDisplayableObjectRespMsg = $root.BasilServer.IdentifyDisplayableObjectResp.fromObject(object.IdentifyDisplayableObjectRespMsg);
             }
+            if (object.ForgetDisplayableObjectReqMsg != null) {
+                if (typeof object.ForgetDisplayableObjectReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.ForgetDisplayableObjectReqMsg: object expected");
+                message.ForgetDisplayableObjectReqMsg = $root.BasilServer.ForgetDisplayableObjectReq.fromObject(object.ForgetDisplayableObjectReqMsg);
+            }
+            if (object.ForgetDisplayableObjectRespMsg != null) {
+                if (typeof object.ForgetDisplayableObjectRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.ForgetDisplayableObjectRespMsg: object expected");
+                message.ForgetDisplayableObjectRespMsg = $root.BasilServer.ForgetDisplayableObjectResp.fromObject(object.ForgetDisplayableObjectRespMsg);
+            }
             if (object.CreateObjectInstanceReqMsg != null) {
                 if (typeof object.CreateObjectInstanceReqMsg !== "object")
                     throw TypeError(".BasilServer.BasilServerMessage.CreateObjectInstanceReqMsg: object expected");
@@ -2802,6 +3256,16 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (typeof object.CreateObjectInstanceRespMsg !== "object")
                     throw TypeError(".BasilServer.BasilServerMessage.CreateObjectInstanceRespMsg: object expected");
                 message.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.fromObject(object.CreateObjectInstanceRespMsg);
+            }
+            if (object.DeleteObjectInstanceReqMsg != null) {
+                if (typeof object.DeleteObjectInstanceReqMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.DeleteObjectInstanceReqMsg: object expected");
+                message.DeleteObjectInstanceReqMsg = $root.BasilServer.DeleteObjectInstanceReq.fromObject(object.DeleteObjectInstanceReqMsg);
+            }
+            if (object.DeleteObjectInstanceRespMsg != null) {
+                if (typeof object.DeleteObjectInstanceRespMsg !== "object")
+                    throw TypeError(".BasilServer.BasilServerMessage.DeleteObjectInstanceRespMsg: object expected");
+                message.DeleteObjectInstanceRespMsg = $root.BasilServer.DeleteObjectInstanceResp.fromObject(object.DeleteObjectInstanceRespMsg);
             }
             if (object.UpdateObjectPropertyReqMsg != null) {
                 if (typeof object.UpdateObjectPropertyReqMsg !== "object")
@@ -2900,6 +3364,16 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (options.oneofs)
                     object.msg = "IdentifyDisplayableObjectRespMsg";
             }
+            if (message.ForgetDisplayableObjectReqMsg != null && message.hasOwnProperty("ForgetDisplayableObjectReqMsg")) {
+                object.ForgetDisplayableObjectReqMsg = $root.BasilServer.ForgetDisplayableObjectReq.toObject(message.ForgetDisplayableObjectReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "ForgetDisplayableObjectReqMsg";
+            }
+            if (message.ForgetDisplayableObjectRespMsg != null && message.hasOwnProperty("ForgetDisplayableObjectRespMsg")) {
+                object.ForgetDisplayableObjectRespMsg = $root.BasilServer.ForgetDisplayableObjectResp.toObject(message.ForgetDisplayableObjectRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "ForgetDisplayableObjectRespMsg";
+            }
             if (message.CreateObjectInstanceReqMsg != null && message.hasOwnProperty("CreateObjectInstanceReqMsg")) {
                 object.CreateObjectInstanceReqMsg = $root.BasilServer.CreateObjectInstanceReq.toObject(message.CreateObjectInstanceReqMsg, options);
                 if (options.oneofs)
@@ -2909,6 +3383,16 @@ export const BasilServer = $root.BasilServer = (() => {
                 object.CreateObjectInstanceRespMsg = $root.BasilServer.CreateObjectInstanceResp.toObject(message.CreateObjectInstanceRespMsg, options);
                 if (options.oneofs)
                     object.msg = "CreateObjectInstanceRespMsg";
+            }
+            if (message.DeleteObjectInstanceReqMsg != null && message.hasOwnProperty("DeleteObjectInstanceReqMsg")) {
+                object.DeleteObjectInstanceReqMsg = $root.BasilServer.DeleteObjectInstanceReq.toObject(message.DeleteObjectInstanceReqMsg, options);
+                if (options.oneofs)
+                    object.msg = "DeleteObjectInstanceReqMsg";
+            }
+            if (message.DeleteObjectInstanceRespMsg != null && message.hasOwnProperty("DeleteObjectInstanceRespMsg")) {
+                object.DeleteObjectInstanceRespMsg = $root.BasilServer.DeleteObjectInstanceResp.toObject(message.DeleteObjectInstanceRespMsg, options);
+                if (options.oneofs)
+                    object.msg = "DeleteObjectInstanceRespMsg";
             }
             if (message.UpdateObjectPropertyReqMsg != null && message.hasOwnProperty("UpdateObjectPropertyReqMsg")) {
                 object.UpdateObjectPropertyReqMsg = $root.BasilServer.UpdateObjectPropertyReq.toObject(message.UpdateObjectPropertyReqMsg, options);
