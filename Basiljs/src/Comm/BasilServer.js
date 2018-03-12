@@ -30,7 +30,7 @@ export class BasilServiceConnection  {
     constructor(serverID, transp, parms) {
         this.ID = serverID;
         this.transport = transp;
-        this.aliveReplySerquenceNum = 2000;
+        this.aliveReplySequenceNum = 2000;
         this.serverID = undefined;
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
         this.receptionMessages = [
@@ -48,6 +48,21 @@ export class BasilServiceConnection  {
             [ 'AliveCheckReqMsg', this.procAliveCheck, 'AliveCheckRespMsg'],
             [ 'AliveCheckRespMsg', this.procAliveCheckResp, undefined]
         ];
+        this.receptionMessages2 = {
+            'IdentifyDisplayableObjectReqMsg': [ '', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg' ],
+            'ForgetDisplayableObjectReqMsg': [ '', this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg' ],
+            'CreateObjectInstanceReqMsg': [ '', this.procCreateObjectInstance, 'CreateObjectInstanceRespMsg' ],
+            'DeleteObjectInstanceReqMsg': [ '', this.procDeleteObjectInstance, 'DeleteObjectInstanceRespMsg' ],
+            'UpdateObjectPropertyReqMsg': [ '', this.procUpdateObjectProperty, 'UpdateObjectPropertyRespMsg' ],
+            'UpdateInstancePropertyReqMsg': [ '', this.procUpdateInstanceProperty, 'UpdateInstancePropertyRespMsg' ],
+            'UpdateInstancePositionReqMsg': [ '', this.procUpdateInstancePosition, 'UpdateInstancePositionRespMsg' ],
+            'RequestObjectPropertiesReqMsg': [ '', this.procRequestObjectProperties, 'RequestObjectPropertiesRespMsg' ],
+            'RequestInstancePropertiesReqMsg': [ '', this.procRequestInstanceProperties, 'RequestInstancePropertiesRespMsg' ],
+            'OpenSessionReqMsg': [ '', this.procOpenSession, 'OpenSessionRespMsg' ],
+            'CloseSessionReqMsg': [ '', this.procCloseSession, 'CloseSessionRespMsg' ],
+            'AliveCheckReqMsg': [ '', this.procAliveCheck, 'AliveCheckRespMsg' ],
+            'AliveCheckRespMsg': [ '', this.procAliveCheckResp, undefined ]
+        };
     }
     Start() {
         if (this.transport) {
@@ -65,22 +80,50 @@ export class BasilServiceConnection  {
     // @param buff raw bytes of the message that was transported
     // @param tcontext transport context. Could be undefined but, if present, used for RPC
     procMessage(buff, tcontext) {
+        let newWay = 1;
         if (this.transport) {
             // the Buffer should be a BasilServerMessage
             try {
                 let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
                 GP.DebugLog('BasilServer: procMessage: ' + JSON.stringify(msg));
                 let replyContents = undefined;
-                for (const template of this.receptionMessages) {
-                    if (msg.hasOwnProperty(template[0])) {
-                        replyContents = template[1](msg[template[0]]);
-                        if (replyContents != undefined && template[2] !== undefined) {
+                if (newWay == 1) {
+                    // Look up the message type with a lookup rather than a loop
+                    let msgProps = Object.getOwnPropertyNames(msg);
+                    if (msgProps.length == 1) {
+                        let msgProp = msgProps[0];
+                        let template = this.receptionMessages2[msgProp];
+                        replyContents = template[1](msg[msgProp], this);
+                        // GP.DebugLog('BasilServer.procMessage:'
+                        //         + ' prop=' + msgProp
+                        //         + ', rec=' + JSON.stringify(msg[msgProp])
+                        //         + ', reply=' + JSON.stringify(replyContents)
+                        //     );
+                        if (replyContents !== undefined && template[2] !== undefined) {
+                            // The message requires a response
                             let rmsg = {};
-                            rmsg[template[0]] = replyContents;
+                            rmsg[template[2]] = replyContents;
                             let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
                             this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                         }
-                        break;
+                    }
+                    else {
+                        GP.DebugLog('BasilServer.procMessage: odd msg props: len=' + msgProps.length);
+                    }
+                }
+                else {
+                    for (const template of this.receptionMessages) {
+                        if (msg.hasOwnProperty(template[0])) {
+                            replyContents = template[1](msg[template[0]]);
+                            if (replyContents != undefined && template[2] !== undefined) {
+                                // The message requires a response
+                                let rmsg = {};
+                                rmsg[template[2]] = replyContents;
+                                let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
+                                this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
+                            }
+                            break;
+                        }
                     }
                 }
                 if (replyContents === undefined) {
@@ -92,44 +135,52 @@ export class BasilServiceConnection  {
             }
         }
     }
-    procIdentifyDisplayableObject(req) {
+    procIdentifyDisplayableObject(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
         };
     }
-    procForgetDisplayableObject(req) {
+    procForgetDisplayableObject(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
         };
     }
     // Given an object with recieved parameters, do operation and return response object
-    procCreateObjectInstance(req) {
+    procCreateObjectInstance(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
             'createdInstanceId': 122334
         };
     }
-    procDeleteObjectInstance(req) {
+    procDeleteObjectInstance(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
         };
     }
-    procUpdateObjectProperty(req) {
+    procUpdateObjectProperty(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1
         };
     }
-    procUpdateInstanceProperty(req) {
+    procUpdateInstanceProperty(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1
         };
     }
-    procUpdateInstancePosition(req) {
+    procUpdateInstancePosition(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1
         };
     }
-    procRequestObjectProperties(req) {
+    procRequestObjectProperties(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
             'properties': {
@@ -138,7 +189,8 @@ export class BasilServiceConnection  {
             }
         };
     }
-    procRequestInstanceProperties(req) {
+    procRequestInstanceProperties(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
             'properties': {
@@ -147,7 +199,8 @@ export class BasilServiceConnection  {
             }
         };
     }
-    procOpenSession(req) {
+    procOpenSession(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1,
             'features': {
@@ -156,17 +209,19 @@ export class BasilServiceConnection  {
             }
         };
     }
-    procCloseSession(req) {
+    procCloseSession(req, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'success': 1
         };
     }
-    procAliveCheck(req) {
+    procAliveCheck(reqq, tthis) {
+        let xxport = tthis === undefined ? this : tthis;
         return {
             'time': Date.now(),
-            'sequenceNum': this.aliveReplySerquenceNum++,
-            'timeReceived': req.time,
-            'sequenceNumReceived': req.sequenceNum
+            'sequenceNum': tthis.aliveReplySequenceNum++,
+            'timeReceived': reqq['time'],
+            'sequenceNumReceived': reqq['sequenceNum']
         };
     }
     procAliveCheckResp(req) {

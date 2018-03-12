@@ -12,10 +12,10 @@
 'use strict';
 
 // Global exception thingy
-export default class BException {
+export class BException {
     constructor(msg, type) {
         this.msg = msg;
-        if (type) {
+        if (type !== undefined) {
             this.type = type;
         }
         else {

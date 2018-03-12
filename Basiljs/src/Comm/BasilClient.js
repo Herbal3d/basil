@@ -22,19 +22,21 @@ export class BasilClientConnection {
     constructor(clientID, xport, parms) {
         this.clientID = clientID;
         this.transport = xport;
-    }
+        this.aliveSequenceNum = 888;
+    };
     Start() {
-    }
+    };
     Close() {
-    }
+    };
     // function that sends the request and returns a Promise for the response.
-    static function SendAndPromiseResponse(msg, xport, reqName) {
+    SendAndPromiseResponse(msg, xport, reqName) {
         let smsg = {};
         smsg[ reqName + 'ReqMsg'] = msg;
         let cmsg = BasilServerMsgs.BasilServerMessage.create(smsg);
         let emsg = BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
-        return new Promise((resolve, reject) => {
-            xport.sendRPC(msg, xport)
+        let xxport = xport;
+        let ret = new Promise( (resolve,reject) => {
+            xxport.SendRPC(emsg, xxport)
             .then( resp => {
                 let response = BasilServerMsgs.BasilServerMessage.decode(resp);
                 if (response.hasOwnProperty( reqName + 'RespMsg')) {
@@ -48,7 +50,8 @@ export class BasilClientConnection {
                 reject(e);
             });
         });
-    }
+        return ret;
+    };
 
     IdentifyDisplayableObject(auth, id, asset, aabb) {
         let msg = {
@@ -57,15 +60,15 @@ export class BasilClientConnection {
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (aabb !== undefined) msg['aabb'] = aabb;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'IdentifyDisplayableObject');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'IdentifyDisplayableObject');
+    };
     ForgetDisplayableObject(auth, id) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'ForgetDisplayableObject');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'ForgetDisplayableObject');
+    };
     CreateObjectInstance(auth, id, pos, props) {
         let msg = {
             'id': id
@@ -73,74 +76,77 @@ export class BasilClientConnection {
         if (auth !== undefined) msg['auth'] = auth;
         if (pos !== undefined) msg['pos'] = pos;
         if (props !== undefined) msg['props'] = props;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'CreateObjectInstance');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'CreateObjectInstance');
+    };
     DeleteObjectInstance(auth, id) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'DeleteObjectInstance');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'DeleteObjectInstance');
+    };
     UpdateObjectProperty(auth, id, props) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (props !== undefined) msg['props'] = props;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'UpdateObjectProperty');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'UpdateObjectProperty');
+    };
     UpdateInstanceProperty(auth, id, props) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (props !== undefined) msg['props'] = props;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'UpdateInstanceProperty');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'UpdateInstanceProperty');
+    };
     UpdateInstancePosition(auth, id,  pos) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (pos !== undefined) msg['pos'] = pos;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'UpdateInstancePosition');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'UpdateInstancePosition');
+    };
     RequestObjectProperties(auth, id, filter) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (filter !== undefined) msg['filter'] = filter;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'RequestObjectProperties');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'RequestObjectProperties');
+    };
     RequestInstanceProperties(auth, id, filter) {
         let msg = {
             'id': id
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (filter !== undefined) msg['filter'] = filter;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'RequestInstanceProperties');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'RequestInstanceProperties');
+    };
     OpenSession(auth, props) {
         let msg = {};
         if (auth !== undefined) msg['auth'] = auth;
         if (props !== undefined) msg['props'] = props;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'OpenSession');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'OpenSession');
+    };
     CloseSession(auth, reason) {
         let msg = {};
         if (auth !== undefined) msg['auth'] = auth;
         if (reason !== undefined) msg['reason'] = reason;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'CloseSession');
-    }
+        return this.SendAndPromiseResponse(msg, this.transport, 'CloseSession');
+    };
     AliveCheck(auth) {
         let msg = {};
         if (auth !== undefined) msg['auth'] = auth;
-        return BasilClientConnection.SendAndPromiseResponse(msg, this.transport, 'AliveCheck');
-    }
-}
+        msg['time'] = Date.now(),
+        msg['sequenceNum']  = this.aliveSequenceNum++
+        // throw 'BasilClient.AliveCheck: sending: ' + JSON.stringify(msg);
+        return this.SendAndPromiseResponse(msg, this.transport, 'AliveCheck');
+    };
+};
 
 export function NewBasilClient(clientID, xport, parms) {
     return new BasilClientConnection(clientID, xport, parms);
-}
+};

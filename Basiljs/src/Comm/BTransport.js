@@ -16,7 +16,7 @@ import GP from 'GP';
 var TR = TR || {};
 GP.TR = TR;
 
-import BException from 'xBException';
+import { BException } from 'xBException';
 import { BTransport as BTransportMsgs } from 'xBasilServerMessages';
 
 // Template for transport implmentations.
@@ -98,6 +98,7 @@ export function EncodeMessage(data, tcontext, tthis) {
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return BTransportMsgs.BTransport.encode(cmsg).finish();
 }
+
 // Wrap the passed 'data' into a RPC transport message.
 // 'resolve' and 'reject' are functions for processing the reception of the response.
 export function EncodeRPCMessage(data, resolve, reject, tthis) {
@@ -113,6 +114,7 @@ export function EncodeRPCMessage(data, resolve, reject, tthis) {
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return BTransportMsgs.BTransport.encode(cmsg).finish();
 }
+
 // Check the input queue for messages and, if present, process one.
 // If 'tthis' is passed, it is used as the BTransport to push reception for.
 export function PushReception(tthis) {

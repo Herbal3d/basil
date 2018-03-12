@@ -30,8 +30,6 @@ export default class BTransportWW extends BTransport {
                 this.isWorker = false;
                 let xport = this;   // for closeure of message function
                 this.worker.onmessage = function(d) {
-                    GP.rmsg = d;    // DEBUG DEBUG
-                    GP.DebugLog('BTransportWW: data type = ' + typeof d.data);
                     xport.messages.push(d.data);
                     PushReception(xport);
                 }
@@ -67,33 +65,31 @@ export default class BTransportWW extends BTransport {
     // Send the data. Places message in output queue
     // 'tcontext' is optional and used for RPC responses.
     Send(data, tcontext, tthis) {
-        let tester = tthis === undefined ? this : tthis;
-        let emsg = EncodeMessage(data, tcontext, tester);
-        if (tester.worker) {
-            tester.worker.postMessage(emsg);
+        let xxport = tthis === undefined ? this : tthis;
+        let emsg = EncodeMessage(data, tcontext, xxport);
+        if (xxport.worker) {
+            xxport.worker.postMessage(emsg);
         }
         else {
             postMessage(emsg);
         }
-        tester.messagesSent++;
-        PushReception(tester);
+        xxport.messagesSent++;
     }
     // Send a messsage and expect a replay of some type.
     // Returns a promise
     SendRPC(data, tthis) {
-        let tester = tthis === undefined ? this : tthis;
+        let xxport = tthis === undefined ? this : tthis;
         return new Promise((resolve, reject) => {
-            let emsg = EncodeRPCMessage(data, resolve, reject, tester);
-            if (tester.worker) {
-                tester.worker.postMessage(emsg);
+            let emsg = EncodeRPCMessage(data, resolve, reject, xxport);
+            if (xxport.worker) {
+                xxport.worker.postMessage(emsg);
             }
             else {
                 postMessage(emsg);
             }
-            tester.RPCmessagesSent++;
-            tester.messagesSent++;
-         });
-        PushReception(tester);
+            xxport.RPCmessagesSent++;
+            xxport.messagesSent++;
+        });
     }
     // Set a calback to be called whenever a message is received
     SetReceiveCallbackObject(callback) {

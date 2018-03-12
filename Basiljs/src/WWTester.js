@@ -16,42 +16,37 @@
 import GP from 'GP';
 
 import Config from 'xConfig';
+import * as BasilClient from './Comm/BasilClient.js';
+import BTransportWW from './Comm/BTransportWW.js';
+import { BException } from './BException.js';
 
 GP.Config = Config;
 
 // Debug function to mimic the non-WebWorker one
 GP.DebugLog = function(msg) {};
 
-import BTransportWW from './Comm/BTransportWW.js';
-import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './Comm/BTransport.js';
-import { BasilServer as BasilServerMsgs } from './jslibs/BasilServerMessages.js';
-import { BException } from './BException.js';
-
 GP.Ready = false;
-GP.aliveSequenceNum = 444;
 
 let parms  = {};
 GP.wwTransport = new BTransportWW(parms);
+/*
 GP.wwTransport.SetReceiveCallbackObject( {
     'procMessage': function(buff, tcontext) {
         let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
         // Do something with the messsage
     }
 })
+*/
 GP.Ready = true;
 
-GP.aliveIntervalID = setInterval(function() {
-    SendAliveCheckReq(GP.wwTransport);
-}, Config.WWTester.AliveCheckPollMS);
+GP.client = BasilClient.NewBasilClient('client', GP.wwTransport, {} );
 
-// Send an AliveCheckReq message
-function SendAliveCheckReq(xport) {
-    let bmsg = {
-        'AliveCheckReqMsg': {
-            'time': Date.now(),
-            'sequenceNum': GP.aliveSequenceNum++
-        }
-    }
-    let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
-    xport.SendRPC(bdata, undefined, xport);
-}
+GP.aliveIntervalID = setInterval(function() {
+    GP.client.AliveCheck()
+    .then( resp => {
+        // Got it back!
+    })
+    .catch (e => {
+        // Got it back!
+    });
+}, Config.WWTester.AliveCheckPollMS);
