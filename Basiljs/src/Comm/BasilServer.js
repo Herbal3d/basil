@@ -15,6 +15,7 @@ import GP from 'GP';
 
 import Config from 'xConfig';
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
+import { BItem } from 'xBItem';
 
 var BS = BS || {};
 GP.BS = BS;
@@ -23,31 +24,17 @@ GP.BS = BS;
 BS.servers = {};
 
 // The browser is the Basil server so requests are sent to us
-export class BasilServiceConnection  {
+export class BasilServiceConnection  extends BItem {
     // @param serverID a unique ID for accessing this server instance
     // @param transp BTransport instance to talk over
     // @param parms a map of extra parameters for this service
     constructor(serverID, transp, parms) {
+        super(parms);
         this.ID = serverID;
         this.transport = transp;
         this.aliveReplySequenceNum = 2000;
         this.serverID = undefined;
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
-        this.receptionMessages = [
-            [ 'IdentifyDisplayableObjectReqMsg', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg'],
-            [ 'ForgetDisplayableObjectReqMsg', this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg'],
-            [ 'CreateObjectInstanceReqMsg', this.procCreateObjectInstance, 'CreateObjectInstanceRespMsg'],
-            [ 'DeleteObjectInstanceReqMsg', this.procDeleteObjectInstance, 'DeleteObjectInstanceRespMsg'],
-            [ 'UpdateObjectPropertyReqMsg', this.procUpdateObjectProperty, 'UpdateObjectPropertyRespMsg'],
-            [ 'UpdateInstancePropertyReqMsg', this.procUpdateInstanceProperty, 'UpdateInstancePropertyRespMsg'],
-            [ 'UpdateInstancePositionReqMsg', this.procUpdateInstancePosition, 'UpdateInstancePositionRespMsg'],
-            [ 'RequestObjectPropertiesReqMsg', this.procRequestObjectProperties, 'RequestObjectPropertiesRespMsg'],
-            [ 'RequestInstancePropertiesReqMsg', this.procRequestInstanceProperties, 'RequestInstancePropertiesRespMsg'],
-            [ 'OpenSessionReqMsg', this.procOpenSession, 'OpenSessionRespMsg'],
-            [ 'CloseSessionReqMsg', this.procCloseSession, 'CloseSessionRespMsg'],
-            [ 'AliveCheckReqMsg', this.procAliveCheck, 'AliveCheckRespMsg'],
-            [ 'AliveCheckRespMsg', this.procAliveCheckResp, undefined]
-        ];
         this.receptionMessages2 = {
             'IdentifyDisplayableObjectReqMsg': [ '', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg' ],
             'ForgetDisplayableObjectReqMsg': [ '', this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg' ],
@@ -87,44 +74,27 @@ export class BasilServiceConnection  {
                 let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
                 GP.DebugLog('BasilServer: procMessage: ' + JSON.stringify(msg));
                 let replyContents = undefined;
-                if (newWay == 1) {
-                    // Look up the message type with a lookup rather than a loop
-                    let msgProps = Object.getOwnPropertyNames(msg);
-                    if (msgProps.length == 1) {
-                        let msgProp = msgProps[0];
-                        let template = this.receptionMessages2[msgProp];
-                        replyContents = template[1](msg[msgProp], this);
-                        // GP.DebugLog('BasilServer.procMessage:'
-                        //         + ' prop=' + msgProp
-                        //         + ', rec=' + JSON.stringify(msg[msgProp])
-                        //         + ', reply=' + JSON.stringify(replyContents)
-                        //     );
-                        if (replyContents !== undefined && template[2] !== undefined) {
-                            // The message requires a response
-                            let rmsg = {};
-                            rmsg[template[2]] = replyContents;
-                            let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
-                            this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                        }
-                    }
-                    else {
-                        GP.DebugLog('BasilServer.procMessage: odd msg props: len=' + msgProps.length);
+                // Look up the message type with a lookup rather than a loop
+                let msgProps = Object.getOwnPropertyNames(msg);
+                if (msgProps.length == 1) {
+                    let msgProp = msgProps[0];
+                    let template = this.receptionMessages2[msgProp];
+                    replyContents = template[1](msg[msgProp], this);
+                    // GP.DebugLog('BasilServer.procMessage:'
+                    //         + ' prop=' + msgProp
+                    //         + ', rec=' + JSON.stringify(msg[msgProp])
+                    //         + ', reply=' + JSON.stringify(replyContents)
+                    //     );
+                    if (replyContents !== undefined && template[2] !== undefined) {
+                        // The message requires a response
+                        let rmsg = {};
+                        rmsg[template[2]] = replyContents;
+                        let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
+                        this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     }
                 }
                 else {
-                    for (const template of this.receptionMessages) {
-                        if (msg.hasOwnProperty(template[0])) {
-                            replyContents = template[1](msg[template[0]]);
-                            if (replyContents != undefined && template[2] !== undefined) {
-                                // The message requires a response
-                                let rmsg = {};
-                                rmsg[template[2]] = replyContents;
-                                let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
-                                this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
-                            }
-                            break;
-                        }
-                    }
+                    GP.DebugLog('BasilServer.procMessage: odd msg props: len=' + msgProps.length);
                 }
                 if (replyContents === undefined) {
                     GP.DebugLog('BasilServer: did not process message in :' + JSON.stringify(msg));

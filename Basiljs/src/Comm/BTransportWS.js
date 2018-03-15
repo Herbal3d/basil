@@ -18,7 +18,9 @@ import { BTransport } from './BTransport.js';
 // There are two halfs: the 'service' and the 'worker'.
 export default class BTransportWS extends BTransport {
     constructor(parms) {
-        super();
+        super(parms);
+        GP.DebugLog('BTransportWS constructor');
+        this.itemTYpe = 'BTransport.TransportWS';
     }
     Open(connectionString) {
     }
@@ -56,10 +58,6 @@ export default class BTransportWS extends BTransport {
     // Return a map with statistics
     get stats() {
         return {};
-    }
-    // Returns type of the transport. Like 'WWS' or 'WS'.
-    get type() {
-        return 'BTransportWS';
     }
     // Returns a longer identifying name of transport (usually includes endpoint name)
     get info() {

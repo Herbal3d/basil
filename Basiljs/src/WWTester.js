@@ -16,9 +16,9 @@
 import GP from 'GP';
 
 import Config from 'xConfig';
-import * as BasilClient from './Comm/BasilClient.js';
-import BTransportWW from './Comm/BTransportWW.js';
-import { BException } from './BException.js';
+import * as BasilClient from 'xBasilClient';
+import BTransportWW from 'xBTransportWW';
+import { BException } from 'xBException';
 
 GP.Config = Config;
 

@@ -16,25 +16,41 @@
 export class BItem {
     constructor() {
         this.props = new Map();
-    }
-    // The key this item is stored under
-    get key() {
-    }
-    set key(value) {
-        this.key = value;
-    }
-    // The type of the item
-    get type() {
+        this.key = undefined;   // index this item is stored under
+        this.itemType = undefined;  // the type of the item
+        // If defined, provides a map of property names to get and set functions
+        // The propertyMap is indexed by the property name which gives an array
+        //     which the first value is a getter function and the second is a setter.
+        this.propertyMap = undefined;
     }
     GetProperties(filter) {
-        return this.props;
+        let ret = undefined;
+        if (this.propertyMap) {
+            ret = {};
+            this.propertyMap.GetOwnPropertyNames().forEach(prop => {
+                ret[prop] = this.propertyMap[prop][0]();
+            })
+        }
+        else {
+            ret = this.props;
+        }
+        return ret;
     }
     SetProperty(prop, value) {
-        props[prop] = value;
+        if (this.propertyMap) {
+            if (this.propertyMap[prop]) {
+                if (this.propertyMap[prop][1]) {
+                    this.propertyMap[prop][1](value);
+                }
+            }
+        }
+        else {
+            this.props.set(prop, value);
+        }
     }
     SetProperties(propValues) {
-        Object.GetOwnpropValues.forEach(prop => {
-            this.props[prop] = propValues[prop];
+        Object.GetOwnPropertyNames.forEach(prop => {
+            this.SetProperty(prop, propValues[prop]);
         });
     }
 }

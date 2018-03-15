@@ -21,7 +21,12 @@ module.exports = {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
         'xBException': path.resolve(__dirname, 'src/BException.js'),
 
+        'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),
+        'xBTransportWW': path.resolve(__dirname, 'src/Comm/BTransportWW.js'),
+        'xBasilClient': path.resolve(__dirname, 'src/Comm/BasilClient.js'),
         'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
+
+        'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
 
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
         'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),

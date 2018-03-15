@@ -28,6 +28,11 @@ module.exports = {
         'xBException': path.resolve(__dirname, 'src/BException.js'),
 
         'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
+        'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),
+        'xBTransportWW': path.resolve(__dirname, 'src/Comm/BTransportWW.js'),
+        'xBTransportWS': path.resolve(__dirname, 'src/Comm/BTransportWS.js'),
+        'xBasilServer': path.resolve(__dirname, 'src/Comm/BasilServer.js'),
+        'xBasilClient': path.resolve(__dirname, 'src/Comm/BasilClient.js'),
         'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
 
         'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),

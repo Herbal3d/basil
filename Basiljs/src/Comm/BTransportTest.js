@@ -28,6 +28,7 @@ export default class BTransportTest extends BTransport {
     constructor(parms) {
         super(parms);
         GP.DebugLog('BTransportTest: constructor');
+        this.itemTYpe = 'BTransport.TransportTest';
         if (GP.TR.TransportTestsRunning === undefined) {
             // Attach test variables to the transport globel variable for debugging
             GP.TR.TransportTestsRunning = [];
@@ -121,10 +122,6 @@ export default class BTransportTest extends BTransport {
     // Return a map with statistics
     get stats() {
         return {};
-    }
-    // Returns type of the transport. Like 'WW' or 'WS'.
-    get type() {
-        return 'BTransportTest';
     }
     // Returns a longer identifying name of transport (usually includes endpoint name)
     get info() {

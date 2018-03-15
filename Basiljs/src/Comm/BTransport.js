@@ -18,10 +18,12 @@ GP.TR = TR;
 
 import { BException } from 'xBException';
 import { BTransport as BTransportMsgs } from 'xBasilServerMessages';
+import { BItem } from 'xBItem';
 
 // Template for transport implmentations.
-export class BTransport {
+export class BTransport extends BItem {
     constructor(parms) {
+        super();
         this.messages = [];
         this.messagesSent = 0;
         this.RPCmessagesSent = 0;
@@ -30,6 +32,15 @@ export class BTransport {
         this.RPCsession = 900222;
         this.RPCSessionCallback = new Map();
         this.aliveSequenceNum = 333;
+
+        // The properties that can be read as a BItem
+        this.propertyMap = {
+            'ItemType': [ () => { return this.itemType; }, undefined ],
+            'MessagesSent': [ () => { return this.messagesSent; }, undefined ],
+            'RPCMessagesSent': [ () => { return this.RPCmessagesSent; }, undefined ],
+            'MessagesReceived': [ () => { return this.messagesReceived; }, undefined ],
+            'QueueSize': [ () => { return this.messages.length; }, undefined ]
+        };
     }
     Close() {
     }
@@ -62,13 +73,9 @@ export class BTransport {
     get stats() {
         return {};
     }
-    // Returns type of the transport. Like 'WW' or 'WS'.
-    get type() {
-        return 'unspecified';
-    }
     // Returns a longer identifying name of transport (usually includes endpoint name)
     get info() {
-        return this.type + ' none';
+        return this.itemType + ' none';
     }
 }
 

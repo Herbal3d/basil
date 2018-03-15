@@ -25,12 +25,14 @@ export default class BTransportWW extends BTransport {
             // We're the master
             // parms.transportURL is WebWorker URL to connect to
             GP.DebugLog('BTransportWW: setting up server');
+            this.itemTYpe = 'BTransport.TransportWW.Server';
             try {
                 this.worker = new Worker(parms.transportURL);
                 this.isWorker = false;
                 let xport = this;   // for closeure of message function
                 this.worker.onmessage = function(d) {
                     xport.messages.push(d.data);
+                    this.messagesReceived++;
                     PushReception(xport);
                 }
                 this.worker.onerror = function(e) {
@@ -48,6 +50,7 @@ export default class BTransportWW extends BTransport {
         else {
             // We're the worker
             GP.DebugLog('BTransportWW: setting up worker');
+            this.itemTYpe = 'BTransport.TransportWW.Client';
             this.isWorker = true;
             let xport = this;   // for closeure of message function
             onmessage = function(d) {
@@ -108,12 +111,8 @@ export default class BTransportWW extends BTransport {
     get stats() {
         return {};
     }
-    // Returns type of the transport. Like 'WW' or 'WS'.
-    get type() {
-        return 'BTransportWW';
-    }
     // Returns a longer identifying name of transport (usually includes endpoint name)
     get info() {
-        return this.type + ' none';
+        return this.itemType + ' none';
     }
 }
