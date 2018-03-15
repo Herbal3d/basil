@@ -70,10 +70,6 @@ export class BTransport {
     get info() {
         return this.type + ' none';
     }
-    GetProperties(filter) {
-    }
-    SetProperty(prop, value) {
-    }
 }
 
 // UTILITY FUNCTIONS USED BY children

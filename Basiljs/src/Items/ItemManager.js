@@ -19,6 +19,7 @@ GP.IM = IM;
 IM.Items = new Map();
 
 export function AddItem(ind, item) {
+    item.key = ind;
     IM.Items.set(ind, item);
 }
 

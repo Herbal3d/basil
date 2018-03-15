@@ -17,6 +17,15 @@ export class BItem {
     constructor() {
         this.props = new Map();
     }
+    // The key this item is stored under
+    get key() {
+    }
+    set key(value) {
+        this.key = value;
+    }
+    // The type of the item
+    get type() {
+    }
     GetProperties(filter) {
         return this.props;
     }
