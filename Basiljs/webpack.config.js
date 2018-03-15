@@ -30,6 +30,11 @@ module.exports = {
         'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
         'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
 
+        'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
+        'xItemManager': path.resolve(__dirname, 'src/Items/ItemManager.js'),
+        'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
+        'xInstance': path.resolve(__dirname, 'src/Items/DisplayableInstance.js'),
+
         'xControls': path.resolve(__dirname, 'src/Controls/index.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
