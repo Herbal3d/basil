@@ -35,6 +35,7 @@ export class BasilServiceConnection  extends BItem {
         this.aliveReplySequenceNum = 2000;
         this.serverID = undefined;
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
+        //      If the _reply_name is 'undefined', then the message doesn't expect a response.
         this.receptionMessages2 = {
             'IdentifyDisplayableObjectReqMsg': [ '', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg' ],
             'ForgetDisplayableObjectReqMsg': [ '', this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg' ],
@@ -53,6 +54,7 @@ export class BasilServiceConnection  extends BItem {
     }
     Start() {
         if (this.transport) {
+            // the recieve callback will call 'procMessage'.
             this.transport.SetReceiveCallbackObject(this);
         }
     }
@@ -76,8 +78,8 @@ export class BasilServiceConnection  extends BItem {
                 let replyContents = undefined;
                 // Look up the message type with a lookup rather than a loop
                 let msgProps = Object.getOwnPropertyNames(msg);
-                if (msgProps.length == 1) {
-                    let msgProp = msgProps[0];
+                if (msgProps !== undefined && msgProps.length > 0) {
+                  msgProps.forEach( msgProp => {
                     let template = this.receptionMessages2[msgProp];
                     replyContents = template[1](msg[msgProp], this);
                     // GP.DebugLog('BasilServer.procMessage:'
@@ -92,12 +94,10 @@ export class BasilServiceConnection  extends BItem {
                         let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
                         this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     }
+                  });
                 }
                 else {
                     GP.DebugLog('BasilServer.procMessage: odd msg props: len=' + msgProps.length);
-                }
-                if (replyContents === undefined) {
-                    GP.DebugLog('BasilServer: did not process message in :' + JSON.stringify(msg));
                 }
             }
             catch(e) {
@@ -105,6 +105,7 @@ export class BasilServiceConnection  extends BItem {
             }
         }
     }
+
     procIdentifyDisplayableObject(req, tthis) {
         let xxport = tthis === undefined ? this : tthis;
         return {

@@ -159,9 +159,6 @@ export function FindTopic(topic) {
 // First parameter can be either a TopicEntry or a topic name
 // Returns handle  that can be used to remove timer.
 export function createTimedEventProcessor (topicEntryOrTopic, processor) {
-    if (EV.timedEventProcessors == undefined) {
-        EV.timedEventProcessors = new Map();
-    }
     let topic = topicEntryOrTopic;
     if ('topic' in topicEntryOrTopic) {
         GP.DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
@@ -189,6 +186,7 @@ export function removeTimedEventProcessor(topicEntryOrTopic) {
 GP.EV = EV; // For debugging. Don't use for cross package access.
 
 EV.topics = EV.topics || new Map();
+EV.timedEventProcessors = EV.timedEventProcessors || new Map();
 EV.numSubscriptions = 0;
 EV.numEventsFired = 0;
 
