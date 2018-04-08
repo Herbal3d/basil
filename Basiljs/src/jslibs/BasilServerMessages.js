@@ -468,6 +468,7 @@ export const BasilServer = $root.BasilServer = (() => {
         CreateObjectInstanceReq.prototype.id = null;
         CreateObjectInstanceReq.prototype.pos = null;
         CreateObjectInstanceReq.prototype.propertiesToSet = null;
+        CreateObjectInstanceReq.prototype.InstanceCountHint = 0;
 
         CreateObjectInstanceReq.create = function create(properties) {
             return new CreateObjectInstanceReq(properties);
@@ -484,6 +485,8 @@ export const BasilServer = $root.BasilServer = (() => {
                 $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(26).fork()).ldelim();
             if (message.propertiesToSet != null && message.hasOwnProperty("propertiesToSet"))
                 $root.BasilType.PropertyList.encode(message.propertiesToSet, writer.uint32(34).fork()).ldelim();
+            if (message.InstanceCountHint != null && message.hasOwnProperty("InstanceCountHint"))
+                writer.uint32(40).int32(message.InstanceCountHint);
             return writer;
         };
 
@@ -509,6 +512,9 @@ export const BasilServer = $root.BasilServer = (() => {
                     break;
                 case 4:
                     message.propertiesToSet = $root.BasilType.PropertyList.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.InstanceCountHint = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -547,6 +553,9 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (error)
                     return "propertiesToSet." + error;
             }
+            if (message.InstanceCountHint != null && message.hasOwnProperty("InstanceCountHint"))
+                if (!$util.isInteger(message.InstanceCountHint))
+                    return "InstanceCountHint: integer expected";
             return null;
         };
 
@@ -574,6 +583,8 @@ export const BasilServer = $root.BasilServer = (() => {
                     throw TypeError(".BasilServer.CreateObjectInstanceReq.propertiesToSet: object expected");
                 message.propertiesToSet = $root.BasilType.PropertyList.fromObject(object.propertiesToSet);
             }
+            if (object.InstanceCountHint != null)
+                message.InstanceCountHint = object.InstanceCountHint | 0;
             return message;
         };
 
@@ -586,6 +597,7 @@ export const BasilServer = $root.BasilServer = (() => {
                 object.id = null;
                 object.pos = null;
                 object.propertiesToSet = null;
+                object.InstanceCountHint = 0;
             }
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
@@ -595,6 +607,8 @@ export const BasilServer = $root.BasilServer = (() => {
                 object.pos = $root.BasilType.InstancePositionInfo.toObject(message.pos, options);
             if (message.propertiesToSet != null && message.hasOwnProperty("propertiesToSet"))
                 object.propertiesToSet = $root.BasilType.PropertyList.toObject(message.propertiesToSet, options);
+            if (message.InstanceCountHint != null && message.hasOwnProperty("InstanceCountHint"))
+                object.InstanceCountHint = message.InstanceCountHint;
             return object;
         };
 
@@ -2499,7 +2513,7 @@ export const BasilServer = $root.BasilServer = (() => {
         }
 
         AliveCheckReq.prototype.auth = null;
-        AliveCheckReq.prototype.time = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        AliveCheckReq.prototype.time = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         AliveCheckReq.prototype.sequenceNum = 0;
 
         AliveCheckReq.create = function create(properties) {
@@ -2512,7 +2526,7 @@ export const BasilServer = $root.BasilServer = (() => {
             if (message.auth != null && message.hasOwnProperty("auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             if (message.time != null && message.hasOwnProperty("time"))
-                writer.uint32(16).sint64(message.time);
+                writer.uint32(16).uint64(message.time);
             if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
                 writer.uint32(24).int32(message.sequenceNum);
             return writer;
@@ -2533,7 +2547,7 @@ export const BasilServer = $root.BasilServer = (() => {
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.time = reader.sint64();
+                    message.time = reader.uint64();
                     break;
                 case 3:
                     message.sequenceNum = reader.int32();
@@ -2580,13 +2594,13 @@ export const BasilServer = $root.BasilServer = (() => {
             }
             if (object.time != null)
                 if ($util.Long)
-                    (message.time = $util.Long.fromValue(object.time)).unsigned = false;
+                    (message.time = $util.Long.fromValue(object.time)).unsigned = true;
                 else if (typeof object.time === "string")
                     message.time = parseInt(object.time, 10);
                 else if (typeof object.time === "number")
                     message.time = object.time;
                 else if (typeof object.time === "object")
-                    message.time = new $util.LongBits(object.time.low >>> 0, object.time.high >>> 0).toNumber();
+                    message.time = new $util.LongBits(object.time.low >>> 0, object.time.high >>> 0).toNumber(true);
             if (object.sequenceNum != null)
                 message.sequenceNum = object.sequenceNum | 0;
             return message;
@@ -2599,7 +2613,7 @@ export const BasilServer = $root.BasilServer = (() => {
             if (options.defaults) {
                 object.auth = null;
                 if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
+                    let long = new $util.Long(0, 0, true);
                     object.time = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.time = options.longs === String ? "0" : 0;
@@ -2611,7 +2625,7 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (typeof message.time === "number")
                     object.time = options.longs === String ? String(message.time) : message.time;
                 else
-                    object.time = options.longs === String ? $util.Long.prototype.toString.call(message.time) : options.longs === Number ? new $util.LongBits(message.time.low >>> 0, message.time.high >>> 0).toNumber() : message.time;
+                    object.time = options.longs === String ? $util.Long.prototype.toString.call(message.time) : options.longs === Number ? new $util.LongBits(message.time.low >>> 0, message.time.high >>> 0).toNumber(true) : message.time;
             if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
                 object.sequenceNum = message.sequenceNum;
             return object;
@@ -2633,9 +2647,9 @@ export const BasilServer = $root.BasilServer = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        AliveCheckResp.prototype.time = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        AliveCheckResp.prototype.time = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         AliveCheckResp.prototype.sequenceNum = 0;
-        AliveCheckResp.prototype.timeReceived = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        AliveCheckResp.prototype.timeReceived = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         AliveCheckResp.prototype.sequenceNumReceived = 0;
 
         AliveCheckResp.create = function create(properties) {
@@ -2646,11 +2660,11 @@ export const BasilServer = $root.BasilServer = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.time != null && message.hasOwnProperty("time"))
-                writer.uint32(8).sint64(message.time);
+                writer.uint32(8).uint64(message.time);
             if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
                 writer.uint32(16).int32(message.sequenceNum);
             if (message.timeReceived != null && message.hasOwnProperty("timeReceived"))
-                writer.uint32(24).sint64(message.timeReceived);
+                writer.uint32(24).uint64(message.timeReceived);
             if (message.sequenceNumReceived != null && message.hasOwnProperty("sequenceNumReceived"))
                 writer.uint32(32).int32(message.sequenceNumReceived);
             return writer;
@@ -2668,13 +2682,13 @@ export const BasilServer = $root.BasilServer = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.time = reader.sint64();
+                    message.time = reader.uint64();
                     break;
                 case 2:
                     message.sequenceNum = reader.int32();
                     break;
                 case 3:
-                    message.timeReceived = reader.sint64();
+                    message.timeReceived = reader.uint64();
                     break;
                 case 4:
                     message.sequenceNumReceived = reader.int32();
@@ -2717,24 +2731,24 @@ export const BasilServer = $root.BasilServer = (() => {
             let message = new $root.BasilServer.AliveCheckResp();
             if (object.time != null)
                 if ($util.Long)
-                    (message.time = $util.Long.fromValue(object.time)).unsigned = false;
+                    (message.time = $util.Long.fromValue(object.time)).unsigned = true;
                 else if (typeof object.time === "string")
                     message.time = parseInt(object.time, 10);
                 else if (typeof object.time === "number")
                     message.time = object.time;
                 else if (typeof object.time === "object")
-                    message.time = new $util.LongBits(object.time.low >>> 0, object.time.high >>> 0).toNumber();
+                    message.time = new $util.LongBits(object.time.low >>> 0, object.time.high >>> 0).toNumber(true);
             if (object.sequenceNum != null)
                 message.sequenceNum = object.sequenceNum | 0;
             if (object.timeReceived != null)
                 if ($util.Long)
-                    (message.timeReceived = $util.Long.fromValue(object.timeReceived)).unsigned = false;
+                    (message.timeReceived = $util.Long.fromValue(object.timeReceived)).unsigned = true;
                 else if (typeof object.timeReceived === "string")
                     message.timeReceived = parseInt(object.timeReceived, 10);
                 else if (typeof object.timeReceived === "number")
                     message.timeReceived = object.timeReceived;
                 else if (typeof object.timeReceived === "object")
-                    message.timeReceived = new $util.LongBits(object.timeReceived.low >>> 0, object.timeReceived.high >>> 0).toNumber();
+                    message.timeReceived = new $util.LongBits(object.timeReceived.low >>> 0, object.timeReceived.high >>> 0).toNumber(true);
             if (object.sequenceNumReceived != null)
                 message.sequenceNumReceived = object.sequenceNumReceived | 0;
             return message;
@@ -2746,13 +2760,13 @@ export const BasilServer = $root.BasilServer = (() => {
             let object = {};
             if (options.defaults) {
                 if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
+                    let long = new $util.Long(0, 0, true);
                     object.time = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.time = options.longs === String ? "0" : 0;
                 object.sequenceNum = 0;
                 if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
+                    let long = new $util.Long(0, 0, true);
                     object.timeReceived = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.timeReceived = options.longs === String ? "0" : 0;
@@ -2762,14 +2776,14 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (typeof message.time === "number")
                     object.time = options.longs === String ? String(message.time) : message.time;
                 else
-                    object.time = options.longs === String ? $util.Long.prototype.toString.call(message.time) : options.longs === Number ? new $util.LongBits(message.time.low >>> 0, message.time.high >>> 0).toNumber() : message.time;
+                    object.time = options.longs === String ? $util.Long.prototype.toString.call(message.time) : options.longs === Number ? new $util.LongBits(message.time.low >>> 0, message.time.high >>> 0).toNumber(true) : message.time;
             if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
                 object.sequenceNum = message.sequenceNum;
             if (message.timeReceived != null && message.hasOwnProperty("timeReceived"))
                 if (typeof message.timeReceived === "number")
                     object.timeReceived = options.longs === String ? String(message.timeReceived) : message.timeReceived;
                 else
-                    object.timeReceived = options.longs === String ? $util.Long.prototype.toString.call(message.timeReceived) : options.longs === Number ? new $util.LongBits(message.timeReceived.low >>> 0, message.timeReceived.high >>> 0).toNumber() : message.timeReceived;
+                    object.timeReceived = options.longs === String ? $util.Long.prototype.toString.call(message.timeReceived) : options.longs === Number ? new $util.LongBits(message.timeReceived.low >>> 0, message.timeReceived.high >>> 0).toNumber(true) : message.timeReceived;
             if (message.sequenceNumReceived != null && message.hasOwnProperty("sequenceNumReceived"))
                 object.sequenceNumReceived = message.sequenceNumReceived;
             return object;
@@ -4678,42 +4692,54 @@ export const BasilType = $root.BasilType = (() => {
         return AaBoundingBox;
     })();
 
-    BasilType.ObjectDisplayInfo = (function() {
+    BasilType.DisplayableInfo = (function() {
 
-        function ObjectDisplayInfo(properties) {
+        function DisplayableInfo(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
 
-        ObjectDisplayInfo.prototype.aabb = null;
+        DisplayableInfo.prototype.aabb = null;
+        DisplayableInfo.prototype.DisplayableType = "";
+        DisplayableInfo.prototype.Asset = null;
 
-        ObjectDisplayInfo.create = function create(properties) {
-            return new ObjectDisplayInfo(properties);
+        DisplayableInfo.create = function create(properties) {
+            return new DisplayableInfo(properties);
         };
 
-        ObjectDisplayInfo.encode = function encode(message, writer) {
+        DisplayableInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.aabb != null && message.hasOwnProperty("aabb"))
                 $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(10).fork()).ldelim();
+            if (message.DisplayableType != null && message.hasOwnProperty("DisplayableType"))
+                writer.uint32(18).string(message.DisplayableType);
+            if (message.Asset != null && message.hasOwnProperty("Asset"))
+                $root.BasilType.PropertyList.encode(message.Asset, writer.uint32(26).fork()).ldelim();
             return writer;
         };
 
-        ObjectDisplayInfo.encodeDelimited = function encodeDelimited(message, writer) {
+        DisplayableInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
-        ObjectDisplayInfo.decode = function decode(reader, length) {
+        DisplayableInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilType.ObjectDisplayInfo();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilType.DisplayableInfo();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
                     message.aabb = $root.BasilType.AaBoundingBox.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.DisplayableType = reader.string();
+                    break;
+                case 3:
+                    message.Asset = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4723,13 +4749,13 @@ export const BasilType = $root.BasilType = (() => {
             return message;
         };
 
-        ObjectDisplayInfo.decodeDelimited = function decodeDelimited(reader) {
+        DisplayableInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
-        ObjectDisplayInfo.verify = function verify(message) {
+        DisplayableInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.aabb != null && message.hasOwnProperty("aabb")) {
@@ -4737,37 +4763,59 @@ export const BasilType = $root.BasilType = (() => {
                 if (error)
                     return "aabb." + error;
             }
+            if (message.DisplayableType != null && message.hasOwnProperty("DisplayableType"))
+                if (!$util.isString(message.DisplayableType))
+                    return "DisplayableType: string expected";
+            if (message.Asset != null && message.hasOwnProperty("Asset")) {
+                let error = $root.BasilType.PropertyList.verify(message.Asset);
+                if (error)
+                    return "Asset." + error;
+            }
             return null;
         };
 
-        ObjectDisplayInfo.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilType.ObjectDisplayInfo)
+        DisplayableInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilType.DisplayableInfo)
                 return object;
-            let message = new $root.BasilType.ObjectDisplayInfo();
+            let message = new $root.BasilType.DisplayableInfo();
             if (object.aabb != null) {
                 if (typeof object.aabb !== "object")
-                    throw TypeError(".BasilType.ObjectDisplayInfo.aabb: object expected");
+                    throw TypeError(".BasilType.DisplayableInfo.aabb: object expected");
                 message.aabb = $root.BasilType.AaBoundingBox.fromObject(object.aabb);
+            }
+            if (object.DisplayableType != null)
+                message.DisplayableType = String(object.DisplayableType);
+            if (object.Asset != null) {
+                if (typeof object.Asset !== "object")
+                    throw TypeError(".BasilType.DisplayableInfo.Asset: object expected");
+                message.Asset = $root.BasilType.PropertyList.fromObject(object.Asset);
             }
             return message;
         };
 
-        ObjectDisplayInfo.toObject = function toObject(message, options) {
+        DisplayableInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
                 object.aabb = null;
+                object.DisplayableType = "";
+                object.Asset = null;
+            }
             if (message.aabb != null && message.hasOwnProperty("aabb"))
                 object.aabb = $root.BasilType.AaBoundingBox.toObject(message.aabb, options);
+            if (message.DisplayableType != null && message.hasOwnProperty("DisplayableType"))
+                object.DisplayableType = message.DisplayableType;
+            if (message.Asset != null && message.hasOwnProperty("Asset"))
+                object.Asset = $root.BasilType.PropertyList.toObject(message.Asset, options);
             return object;
         };
 
-        ObjectDisplayInfo.prototype.toJSON = function toJSON() {
+        DisplayableInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
-        return ObjectDisplayInfo;
+        return DisplayableInfo;
     })();
 
     BasilType.AssetInformation = (function() {
@@ -4792,7 +4840,7 @@ export const BasilType = $root.BasilType = (() => {
             if (message.id != null && message.hasOwnProperty("id"))
                 $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(10).fork()).ldelim();
             if (message.displayInfo != null && message.hasOwnProperty("displayInfo"))
-                $root.BasilType.ObjectDisplayInfo.encode(message.displayInfo, writer.uint32(18).fork()).ldelim();
+                $root.BasilType.DisplayableInfo.encode(message.displayInfo, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
@@ -4811,7 +4859,7 @@ export const BasilType = $root.BasilType = (() => {
                     message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.displayInfo = $root.BasilType.ObjectDisplayInfo.decode(reader, reader.uint32());
+                    message.displayInfo = $root.BasilType.DisplayableInfo.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4836,7 +4884,7 @@ export const BasilType = $root.BasilType = (() => {
                     return "id." + error;
             }
             if (message.displayInfo != null && message.hasOwnProperty("displayInfo")) {
-                let error = $root.BasilType.ObjectDisplayInfo.verify(message.displayInfo);
+                let error = $root.BasilType.DisplayableInfo.verify(message.displayInfo);
                 if (error)
                     return "displayInfo." + error;
             }
@@ -4855,7 +4903,7 @@ export const BasilType = $root.BasilType = (() => {
             if (object.displayInfo != null) {
                 if (typeof object.displayInfo !== "object")
                     throw TypeError(".BasilType.AssetInformation.displayInfo: object expected");
-                message.displayInfo = $root.BasilType.ObjectDisplayInfo.fromObject(object.displayInfo);
+                message.displayInfo = $root.BasilType.DisplayableInfo.fromObject(object.displayInfo);
             }
             return message;
         };
@@ -4871,7 +4919,7 @@ export const BasilType = $root.BasilType = (() => {
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = $root.BasilType.ObjectIdentifier.toObject(message.id, options);
             if (message.displayInfo != null && message.hasOwnProperty("displayInfo"))
-                object.displayInfo = $root.BasilType.ObjectDisplayInfo.toObject(message.displayInfo, options);
+                object.displayInfo = $root.BasilType.DisplayableInfo.toObject(message.displayInfo, options);
             return object;
         };
 
