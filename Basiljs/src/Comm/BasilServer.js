@@ -37,19 +37,19 @@ export class BasilServiceConnection  extends BItem {
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
         this.receptionMessages2 = {
-            'IdentifyDisplayableObjectReqMsg': [ '', this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg' ],
-            'ForgetDisplayableObjectReqMsg': [ '', this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg' ],
-            'CreateObjectInstanceReqMsg': [ '', this.procCreateObjectInstance, 'CreateObjectInstanceRespMsg' ],
-            'DeleteObjectInstanceReqMsg': [ '', this.procDeleteObjectInstance, 'DeleteObjectInstanceRespMsg' ],
-            'UpdateObjectPropertyReqMsg': [ '', this.procUpdateObjectProperty, 'UpdateObjectPropertyRespMsg' ],
-            'UpdateInstancePropertyReqMsg': [ '', this.procUpdateInstanceProperty, 'UpdateInstancePropertyRespMsg' ],
-            'UpdateInstancePositionReqMsg': [ '', this.procUpdateInstancePosition, 'UpdateInstancePositionRespMsg' ],
-            'RequestObjectPropertiesReqMsg': [ '', this.procRequestObjectProperties, 'RequestObjectPropertiesRespMsg' ],
-            'RequestInstancePropertiesReqMsg': [ '', this.procRequestInstanceProperties, 'RequestInstancePropertiesRespMsg' ],
-            'OpenSessionReqMsg': [ '', this.procOpenSession, 'OpenSessionRespMsg' ],
-            'CloseSessionReqMsg': [ '', this.procCloseSession, 'CloseSessionRespMsg' ],
-            'AliveCheckReqMsg': [ '', this.procAliveCheck, 'AliveCheckRespMsg' ],
-            'AliveCheckRespMsg': [ '', this.procAliveCheckResp, undefined ]
+            'IdentifyDisplayableObjectReqMsg': [ this.procIdentifyDisplayableObject, 'IdentifyDisplayableObjectRespMsg' ],
+            'ForgetDisplayableObjectReqMsg': [ this.procForgetDisplayableObject, 'ForgetDisplayableObjectRespMsg' ],
+            'CreateObjectInstanceReqMsg': [ this.procCreateObjectInstance, 'CreateObjectInstanceRespMsg' ],
+            'DeleteObjectInstanceReqMsg': [ this.procDeleteObjectInstance, 'DeleteObjectInstanceRespMsg' ],
+            'UpdateObjectPropertyReqMsg': [ this.procUpdateObjectProperty, 'UpdateObjectPropertyRespMsg' ],
+            'UpdateInstancePropertyReqMsg': [ this.procUpdateInstanceProperty, 'UpdateInstancePropertyRespMsg' ],
+            'UpdateInstancePositionReqMsg': [ this.procUpdateInstancePosition, 'UpdateInstancePositionRespMsg' ],
+            'RequestObjectPropertiesReqMsg': [ this.procRequestObjectProperties, 'RequestObjectPropertiesRespMsg' ],
+            'RequestInstancePropertiesReqMsg': [ this.procRequestInstanceProperties, 'RequestInstancePropertiesRespMsg' ],
+            'OpenSessionReqMsg': [ this.procOpenSession, 'OpenSessionRespMsg' ],
+            'CloseSessionReqMsg': [ this.procCloseSession, 'CloseSessionRespMsg' ],
+            'AliveCheckReqMsg': [ this.procAliveCheck, 'AliveCheckRespMsg' ],
+            'AliveCheckRespMsg': [ this.procAliveCheckResp, undefined ]
         };
     }
     Start() {
@@ -76,22 +76,23 @@ export class BasilServiceConnection  extends BItem {
                 let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
                 GP.DebugLog('BasilServer: procMessage: ' + JSON.stringify(msg));
                 let replyContents = undefined;
-                // Look up the message type with a lookup rather than a loop
+                // The message will have one or more message names with that message type
                 let msgProps = Object.getOwnPropertyNames(msg);
                 if (msgProps !== undefined && msgProps.length > 0) {
                   msgProps.forEach( msgProp => {
                     let template = this.receptionMessages2[msgProp];
-                    replyContents = template[1](msg[msgProp], this);
+                    replyContents = template[0](msg[msgProp], this);
                     // GP.DebugLog('BasilServer.procMessage:'
                     //         + ' prop=' + msgProp
                     //         + ', rec=' + JSON.stringify(msg[msgProp])
                     //         + ', reply=' + JSON.stringify(replyContents)
                     //     );
-                    if (replyContents !== undefined && template[2] !== undefined) {
+                    if (replyContents !== undefined && template[1] !== undefined) {
                         // The message requires a response
                         let rmsg = {};
-                        rmsg[template[2]] = replyContents;
+                        rmsg[template[1]] = replyContents;
                         let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
+                        // Passing 'tcontext' gives the required info for creating the response header
                         this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(reply).finish(), tcontext);
                     }
                   });

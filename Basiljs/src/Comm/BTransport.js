@@ -23,7 +23,8 @@ import { BItem } from 'xBItem';
 // Template for transport implmentations.
 export class BTransport extends BItem {
     constructor(parms) {
-        super();
+        super(parms);
+        this.itemType = 'unknown';
         this.messages = [];
         this.messagesSent = 0;
         this.RPCmessagesSent = 0;
@@ -34,13 +35,13 @@ export class BTransport extends BItem {
         this.aliveSequenceNum = 333;
 
         // The properties that can be read as a BItem
-        this.propertyMap = {
+        super.SetProperties({
             'ItemType': [ () => { return this.itemType; }, undefined ],
             'MessagesSent': [ () => { return this.messagesSent; }, undefined ],
             'RPCMessagesSent': [ () => { return this.RPCmessagesSent; }, undefined ],
             'MessagesReceived': [ () => { return this.messagesReceived; }, undefined ],
             'QueueSize': [ () => { return this.messages.length; }, undefined ]
-        };
+        });
     }
     Close() {
     }
@@ -68,14 +69,6 @@ export class BTransport extends BItem {
     }
     get isConnected() {
         return false;
-    }
-    // Return a map with statistics
-    get stats() {
-        return {};
-    }
-    // Returns a longer identifying name of transport (usually includes endpoint name)
-    get info() {
-        return this.itemType + ' none';
     }
 }
 

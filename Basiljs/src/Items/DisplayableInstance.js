@@ -11,57 +11,82 @@
 
 'use strict';
 
-import { BItem } from 'xBItem.js';
+import { BItem } from 'xBItem';
 
 export class DisplayableInstance extends BItem {
-    constructor() {
-        super();
-        this.displayable = undefined;
+    constructor(id, auth, baseDisplayable) {
+        super(id, auth);
+        this.displayable = baseDisplayable;
 
-        this.globalPos = [ 0, 0, 0 ];
-        this.globalRot = [ 0, 0, 0, 1];
-        this.globalPosCoordSystem = 0;
-        this.globalRotCoordSystem = 0;
+        this.gPos = [ 0, 0, 0 ];
+        this.gRot = [ 0, 0, 0, 1];
+        this.gPosCoordSystem = 0;
+        this.gRotCoordSystem = 0;
+        this.gRotgPosModified = false;  // flag saying gRot or gPos modified
 
         this.referenceFrame = 0;
         this.localPos = [ 0,0,0 ];
         this.localRot = [ 0, 0, 0, 1];
 
-        this.propertyMap = {
-            'Position': [ () => { return this.gPos; }, (val) => { this.gPos = val; } ]
-            'Rotation': [ () => { return this.gRot; }, (val) => { this.gRot = val; } ]
-            'PosCoordSystem': [ () => { return this.gPosCoordSystem; }, (val) => { this.gPosCoordSystem = val; } ]
-            'RotCoordSystem': [ () => { return this.gRotCoordSystem; }, (val) => { this.gRotCoordSystem = val; } ]
-        };
-    }
-    get gPos() {
-        return this.globalPos;
-    }
-    set gPos(val) {
-    }
-    get gRot() {
-        return this.globalRot;
-    }
-    set gRot(val) {
-    }
-    get gPosCoordSystem() {
-        return this.globalPosCoordSystem;
-    }
-    set gPosCoordSystem(val) {
-    }
-    get gRotCoordSystem() {
-        return this.globalRotCoordSystem;
-    }
-    set gRotCoordSystem(val) {
-    }
-    get lPos() {
-        return this.localPos;
-    }
-    set lPos(val) {
-    }
-    get lRot() {
-        return this.localRot;
-    }
-    set lRot(val) {
+        super.DefineProperties( {
+            'Position': {
+                'get': () => { return this.gPos; },
+                'set': (val) => {
+                    if (typeof val == 'Array' && val.length == 3) {
+                        this.gPos[0] = Float(val[0]);
+                        this.gPos[1] = Float(val[1]);
+                        this.gPos[2] = Float(val[2]);
+                    }
+                    this.gRotgPosModified = true;
+                    if (this.procgPostionSet !== undefined)
+                        procgPositionSet(this);
+                    }
+                }
+            },
+            'Rotation': {
+                'get': () => { return this.gRot; },
+                'set': (val) => {
+                    if (typeof val == 'Array' && val.length == 4) {
+                        this.gRot[0] = Float(val[0]);
+                        this.gRot[1] = Float(val[1]);
+                        this.gRot[2] = Float(val[2]);
+                        this.gRot[4] = Float(val[4]);
+                    }
+                    this.gRotgPosModified = true;
+                    if (this.procgRotationSet !== undefined)
+                        procgRotationSet(this);
+                    }
+                }
+            },
+            'PosCoordSystem': {
+                'get': () => { return this.gPosCoordSystem; },
+                'set': (val) => {
+                    this.gPosCoordSystem = Integer(val);
+                }
+            },
+            'RotCoordSystem': {
+                'get': () => { return this.gRotCoordSystem; },
+                'set': (val) => {
+                    this.gRotCoordSystem = Integer(val);
+                }
+            },
+            'referenceFrame': {
+                'get': () => { return this.referenceFrame; },
+                'set': (val) => { this.referenceFrame = val; },
+                'local': true
+            },
+            'lPos': {
+                'get': () => {
+                    return this.localPos;
+                },
+                'set': undefined
+            }
+            'lRot': {
+                'get': () => {
+                    return this.localRot;
+                },
+                'set': undefined
+            }
+        } );
     }
 }

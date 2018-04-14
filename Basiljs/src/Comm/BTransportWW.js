@@ -107,12 +107,4 @@ export default class BTransportWW extends BTransport {
     get isConnected() {
         return this.worker !== undefined;
     }
-    // Return a map with statistics
-    get stats() {
-        return {};
-    }
-    // Returns a longer identifying name of transport (usually includes endpoint name)
-    get info() {
-        return this.itemType + ' none';
-    }
 }

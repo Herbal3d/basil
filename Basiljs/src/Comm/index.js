@@ -22,27 +22,33 @@ import BTransportTest from './BTransportTest.js';
 var CM = CM || {};
 GP.CM = CM; // for debugging. Don't use for cross package access.
 
-CM.transports = [];
-CM.services = [];
-
 export function Init(parms) {
+}
+
+export function Start() {
+};
+
+// Initialize a transport and a service and resolve the promise when connected
+// The 'parms' are passed to the transport and service creation routimes.
+// If 'parms.testmode' is defined and 'true', test configuration is forced.
+// REturns a promise that is resolved when both transport and service are running.
+export function ConnectTransportService(parms) {}
     return new Promise((resolve, reject) => {
-        if (Config.comm.testmode && Config.comm.testmode == true) {
+        if (parms.testmode && parms.testmode == true) {
             // Test mode sets up the WebWorker transport and a BasilServer here
-            Config.comm.transport = 'WW';
-            Config.comm.transportURL = Config.comm.testWWURL;
-            Config.comm.service = 'BasilServer';
+            parms.transport = 'WW';
+            parms.transportURL = parms.testWWURL;
+            parms.service = 'BasilServer';
         }
-        if (Config.comm.transport && Config.comm.transportURL) {
-            GP.DebugLog('Comm.Init: first transport: ' + Config.comm.transport
-                        + '=>' + Config.comm.transportURL);
-            ConnectTransport(Config.comm)
+        if (parms.transport && parms.transportURL) {
+            GP.DebugLog('Comm.ConnectTransportService: transport: ' + parms.transport
+                        + '=>' + parms.transportURL);
+            ConnectTransport(parms)
             .then (xport => {
-                GP.DebugLog('Comm.Init: transport connected');
-                CM.transports.push(xport);
-                if (Config.comm.service) {
-                    GP.DebugLog('Comm.Init: first service: ' + Config.comm.service);
-                    return ConnectService(xport, Config.comm);
+                GP.DebugLog('Comm.ConnectTransportService: transport connected');
+                if (parms.service) {
+                    GP.DebugLog('Comm.ConnectTransportService: service: ' + parms.service);
+                    return ConnectService(xport, parms);
                 }
                 else {
                     return null;
@@ -50,20 +56,16 @@ export function Init(parms) {
             })
             .then (svc => {
                 if (svc) {
-                    CM.services.push(svc);
-                    GP.DebugLog('Comm.Init: service connected');
+                    GP.DebugLog('Comm.ConnectTransportService: service connected');
                 }
                 resolve();
             })
             .catch ( e => {
-                GP.DebugLog('Comm.Init: failed initialization: ' + e);
+                GP.DebugLog('Comm.ConnectTransportService: failed initialization: ' + e);
                 reject(e);
             })
         }
     })
-};
-
-export function Start() {
 };
 
 // Make a connection to a service.
@@ -74,7 +76,7 @@ export function Start() {
 // 'parms' is passed to the created transport/service
 export function ConnectTransport(parms) {
     return new Promise((resolve, reject) => {
-        var xport;
+        let xport = undefined;
         try {
             if (parms.transport) {
                 switch (parms.transport) {
@@ -104,6 +106,10 @@ export function ConnectTransport(parms) {
     });
 };
 
+// A misnomer as this will connect a transport to either a Pseto service or a
+//     Basil client (Creating the BasilService for this end))
+// Expects parms.service = either 'BasilServer" or 'Pesto'
+// Returns a Promise that has a handle to the created processor or undefined.
 export function ConnectService(xport, parms) {
     return new Promise((resolve, reject) => {
         var svc;

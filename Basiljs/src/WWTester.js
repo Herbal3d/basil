@@ -41,12 +41,17 @@ GP.Ready = true;
 
 GP.client = BasilClient.NewBasilClient('client', GP.wwTransport, {} );
 
-GP.aliveIntervalID = setInterval(function() {
-    GP.client.AliveCheck()
-    .then( resp => {
+GP.client.OpenSession(undefined, {
+    'originator': 'com.basil.b.tester'
+})
+.then( resp => {
+    GP.aliveIntervalID = setInterval(function() {
+        GP.client.AliveCheck()
+        .then( resp => {
         // Got it back!
-    })
-    .catch (e => {
+        })
+        .catch( e => {
         // Got it back!
-    });
-}, Config.WWTester.AliveCheckPollMS);
+        });
+    }, Config.WWTester.AliveCheckPollMS);
+});

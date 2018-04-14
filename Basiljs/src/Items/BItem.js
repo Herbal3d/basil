@@ -11,46 +11,104 @@
 
 'use strict';
 
+import GP from 'GP';
+
+// The management of the itme collection is done with static functions
+const IM = IM || {};
+GP.IM = IM;
+
+IM.Items = new Map();
+
 // All things referenced by the Basil interface are "items' and thus they
 //   have these access methods
 export class BItem {
-    constructor() {
+    constructor(id, auth) {
         this.props = new Map();
-        this.key = undefined;   // index this item is stored under
+        this.id = id;   // index this item is stored under
         this.itemType = undefined;  // the type of the item
-        // If defined, provides a map of property names to get and set functions
-        // The propertyMap is indexed by the property name which gives an array
-        //     which the first value is a getter function and the second is a setter.
-        this.propertyMap = undefined;
+        this.DefineProperties({
+            'Type': {
+                'get': () => { return this.itemType; },
+                'set': undefined
+            }
+            'Id': {
+                'get': () => { return this.id; },
+                'set': undefined
+            }
+        })
+        BItem.AddItem(id, this);
     }
-    GetProperties(filter) {
+    ReleaseItem() {
+        BItem.ForgetItem(this.id);
+    });
+
+    // Returns a MAp of properties
+    FetchProperties(filter) {
         let ret = undefined;
-        if (this.propertyMap) {
-            ret = {};
-            this.propertyMap.GetOwnPropertyNames().forEach(prop => {
-                ret[prop] = this.propertyMap[prop][0]();
-            })
+        if (filter !== undefined) {
+            ret = new Map();
+            this.props.forEach((prop, val) => {
+                // Some wildcard testing
+                ret.AddItem(prop, val);
+            });
         }
         else {
             ret = this.props;
         }
         return ret;
     }
-    SetProperty(prop, value) {
-        if (this.propertyMap) {
-            if (this.propertyMap[prop]) {
-                if (this.propertyMap[prop][1]) {
-                    this.propertyMap[prop][1](value);
-                }
-            }
+    // Define a property that can be accessed locally and remotely.
+    // Remote access is alwas thrugh the MAp so remote people don't get access to local variables
+    // The value for a property is an object with some functions defined:
+    // val = {
+    //     'set': setFunction,
+    //     'get': getFunction,
+    //     'local': if defined and 'true', only local access is allowed
+    // }
+    DefineProperty(propertyName, propertyDefinition) {
+        this.props.set(propertyName, propertyDefinition);
+        // Add this property defineition to this instance for easy access
+        let defn = {};
+        if (propertyDefinition !== undefined && propertyDefinition['set']) {
+            defn[set] = propertyDefinition['set'};]
+            defn[writable] = true;
+        }
+        if (propertyDefinition !== undefined && propertyDefinition['get']) {
+            defn[get] = propertyDefinition['get'};]
+        }
+
+        Object.defineProperty(this, defn);
+    }
+
+    // Pass a Map or Objectof propertyNames with definitions
+    DefineProperties(propValues) {
+        if (propValuse instanceOf Map) {
+            propValues.forEach((prop, val) => {
+                this.DefineProperty(prop, val);
+            }, this);
         }
         else {
-            this.props.set(prop, value);
+            Object.getOwnPropertyNames().forEach(prop => {
+                this.DefineProperty(prop, propValues[prop]);
+            }, this);
+
         }
     }
-    SetProperties(propValues) {
-        Object.GetOwnPropertyNames.forEach(prop => {
-            this.SetProperty(prop, propValues[prop]);
-        });
+
+    // Add an item to the database of items.
+    // One caller should not be able to see other caller's items so, someday,
+    //     add some security based on the creator of the BItem
+    static AddItem(id, item, auth) {
+        return IM.Items.add(id, item);
+    }
+
+    // Look up an item baed on it's Id
+    static GetItem(id) {
+        return IM.Items.get(id);
+    }
+
+    // Remove an BItem from the database of BItems
+    static ForgetItem(id) {
+        IM.Items.delete(id);
     }
 }

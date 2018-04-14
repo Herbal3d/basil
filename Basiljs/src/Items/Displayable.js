@@ -14,7 +14,7 @@
 import { BItem } from 'xBItem.js';
 
 export class Displayable extends BItem {
-    constructor() {
-        super();
+    constructor(id, auth, assetInfo) {
+        super(id, auth);
     }
 }
