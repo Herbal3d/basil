@@ -14,7 +14,7 @@
 import GP from 'GP';
 
 // The management of the itme collection is done with static functions
-const IM = IM || {};
+var IM = IM || {};
 GP.IM = IM;
 
 IM.Items = new Map();
@@ -30,7 +30,7 @@ export class BItem {
             'Type': {
                 'get': () => { return this.itemType; },
                 'set': undefined
-            }
+            },
             'Id': {
                 'get': () => { return this.id; },
                 'set': undefined
@@ -38,9 +38,10 @@ export class BItem {
         })
         BItem.AddItem(id, this);
     }
+
     ReleaseItem() {
         BItem.ForgetItem(this.id);
-    });
+    };
 
     // Returns a MAp of properties
     FetchProperties(filter) {
@@ -56,7 +57,8 @@ export class BItem {
             ret = this.props;
         }
         return ret;
-    }
+    };
+
     // Define a property that can be accessed locally and remotely.
     // Remote access is alwas thrugh the MAp so remote people don't get access to local variables
     // The value for a property is an object with some functions defined:
@@ -70,25 +72,25 @@ export class BItem {
         // Add this property defineition to this instance for easy access
         let defn = {};
         if (propertyDefinition !== undefined && propertyDefinition['set']) {
-            defn[set] = propertyDefinition['set'};]
-            defn[writable] = true;
+          defn.set = propertyDefinition['set'];
+          defn.writable = true;
         }
         if (propertyDefinition !== undefined && propertyDefinition['get']) {
-            defn[get] = propertyDefinition['get'};]
+          defn.get = propertyDefinition['get'];
         }
-
-        Object.defineProperty(this, defn);
+        defn.enumerable = true;
+        Object.defineProperty(this, propertyName, defn);
     }
 
     // Pass a Map or Objectof propertyNames with definitions
     DefineProperties(propValues) {
-        if (propValuse instanceOf Map) {
-            propValues.forEach((prop, val) => {
+        if (propValues instanceof Map) {
+            propValues.forEach((val, prop) => {
                 this.DefineProperty(prop, val);
             }, this);
         }
         else {
-            Object.getOwnPropertyNames().forEach(prop => {
+            Object.getOwnPropertyNames(propValues).forEach(prop => {
                 this.DefineProperty(prop, propValues[prop]);
             }, this);
 
@@ -99,7 +101,7 @@ export class BItem {
     // One caller should not be able to see other caller's items so, someday,
     //     add some security based on the creator of the BItem
     static AddItem(id, item, auth) {
-        return IM.Items.add(id, item);
+        return IM.Items.set(id, item);
     }
 
     // Look up an item baed on it's Id

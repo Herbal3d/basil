@@ -23,7 +23,7 @@ import { BItem } from 'xBItem';
 // Template for transport implmentations.
 export class BTransport extends BItem {
     constructor(parms) {
-        super(parms);
+        super(parms.transportID, parms.transportAuth);
         this.itemType = 'unknown';
         this.messages = [];
         this.messagesSent = 0;
@@ -35,12 +35,12 @@ export class BTransport extends BItem {
         this.aliveSequenceNum = 333;
 
         // The properties that can be read as a BItem
-        super.SetProperties({
-            'ItemType': [ () => { return this.itemType; }, undefined ],
-            'MessagesSent': [ () => { return this.messagesSent; }, undefined ],
-            'RPCMessagesSent': [ () => { return this.RPCmessagesSent; }, undefined ],
-            'MessagesReceived': [ () => { return this.messagesReceived; }, undefined ],
-            'QueueSize': [ () => { return this.messages.length; }, undefined ]
+        super.DefineProperties({
+            'ItemType': { 'get': () => { return this.itemType; } },
+            'MessagesSent': { 'get': () => { return this.messagesSent; } },
+            'RPCMessagesSent': { 'get': () => { return this.RPCmessagesSent; } },
+            'MessagesReceived': { 'get': () => { return this.messagesReceived; } },
+            'QueueSize': { 'get': () => { return this.messages.length; } }
         });
     }
     Close() {

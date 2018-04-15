@@ -109,12 +109,19 @@ let canvas = document.getElementById(Config.page.webGLcanvasId);
 
 Graphics.Init(container, canvas);
 Controls.Init();
-Comm.Init()
-.then( () => {
-    Graphics.Start();
-    Comm.Start();
-    GP.Ready = true;
-})
-.catch( e => {
-    GP.DebugLog('Basil.js: exception initializing comm' + e);
-});
+Comm.Init();
+
+Graphics.Start();
+Comm.Start();
+GP.Ready = true;
+
+// If there are connection parameters, start the first connection
+if (Config.comm && Object.getOwnPropertyNames(Config.comm).length > 0) {
+  Comm.ConnectTransportService(Config.comm)
+  .then( () => {
+    GP.DebugLog('Basiljs: initial transport and service connected');
+  })
+  .catch( e => {
+    GP.DebugLog('Basiljs: failed connecting initial transport and service: ${e}');
+  });
+};

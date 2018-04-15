@@ -19,7 +19,6 @@ export const BasilServer = $root.BasilServer = (() => {
         }
 
         IdentifyDisplayableObjectReq.prototype.auth = null;
-        IdentifyDisplayableObjectReq.prototype.id = null;
         IdentifyDisplayableObjectReq.prototype.assetInfo = null;
         IdentifyDisplayableObjectReq.prototype.aabb = null;
 
@@ -32,12 +31,10 @@ export const BasilServer = $root.BasilServer = (() => {
                 writer = $Writer.create();
             if (message.auth != null && message.hasOwnProperty("auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.id != null && message.hasOwnProperty("id"))
-                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(18).fork()).ldelim();
             if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
-                $root.BasilType.AssetInformation.encode(message.assetInfo, writer.uint32(26).fork()).ldelim();
+                $root.BasilType.AssetInformation.encode(message.assetInfo, writer.uint32(18).fork()).ldelim();
             if (message.aabb != null && message.hasOwnProperty("aabb"))
-                $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(34).fork()).ldelim();
+                $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(26).fork()).ldelim();
             return writer;
         };
 
@@ -56,12 +53,9 @@ export const BasilServer = $root.BasilServer = (() => {
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
-                    break;
-                case 3:
                     message.assetInfo = $root.BasilType.AssetInformation.decode(reader, reader.uint32());
                     break;
-                case 4:
+                case 3:
                     message.aabb = $root.BasilType.AaBoundingBox.decode(reader, reader.uint32());
                     break;
                 default:
@@ -86,11 +80,6 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (error)
                     return "auth." + error;
             }
-            if (message.id != null && message.hasOwnProperty("id")) {
-                let error = $root.BasilType.ObjectIdentifier.verify(message.id);
-                if (error)
-                    return "id." + error;
-            }
             if (message.assetInfo != null && message.hasOwnProperty("assetInfo")) {
                 let error = $root.BasilType.AssetInformation.verify(message.assetInfo);
                 if (error)
@@ -113,11 +102,6 @@ export const BasilServer = $root.BasilServer = (() => {
                     throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
             }
-            if (object.id != null) {
-                if (typeof object.id !== "object")
-                    throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.id: object expected");
-                message.id = $root.BasilType.ObjectIdentifier.fromObject(object.id);
-            }
             if (object.assetInfo != null) {
                 if (typeof object.assetInfo !== "object")
                     throw TypeError(".BasilServer.IdentifyDisplayableObjectReq.assetInfo: object expected");
@@ -137,14 +121,11 @@ export const BasilServer = $root.BasilServer = (() => {
             let object = {};
             if (options.defaults) {
                 object.auth = null;
-                object.id = null;
                 object.assetInfo = null;
                 object.aabb = null;
             }
             if (message.auth != null && message.hasOwnProperty("auth"))
                 object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = $root.BasilType.ObjectIdentifier.toObject(message.id, options);
             if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
                 object.assetInfo = $root.BasilType.AssetInformation.toObject(message.assetInfo, options);
             if (message.aabb != null && message.hasOwnProperty("aabb"))
@@ -169,6 +150,7 @@ export const BasilServer = $root.BasilServer = (() => {
         }
 
         IdentifyDisplayableObjectResp.prototype.success = null;
+        IdentifyDisplayableObjectResp.prototype.id = null;
 
         IdentifyDisplayableObjectResp.create = function create(properties) {
             return new IdentifyDisplayableObjectResp(properties);
@@ -179,6 +161,8 @@ export const BasilServer = $root.BasilServer = (() => {
                 writer = $Writer.create();
             if (message.success != null && message.hasOwnProperty("success"))
                 $root.BasilType.BasilException.encode(message.success, writer.uint32(10).fork()).ldelim();
+            if (message.id != null && message.hasOwnProperty("id"))
+                $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(18).fork()).ldelim();
             return writer;
         };
 
@@ -195,6 +179,9 @@ export const BasilServer = $root.BasilServer = (() => {
                 switch (tag >>> 3) {
                 case 1:
                     message.success = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.id = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -218,6 +205,11 @@ export const BasilServer = $root.BasilServer = (() => {
                 if (error)
                     return "success." + error;
             }
+            if (message.id != null && message.hasOwnProperty("id")) {
+                let error = $root.BasilType.ObjectIdentifier.verify(message.id);
+                if (error)
+                    return "id." + error;
+            }
             return null;
         };
 
@@ -230,6 +222,11 @@ export const BasilServer = $root.BasilServer = (() => {
                     throw TypeError(".BasilServer.IdentifyDisplayableObjectResp.success: object expected");
                 message.success = $root.BasilType.BasilException.fromObject(object.success);
             }
+            if (object.id != null) {
+                if (typeof object.id !== "object")
+                    throw TypeError(".BasilServer.IdentifyDisplayableObjectResp.id: object expected");
+                message.id = $root.BasilType.ObjectIdentifier.fromObject(object.id);
+            }
             return message;
         };
 
@@ -237,10 +234,14 @@ export const BasilServer = $root.BasilServer = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
+            if (options.defaults) {
                 object.success = null;
+                object.id = null;
+            }
             if (message.success != null && message.hasOwnProperty("success"))
                 object.success = $root.BasilType.BasilException.toObject(message.success, options);
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = $root.BasilType.ObjectIdentifier.toObject(message.id, options);
             return object;
         };
 

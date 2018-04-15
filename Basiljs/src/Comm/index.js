@@ -19,6 +19,8 @@ import BTransportWW from './BTransportWW.js';
 import BTransportWS from './BTransportWS.js';
 import BTransportTest from './BTransportTest.js';
 
+import { CreateUniqueId } from 'xUtilities';
+
 var CM = CM || {};
 GP.CM = CM; // for debugging. Don't use for cross package access.
 
@@ -32,9 +34,9 @@ export function Start() {
 // The 'parms' are passed to the transport and service creation routimes.
 // If 'parms.testmode' is defined and 'true', test configuration is forced.
 // REturns a promise that is resolved when both transport and service are running.
-export function ConnectTransportService(parms) {}
+export function ConnectTransportService(parms) {
     return new Promise((resolve, reject) => {
-        if (parms.testmode && parms.testmode == true) {
+        if (parms.testmode) {
             // Test mode sets up the WebWorker transport and a BasilServer here
             parms.transport = 'WW';
             parms.transportURL = parms.testWWURL;
@@ -78,6 +80,10 @@ export function ConnectTransport(parms) {
     return new Promise((resolve, reject) => {
         let xport = undefined;
         try {
+            if (parms.transportId === undefined) {
+              // If the caller is not specifying a unique identifier, create one
+              parms.transportId = CreateUniqueId('transport', parms.transport);
+            }
             if (parms.transport) {
                 switch (parms.transport) {
                     case 'WW':
@@ -90,11 +96,12 @@ export function ConnectTransport(parms) {
                         xport = new BTransportTest(parms);
                         break;
                     default:
-                        GP.DebugLog('Comm.Connect: transport type unknown: ' + parms.transport)
-                        reject('Comm.Connect: transport type unknown: ' + parms.transport)
+                        GP.DebugLog('Comm.Connect: transport type unknown: ' + parms.transport);
+                        reject('Comm.Connect: transport type unknown: ' + parms.transport);
                 }
             }
             else {
+                GP.DebugLog('Comm.Connect: defaulting to WS transport');
                 xport = new BTransportWS(parms);
             }
         }
@@ -131,34 +138,6 @@ export function ConnectService(xport, parms) {
         resolve(svc);
     });
 };
-
-export function TestComm() {
-    if (GP.TestCommService) {
-        GP.DebugLog('Comm.TestComm: stopping test');
-        GP.TestCommService.Close();
-        GP.TestCommService = undefined;
-    }
-    else {
-        GP.DebugLog('Comm.TestComm: starting test');
-        ConnectTransport( {
-            'transport': 'Test',
-            'transportURL': 'TESTTEST',
-            'testInterval': 1000,       // MS between alive checks
-        })
-        .then (xport => {
-            return ConnectService(xport, {
-                'service': 'BasilServer'
-            })
-        })
-        .then (svc => {
-            GP.DebugLog('TestComm: service connected and running');
-            GP.TestCommService = svc;
-        })
-        .catch ( e => {
-            GP.DebugLog('Comm.TestComm: failed test: ' + e);
-        })
-    }
-}
 
 export function stats() {
 

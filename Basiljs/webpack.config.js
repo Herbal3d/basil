@@ -26,6 +26,7 @@ module.exports = {
     alias: {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
         'xBException': path.resolve(__dirname, 'src/BException.js'),
+        'xUtilities': path.resolve(__dirname, 'src/Utilities.js'),
 
         'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
         'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),

@@ -12,7 +12,6 @@
 'use strict';
 
 // holds the controls context for this threejs instance
-var CO = CO || {};
 
 import GP from 'GP';
 import Config from 'xConfig';
@@ -22,6 +21,9 @@ import * as Comm from 'xComm';
 import * as Eventing from 'xEventing';
 // Classes that implement different types of UI controls
 import * as UIControls from './UIControls.js';
+
+var CO = CO || {};
+GP.CO = CO;         // added for debugging. Do not use for inter-package access
 
 export function Init() {
     // Make all 'class=clickable' page items create events
@@ -103,7 +105,16 @@ function internalOnClickable(evnt) {
     }
     if (buttonOp == 'testComm') {
         GP.DebugLog('Controls: OnTestComm');
-        Comm.TestComm();
+      Comm.ConnectTransportService( {
+            'testmode': true,
+            'testWWURL': './wwtester.js'
+      })
+      .then( () => {
+        GP.DebugLog('Controls: test transport and service connected');
+      })
+      .catch( e => {
+        GP.DebugLog('Controls: failed connecting test transport and service: ${e}');
+      });
     }
     if (buttonOp == 'addTest') {
         GP.DebugLog('Controls: OnAddTestObject');
@@ -157,5 +168,3 @@ function internalDoLoadMultiple(urlsAndLocations) {
         Graphics.Start(); // ClearScene possibly shuts down rendering
     });
 };
-
-GP.CO = CO;         // added for debugging. Do not use for inter-package access

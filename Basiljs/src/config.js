@@ -6,16 +6,12 @@
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 export default {
     'comm': {
-        'PestoURL': '',
-        'initSceneURL': '',
-        'noComma': 0
     },
     // Parameters for the main display page
     'page': {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
-        'showDebug': true,
-        'noComma': 0
+        'showDebug': true
     },
     // Parameters for the webgl environment
     'webgl': {
@@ -27,8 +23,7 @@ export default {
             'initialCameraLookAt': [ 128, 30, 128 ],
             'addCameraHelper': false,
             'addAxisHelper': true,
-            'axisHelperSize': 20,
-            'noComma': 0
+            'axisHelperSize': 20
         },
         'lights': {
             'ambient': {
@@ -37,8 +32,7 @@ export default {
                 'intensity': 0.9,
                 'specular': [ 0.3, 0.3, 0.3 ],
                 'diffuse': [ 0.3, 0.3, 0.3 ],
-                'groundColor': [ 0, 0, 0 ], //0x000000
-                'noComma': 0
+                'groundColor': [ 0, 0, 0 ]      //0x000000
             },
             // placeholder for the eventual sun system
             'directional': {
@@ -49,36 +43,26 @@ export default {
                 'shadows': {
                     'bias': 0.0001,
                     'mapWidth': 2048,
-                    'mapHeight': 2048,
-                    'noComma': 0
-                },
-                'noComma': 0
-            },
-            'noComma': 0
+                    'mapHeight': 2048
+                }
+            }
         },
         'renderer': {
             'ThreeJS': {
                 'antialias': true,
                 'alpha': true,      // there are alpha textures in the scene
-                'logarithmicDepthBuffer': false,
-                'noComma': 0
-            },
-            'noComma': 0
-        },
-        'noComma': 0
+                'logarithmicDepthBuffer': false
+            }
+        }
     },
     'assets': {
-        'gltfURLBase': '/basil/',
-        'noComma': 0
+        'gltfURLBase': '/basil/'
     },
     'eventing': {
-        'eventPollIntervalMS': 500,
-        'noComma': 0
+        'eventPollIntervalMS': 500
     },
     'WWTester': {
-        'AliveCheckPollMS': 10000,
-        'noComma': 0
-
+        'AliveCheckPollMS': 10000
     },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [
@@ -91,7 +75,6 @@ export default {
             [ "convoar/Atropia_20.gltf", [512,0,512] ],
             [ "convoar/Atropia_21.gltf", [512,0,256] ],
             [ "convoar/Atropia_22.gltf", [512,0,0] ]
-    ],
-    'noComma': 0
+    ]
 }
 ;

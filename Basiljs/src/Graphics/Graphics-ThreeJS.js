@@ -16,7 +16,6 @@
 //      display.objectSelected
 //      display.cameraInfo
 //      display.info
-var GR = GR || {};
 
 import GP from 'GP';
 import Config from 'xConfig';
@@ -25,6 +24,9 @@ import * as Eventing from 'xEventing';
 import * as THREE from 'xThreeJS';
 import { OrbitControls } from 'xThreeJSOrbit';
 import { GLTFLoader } from 'xThreeJSGLTF';
+
+var GR = GR || {};
+GP.GR = GR; // for debugging. Don't use for cross package access.
 
 // return a ThreeJS color number from an array of color values
 var colorFromArray = function(colorArr) {
@@ -428,5 +430,3 @@ export function AddTestObject() {
 
 export function SetDebugMode(enable) {
 };
-
-GP.GR = GR; // for debugging. Don't use for cross package access.
