@@ -43,7 +43,6 @@ GP.ConfigGetQueryVariable = function (variable) {
 
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
-var DebugLogLines = 20;
 GP.LogMessage = function LogMessage(msg, classs) {
     if ($('#DEBUGG')) {
         if (classs)
@@ -51,7 +50,7 @@ GP.LogMessage = function LogMessage(msg, classs) {
         else
             $('#DEBUGG').append('<div>' + msg + '</div>');
 
-        if ($('#DEBUGG').children().length > DebugLogLines) {
+        if ($('#DEBUGG').children().length > Config.page.debugLogLines) {
             $('#DEBUGG').children('div:first').remove();
 
         }

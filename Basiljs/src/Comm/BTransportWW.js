@@ -25,7 +25,7 @@ export default class BTransportWW extends BTransport {
             // We're the master
             // parms.transportURL is WebWorker URL to connect to
             GP.DebugLog('BTransportWW: setting up server');
-            this.itemTYpe = 'BTransport.TransportWW.Server';
+            this.itemType = 'BTransport.TransportWW.Server';
             try {
                 this.worker = new Worker(parms.transportURL);
                 this.isWorker = false;
@@ -50,7 +50,7 @@ export default class BTransportWW extends BTransport {
         else {
             // We're the worker
             GP.DebugLog('BTransportWW: setting up worker');
-            this.itemTYpe = 'BTransport.TransportWW.Client';
+            this.itemType = 'BTransport.TransportWW.Client';
             this.isWorker = true;
             let xport = this;   // for closeure of message function
             onmessage = function(d) {

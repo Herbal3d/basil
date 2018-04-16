@@ -29,11 +29,9 @@ export class BItem {
         this.DefineProperties({
             'Type': {
                 'get': () => { return this.itemType; },
-                'set': undefined
             },
             'Id': {
                 'get': () => { return this.id; },
-                'set': undefined
             }
         })
         BItem.AddItem(id, this);
@@ -73,7 +71,6 @@ export class BItem {
         let defn = {};
         if (propertyDefinition !== undefined && propertyDefinition['set']) {
           defn.set = propertyDefinition['set'];
-          defn.writable = true;
         }
         if (propertyDefinition !== undefined && propertyDefinition['get']) {
           defn.get = propertyDefinition['get'];

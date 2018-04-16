@@ -108,7 +108,7 @@ export function ConnectTransport(parms) {
         catch(e) {
             reject('Comm.Connect: exception opening transport: ' + e);
         }
-        GP.DebugLog('Comm.Connect: created transport ' + xport.type)
+        GP.DebugLog('Comm.Connect: created transport ' + xport.Id)
         resolve(xport);
     });
 };
@@ -121,20 +121,23 @@ export function ConnectService(xport, parms) {
     return new Promise((resolve, reject) => {
         var svc;
         let serviceType = parms.service ? parms.service : 'BasilServer';
+        if (parms.serviceId === undefined) {
+          // If the caller is not specifying a unique identifier, create one
+          parms.serviceId = CreateUniqueId('service', serviceType);
+        }
         switch (serviceType) {
             case 'BasilServer':
-                let serverID = parms.BasilServerID ? parms.BasilServerID : 'BasilServer';
-                svc = BasilServer.NewBasilServerConnection(serverID, xport, parms);
-                GP.DebugLog('Comm.Connect: created BasilService: ' + serviceType + ', ID=' + serverID);
+                svc = BasilServer.NewBasilServerConnection(parms.serviceId, xport, parms);
+                GP.DebugLog('Comm.Connect: created BasilService: ' + serviceType + ', Id=' + parms.serviceId);
                 break;
             case 'Pesto':
-                svc = new PestoClient(xport, parms);
+                svc = new PestoClient(parms.serviceId, xport, parms);
                 break;
             default:
                 GP.DebugLog('Comm.Connect: service type unknown: ' + parms.service)
                 reject('Comm.Connect: service type unknown: ' + parms.service)
         }
-        GP.DebugLog('Comm.Connect: created service ' + svc.serverID)
+        GP.DebugLog('Comm.Connect: created service ' + svc.Id)
         resolve(svc);
     });
 };

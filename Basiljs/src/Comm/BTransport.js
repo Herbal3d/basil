@@ -23,7 +23,8 @@ import { BItem } from 'xBItem';
 // Template for transport implmentations.
 export class BTransport extends BItem {
     constructor(parms) {
-        super(parms.transportID, parms.transportAuth);
+        super(parms.transportId, parms.transportAuth);
+        GP.DebugLog('BTransport: constructor');
         this.itemType = 'unknown';
         this.messages = [];
         this.messagesSent = 0;
@@ -36,7 +37,7 @@ export class BTransport extends BItem {
 
         // The properties that can be read as a BItem
         super.DefineProperties({
-            'ItemType': { 'get': () => { return this.itemType; } },
+            'ItemType': { 'get': () => { return this.itemType; }, 'set': val => { this.itemType = val; } },
             'MessagesSent': { 'get': () => { return this.messagesSent; } },
             'RPCMessagesSent': { 'get': () => { return this.RPCmessagesSent; } },
             'MessagesReceived': { 'get': () => { return this.messagesReceived; } },
@@ -119,19 +120,25 @@ export function PushReception(tthis) {
     if (msg) {
         tester.messagesReceived++;
         let dmsg = BTransportMsgs.BTransport.decode(msg)
-        GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
+        // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
+
+        // If the message has the info for a response to a RPC, call the saved response handler
+        let RPCResponseCalled = false;
         if (dmsg.requestSession) {
             let session = tester.RPCSessionCallback[dmsg.requestSession];
             if (session) {
-                // the session entry is a tuple: [ time, resolve, reject, msgAsObject ]
+                // the session entry is a 4-tuple: [ time, resolve, reject, msgAsObject ]
                 tester.RPCSessionCallback.delete(dmsg.requestSession);
-                // GP.DebugLog('BTransportTest: returning RPC: session=' + dmsg.requestSession);
                 (session[1])(dmsg.message);
+                RPCResponseCalled = true;
             }
         }
-        if (tester.receiveCallbackObject && tester.receiveCallbackObject.procMessage) {
-            // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-            tester.receiveCallbackObject.procMessage(dmsg.message, dmsg);
+        if (!RPCResponseCalled) {
+            // If the message is not an RPC reqpsonse, call the message processor
+            if (tester.receiveCallbackObject && tester.receiveCallbackObject.procMessage) {
+                // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
+                tester.receiveCallbackObject.procMessage(dmsg.message, dmsg);
+            }
         }
     }
 }

@@ -25,15 +25,13 @@ BS.servers = {};
 
 // The browser is the Basil server so requests are sent to us
 export class BasilServiceConnection  extends BItem {
-    // @param serverID a unique ID for accessing this server instance
+    // @param serverId a unique Id for accessing this server instance
     // @param transp BTransport instance to talk over
     // @param parms a map of extra parameters for this service
-    constructor(serverID, transp, parms) {
-        super(parms);
-        this.ID = serverID;
+    constructor(serverId, transp, parms) {
+        super(serverId, parms.serviceAuth);
         this.transport = transp;
         this.aliveReplySequenceNum = 2000;
-        this.serverID = undefined;
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
         this.receptionMessages2 = {
@@ -212,16 +210,16 @@ export class BasilServiceConnection  extends BItem {
 
 // Create a new server connection and return same
 // Returns a BasilServiceConnection or undefined if an error.
-export function NewBasilServerConnection(serverID, transport, parms) {
-    if (BS.servers[serverID] != undefined) {
-        GP.DebugLog('BasilServer: Not creating service. Existing ID:' + serverID);
+export function NewBasilServerConnection(serverId, transport, parms) {
+    if (BS.servers[serverId] != undefined) {
+        GP.DebugLog('BasilServer: Not creating service. Existing Id:' + serverId);
         return undefined;
     }
-    let newConnection = new BasilServiceConnection(serverID, transport, parms);
-    BS.servers[serverID] = newConnection;
-    newConnection.serverID = serverID;
+    let newConnection = new BasilServiceConnection(serverId, transport, parms);
+    BS.servers[serverId] = newConnection;
+    newConnection.serverId = serverId;
     newConnection.Start();
-    GP.DebugLog('BasilServer: created new service connection for ID ' + serverID);
+    GP.DebugLog('BasilServer: created new service connection for Id ' + serverId);
     return newConnection;
 }
 

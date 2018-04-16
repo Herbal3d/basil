@@ -11,7 +11,8 @@ export default {
     'page': {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
-        'showDebug': true
+        'showDebug': true,
+        'debugLogLines': 25
     },
     // Parameters for the webgl environment
     'webgl': {
