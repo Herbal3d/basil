@@ -54,4 +54,35 @@ GP.client.OpenSession(undefined, {
         // Got it back!
         });
     }, Config.WWTester.AliveCheckPollMS);
+    let anAsset = {
+      displayInfo: {
+        displayableType: 'meshset',
+        asset: {
+          list: {
+            'URL': 'http://home.livingroomcam.us:14600/basil/convoar/testtest88.gltf',
+            'loaderType': 'GLTF'
+          }
+        }
+      }
+    };
+    let auth = undefined; // no authentication at the moment
+    GP.client.IdentifyDisplayableObject(auth, anAsset)
+    .then( resp => {
+      if (resp.exception === undefined) {
+        let displayableId = resp.id.id;
+        let pos = {
+          'pos': '[ 10, 11, 12 ]',
+          'rot': '[ 0, 0, 0, 1 ]',
+          'posRef': '0',
+          'rotRef': '0'
+        };
+        GP.client.CreateObjectInstance(auth, displayableId, pos)
+        .then( resp => {
+          if (resp.exception === undefined) {
+            let instanceId = resp.id.id;
+          }
+        });
+      }
+      // One asset is in the scene
+    });
 });

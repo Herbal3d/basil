@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { BItem } from 'xBItem.js';
+import { BItem } from 'xBItem';
 
 export class Displayable extends BItem {
     constructor(auth, assetInfo) {
@@ -48,7 +48,7 @@ export class DisplayableInstance extends BItem {
                         this.gPos[2] = Float(val[2]);
                     }
                     this.gRotgPosModified = true;
-                    if (this.procgPostionSet !== undefined)
+                    if (this.procgPostionSet !== undefined) {
                         procgPositionSet(this);
                     }
                 }
@@ -63,7 +63,7 @@ export class DisplayableInstance extends BItem {
                         this.gRot[4] = Float(val[4]);
                     }
                     this.gRotgPosModified = true;
-                    if (this.procgRotationSet !== undefined)
+                    if (this.procgRotationSet !== undefined) {
                         procgRotationSet(this);
                     }
                 }
@@ -86,15 +86,11 @@ export class DisplayableInstance extends BItem {
                 'local': true
             },
             'lPos': {
-                'get': () => {
-                    return this.localPos;
-                },
+                'get': () => { return this.localPos; },
                 'set': undefined
-            }
+            },
             'lRot': {
-                'get': () => {
-                    return this.localRot;
-                },
+                'get': () => { return this.localRot; },
                 'set': undefined
             }
         } );

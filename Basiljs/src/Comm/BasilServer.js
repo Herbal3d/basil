@@ -117,11 +117,16 @@ export class BasilServiceConnection  extends BItem {
         let ret = undefined;
         if (req.assetInfo) {
           let newItem = new Displayable(req.auth, req.assetInfo);
-          ret = {
-              'identifier': {
-                'id': newItem.Id;
-              }
-          };
+          if (newItem){
+            ret = {
+                'identifier': {
+                  'id': newItem.id
+                }
+            };
+          }
+          else {
+            ret = BasilServer.MakeException('Could not create object');
+          }
         }
         else {
           ret = BasilServer.MakeException('No assetInfo specified');
@@ -149,7 +154,7 @@ export class BasilServiceConnection  extends BItem {
             }
             ret = {
               'createdInstanceId': {
-                'id': newInstance.id;
+                'id': newInstance.id
               }
             };
           }
@@ -164,7 +169,7 @@ export class BasilServiceConnection  extends BItem {
     }
     procDeleteObjectInstance(req) {
         if (req.identifier) {
-          BItem.ForgetItem(req.identifier.id);)
+          BItem.ForgetItem(req.identifier.id);
         }
         return {
         };
