@@ -17,6 +17,9 @@ import Config from 'xConfig';
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
 import { BItem } from 'xBItem';
 
+import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
+import { Displayable, DisplayableInstance } from 'xDisplayable';
+
 var BS = BS || {};
 GP.BS = BS;
 
@@ -79,7 +82,12 @@ export class BasilServiceConnection  extends BItem {
                 if (msgProps !== undefined && msgProps.length > 0) {
                   msgProps.forEach( msgProp => {
                     let template = this.receptionMessages2[msgProp];
-                    replyContents = template[0](msg[msgProp], this);
+                    try {
+                      replyContents = template[0].bind(this, msg[msgProp]);
+                    }
+                    catch (e) {
+                      replyContents = BasilServer.MakeException('Exception processing: ' + e);
+                    }
                     // GP.DebugLog('BasilServer.procMessage:'
                     //         + ' prop=' + msgProp
                     //         + ', rec=' + JSON.stringify(msg[msgProp])
@@ -105,107 +113,176 @@ export class BasilServiceConnection  extends BItem {
         }
     }
 
-    procIdentifyDisplayableObject(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1,
-        };
+    procIdentifyDisplayableObject(req) {
+        let ret = undefined;
+        if (req.assetInfo) {
+          let newItem = new Displayable(req.auth, req.assetInfo);
+          ret = {
+              'identifier': {
+                'id': newItem.Id;
+              }
+          };
+        }
+        else {
+          ret = BasilServer.MakeException('No assetInfo specified');
+        }
+        return ret;
     }
-    procForgetDisplayableObject(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1,
-        };
+    procForgetDisplayableObject(req) {
+        let ret = {};
+        if (req.identifier && req.identifier.id) {
+          BItem.ForgetItem(req.identifier.id);
+        }
+        return ret;
     }
     // Given an object with recieved parameters, do operation and return response object
-    procCreateObjectInstance(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1,
-            'createdInstanceId': 122334
-        };
-    }
-    procDeleteObjectInstance(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1,
-        };
-    }
-    procUpdateObjectProperty(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1
-        };
-    }
-    procUpdateInstanceProperty(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1
-        };
-    }
-    procUpdateInstancePosition(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1
-        };
-    }
-    procRequestObjectProperties(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1,
-            'properties': {
-                'ObjectHere': 'frog',
-                'ObjectThere': 'frog2'
+    procCreateObjectInstance(req) {
+        let ret = undefined;
+        if (req.identifier && req.pos) {
+          let baseDisplayable = BItem.GetItem(req.identifier.id);
+          if (baseDisplayable) {
+            let instanceId = CreateUniqueInstanceId();
+            let newInstance = new DisplayableInstance(instanceId, req.auth, baseDisplayable);
+            BasilServer.UpdatePosInfo(newInstance, req.pos);
+            if (req.propertiesToSet) {
+              newInstance.SetProperties(req.propertiesToSet.list);
             }
+            ret = {
+              'createdInstanceId': {
+                'id': newInstance.id;
+              }
+            };
+          }
+          else {
+            ret = BasilServer.MakeException('Displayable was not found: ' + req.identifier.id);
+          }
+        }
+        else {
+          ret = BasilSErver.MakeException('Displayable or position not specified');
+        }
+        return ret;
+    }
+    procDeleteObjectInstance(req) {
+        if (req.identifier) {
+          BItem.ForgetItem(req.identifier.id);)
+        }
+        return {
         };
     }
-    procRequestInstanceProperties(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return {
-            'success': 1,
-            'properties': {
-                'InstanceHere': 'frog',
-                'InstanceThere': 'frog2'
-            }
-        };
+    procUpdateObjectProperty(req) {
+        let ret = {};
+        if (req.identifier && req.props) {
+          let obj = BItem.GetItem(req.identifier.id);
+          if (obj) {
+            obj.SetProperties(req.props.list);
+          }
+          else {
+            ret = BasilServer.MakeException('Object not found');
+          }
+        }
+        return ret;
     }
-    procOpenSession(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
+    procUpdateInstanceProperty(req) {
+        let ret = {};
+        if (req.identifier && req.props) {
+          let obj = BItem.GetItem(req.identifier.id);
+          if (obj) {
+            obj.SetProperties(req.props.list);
+          }
+          else {
+            ret = BasilServer.MakeException('Object not found');
+          }
+        }
+        return ret;
+    }
+    procUpdateInstancePosition(req) {
+      if (req.instanceId && req.pos) {
+        let instance = BItem.GetItem(req.instanceId.id);
+        if (instance) {
+          BasilServer.UpdatePositionInfo(instance, req.pos);
+        }
+      }
+      return {};
+    }
+    procRequestObjectProperties(req) {
+      ret = {};
+      if (req.identifier) {
+        let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
+        let obj = BItem.GetItem(req.identifier.id);
+        if (obj) {
+          let props = obj.GetProperties(filter);
+          ret = { 'properties': {} };
+          ret.properties.list = props;
+        }
+        else {
+          ret = BasilServer.MakeException('Object not found: ' + req.identifier.id);
+        }
+        return ret;
+      };
+    }
+    procRequestInstanceProperties(req) {
+      ret = {};
+      if (req.instanceId) {
+        let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
+        let instance = BItem.GetItem(req.instanceId.id);
+        if (instance) {
+          let props = instance.GetProperties(filter);
+          ret = { 'properties': {} };
+          ret.properties.list = props;
+        }
+        else {
+          ret = BasilServer.MakeException('Instance not found: ' + req.identifier.id);
+        }
+        return ret;
+      };
+    }
+    procOpenSession(req) {
         return {
-            'success': 1,
             'features': {
+              'list': {
                 'creepy': 'no',
                 'wow': '44'
+              }
             }
         };
     }
-    procCloseSession(req, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
+    procCloseSession(req) {
         return {
-            'success': 1
         };
     }
-    procAliveCheck(reqq, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
+    procAliveCheck(req) {
         return {
             'time': Date.now(),
             'sequenceNum': tthis.aliveReplySequenceNum++,
-            'timeReceived': reqq['time'],
-            'sequenceNumReceived': reqq['sequenceNum']
+            'timeReceived': req['time'],
+            'sequenceNumReceived': req['sequenceNum']
         };
-    }
+    };
     procAliveCheckResp(req) {
         // Match response with sent alive check
         return {
         };
-    }
+    };
 
-    get stats() {
-        return {
+    // Create an exception object
+    static MakeException(reason, hints) {
+      let except = { 'exception': {} };
+      if (reason) {
+        except.exception.reason = reason;
+      }
+      if (hints) {
+        except.exception.hints = hints;
+      }
+      return except;
+    };
 
-        }
-    }
-
+    // Update an instance's position info based on a passed BasilType.InstancePostionInfo
+    static UpdatePositionInfo(instance, posInfo) {
+      if (posInfo.pos) { instance.SetProperty('Position', req.pos.pos) }
+      if (posInfo.rot) { instance.SetProperty('Rotation', req.pos.rot) }
+      if (posInfo.posRef) { instance.SetProperty('PosCoordSystem', req.pos.posRef) }
+      if (posInfo.rotRef) { instance.SetProperty('RotCoordSystem', req.pos.rotRef) }
+    };
 }
 
 // Create a new server connection and return same

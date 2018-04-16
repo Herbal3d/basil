@@ -53,10 +53,9 @@ export class BasilClientConnection {
         return ret;
     };
 
-    IdentifyDisplayableObject(auth, id, asset, aabb) {
+    IdentifyDisplayableObject(auth, asset, aabb) {
         let msg = {
-            'id': id,
-            'asset': asset
+            'assetInfo': asset
         };
         if (auth !== undefined) msg['auth'] = auth;
         if (aabb !== undefined) msg['aabb'] = aabb;

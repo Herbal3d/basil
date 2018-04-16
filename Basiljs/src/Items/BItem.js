@@ -41,21 +41,43 @@ export class BItem {
         BItem.ForgetItem(this.id);
     };
 
-    // Returns a MAp of properties
+    // Returns an Object of properties and values
     FetchProperties(filter) {
-        let ret = undefined;
+        let ret = {};
         if (filter !== undefined) {
-            ret = new Map();
-            this.props.forEach((prop, val) => {
+            this.props.forEach((val, prop) => {
                 // Some wildcard testing
-                ret.AddItem(prop, val);
+                let propVal = val.get ? val.get() : undefined;
+                ret[prop] = value;
             });
         }
         else {
-            ret = this.props;
+            this.props.forEach((val, prop) => {
+                let propVal = val.get ? val.get() : undefined;
+                ret[prop] = value;
+            });
         }
         return ret;
     };
+    SetProperty(propertyName, value) {
+      if (this.props.has(propertyName)) {
+        if (this.props.get(propertyName).set) {
+          this.props.get(propertyName).set(value);
+        }
+      }
+    }
+    SetProperties(propValues) {
+      if (propValues instanceof Map) {
+          propValues.forEach((val, prop) => {
+              this.SetProperty(prop, val);
+          }, this);
+      }
+      else {
+          Object.getOwnPropertyNames(propValues).forEach(prop => {
+              this.SetProperty(prop, propValues[prop]);
+          }, this);
+      }
+    }
 
     // Define a property that can be accessed locally and remotely.
     // Remote access is alwas thrugh the MAp so remote people don't get access to local variables
@@ -81,17 +103,16 @@ export class BItem {
 
     // Pass a Map or Objectof propertyNames with definitions
     DefineProperties(propValues) {
-        if (propValues instanceof Map) {
-            propValues.forEach((val, prop) => {
-                this.DefineProperty(prop, val);
-            }, this);
-        }
-        else {
-            Object.getOwnPropertyNames(propValues).forEach(prop => {
-                this.DefineProperty(prop, propValues[prop]);
-            }, this);
-
-        }
+      if (propValues instanceof Map) {
+          propValues.forEach((val, prop) => {
+              this.DefineProperty(prop, val);
+          }, this);
+      }
+      else {
+          Object.getOwnPropertyNames(propValues).forEach(prop => {
+              this.DefineProperty(prop, propValues[prop]);
+          }, this);
+      }
     }
 
     // Add an item to the database of items.

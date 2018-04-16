@@ -24,3 +24,8 @@ export function CreateUniqueId(service, type ) {
                 + '.'
                 + String(GP.UniqueIdCount++);
 }
+
+// Create a locally unique instance identifier.
+export function CreateUniqueInstanceId() {
+  return CreateUniqueId('instance');
+}

@@ -3580,9 +3580,9 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        Vector3.prototype.X = 0;
-        Vector3.prototype.Y = 0;
-        Vector3.prototype.Z = 0;
+        Vector3.prototype.x = 0;
+        Vector3.prototype.y = 0;
+        Vector3.prototype.z = 0;
 
         Vector3.create = function create(properties) {
             return new Vector3(properties);
@@ -3591,12 +3591,12 @@ export const BasilType = $root.BasilType = (() => {
         Vector3.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.X != null && message.hasOwnProperty("X"))
-                writer.uint32(9).double(message.X);
-            if (message.Y != null && message.hasOwnProperty("Y"))
-                writer.uint32(17).double(message.Y);
-            if (message.Z != null && message.hasOwnProperty("Z"))
-                writer.uint32(25).double(message.Z);
+            if (message.x != null && message.hasOwnProperty("x"))
+                writer.uint32(9).double(message.x);
+            if (message.y != null && message.hasOwnProperty("y"))
+                writer.uint32(17).double(message.y);
+            if (message.z != null && message.hasOwnProperty("z"))
+                writer.uint32(25).double(message.z);
             return writer;
         };
 
@@ -3612,13 +3612,13 @@ export const BasilType = $root.BasilType = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.X = reader.double();
+                    message.x = reader.double();
                     break;
                 case 2:
-                    message.Y = reader.double();
+                    message.y = reader.double();
                     break;
                 case 3:
-                    message.Z = reader.double();
+                    message.z = reader.double();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -3637,15 +3637,15 @@ export const BasilType = $root.BasilType = (() => {
         Vector3.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.X != null && message.hasOwnProperty("X"))
-                if (typeof message.X !== "number")
-                    return "X: number expected";
-            if (message.Y != null && message.hasOwnProperty("Y"))
-                if (typeof message.Y !== "number")
-                    return "Y: number expected";
-            if (message.Z != null && message.hasOwnProperty("Z"))
-                if (typeof message.Z !== "number")
-                    return "Z: number expected";
+            if (message.x != null && message.hasOwnProperty("x"))
+                if (typeof message.x !== "number")
+                    return "x: number expected";
+            if (message.y != null && message.hasOwnProperty("y"))
+                if (typeof message.y !== "number")
+                    return "y: number expected";
+            if (message.z != null && message.hasOwnProperty("z"))
+                if (typeof message.z !== "number")
+                    return "z: number expected";
             return null;
         };
 
@@ -3653,12 +3653,12 @@ export const BasilType = $root.BasilType = (() => {
             if (object instanceof $root.BasilType.Vector3)
                 return object;
             let message = new $root.BasilType.Vector3();
-            if (object.X != null)
-                message.X = Number(object.X);
-            if (object.Y != null)
-                message.Y = Number(object.Y);
-            if (object.Z != null)
-                message.Z = Number(object.Z);
+            if (object.x != null)
+                message.x = Number(object.x);
+            if (object.y != null)
+                message.y = Number(object.y);
+            if (object.z != null)
+                message.z = Number(object.z);
             return message;
         };
 
@@ -3667,16 +3667,16 @@ export const BasilType = $root.BasilType = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.X = 0;
-                object.Y = 0;
-                object.Z = 0;
+                object.x = 0;
+                object.y = 0;
+                object.z = 0;
             }
-            if (message.X != null && message.hasOwnProperty("X"))
-                object.X = options.json && !isFinite(message.X) ? String(message.X) : message.X;
-            if (message.Y != null && message.hasOwnProperty("Y"))
-                object.Y = options.json && !isFinite(message.Y) ? String(message.Y) : message.Y;
-            if (message.Z != null && message.hasOwnProperty("Z"))
-                object.Z = options.json && !isFinite(message.Z) ? String(message.Z) : message.Z;
+            if (message.x != null && message.hasOwnProperty("x"))
+                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
+            if (message.y != null && message.hasOwnProperty("y"))
+                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
+            if (message.z != null && message.hasOwnProperty("z"))
+                object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z;
             return object;
         };
 
@@ -3696,10 +3696,10 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        Quaternion.prototype.X = 0;
-        Quaternion.prototype.Y = 0;
-        Quaternion.prototype.Z = 0;
-        Quaternion.prototype.W = 0;
+        Quaternion.prototype.x = 0;
+        Quaternion.prototype.y = 0;
+        Quaternion.prototype.z = 0;
+        Quaternion.prototype.w = 0;
 
         Quaternion.create = function create(properties) {
             return new Quaternion(properties);
@@ -3708,14 +3708,14 @@ export const BasilType = $root.BasilType = (() => {
         Quaternion.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.X != null && message.hasOwnProperty("X"))
-                writer.uint32(9).double(message.X);
-            if (message.Y != null && message.hasOwnProperty("Y"))
-                writer.uint32(17).double(message.Y);
-            if (message.Z != null && message.hasOwnProperty("Z"))
-                writer.uint32(25).double(message.Z);
-            if (message.W != null && message.hasOwnProperty("W"))
-                writer.uint32(33).double(message.W);
+            if (message.x != null && message.hasOwnProperty("x"))
+                writer.uint32(9).double(message.x);
+            if (message.y != null && message.hasOwnProperty("y"))
+                writer.uint32(17).double(message.y);
+            if (message.z != null && message.hasOwnProperty("z"))
+                writer.uint32(25).double(message.z);
+            if (message.w != null && message.hasOwnProperty("w"))
+                writer.uint32(33).double(message.w);
             return writer;
         };
 
@@ -3731,16 +3731,16 @@ export const BasilType = $root.BasilType = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.X = reader.double();
+                    message.x = reader.double();
                     break;
                 case 2:
-                    message.Y = reader.double();
+                    message.y = reader.double();
                     break;
                 case 3:
-                    message.Z = reader.double();
+                    message.z = reader.double();
                     break;
                 case 4:
-                    message.W = reader.double();
+                    message.w = reader.double();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -3759,18 +3759,18 @@ export const BasilType = $root.BasilType = (() => {
         Quaternion.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.X != null && message.hasOwnProperty("X"))
-                if (typeof message.X !== "number")
-                    return "X: number expected";
-            if (message.Y != null && message.hasOwnProperty("Y"))
-                if (typeof message.Y !== "number")
-                    return "Y: number expected";
-            if (message.Z != null && message.hasOwnProperty("Z"))
-                if (typeof message.Z !== "number")
-                    return "Z: number expected";
-            if (message.W != null && message.hasOwnProperty("W"))
-                if (typeof message.W !== "number")
-                    return "W: number expected";
+            if (message.x != null && message.hasOwnProperty("x"))
+                if (typeof message.x !== "number")
+                    return "x: number expected";
+            if (message.y != null && message.hasOwnProperty("y"))
+                if (typeof message.y !== "number")
+                    return "y: number expected";
+            if (message.z != null && message.hasOwnProperty("z"))
+                if (typeof message.z !== "number")
+                    return "z: number expected";
+            if (message.w != null && message.hasOwnProperty("w"))
+                if (typeof message.w !== "number")
+                    return "w: number expected";
             return null;
         };
 
@@ -3778,14 +3778,14 @@ export const BasilType = $root.BasilType = (() => {
             if (object instanceof $root.BasilType.Quaternion)
                 return object;
             let message = new $root.BasilType.Quaternion();
-            if (object.X != null)
-                message.X = Number(object.X);
-            if (object.Y != null)
-                message.Y = Number(object.Y);
-            if (object.Z != null)
-                message.Z = Number(object.Z);
-            if (object.W != null)
-                message.W = Number(object.W);
+            if (object.x != null)
+                message.x = Number(object.x);
+            if (object.y != null)
+                message.y = Number(object.y);
+            if (object.z != null)
+                message.z = Number(object.z);
+            if (object.w != null)
+                message.w = Number(object.w);
             return message;
         };
 
@@ -3794,19 +3794,19 @@ export const BasilType = $root.BasilType = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.X = 0;
-                object.Y = 0;
-                object.Z = 0;
-                object.W = 0;
+                object.x = 0;
+                object.y = 0;
+                object.z = 0;
+                object.w = 0;
             }
-            if (message.X != null && message.hasOwnProperty("X"))
-                object.X = options.json && !isFinite(message.X) ? String(message.X) : message.X;
-            if (message.Y != null && message.hasOwnProperty("Y"))
-                object.Y = options.json && !isFinite(message.Y) ? String(message.Y) : message.Y;
-            if (message.Z != null && message.hasOwnProperty("Z"))
-                object.Z = options.json && !isFinite(message.Z) ? String(message.Z) : message.Z;
-            if (message.W != null && message.hasOwnProperty("W"))
-                object.W = options.json && !isFinite(message.W) ? String(message.W) : message.W;
+            if (message.x != null && message.hasOwnProperty("x"))
+                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
+            if (message.y != null && message.hasOwnProperty("y"))
+                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
+            if (message.z != null && message.hasOwnProperty("z"))
+                object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z;
+            if (message.w != null && message.hasOwnProperty("w"))
+                object.w = options.json && !isFinite(message.w) ? String(message.w) : message.w;
             return object;
         };
 
@@ -4703,8 +4703,8 @@ export const BasilType = $root.BasilType = (() => {
         }
 
         DisplayableInfo.prototype.aabb = null;
-        DisplayableInfo.prototype.DisplayableType = "";
-        DisplayableInfo.prototype.Asset = null;
+        DisplayableInfo.prototype.displayableType = "";
+        DisplayableInfo.prototype.asset = null;
 
         DisplayableInfo.create = function create(properties) {
             return new DisplayableInfo(properties);
@@ -4715,10 +4715,10 @@ export const BasilType = $root.BasilType = (() => {
                 writer = $Writer.create();
             if (message.aabb != null && message.hasOwnProperty("aabb"))
                 $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(10).fork()).ldelim();
-            if (message.DisplayableType != null && message.hasOwnProperty("DisplayableType"))
-                writer.uint32(18).string(message.DisplayableType);
-            if (message.Asset != null && message.hasOwnProperty("Asset"))
-                $root.BasilType.PropertyList.encode(message.Asset, writer.uint32(26).fork()).ldelim();
+            if (message.displayableType != null && message.hasOwnProperty("displayableType"))
+                writer.uint32(18).string(message.displayableType);
+            if (message.asset != null && message.hasOwnProperty("asset"))
+                $root.BasilType.PropertyList.encode(message.asset, writer.uint32(26).fork()).ldelim();
             return writer;
         };
 
@@ -4737,10 +4737,10 @@ export const BasilType = $root.BasilType = (() => {
                     message.aabb = $root.BasilType.AaBoundingBox.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.DisplayableType = reader.string();
+                    message.displayableType = reader.string();
                     break;
                 case 3:
-                    message.Asset = $root.BasilType.PropertyList.decode(reader, reader.uint32());
+                    message.asset = $root.BasilType.PropertyList.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4764,13 +4764,13 @@ export const BasilType = $root.BasilType = (() => {
                 if (error)
                     return "aabb." + error;
             }
-            if (message.DisplayableType != null && message.hasOwnProperty("DisplayableType"))
-                if (!$util.isString(message.DisplayableType))
-                    return "DisplayableType: string expected";
-            if (message.Asset != null && message.hasOwnProperty("Asset")) {
-                let error = $root.BasilType.PropertyList.verify(message.Asset);
+            if (message.displayableType != null && message.hasOwnProperty("displayableType"))
+                if (!$util.isString(message.displayableType))
+                    return "displayableType: string expected";
+            if (message.asset != null && message.hasOwnProperty("asset")) {
+                let error = $root.BasilType.PropertyList.verify(message.asset);
                 if (error)
-                    return "Asset." + error;
+                    return "asset." + error;
             }
             return null;
         };
@@ -4784,12 +4784,12 @@ export const BasilType = $root.BasilType = (() => {
                     throw TypeError(".BasilType.DisplayableInfo.aabb: object expected");
                 message.aabb = $root.BasilType.AaBoundingBox.fromObject(object.aabb);
             }
-            if (object.DisplayableType != null)
-                message.DisplayableType = String(object.DisplayableType);
-            if (object.Asset != null) {
-                if (typeof object.Asset !== "object")
-                    throw TypeError(".BasilType.DisplayableInfo.Asset: object expected");
-                message.Asset = $root.BasilType.PropertyList.fromObject(object.Asset);
+            if (object.displayableType != null)
+                message.displayableType = String(object.displayableType);
+            if (object.asset != null) {
+                if (typeof object.asset !== "object")
+                    throw TypeError(".BasilType.DisplayableInfo.asset: object expected");
+                message.asset = $root.BasilType.PropertyList.fromObject(object.asset);
             }
             return message;
         };
@@ -4800,15 +4800,15 @@ export const BasilType = $root.BasilType = (() => {
             let object = {};
             if (options.defaults) {
                 object.aabb = null;
-                object.DisplayableType = "";
-                object.Asset = null;
+                object.displayableType = "";
+                object.asset = null;
             }
             if (message.aabb != null && message.hasOwnProperty("aabb"))
                 object.aabb = $root.BasilType.AaBoundingBox.toObject(message.aabb, options);
-            if (message.DisplayableType != null && message.hasOwnProperty("DisplayableType"))
-                object.DisplayableType = message.DisplayableType;
-            if (message.Asset != null && message.hasOwnProperty("Asset"))
-                object.Asset = $root.BasilType.PropertyList.toObject(message.Asset, options);
+            if (message.displayableType != null && message.hasOwnProperty("displayableType"))
+                object.displayableType = message.displayableType;
+            if (message.asset != null && message.hasOwnProperty("asset"))
+                object.asset = $root.BasilType.PropertyList.toObject(message.asset, options);
             return object;
         };
 
