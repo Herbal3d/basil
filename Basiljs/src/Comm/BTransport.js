@@ -24,7 +24,6 @@ import { BItem } from 'xBItem';
 export class BTransport extends BItem {
     constructor(parms) {
         super(parms.transportId, parms.transportAuth);
-        GP.DebugLog('BTransport: constructor');
         this.itemType = 'unknown';
         this.messages = [];
         this.messagesSent = 0;
