@@ -15,10 +15,11 @@
 
 import GP from 'GP';
 import Config from 'xConfig';
-import * as $ from 'jquery';
+
 import * as Graphics from 'xGraphics';
 import * as Comm from 'xComm';
 import * as Eventing from 'xEventing';
+
 // Classes that implement different types of UI controls
 import * as UIControls from './UIControls.js';
 
