@@ -21,7 +21,6 @@ import GP from 'GP';
 import Config from 'xConfig';
 import * as Eventing from 'xEventing';
 
-import * as THREE from 'xThreeJS';
 import { OrbitControls } from 'xThreeJSOrbit';
 import { GLTFLoader } from 'xThreeJSGLTF';
 

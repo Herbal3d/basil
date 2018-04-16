@@ -37,9 +37,7 @@ module.exports = {
         'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
 
         'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
-        'xItemManager': path.resolve(__dirname, 'src/Items/ItemManager.js'),
         'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
-        'xInstance': path.resolve(__dirname, 'src/Items/DisplayableInstance.js'),
 
         'xControls': path.resolve(__dirname, 'src/Controls/index.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
@@ -65,7 +63,8 @@ module.exports = {
     }),
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
-        'THREE': 'xThreeJS'
+        THREE: 'xThreeJS',
+        $: 'jquery'
     }),
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
     new webpack.optimize.CommonsChunkPlugin({
