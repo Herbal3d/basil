@@ -19,6 +19,7 @@ import Config from 'xConfig';
 import * as $ from 'jquery';
 
 import { Base64 } from 'js-base64';
+import { PredefinedDisplayable, DebugInstance } from 'xPredefinedItems';
 
 GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
@@ -75,6 +76,7 @@ GP.ReportError = function ReportError(msg) {
 import * as Graphics from 'xGraphics';
 import * as Controls from 'xControls';
 import * as Comm from 'xComm';
+import { BItem } from 'xBItem';
 
 GP.Ready = false;
 
@@ -101,6 +103,16 @@ if (configParams) {
     catch(e) {
         GP.DebugLog('Basiljs: failed parsing option config: ' + e);
     }
+}
+
+// Create the instances that exist for debugging and environment
+if (Config.predefinedInstances) {
+  if (Config.predefinedInstances.predefinedDisplayableName) {
+    let predefinedDisplayable = new PredefinedDisplayable();
+    if (Config.predefinedInstances.debugObjectId) {
+      let debugInstance = new DebugInstance();
+    }
+  }
 }
 
 let container = document.getElementById(Config.page.webGLcontainerId);

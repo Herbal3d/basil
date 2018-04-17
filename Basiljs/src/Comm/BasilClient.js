@@ -57,88 +57,72 @@ export class BasilClientConnection {
         let msg = {
             'assetInfo': asset
         };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (aabb !== undefined) msg['aabb'] = aabb;
+        if (auth) msg['auth'] = auth;
+        if (aabb) msg['aabb'] = aabb;
         return this.SendAndPromiseResponse(msg, this.transport, 'IdentifyDisplayableObject');
     };
     ForgetDisplayableObject(auth, id) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
+        let msg = { 'identifier': { 'id': id } };
+        if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg, this.transport, 'ForgetDisplayableObject');
     };
-    CreateObjectInstance(auth, id, pos, props) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (pos !== undefined) msg['pos'] = pos;
-        if (props !== undefined) msg['props'] = props;
+    CreateObjectInstance(auth, id, instancePositionInfo, propertyList) {
+        let msg = { 'identifier': { 'id': id } };
+        if (auth) msg['auth'] = auth;
+        if (instancePositionInfo) msg['pos'] = instancePositionInfo;
+        if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, this.transport, 'CreateObjectInstance');
     };
     DeleteObjectInstance(auth, id) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
+        let msg = { 'identifier': { 'id': id } };
+        if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg, this.transport, 'DeleteObjectInstance');
     };
-    UpdateObjectProperty(auth, id, props) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (props !== undefined) msg['props'] = props;
+    UpdateObjectProperty(auth, id, propertyList) {
+        let msg = { 'identifier': { 'id': id } };
+        if (auth) msg['auth'] = auth;
+        if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, this.transport, 'UpdateObjectProperty');
     };
-    UpdateInstanceProperty(auth, id, props) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (props !== undefined) msg['props'] = props;
+    UpdateInstanceProperty(auth, id, propertyList) {
+        let msg = { 'instanceId': { 'id': id } };
+        if (auth) msg['auth'] = auth;
+        if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, this.transport, 'UpdateInstanceProperty');
     };
     UpdateInstancePosition(auth, id,  pos) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (pos !== undefined) msg['pos'] = pos;
+        let msg = { 'instanceId': { 'id': id } };
+        if (auth) msg['auth'] = auth;
+        if (pos) msg['pos'] = pos;
         return this.SendAndPromiseResponse(msg, this.transport, 'UpdateInstancePosition');
     };
     RequestObjectProperties(auth, id, filter) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (filter !== undefined) msg['filter'] = filter;
+        let msg = { 'identifier': { 'id': id } };
+        if (auth) msg['auth'] = auth;
+        if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, this.transport, 'RequestObjectProperties');
     };
     RequestInstanceProperties(auth, id, filter) {
-        let msg = {
-            'id': id
-        };
-        if (auth !== undefined) msg['auth'] = auth;
-        if (filter !== undefined) msg['filter'] = filter;
+        let msg = { 'instanceId': { 'id': id } };
+        if (auth) msg['auth'] = auth;
+        if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, this.transport, 'RequestInstanceProperties');
     };
-    OpenSession(auth, props) {
+    OpenSession(auth, propertyList) {
         let msg = {};
-        if (auth !== undefined) msg['auth'] = auth;
-        if (props !== undefined) msg['props'] = props;
+        if (auth) msg['auth'] = auth;
+        if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, this.transport, 'OpenSession');
     };
     CloseSession(auth, reason) {
         let msg = {};
-        if (auth !== undefined) msg['auth'] = auth;
-        if (reason !== undefined) msg['reason'] = reason;
+        if (auth) msg['auth'] = auth;
+        if (reason) msg['reason'] = reason;
         return this.SendAndPromiseResponse(msg, this.transport, 'CloseSession');
     };
     AliveCheck(auth) {
         let msg = {};
-        if (auth !== undefined) msg['auth'] = auth;
+        if (auth) msg['auth'] = auth;
         msg['time'] = Date.now(),
         msg['sequenceNum']  = this.aliveSequenceNum++
         // throw 'BasilClient.AliveCheck: sending: ' + JSON.stringify(msg);

@@ -14,15 +14,14 @@
 import { BItem } from 'xBItem';
 
 export class Displayable extends BItem {
-    constructor(auth, assetInfo) {
-        let id = CreateUniqueId('displayable');
-        super(id, auth);
+    constructor(id, auth, assetInfo) {
+      super(id, auth, 'Displayable');
     }
 }
 
 export class DisplayableInstance extends BItem {
     constructor(id, auth, baseDisplayable) {
-        super(id, auth);
+        super(id, auth, 'DisplayableInstance');
         this.displayable = baseDisplayable;
 
         this.gPos = [ 0, 0, 0 ];
@@ -31,7 +30,7 @@ export class DisplayableInstance extends BItem {
         this.gRotCoordSystem = 0;
         this.gRotgPosModified = false;  // flag saying gRot or gPos modified
 
-        this.referenceFrame = 0;
+        this.refFrame = 0;
         this.localPos = [ 0,0,0 ];
         this.localRot = [ 0, 0, 0, 1];
 
@@ -80,9 +79,9 @@ export class DisplayableInstance extends BItem {
                     this.gRotCoordSystem = Integer(val);
                 }
             },
-            'referenceFrame': {
-                'get': () => { return this.referenceFrame; },
-                'set': (val) => { this.referenceFrame = val; },
+            'ReferenceFrame': {
+                'get': () => { return this.refFrame; },
+                'set': (val) => { this.refFrame = val; },
                 'local': true
             },
             'lPos': {

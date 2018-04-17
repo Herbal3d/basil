@@ -56,6 +56,12 @@ export default {
             }
         }
     },
+    'predefinedInstances': {
+      'generatedInstanceBasename': 'org.basil.b.',
+      'predefinedDisplayableName': 'org.basil.b.predefinedDisplayable.000',
+      'cameraBasename': 'org.basil.b.camera',
+      'debugObjectId': 'org.basil.b.Debugging.Display'
+    },
     'assets': {
         'gltfURLBase': '/basil/'
     },

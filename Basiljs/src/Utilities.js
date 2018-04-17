@@ -12,20 +12,26 @@
 'use strict';
 
 import GP from 'GP';
+import Config from 'xConfig';
 
 // Create a globally unique Id based on the service and type passed
-export function CreateUniqueId(service, type ) {
+export function CreateUniqueId(service, type) {
   if (GP.UniqueIdCount === undefined) {
     GP.UniqueIdCount = 1;
+    GP.UniqueIdBasename = 'org.basil.b.';
+    if (Config.predefinedInstances && Config.predefinedInstances.generatedInstanceBasename) {
+      GP.UniqueIdBasename = Config.predefinedInstances.generatedInstanceBasename;
+    }
   }
-  return 'org.basil.b.' + service
+  return GP.UniqueIdBasename
+                + service
                 + '.'
                 + (type ? type : 'default')
                 + '.'
                 + String(GP.UniqueIdCount++);
-}
+};
 
 // Create a locally unique instance identifier.
 export function CreateUniqueInstanceId() {
   return CreateUniqueId('instance');
-}
+};

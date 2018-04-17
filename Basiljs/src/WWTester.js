@@ -41,10 +41,27 @@ GP.Ready = true;
 
 GP.client = BasilClient.NewBasilClient('client', GP.wwTransport, {} );
 
+// Once client is created and connected, debug messsages can be sent to the
+//    predefined debug instance.
+if (Config.predefinedInstances && Config.predefinedInstances.debugObjectId) {
+  GP.DebugObjectId = Config.predefinedInstances.debugObjectId;
+  GP.DebugLog = function(msg) {
+    let auth = undefined;
+    let id = GP.DebugObjectId;
+    let props = {
+      'list': {
+        'Msg': msg
+      }
+    };
+    GP.client.UpdateInstanceProperty(auth, id, props);
+  }
+}
+
 GP.client.OpenSession(undefined, {
     'originator': 'com.basil.b.tester'
 })
 .then( resp => {
+    // Start alive polling
     GP.aliveIntervalID = setInterval(function() {
         GP.client.AliveCheck()
         .then( resp => {
@@ -54,6 +71,8 @@ GP.client.OpenSession(undefined, {
         // Got it back!
         });
     }, Config.WWTester.AliveCheckPollMS);
+
+    // Build an asset
     let anAsset = {
       displayInfo: {
         displayableType: 'meshset',
@@ -68,18 +87,45 @@ GP.client.OpenSession(undefined, {
     let auth = undefined; // no authentication at the moment
     GP.client.IdentifyDisplayableObject(auth, anAsset)
     .then( resp => {
-      if (resp.exception === undefined) {
-        let displayableId = resp.id.id;
-        let pos = {
-          'pos': '[ 10, 11, 12 ]',
-          'rot': '[ 0, 0, 0, 1 ]',
-          'posRef': '0',
-          'rotRef': '0'
+      if (resp.exception) {
+        GP.DebugLog('failed creation of displayable:' + resp.exception.reason);
+      }
+      else {
+        let displayableId = resp.identifier.id;
+        GP.DebugLog('Created displayable ' + displayableId);
+        let instancePositionInfo = {
+          // 'id': instanceIdentifier,  // not needed for creation
+          'pos': {
+            'pos': { x: 10, y: 11, z: 12 },
+            'rot': { x: 0, y: 0, z: 0, w: 1 },
+            'posRef': 0,
+            'rotRef': 0
+          }
+          // 'vel': '0',
+          // 'path': pathDescription
         };
-        GP.client.CreateObjectInstance(auth, displayableId, pos)
+        GP.client.CreateObjectInstance(auth, displayableId, instancePositionInfo)
         .then( resp => {
-          if (resp.exception === undefined) {
-            let instanceId = resp.id.id;
+          if (resp.exception) {
+            GP.DebugLog('failed creation of instance:' + resp.exception.reason);
+          }
+          else {
+            let instanceId = resp.instanceId.id;
+            GP.DebugLog('Created instance ' + instanceId);
+            GP.client.RequestInstanceProperties(auth, instanceId)
+            .then( resp => {
+              if (resp.exception) {
+                GP.DebugLog('failed fetching of instance properties: ' + resp.exception.reason);
+              }
+              else {
+                if (resp.properties && resp.properties.list) {
+                  GP.DebugLog('Fetched properties for ' + instanceId + ':');
+                  Object.keys(resp.properties.list).forEach(prop => {
+                    GP.DebugLog('    ' + prop + ' => ' + resp.properties.list[prop]);
+                  });
+                }
+              }
+            })
           }
         });
       }

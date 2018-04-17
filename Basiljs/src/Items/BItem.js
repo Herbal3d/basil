@@ -22,18 +22,14 @@ IM.Items = new Map();
 // All things referenced by the Basil interface are "items' and thus they
 //   have these access methods
 export class BItem {
-    constructor(id, auth) {
+    constructor(id, auth, itemType) {
         this.props = new Map();
         this.id = id;   // index this item is stored under
-        this.itemType = undefined;  // the type of the item
-        this.DefineProperties({
-            'Type': {
-                'get': () => { return this.itemType; },
-            },
-            'Id': {
-                'get': () => { return this.id; },
-            }
-        })
+        this.itemType = itemType ? itemType : undefined;  // the type of the item
+        this.DefineProperties( {
+            'Type': { 'get': () => { return this.itemType; } },
+            'Id': { 'get': () => { return this.id; } }
+        });
         BItem.AddItem(id, this);
     }
 
@@ -41,23 +37,39 @@ export class BItem {
         BItem.ForgetItem(this.id);
     };
 
+    // Returns the value of the property or 'undefined' if either
+    //    no such property or there isn't a value for it.
+    GetProperty(prop) {
+      let ret = undefined;
+      let propDesc = this.props.get(prop);
+      if (propDesc) {
+        if (propDesc.get) {
+          ret = propDesc.get();
+          // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);
+        }
+      }
+      return ret;
+    }
+
     // Returns an Object of properties and values
+    // The optional second parameter is a function to operation on the value
+    //     before putting it in the returned structure. Usually used to stringify.
     FetchProperties(filter) {
-        let ret = {};
-        if (filter !== undefined) {
-            this.props.forEach((val, prop) => {
-                // Some wildcard testing
-                let propVal = val.get ? val.get() : undefined;
-                ret[prop] = value;
-            });
-        }
-        else {
-            this.props.forEach((val, prop) => {
-                let propVal = val.get ? val.get() : undefined;
-                ret[prop] = value;
-            });
-        }
-        return ret;
+      let ret = {};
+      if (filter) {
+          this.props.forEach((propDesc, prop) => {
+              // Some wildcard testing
+              let propVal = propDesc.get ? propDesc.get() : undefined;
+              ret[prop] = value;
+          });
+      }
+      else {
+          this.props.forEach((propDesc, prop) => {
+              let propVal = propDesc.get ? propDesc.get() : undefined;
+              ret[prop] = propVal;
+          });
+      }
+      return ret;
     };
     SetProperty(propertyName, value) {
       if (this.props.has(propertyName)) {
@@ -91,10 +103,10 @@ export class BItem {
         this.props.set(propertyName, propertyDefinition);
         // Add this property defineition to this instance for easy access
         let defn = {};
-        if (propertyDefinition !== undefined && propertyDefinition['set']) {
+        if (propertyDefinition && propertyDefinition['set']) {
           defn.set = propertyDefinition['set'];
         }
-        if (propertyDefinition !== undefined && propertyDefinition['get']) {
+        if (propertyDefinition && propertyDefinition['get']) {
           defn.get = propertyDefinition['get'];
         }
         defn.enumerable = true;
@@ -109,26 +121,26 @@ export class BItem {
           }, this);
       }
       else {
-          Object.getOwnPropertyNames(propValues).forEach(prop => {
+          Object.getOwnPropertyNames(propValues).forEach( prop => {
               this.DefineProperty(prop, propValues[prop]);
           }, this);
       }
-    }
+    };
 
     // Add an item to the database of items.
     // One caller should not be able to see other caller's items so, someday,
     //     add some security based on the creator of the BItem
     static AddItem(id, item, auth) {
         return IM.Items.set(id, item);
-    }
+    };
 
     // Look up an item baed on it's Id
     static GetItem(id) {
         return IM.Items.get(id);
-    }
+    };
 
     // Remove an BItem from the database of BItems
     static ForgetItem(id) {
         IM.Items.delete(id);
-    }
+    };
 }

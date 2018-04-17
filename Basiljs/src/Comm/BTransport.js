@@ -35,13 +35,13 @@ export class BTransport extends BItem {
         this.aliveSequenceNum = 333;
 
         // The properties that can be read as a BItem
-        super.DefineProperties({
+        super.DefineProperties( {
             'ItemType': { 'get': () => { return this.itemType; }, 'set': val => { this.itemType = val; } },
             'MessagesSent': { 'get': () => { return this.messagesSent; } },
             'RPCMessagesSent': { 'get': () => { return this.RPCmessagesSent; } },
             'MessagesReceived': { 'get': () => { return this.messagesReceived; } },
             'QueueSize': { 'get': () => { return this.messages.length; } }
-        });
+        } );
     }
     Close() {
     }

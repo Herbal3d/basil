@@ -84,49 +84,57 @@ export function ShowDebug(onOff) {
 };
 
 // Operation called on UI button click ('clickable').
-function internalOnClickable(evnt) {
-    var buttonOp = $(evnt.target).attr('op');
-    if (buttonOp == 'loadGltf') {
-        var url = Config.assets.gltfURLBase + $('#SelectGltf').val();
-        GP.DebugLog('Controls: OnLoadButton: loading ' + url);
-        internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
-    }
-    if (buttonOp == 'loadAtropia') {
-        GP.DebugLog('Controls: OnLoadAtropia');
-        let atropiaValue = Config.Atropia;
-        if (atropiaValue) {
-            GP.DebugLog('Getting value for regions from HTML')
-            let parsedInput = JSON.parse(atropiaValue);
-            // Add the url base for GLTF files (since it changes with the GLTF version)
-            atropiaRegions = parsedInput.map(oneRegionInfo => {
-                return [ Config.assets.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
-            });
-            internalDoLoadMultiple(atropiaRegions);
-        }
-    }
-    if (buttonOp == 'testComm') {
+const internalOnClickableOps  = {
+  'loadGltf': function() {
+      var url = Config.assets.gltfURLBase + $('#SelectGltf').val();
+      GP.DebugLog('Controls: OnLoadButton: loading ' + url);
+      internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
+  },
+  'loadAtropia': function() {
+      GP.DebugLog('Controls: OnLoadAtropia');
+      let atropiaValue = Config.Atropia;
+      if (atropiaValue) {
+          GP.DebugLog('Getting value for regions from HTML')
+          let parsedInput = JSON.parse(atropiaValue);
+          // Add the url base for GLTF files (since it changes with the GLTF version)
+          atropiaRegions = parsedInput.map(oneRegionInfo => {
+              return [ Config.assets.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
+          });
+          internalDoLoadMultiple(atropiaRegions);
+      }
+    },
+    'testComm': function() {
         GP.DebugLog('Controls: OnTestComm');
-      Comm.ConnectTransportService( {
-            'testmode': true,
-            'testWWURL': './wwtester.js'
-      })
-      .then( () => {
-        GP.DebugLog('Controls: test transport and service connected');
-      })
-      .catch( e => {
-        GP.DebugLog('Controls: failed connecting test transport and service: ${e}');
-      });
-    }
-    if (buttonOp == 'addTest') {
+        Comm.ConnectTransportService( {
+              'testmode': true,
+              'testWWURL': './wwtester.js'
+        })
+        .then( () => {
+          GP.DebugLog('Controls: test transport and service connected');
+        })
+        .catch( e => {
+          GP.DebugLog('Controls: failed connecting test transport and service: ${e}');
+        });
+    },
+    'addTest': function() {
         GP.DebugLog('Controls: OnAddTestObject');
         Graphics.AddTestObject();
-    }
-    if (buttonOp == 'showDebug') {
+    },
+    'showDebug': function() {
         // Make the state to the opposite of what it is now
         ShowDebug(!$('#DEBUGG').is(':visible'));
-    }
-    if (buttonOp == 'showDebugLayer') {
+    },
+    'showDebugLayer': function() {
         Graphics.SetDebugMode();
+    }
+};
+
+// Process the HTML element that has class 'clickable'
+// The attribute 'op' says what to do when the element is clicked.
+function internalOnClickable(evnt) {
+    var buttonOp = $(evnt.target).attr('op');
+    if (internalOnClickableOps[buttonOp]) {
+      internalOnClickableOps[buttonOp]();
     }
 };
 
