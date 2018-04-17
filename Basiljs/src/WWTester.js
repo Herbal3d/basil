@@ -61,16 +61,20 @@ GP.client.OpenSession(undefined, {
     'originator': 'com.basil.b.tester'
 })
 .then( resp => {
-    // Start alive polling
-    GP.aliveIntervalID = setInterval(function() {
-        GP.client.AliveCheck()
-        .then( resp => {
-        // Got it back!
-        })
-        .catch( e => {
-        // Got it back!
-        });
-    }, Config.WWTester.AliveCheckPollMS);
+    if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
+      // Start alive polling
+      GP.aliveIntervalID = setInterval(function() {
+          GP.client.AliveCheck()
+          .then( resp => {
+            if (Config.WWTester.PrintDebugOnAliveResponse) {
+              GP.DebugLog('Keep alive response: ' + JSON.stringify(resp));
+            }
+          })
+          .catch( e => {
+          // Got it back!
+          });
+      }, Config.WWTester.AliveCheckPollMS);
+    }
 
     // Build an asset
     let anAsset = {
