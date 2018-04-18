@@ -26,7 +26,7 @@ import * as UIControls from './UIControls.js';
 var CO = CO || {};
 GP.CO = CO;         // added for debugging. Do not use for inter-package access
 
-export function Init() {
+export function ControlsInit() {
     // Make all 'class=clickable' page items create events
     $('.clickable').click(internalOnClickable);
 
@@ -68,7 +68,7 @@ export function Init() {
     }
 };
 
-export function Start() {
+export function ControlsStart() {
 };
 
 // Call to set debug window to specified state. Pass state that is should be in

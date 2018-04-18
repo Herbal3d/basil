@@ -23,8 +23,8 @@ export default {
             'initialViewDistance': 2000,
             'initialCameraLookAt': [ 128, 30, 128 ],
             'addCameraHelper': false,
-            'addAxisHelper': true,
-            'axisHelperSize': 20
+            'addAxesHelper': true,
+            'axesHelperSize': 20
         },
         'lights': {
             'ambient': {
@@ -49,11 +49,13 @@ export default {
             }
         },
         'renderer': {
-            'ThreeJS': {
-                'antialias': true,
-                'alpha': true,      // there are alpha textures in the scene
-                'logarithmicDepthBuffer': false
-            }
+          'ThreeJS': {
+            // Parameters passed to the renderer when created.
+            //   see https://threejs.org/docs/index.html#api/renderers/WebGLRenderer
+            'antialias': true,
+            'alpha': true,      // there are alpha textures in the scene
+            'logarithmicDepthBuffer': false
+          },
         }
     },
     'predefinedInstances': {

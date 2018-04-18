@@ -85,7 +85,7 @@ function disposeScene(scene) {
     }
 }
 
-export function Init(container, canvas, initializedCallback) {
+export function GraphicsInit(container, canvas, initializedCallback) {
     GR.container = container;
     GR.canvas = canvas;
 
@@ -147,7 +147,7 @@ export function Init(container, canvas, initializedCallback) {
     GR.lastFrameTime = new Date().getTime();
 };
 
-export function Start() {
+export function GraphicsStart() {
     if (!GR.runLoopIdentifier) {
         internalStartRendering();
     }
@@ -341,10 +341,10 @@ function internalInitializeCameraAndLights(theScene, canvas) {
         GR.cameraHelper = new THREE.CameraHelper(GR.camera);
         theScene.add(GR.cameraHelper);
     }
-    if (Config.webgl.camera.addAxisHelper) {
-        var helperSize = parms.axisHelperSize || 5;
-        GR.axisHelper = new THREE.AxisHelper(Number(helperSize));
-        theScene.add(GR.axisHelper);
+    if (Config.webgl.camera.addAxesHelper) {
+        var helperSize = parms.axesHelperSize || 5;
+        GR.axesHelper = new THREE.AxesHelper(Number(helperSize));
+        theScene.add(GR.axesHelper);
     }
     theScene.add(GR.camera);
 

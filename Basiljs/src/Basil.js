@@ -16,10 +16,8 @@
 import GP from 'GP';
 
 import Config from 'xConfig';
-import * as $ from 'jquery';
 
 import { Base64 } from 'js-base64';
-import { PredefinedDisplayable, DebugInstance } from 'xPredefinedItems';
 
 GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
@@ -29,7 +27,7 @@ import './Basiljs.less';
 
 // From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
 // Used to fetch invocation parameters. The request better be well formed as
-//     parsing is pretty unforgiving.
+//     parsing is pretty simplistic and unforgiving.
 GP.ConfigGetQueryVariable = function (variable) {
     var query = window.location.search.substring(1);
     var vars = query.split('&');
@@ -73,10 +71,10 @@ GP.ReportError = function ReportError(msg) {
     for use in debugging.
 */
 
-import * as Graphics from 'xGraphics';
-import * as Controls from 'xControls';
-import * as Comm from 'xComm';
-import { BItem } from 'xBItem';
+import { GraphicsInit, GraphicsStart } from 'xGraphics';
+import { ControlsInit, ControlsStart } from 'xControls';
+import { CommInit, CommStart, ConnectTransportService } from 'xComm';
+import { PredefinedBItemInit } from 'xPredefinedItems';
 
 GP.Ready = false;
 
@@ -105,30 +103,23 @@ if (configParams) {
     }
 }
 
-// Create the instances that exist for debugging and environment
-if (Config.predefinedInstances) {
-  if (Config.predefinedInstances.predefinedDisplayableName) {
-    let predefinedDisplayable = new PredefinedDisplayable();
-    if (Config.predefinedInstances.debugObjectId) {
-      let debugInstance = new DebugInstance();
-    }
-  }
-}
-
 let container = document.getElementById(Config.page.webGLcontainerId);
 let canvas = document.getElementById(Config.page.webGLcanvasId);
 
-Graphics.Init(container, canvas);
-Controls.Init();
-Comm.Init();
+GraphicsInit(container, canvas);
+ControlsInit();
+CommInit();
 
-Graphics.Start();
-Comm.Start();
+// Initialize the BItem system with predefined items (camera, renderer, debug, ...)
+PredefinedBItemInit();
+
+GraphicsStart();
+CommStart();
 GP.Ready = true;
 
 // If there are connection parameters, start the first connection
-if (Config.comm && Object.getOwnPropertyNames(Config.comm).length > 0) {
-  Comm.ConnectTransportService(Config.comm)
+if (Config.comm && Object.keys(Config.comm).length > 0) {
+  ConnectTransportService(Config.comm)
   .then( () => {
     GP.DebugLog('Basiljs: initial transport and service connected');
   })

@@ -18,12 +18,32 @@ import { BItem } from 'xBItem';
 import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
 import { Displayable, DisplayableInstance } from 'xDisplayable';
 
+import * as Graphics from 'xGraphics';
+
+// Create the instances that exist for debugging and environment
+export function PredefinedBItemInit() {
+  let parms = {};
+  if (Config.predefinedInstances) {
+    parms = Config.predefinedInstances;
+  }
+  let predefinedDisplayable = new PredefinedDisplayable();
+  if (parms.debugObjectId) {
+    GP.debugInstance = new PredefinedDebugInstance();
+  }
+  GP.rendererInstance = new PredefinedRendererInstance();
+  GP.cameraInstance = new PredefinedCameraInstance();
+};
+
 // A dummy Displayable used by the rest of these predefined instances
 export class PredefinedDisplayable extends Displayable {
   constructor() {
+    let parms = {};
+    if (Config.predefinedInstances) {
+      parms = Config.predefinedInstances;
+    }
     let id = 'org.basil.b.defaultPredefinedDisplayable';
-    if (Config.predefinedInstances && Config.predefinedInstances.predefinedDisplayableName) {
-      id = Config.predefinedInstances.predefinedDisplayableName;
+    if (parms.predefinedDisplayableName) {
+      id = parms.predefinedDisplayableName;
     }
     let auth = undefined;
     let assetInfo = {
@@ -36,16 +56,74 @@ export class PredefinedDisplayable extends Displayable {
 }
 
 // A special instance that displays it's 'Msg' property in the debug window
-export class DebugInstance extends DisplayableInstance {
+export class PredefinedDebugInstance extends DisplayableInstance {
   constructor() {
+    let parms = {};
+    if (Config.predefinedInstances) {
+      parms = Config.predefinedInstances;
+    }
     let id = 'org.basil.b.defaultDebugInstance';
-    if (Config.predefinedInstances && Config.predefinedInstances.debugObjectId) {
-      id = Config.predefinedInstances.debugObjectId;
+    if (parms.debugObjectId) {
+      id = parms.debugObjectId;
     }
     let auth = undefined;
     super(id, auth, GP.predefinedDisplayable);
     this.itemType = 'DebugInstance';
     this.lastMessage = 'none';
+
+    super.DefineProperties( {
+      'Msg': {
+        'get': () => { return this.lastMessage; },
+        'set': (val) => {
+          this.lastMessage = val;
+          GP.DebugLog('WORKER: ' + val);
+        }
+      }
+    } );
+  }
+}
+
+// A special instance that displays it's 'Msg' property in the debug window
+export class PredefinedRendererInstance extends DisplayableInstance {
+  constructor() {
+    let parms = {};
+    if (Config.predefinedInstances) {
+      parms = Config.predefinedInstances;
+    }
+    let id = 'org.basil.b.renderer';
+    if (parms.rendererInstanceId) {
+      id = parms.rendererInstanceId;
+    }
+    let auth = undefined;
+    super(id, auth, GP.predefinedDisplayable);
+    this.itemType = 'RendererInstance';
+
+    super.DefineProperties( {
+      'Msg': {
+        'get': () => { return this.lastMessage; },
+        'set': (val) => {
+          this.lastMessage = val;
+          GP.DebugLog('WORKER: ' + val);
+        }
+      }
+    } );
+  }
+}
+
+// A special instance that displays it's 'Msg' property in the debug window
+export class PredefinedCameraInstance extends DisplayableInstance {
+  constructor() {
+    let parms = {};
+    if (Config.predefinedInstances) {
+      parms = Config.predefinedInstances;
+    }
+    let id = 'org.basil.b.camera';
+    if (parms.cameraInstanceId) {
+      id = parms.cameraInstanceId;
+    }
+    let auth = undefined;
+    super(id, auth, GP.predefinedDisplayable);
+    this.itemType = 'CameraInstance';
 
     super.DefineProperties( {
       'Msg': {

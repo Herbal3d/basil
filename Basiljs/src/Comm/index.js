@@ -13,6 +13,7 @@
 
 import GP from 'GP';
 import Config from 'xConfig';
+
 import * as BasilServer from './BasilServer.js';
 import * as PestoClient from './PestoClient.js';
 import BTransportWW from './BTransportWW.js';
@@ -24,10 +25,10 @@ import { CreateUniqueId } from 'xUtilities';
 var CM = CM || {};
 GP.CM = CM; // for debugging. Don't use for cross package access.
 
-export function Init(parms) {
+export function CommInit(parms) {
 }
 
-export function Start() {
+export function CommStart() {
 };
 
 // Initialize a transport and a service and resolve the promise when connected
