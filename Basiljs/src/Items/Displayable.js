@@ -30,10 +30,8 @@ export class DisplayableInstance extends BItem {
         this.gRotCoordSystem = 0;
         this.gRotgPosModified = false;  // flag saying gRot or gPos modified
 
-        this.refFrame = 0;
-        this.localPos = [ 0,0,0 ];
-        this.localRot = [ 0, 0, 0, 1];
-
+        // Note: some of these are over-ridden by other modules.
+        //    If these are changed, check PredefinedCameraInstance.j
         super.DefineProperties( {
             'Position': {
                 'get': () => { return this.gPos; },
@@ -47,7 +45,7 @@ export class DisplayableInstance extends BItem {
                         this.gPos[2] = Float(val[2]);
                     }
                     this.gRotgPosModified = true;
-                    if (this.procgPostionSet !== undefined) {
+                    if (this.procgPositionSet !== undefined) {
                         procgPositionSet(this);
                     }
                 }
@@ -78,19 +76,6 @@ export class DisplayableInstance extends BItem {
                 'set': (val) => {
                     this.gRotCoordSystem = Integer(val);
                 }
-            },
-            'ReferenceFrame': {
-                'get': () => { return this.refFrame; },
-                'set': (val) => { this.refFrame = val; },
-                'local': true
-            },
-            'lPos': {
-                'get': () => { return this.localPos; },
-                'set': undefined
-            },
-            'lRot': {
-                'get': () => { return this.localRot; },
-                'set': undefined
             }
         } );
     }

@@ -99,12 +99,14 @@ export class PredefinedRendererInstance extends DisplayableInstance {
     this.itemType = 'RendererInstance';
 
     super.DefineProperties( {
-      'Msg': {
-        'get': () => { return this.lastMessage; },
-        'set': (val) => {
-          this.lastMessage = val;
-          GP.DebugLog('WORKER: ' + val);
-        }
+      'Capabilities': {
+        'get': () => { return JSON.stringify(Graphics.THREErenderer().capabilities); },
+      },
+      'Extensions': {
+        'get': () => { return JSON.stringify(Graphics.THREErenderer().extensions); },
+      },
+      'Info': {
+        'get': () => { return JSON.stringify(Graphics.THREErenderer().info); },
       }
     } );
   }
@@ -126,13 +128,38 @@ export class PredefinedCameraInstance extends DisplayableInstance {
     this.itemType = 'CameraInstance';
 
     super.DefineProperties( {
-      'Msg': {
-        'get': () => { return this.lastMessage; },
-        'set': (val) => {
-          this.lastMessage = val;
-          GP.DebugLog('WORKER: ' + val);
+        'Position': {
+            'get': () => { return this.gPos; },
+            'set': (val) => {
+                if (typeof val == 'String') {
+                  val = JSON.Parse(val);
+                }
+                if (typeof val == 'Array' && val.length == 3) {
+                    this.gPos[0] = Float(val[0]);
+                    this.gPos[1] = Float(val[1]);
+                    this.gPos[2] = Float(val[2]);
+                }
+                this.gRotgPosModified = true;
+                if (this.procgPositionSet !== undefined) {
+                    procgPositionSet(this);
+                }
+            }
+        },
+        'Rotation': {
+            'get': () => { return this.gRot; },
+            'set': (val) => {
+                if (typeof val == 'Array' && val.length == 4) {
+                    this.gRot[0] = Float(val[0]);
+                    this.gRot[1] = Float(val[1]);
+                    this.gRot[2] = Float(val[2]);
+                    this.gRot[4] = Float(val[4]);
+                }
+                this.gRotgPosModified = true;
+                if (this.procgRotationSet !== undefined) {
+                    procgRotationSet(this);
+                }
+            }
         }
-      }
     } );
   }
 }

@@ -39,26 +39,24 @@ export function disposeNode (node) {
             node.geometry.dispose ();
         }
         if (node.material) {
-            if (node.material instanceof THREE.MeshFaceMaterial) {
-                for (let mtrl in node.material.materials) {
-                    if (mtrl.map)           mtrl.map.dispose ();
-                    if (mtrl.lightMap)      mtrl.lightMap.dispose ();
-                    if (mtrl.bumpMap)       mtrl.bumpMap.dispose ();
-                    if (mtrl.normalMap)     mtrl.normalMap.dispose ();
-                    if (mtrl.specularMap)   mtrl.specularMap.dispose ();
-                    if (mtrl.envMap)        mtrl.envMap.dispose ();
-                    mtrl.dispose ();    // disposes any programs associated with the material
-                }
+            let matTypes = [ 'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap', 'envMap' ];
+            if (node.material.materials) {
+              node.material.materials.forEach( mtrl => {
+                matTypes.forEach( matType => {
+                  if (mtrl[matType]) mtrl[matType].dispose();
+                } );
+                mtrl.dispose();
+              } );
             }
             else {
-                if (node.material.map)          node.material.map.dispose ();
-                if (node.material.lightMap)     node.material.lightMap.dispose ();
-                if (node.material.bumpMap)      node.material.bumpMap.dispose ();
-                if (node.material.normalMap)    node.material.normalMap.dispose ();
-                if (node.material.specularMap)  node.material.specularMap.dispose ();
-                if (node.material.envMap)       node.material.envMap.dispose ();
-                node.material.dispose ();   // disposes any programs associated with the material
+                matTypes.forEach( matType => {
+                  if (node.material[matType]) node.material[matType].dispose();
+                });
+                node.material.dispose();
             }
+        }
+        if (node.texture) {
+          node.texture.dispose();
         }
     }
 }   // disposeNode
@@ -80,6 +78,7 @@ export function disposeScene(scene) {
 }
 
 export function GraphicsInit(container, canvas) {
+  GP.DebugLog('Graphics: GraphicsInit');
   GR.container = container;
   GR.canvas = canvas;
 
@@ -88,38 +87,175 @@ export function GraphicsInit(container, canvas) {
   InitializeCamera(GR.scene, canvas);
   InitializeLights(GR.scene);
 
-  let parms = {};
+  let parms = {}; // parameters specific to the renderer
   if (Config.webgl && Config.webgl.renderer) {
     parms = Config.webgl.renderer;
   }
-  let rendererParams = {};
+
+  let rendererParams = {};  // parameters to pass to the THREE.renderer creation
   if (parms.ThreeJS) {
-    Object.assign(renderParms, parms.ThreeJS);
+    rendererParams = parms.ThreeJS;
   }
   rendererParams.canvas = canvas;
   GR.renderer = new THREE.WebGLRenderer(parms);
   if (parms.clearColor) {
-      GR.renderer.setClearColor(colorFromArray(Config.webgl.renderer.clearColor));
+      GR.renderer.setClearColor(colorFromArray(parms.clearColor));
   }
-  GR.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+  GR.clock = new THREE.Clock();
 
   if (parms.shadows) {
       GR.renderer.shadowMap.enabled = true;
       GR.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
   }
 
-  // resizing causes recomputations
+  // keep the camera and environment adjusted for the display size
+  OnContainerResize();  // initial aspect ration computation
   container.addEventListener('resize', OnContainerResize, false);
 
   // For the moment, camera control comes from the user
   InitializeCameraControl(GR.scene, GR.container);
 
+  // There are several top level groups for objects in different coordinate systems
+  GR.GroupWorldRel = new THREE.Group();
+  GR.GroupWorldRel.name = 'org.basil.b.GroupWorldRel';
+  GR.GroupCameraRel = new THREE.Group();
+  GR.GroupCameraRel.name = 'org.basil.b.GroupCameraRel';
+  GR.scene.add(GR.GroupWorldRel);
+  GR.scene.add(GR.GroupCameraRel);
+
   // Graphics generate a bunch of events so people can display stuff
   GenerateCameraEvents();
   GenerateRendererStatEvents();
-}
+};
 
 export function GraphicsStart() {
+  StartRendering();
+};
+
+function StartRendering() {
+  if (GR.renderer) {
+    GR.renderer.animate(DoRendering);
+  }
+};
+
+function StopRendering() {
+  //
+};
+
+// Do per-frame updates and then render the frame
+function DoRendering() {
+    if (GP.Ready && GR.scene && GR.camera) {
+        // compute fps
+        GR.lastFrameDelta = GR.clock.getDelta();
+        GR.fps = 1 / GR.lastFrameDelta;
+
+        if (GR.cameraControl) {
+            GR.cameraControl.update();
+        }
+        if (GR.eventEachFrame) {
+            Eventing.fire(GR.eventEachFrame, {});
+        }
+        DoAnimation();
+        GR.renderer.render(GR.scene, GR.camera);
+    }
+};
+
+function DoAnimation() {
+  // look into https://github.com/tweenjs/tween.js
+};
+
+// Adjust the camera and environment when display size changes
+function OnContainerResize() {
+  GR.renderer.setSize(GR.canvas.clientWidth, GR.canvas.clientHeight);
+  GR.camera.aspect = GR.canvas.clientWidth / GR.canvas.clientHeight;
+  GR.camera.updateProjectionMatrix();
+  // GR.renderer.setPixelRatio(window.devicePixelRatio);
+};
+
+// Access function for the camera.
+export function THREErenderer() {
+  return GR.renderer;
+}
+
+// Access function for the camera.
+export function THREEcamera() {
+  return GR.camera;
+}
+
+// Remove everything from the scene
+export function ClearScene() {
+  GR.renderer.stopAnimation();
+
+  disposeScene();
+  GP.DebugLog('Graphics: cleared scene');
+
+  GR.renderer.startAnimation();
+}
+
+// Load multiple scenes.
+// The caller should clear and release the previous scene as this creates new.
+// Pass in an array: [ [url1, [x,y,x]], [url2,[x,y,x]], ...]
+//     Where the [x,y,z] is a displacement base for the region.
+export function LoadSceneMultiple(urlsAndLocations, loadedCallback) {
+  // TODO:
+}
+
+// Function to move the camera from where it is to a new place.
+// This is movement from external source which could conflict with AR
+//     and VR camera control.
+export function SetCameraPosition(gPos) {
+  // TODO: conversion of gPos to lPos
+  if (Array.isArray(gPos)) {
+      // newPos = new THREE.Vector3().fromArray(pos);
+      GR.camera.position.fromArray(gPos);
+  }
+  else {
+      // newPos = pos;
+      GR.camera.position.set(gPos);
+      // GR.camera.position = newPos;
+  }
+  GP.DebugLog('Graphics: camera position: ['
+    + GR.camera.position.x
+    + ', '
+    + GR.camera.position.y
+    + ', '
+    + GR.camera.position.z
+    + ']'
+  );
+}
+
+// Pass position as either THREE.Vector3 or array of three numbers
+export function PointCameraAt(gPos) {
+  // TODO: conversion of gPos to lPos
+  let look = new THREE.Vector3;
+  if (Array.isArray(gPos)) {
+    look.fromArray(gPos);
+  }
+  else {
+    look = gPos;
+  }
+
+  if (GR.cameraControl) {
+      GR.cameraControl.target = look;
+      GR.cameraControl.update();
+  }
+  else {
+      GR.camera.lookAt(look);
+  }
+  // Move axes helper to where the camera is looking
+  if (GR.axesHelper) {
+      GR.axesHelper.geometry.translate(look.x, look.y, look.z);
+  }
+
+  GP.DebugLog('Graphics: camera looking at: ['
+    + look.x
+    + ', '
+    + look.y
+    + ', '
+    + look.z
+    + ']'
+  );
 }
 
 function InitializeCamera(theScene, canvas, passedParms) {
@@ -148,13 +284,13 @@ function InitializeCamera(theScene, canvas, passedParms) {
     }
   });
 
-  GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, parms.initialViewDistance );
-  GR[parms.name] = GR.camera;
+  GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight,
+                    1, parms.initialViewDistance );
   // GR.camera.up = new THREE.Vector3(0, 1, 0);
-  GR.camera.position.fromArray(parms.initialCameraPosition);
-  var lookAt = new THREE.Vector3;
-  lookAt.fromArray(parms.initialCameraLookAt);
-  GR.camera.lookAt(lookAt);
+
+  SetCameraPosition(parms.initialCameraPosition);
+  PointCameraAt(parms.initialCameraLookAt);
+
   if (parms.addCameraHelper) {
       GR.cameraHelper = new THREE.CameraHelper(GR.camera);
       theScene.add(GR.cameraHelper);
@@ -195,4 +331,63 @@ function InitializeLights(theScene, passedParms) {
       }
       theScene.add(directional);
   }
+}
+
+// Add a test object to the scene
+export function AddTestObject() {
+    var geometry = new THREE.BoxGeometry( 1, 2, 3);
+    var material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
+    var cube = new THREE.Mesh(geometry, material);
+    cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
+    GR.scene.add(cube);
+    GP.DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
+};
+
+// For initial debugging, camera is controlled by the console
+function InitializeCameraControl(theScene, theContainer) {
+  let control = new THREE.OrbitControls(GR.camera, GR.renderer.domElement);
+  control.enableDamping = true;
+  control.dampingFactor = 0.25;
+  controls.screenSpacePanning = true;
+  control.minDistance = 50;
+  control.maxDistance = GR.camera.far;
+  GR.cameraControl = control;
+}
+
+// Generate subscribable periodic when camera info (position) changes
+function GenerateCameraEvents() {
+  GR.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
+  GR.eventCameraInfo.timer = Eventing.createTimedEventProcessor(GR.eventCameraInfo, function(topic) {
+      if (GR.eventCameraInfo.hasSubscriptions) {
+          if (GR.eventCameraInfo.prevCamPosition == undefined) {
+              GR.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
+          }
+          var oldPos = GR.eventCameraInfo.prevCamPosition;
+          // must clone or 'newPos' will be just a reference to the old value.
+          var newPos = GR.camera.position.clone();
+          if (!newPos.equals(oldPos)) {
+              var camInfo = {
+                  'position': GR.camera.position.clone(),
+                  'rotation': GR.camera.rotation.clone()
+              };
+              Eventing.fire(GR.eventCameraInfo, camInfo);
+              GR.eventCameraInfo.prevCamPosition = newPos;
+          }
+      }
+  });
+}
+
+// Start the generation of renderer statistic events
+function GenerateRendererStatEvents() {
+    // Generate subscribable periodic events when display info changes
+    GR.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
+    GR.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(GR.eventDisplayInfo,
+      function(topic) {
+        if (GR.eventDisplayInfo.hasSubscriptions) {
+            // not general, but, for the moment, just return the WebGL info
+            var dispInfo = GR.renderer.info;
+            dispInfo.render.fps = GR.fps;
+            Eventing.fire(GR.eventDisplayInfo, dispInfo);
+        }
+    });
 }

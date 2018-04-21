@@ -35,6 +35,8 @@ export class BasilServiceConnection  extends BItem {
         super(serverId, parms.serviceAuth);
         this.transport = transp;
         this.aliveReplySequenceNum = 2000;
+        this.sessionId = undefined;
+
         // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
         this.receptionMessages2 = {
@@ -113,6 +115,7 @@ export class BasilServiceConnection  extends BItem {
         if (req.assetInfo) {
           let id = CreateUniqueId('displayable');
           let newItem = new Displayable(id, req.auth, req.assetInfo);
+          newItem.ownerId = this.id;    // So we know who created what
           if (newItem) {
             ret = {
                 'identifier': {
@@ -144,6 +147,7 @@ export class BasilServiceConnection  extends BItem {
           if (baseDisplayable) {
             let instanceId = CreateUniqueInstanceId();
             let newInstance = new DisplayableInstance(instanceId, req.auth, baseDisplayable);
+            newInstance.ownerId = this.id;    // So we know who created what
             BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet.list);

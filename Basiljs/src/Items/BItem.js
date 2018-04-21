@@ -24,11 +24,13 @@ IM.Items = new Map();
 export class BItem {
     constructor(id, auth, itemType) {
         this.props = new Map();
-        this.id = id;   // index this item is stored under
+        this.id = id;             // index this item is stored under
+        this.ownerId = undefined; // this item is not yet associated with  some service/connection
         this.itemType = itemType ? itemType : undefined;  // the type of the item
         this.DefineProperties( {
             'Type': { 'get': () => { return this.itemType; } },
-            'Id': { 'get': () => { return this.id; } }
+            'Id': { 'get': () => { return this.id; } },
+            'OwnerId': { 'get': () => { return this.ownerId; } }
         });
         BItem.AddItem(id, this);
     }
@@ -100,8 +102,12 @@ export class BItem {
     //     'local': if defined and 'true', only local access is allowed
     // }
     DefineProperty(propertyName, propertyDefinition) {
+      if (propertyName && propertyDefinition) {
         this.props.set(propertyName, propertyDefinition);
-        // Add this property defineition to this instance for easy access
+
+        /*  This adds the property to this Object as a property.
+        // Add this property definition to this instance for easy access
+        // Need to remove old property as this might be a re-definition
         let defn = {};
         if (propertyDefinition && propertyDefinition['set']) {
           defn.set = propertyDefinition['set'];
@@ -111,6 +117,8 @@ export class BItem {
         }
         defn.enumerable = true;
         Object.defineProperty(this, propertyName, defn);
+        */
+      }
     }
 
     // Pass a Map or Objectof propertyNames with definitions
@@ -121,7 +129,7 @@ export class BItem {
           }, this);
       }
       else {
-          Object.getOwnPropertyNames(propValues).forEach( prop => {
+          Object.keys(propValues).forEach( prop => {
               this.DefineProperty(prop, propValues[prop]);
           }, this);
       }

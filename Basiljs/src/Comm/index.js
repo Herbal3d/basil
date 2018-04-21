@@ -50,7 +50,7 @@ export function ConnectTransportService(parms) {
             .then (xport => {
                 GP.DebugLog('Comm.ConnectTransportService: transport connected');
                 if (parms.service) {
-                    GP.DebugLog('Comm.ConnectTransportService: service: ' + parms.service);
+                    // GP.DebugLog('Comm.ConnectTransportService: service: ' + parms.service);
                     return ConnectService(xport, parms);
                 }
                 else {
@@ -59,12 +59,12 @@ export function ConnectTransportService(parms) {
             })
             .then (svc => {
                 if (svc) {
-                    GP.DebugLog('Comm.ConnectTransportService: service connected');
+                    // GP.DebugLog('Comm.ConnectTransportService: service connected');
                 }
                 resolve();
             })
             .catch ( e => {
-                GP.DebugLog('Comm.ConnectTransportService: failed initialization: ' + e);
+                GP.ReportError('Comm.ConnectTransportService: failed initialization: ' + e);
                 reject(e);
             })
         }
@@ -97,7 +97,7 @@ export function ConnectTransport(parms) {
                         xport = new BTransportTest(parms);
                         break;
                     default:
-                        GP.DebugLog('Comm.Connect: transport type unknown: ' + parms.transport);
+                        GP.ReportError('Comm.Connect: transport type unknown: ' + parms.transport);
                         reject('Comm.Connect: transport type unknown: ' + parms.transport);
                 }
             }
@@ -109,7 +109,7 @@ export function ConnectTransport(parms) {
         catch(e) {
             reject('Comm.Connect: exception opening transport: ' + e);
         }
-        GP.DebugLog('Comm.Connect: created transport ' + xport.Id)
+        GP.DebugLog('Comm.Connect: created transport ' + xport.id)
         resolve(xport);
     });
 };
@@ -135,10 +135,10 @@ export function ConnectService(xport, parms) {
                 svc = new PestoClient(parms.serviceId, xport, parms);
                 break;
             default:
-                GP.DebugLog('Comm.Connect: service type unknown: ' + parms.service)
+                GP.ReportError('Comm.Connect: service type unknown: ' + parms.service)
                 reject('Comm.Connect: service type unknown: ' + parms.service)
         }
-        GP.DebugLog('Comm.Connect: created service ' + svc.Id)
+        GP.DebugLog('Comm.Connect: created service ' + svc.id)
         resolve(svc);
     });
 };

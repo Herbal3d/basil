@@ -44,6 +44,7 @@ module.exports = {
         'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
         'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
+        'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
         'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),

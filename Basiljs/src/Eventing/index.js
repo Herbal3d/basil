@@ -88,7 +88,11 @@ let processTimedEvents = function() {
             proc(topic);
         });
     }
-    setTimeout(processTimedEvents, Number(Config.eventing.eventPollIntervalMS));
+    let interval = 500;
+    if (Config.eventing && Config.eventing.eventPollIntervalMS) {
+      interval = Number(Config.eventing.eventPollIntervalMS);
+    }
+    setTimeout(processTimedEvents, interval);
 };
 
 // ===========================================

@@ -24,6 +24,9 @@ import * as Eventing from 'xEventing';
 import { OrbitControls } from 'xThreeJSOrbit';
 import { GLTFLoader } from 'xThreeJSGLTF';
 
+// DEPRECATED!!!!
+// This file will be deleted after everything is stripped from it!
+
 var GR = GR || {};
 GP.GR = GR; // for debugging. Don't use for cross package access.
 

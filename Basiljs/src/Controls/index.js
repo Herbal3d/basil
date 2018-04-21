@@ -103,29 +103,12 @@ const internalOnClickableOps  = {
           internalDoLoadMultiple(atropiaRegions);
       }
     },
-    'testComm': function() {
-        GP.DebugLog('Controls: OnTestComm');
-        Comm.ConnectTransportService( {
-              'testmode': true,
-              'testWWURL': './wwtester.js'
-        })
-        .then( () => {
-          GP.DebugLog('Controls: test transport and service connected');
-        })
-        .catch( e => {
-          GP.DebugLog('Controls: failed connecting test transport and service: ${e}');
-        });
-    },
-    'addTest': function() {
-        GP.DebugLog('Controls: OnAddTestObject');
+    'addTestObject': function() {
         Graphics.AddTestObject();
     },
     'showDebug': function() {
         // Make the state to the opposite of what it is now
         ShowDebug(!$('#DEBUGG').is(':visible'));
-    },
-    'showDebugLayer': function() {
-        Graphics.SetDebugMode();
     }
 };
 
@@ -174,6 +157,6 @@ function internalDoLoadMultiple(urlsAndLocations) {
             Graphics.PointCameraAt([aPlace[0], aPlace[1], aPlace[2]]);
         }
         // end DEBUG DEBUG
-        Graphics.Start(); // ClearScene possibly shuts down rendering
+        Graphics.GraphicsStart(); // ClearScene possibly shuts down rendering
     });
 };

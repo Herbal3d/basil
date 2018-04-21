@@ -14,13 +14,17 @@
 
 // Global parameters and variables. "GP.variable"
 import GP from 'GP';
-
 import Config from 'xConfig';
-
-import { Base64 } from 'js-base64';
 
 GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
+
+import { Base64 } from 'js-base64';
+
+import { GraphicsInit, GraphicsStart } from 'xGraphics';
+import { ControlsInit, ControlsStart } from 'xControls';
+import { CommInit, CommStart, ConnectTransportService } from 'xComm';
+import { PredefinedBItemInit } from 'xPredefinedItems';
 
 // Force the processing of the CSS format file
 import './Basiljs.less';
@@ -70,11 +74,6 @@ GP.ReportError = function ReportError(msg) {
     global var named 'GP' that has references to everything but that is ONLY
     for use in debugging.
 */
-
-import { GraphicsInit, GraphicsStart } from 'xGraphics';
-import { ControlsInit, ControlsStart } from 'xControls';
-import { CommInit, CommStart, ConnectTransportService } from 'xComm';
-import { PredefinedBItemInit } from 'xPredefinedItems';
 
 GP.Ready = false;
 
