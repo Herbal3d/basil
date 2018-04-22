@@ -47,7 +47,7 @@ GP.ConfigGetQueryVariable = function (variable) {
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
-    if ($('#DEBUGG')) {
+    if (GP.CollectDebug && $('#DEBUGG')) {
         if (classs)
             $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
         else
@@ -79,7 +79,7 @@ GP.Ready = false;
 
 // Can be called with communication configuration parameters in the URL
 let configParams = GP.ConfigGetQueryVariable('c');
-if (configParams === undefined) {
+if (typeof(configParams) == 'undefined') {
     // If no communication parameters are given, use testing parameters
     let testConfigParams = {
         'comm': {
@@ -100,6 +100,11 @@ if (configParams) {
     catch(e) {
         GP.DebugLog('Basiljs: failed parsing option config: ' + e);
     }
+}
+
+if (Config && Config.page && Config.page.collectDebug
+            && typeof(Config.page.collectDebug) == 'boolean') {
+  GP.CollectDebug = Config.page.collectDebug;
 }
 
 let container = document.getElementById(Config.page.webGLcontainerId);

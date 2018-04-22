@@ -33,7 +33,7 @@ var colorFromArray = function(colorArr) {
 
 // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
 // From https://stackoverflow.com/questions/33152132/three-js-collada-whats-the-proper-way-to-dispose-and-release-memory-garbag/33199591#33199591
-export function disposeNode (node) {
+function disposeNode (node) {
     if (node instanceof THREE.Mesh) {
         if (node.geometry) {
             node.geometry.dispose ();
@@ -62,7 +62,7 @@ export function disposeNode (node) {
 }   // disposeNode
 
 // disposeHierarchy (YOUR_OBJECT3D, disposeNode);
-export function disposeHierarchy (node) {
+function disposeHierarchy (node) {
     for (var i = node.children.length - 1; i >= 0; i--) {
         var child = node.children[i];
         disposeHierarchy(child);
@@ -71,7 +71,7 @@ export function disposeHierarchy (node) {
     disposeNode(node);
 }
 
-export function disposeScene(scene) {
+function disposeScene(scene) {
   for (var ii = scene.children.length - 1; ii >= 0; ii--) {
       disposeHierarchy(scene.children[ii], node => { scene.remove(node)});
   }
@@ -87,7 +87,7 @@ export function GraphicsInit(container, canvas) {
   InitializeCamera(GR.scene, canvas);
   InitializeLights(GR.scene);
 
-  let parms = {}; // parameters specific to the renderer
+  let parms = {}; // parameters specific to setting up WebGL in the renderer
   if (Config.webgl && Config.webgl.renderer) {
     parms = Config.webgl.renderer;
   }
@@ -97,12 +97,11 @@ export function GraphicsInit(container, canvas) {
     rendererParams = parms.ThreeJS;
   }
   rendererParams.canvas = canvas;
-  GR.renderer = new THREE.WebGLRenderer(parms);
+  GR.renderer = new THREE.WebGLRenderer(rendererParams);
+
   if (parms.clearColor) {
       GR.renderer.setClearColor(colorFromArray(parms.clearColor));
   }
-
-  GR.clock = new THREE.Clock();
 
   if (parms.shadows) {
       GR.renderer.shadowMap.enabled = true;
@@ -115,6 +114,9 @@ export function GraphicsInit(container, canvas) {
 
   // For the moment, camera control comes from the user
   InitializeCameraControl(GR.scene, GR.container);
+
+  // Clock used to keep track of frame time and FPS
+  GR.clock = new THREE.Clock();
 
   // There are several top level groups for objects in different coordinate systems
   GR.GroupWorldRel = new THREE.Group();
@@ -133,14 +135,16 @@ export function GraphicsStart() {
   StartRendering();
 };
 
-function StartRendering() {
+export function StartRendering() {
   if (GR.renderer) {
     GR.renderer.animate(DoRendering);
   }
 };
 
-function StopRendering() {
-  //
+export function StopRendering() {
+  if (GR.renderer) {
+    GR.renderer.stopAnimation();
+  }
 };
 
 // Do per-frame updates and then render the frame
@@ -170,7 +174,7 @@ function OnContainerResize() {
   GR.renderer.setSize(GR.canvas.clientWidth, GR.canvas.clientHeight);
   GR.camera.aspect = GR.canvas.clientWidth / GR.canvas.clientHeight;
   GR.camera.updateProjectionMatrix();
-  // GR.renderer.setPixelRatio(window.devicePixelRatio);
+  GR.renderer.setPixelRatio(window.devicePixelRatio);
 };
 
 // Access function for the camera.
@@ -185,12 +189,12 @@ export function THREEcamera() {
 
 // Remove everything from the scene
 export function ClearScene() {
-  GR.renderer.stopAnimation();
+  StopRendering();
 
   disposeScene();
   GP.DebugLog('Graphics: cleared scene');
 
-  GR.renderer.startAnimation();
+  StartRendering();
 }
 
 // Load multiple scenes.
@@ -287,6 +291,7 @@ function InitializeCamera(theScene, canvas, passedParms) {
   GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight,
                     1, parms.initialViewDistance );
   // GR.camera.up = new THREE.Vector3(0, 1, 0);
+  theScene.add(GR.camera);
 
   SetCameraPosition(parms.initialCameraPosition);
   PointCameraAt(parms.initialCameraLookAt);
@@ -300,7 +305,6 @@ function InitializeCamera(theScene, canvas, passedParms) {
       GR.axesHelper = new THREE.AxesHelper(Number(helperSize));
       theScene.add(GR.axesHelper);
   }
-  theScene.add(GR.camera);
 }
 
 function InitializeLights(theScene, passedParms) {

@@ -19,6 +19,7 @@ export function CreateUniqueId(service, type) {
   if (GP.UniqueIdCount === undefined) {
     GP.UniqueIdCount = 1;
     GP.UniqueIdBasename = 'org.basil.b.';
+    // Note that basename ends with a dot
     if (Config.predefinedInstances && Config.predefinedInstances.generatedInstanceBasename) {
       GP.UniqueIdBasename = Config.predefinedInstances.generatedInstanceBasename;
     }

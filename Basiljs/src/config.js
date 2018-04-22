@@ -6,11 +6,13 @@
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 export default {
     'comm': {
+      // Filled by parameters passed in initial invocation
     },
     // Parameters for the main display page
     'page': {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
+        'collectDebug': true,
         'showDebug': true,
         'debugLogLines': 35
     },
@@ -56,10 +58,12 @@ export default {
             'alpha': true,      // there are alpha textures in the scene
             'logarithmicDepthBuffer': false
           },
-        }
+          'clearColor': [ 0.1, 0.1, 0.1 ],
+          'shadows': false
+        },
     },
     'predefinedInstances': {
-      'generatedInstanceBasename': 'org.basil.b.',
+      'generatedInstanceBasename': 'org.basil.b.',  // ends with a period
       'predefinedDisplayableName': 'org.basil.b.predefinedDisplayable.000',
       'cameraBasename': 'org.basil.b.camera',
       'debugObjectId': 'org.basil.b.Debugging.Display'

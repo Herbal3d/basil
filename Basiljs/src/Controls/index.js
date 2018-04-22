@@ -28,7 +28,7 @@ GP.CO = CO;         // added for debugging. Do not use for inter-package access
 
 export function ControlsInit() {
     // Make all 'class=clickable' page items create events
-    $('.clickable').click(internalOnClickable);
+    $('.clickable').click(OnClickable);
 
     // Whether debug output window is initially displayed can be set in the configuration file
     ShowDebug(Config.page.showDebug);
@@ -84,11 +84,11 @@ export function ShowDebug(onOff) {
 };
 
 // Operation called on UI button click ('clickable').
-const internalOnClickableOps  = {
+const OnClickableOps  = {
   'loadGltf': function() {
       var url = Config.assets.gltfURLBase + $('#SelectGltf').val();
       GP.DebugLog('Controls: OnLoadButton: loading ' + url);
-      internalDoLoadMultiple([ [ url, [0,0,0] ] ]);
+      DoLoadMultiple([ [ url, [0,0,0] ] ]);
   },
   'loadAtropia': function() {
       GP.DebugLog('Controls: OnLoadAtropia');
@@ -100,7 +100,7 @@ const internalOnClickableOps  = {
           atropiaRegions = parsedInput.map(oneRegionInfo => {
               return [ Config.assets.gltfURLBase + oneRegionInfo[0], oneRegionInfo[1] ];
           });
-          internalDoLoadMultiple(atropiaRegions);
+          DoLoadMultiple(atropiaRegions);
       }
     },
     'addTestObject': function() {
@@ -114,14 +114,14 @@ const internalOnClickableOps  = {
 
 // Process the HTML element that has class 'clickable'
 // The attribute 'op' says what to do when the element is clicked.
-function internalOnClickable(evnt) {
+function OnClickable(evnt) {
     var buttonOp = $(evnt.target).attr('op');
-    if (internalOnClickableOps[buttonOp]) {
-      internalOnClickableOps[buttonOp]();
+    if (OnClickableOps[buttonOp]) {
+      OnClickableOps[buttonOp](evnt.target);
     }
 };
 
-function internalDoLoadMultiple(urlsAndLocations) {
+function DoLoadMultiple(urlsAndLocations) {
     Graphics.ClearScene();
     Graphics.LoadSceneMultiple(urlsAndLocations, function() {
 
