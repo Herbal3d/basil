@@ -79,4 +79,11 @@ export class DisplayableInstance extends BItem {
             }
         } );
     }
+
+    // Place this instance in the displayed world data structure
+    PlaceInWorld() {
+    }
+    // Remove this instance from the displayed world data structure
+    RemoveFromWorld() {
+    }
 }

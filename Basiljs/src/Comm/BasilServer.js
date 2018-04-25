@@ -152,6 +152,7 @@ export class BasilServiceConnection  extends BItem {
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet.list);
             }
+            newInstance.PlaceInWorld();  // place it in the world
             ret = {
               'instanceId': {
                 'id': newInstance.id
