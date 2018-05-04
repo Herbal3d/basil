@@ -20,11 +20,20 @@ GP.IM = IM;
 IM.Items = new Map();
 
 // All things referenced by the Basil interface are "items' and thus they
-//   have these access methods
+//   have these access methods.
+// The main features of a BItem are:
+//  An array of properties that are defined and can be get and set.
+//      Used for remote access and control of this thing.
+//  An 'id' which uniquely names this item.
+//  An 'auth' which is auth info for access to and from this item.
+//  An 'ownerId' which identifies an 'owner' of this item. Mostly used
+//      for cleaning up items when service is disconnected.
+//  An 'itemType' which identifies the type of the item.
 export class BItem {
     constructor(id, auth, itemType) {
         this.props = new Map();
         this.id = id;             // index this item is stored under
+        this.auth = auth;         // authorization information
         this.ownerId = undefined; // this item is not yet associated with  some service/connection
         this.itemType = itemType ? itemType : undefined;  // the type of the item
         this.DefineProperties( {
@@ -44,11 +53,9 @@ export class BItem {
     GetProperty(prop) {
       let ret = undefined;
       let propDesc = this.props.get(prop);
-      if (propDesc) {
-        if (propDesc.get) {
-          ret = propDesc.get();
-          // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);
-        }
+      if (propDesc && propDesc.get) {
+        ret = propDesc.get();
+        // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);
       }
       return ret;
     }
@@ -73,13 +80,15 @@ export class BItem {
       }
       return ret;
     };
+
     SetProperty(propertyName, value) {
-      if (this.props.has(propertyName)) {
-        if (this.props.get(propertyName).set) {
-          this.props.get(propertyName).set(value);
-        }
+      let propDesc = this.props.get(propertyName);
+      if (propDesc && propDesc.set) {
+        propDesc.set(value);
       }
     }
+
+    // Set several properties. Values can be an object or a Map().
     SetProperties(propValues) {
       if (propValues instanceof Map) {
           propValues.forEach((val, prop) => {
@@ -87,7 +96,7 @@ export class BItem {
           }, this);
       }
       else {
-          Object.getOwnPropertyNames(propValues).forEach(prop => {
+          Object.keys(propValues).forEach(prop => {
               this.SetProperty(prop, propValues[prop]);
           }, this);
       }
@@ -106,6 +115,7 @@ export class BItem {
         this.props.set(propertyName, propertyDefinition);
 
         /*  This adds the property to this Object as a property.
+            Had some problems with this so use GetProperty and SetProperty.
         // Add this property definition to this instance for easy access
         // Need to remove old property as this might be a re-definition
         let defn = {};

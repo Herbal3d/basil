@@ -4,8 +4,10 @@
   "description": "Browser based virtual world viewer. Part of Herbal3D.",
   "main": "Bundle.js",
   "scripts": {
-    "build": "npm-run-all -s \"build:basil\" \"build:wwtester\"",
-    "build:basil": "webpack --config webpack.config.js",
+    "build": "npm-run-all -s \"clean:dist\" \"build:basil\" \"build:wwtester\"",
+    "clean:dist": "rm -rf dist",
+    "build:entry": "webpack --config webpack.entry.config.js",
+    "build:basil": "webpack --config webpack.basil.config.js",
     "build:wwtester": "webpack --config webpack.wwtester.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

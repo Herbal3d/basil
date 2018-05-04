@@ -32,7 +32,7 @@ export default class BTransportWW extends BTransport {
                 let xport = this;   // for closeure of message function
                 this.worker.onmessage = function(d) {
                     xport.messages.push(d.data);
-                    this.messagesReceived++;
+                    xport.stats.messagesReceived++;
                     PushReception(xport);
                 }
                 this.worker.onerror = function(e) {
@@ -76,7 +76,7 @@ export default class BTransportWW extends BTransport {
         else {
             postMessage(emsg);
         }
-        xxport.messagesSent++;
+        xxport.stats.messagesSent++;
     }
     // Send a messsage and expect a replay of some type.
     // Returns a promise
@@ -90,8 +90,8 @@ export default class BTransportWW extends BTransport {
             else {
                 postMessage(emsg);
             }
-            xxport.RPCmessagesSent++;
-            xxport.messagesSent++;
+            xxport.stats.RPCmessagesSent++;
+            xxport.stats.messagesSent++;
         });
     }
     // Set a calback to be called whenever a message is received

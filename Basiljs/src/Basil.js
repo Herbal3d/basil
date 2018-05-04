@@ -47,7 +47,7 @@ GP.ConfigGetQueryVariable = function (variable) {
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
-    if (GP.CollectDebug && $('#DEBUGG')) {
+    if (GP.EnableDebugLog && $('#DEBUGG')) {
         if (classs)
             $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
         else
@@ -102,9 +102,10 @@ if (configParams) {
     }
 }
 
+// Whether to enable DebugLog writing somewhere
 if (Config && Config.page && Config.page.collectDebug
             && typeof(Config.page.collectDebug) == 'boolean') {
-  GP.CollectDebug = Config.page.collectDebug;
+  GP.EnableDebugLog = Config.page.collectDebug;
 }
 
 let container = document.getElementById(Config.page.webGLcontainerId);

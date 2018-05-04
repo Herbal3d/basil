@@ -3,13 +3,12 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
-    basil: './src/Basil.js',
-    vendor: [
+    entry: './src/Entry/Entry.js',
+    jquery: [
         'jquery'
     ]
   },
@@ -27,56 +26,30 @@ module.exports = {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
         'xBException': path.resolve(__dirname, 'src/BException.js'),
         'xUtilities': path.resolve(__dirname, 'src/Utilities.js'),
-
-        'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
-        'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),
-        'xBTransportWW': path.resolve(__dirname, 'src/Comm/BTransportWW.js'),
-        'xBTransportWS': path.resolve(__dirname, 'src/Comm/BTransportWS.js'),
-        'xBasilServer': path.resolve(__dirname, 'src/Comm/BasilServer.js'),
-        'xBasilClient': path.resolve(__dirname, 'src/Comm/BasilClient.js'),
-        'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
-
-        'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
-        'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
-        'xPredefinedItems': path.resolve(__dirname, 'src/Items/PredefinedItems.js'),
-
-        'xControls': path.resolve(__dirname, 'src/Controls/index.js'),
-        'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
-        // 'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
-        'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
-        'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
-        'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
-        'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
-        'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
-
-        // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
-        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
     },
     extensions: [ '.js', '.jsx' ]
   },
   plugins: [
-    // Cleans out the 'dist' directory at the start of each build
-    new CleanWebpackPlugin( ['dist']),
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     new webpack.HashedModuleIdsPlugin(),
     // Causes a separate bundle for the entry.vendor modules
     new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor'
+        name: 'jquery'
     }),
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
-        THREE: 'xThreeJS',
         $: 'jquery'
     }),
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
     new webpack.optimize.CommonsChunkPlugin({
         name: 'runtime'
     }),
-    // Create dist/index.html from my template
+    // Create dist/Basil.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
         inject: true,
-        template: 'src/index.html',
+        filename: 'Entry.html',
+        template: 'src/Entry.html',
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US',

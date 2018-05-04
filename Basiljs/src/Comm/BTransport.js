@@ -26,9 +26,10 @@ export class BTransport extends BItem {
         super(parms.transportId, parms.transportAuth);
         this.itemType = 'unknown';
         this.messages = [];
-        this.messagesSent = 0;
-        this.RPCmessagesSent = 0;
-        this.messagesReceived = 0;
+        this.stats = {};
+        this.stats.messagesSent = 0;
+        this.stats.RPCmessagesSent = 0;
+        this.stats.messagesReceived = 0;
         this.sequenceNum = 111;
         this.RPCsession = 900222;
         this.RPCSessionCallback = new Map();
@@ -36,10 +37,11 @@ export class BTransport extends BItem {
 
         // The properties that can be read as a BItem
         super.DefineProperties( {
-            'ItemType': { 'get': () => { return this.itemType; }, 'set': val => { this.itemType = val; } },
-            'MessagesSent': { 'get': () => { return this.messagesSent; } },
-            'RPCMessagesSent': { 'get': () => { return this.RPCmessagesSent; } },
-            'MessagesReceived': { 'get': () => { return this.messagesReceived; } },
+            'ItemType': { 'get': () => { return this.itemType; } },
+            'MessagesSent': { 'get': () => { return this.stats.messagesSent; } },
+            'RPCMessagesSent': { 'get': () => { return this.stats.RPCmessagesSent; } },
+            'MessagesReceived': { 'get': () => { return this.stats.messagesReceived; } },
+            'Stats': { 'get': () => { return this.stats; } },
             'QueueSize': { 'get': () => { return this.messages.length; } }
         } );
     }
@@ -117,7 +119,7 @@ export function PushReception(tthis) {
     let tester = tthis === undefined ? this : tthis;
     let msg = tester.messages.shift();
     if (msg) {
-        tester.messagesReceived++;
+        tester.stats.messagesReceived++;
         let dmsg = BTransportMsgs.BTransport.decode(msg)
         // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
 

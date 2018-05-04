@@ -34,7 +34,12 @@ export function CommStart() {
 // Initialize a transport and a service and resolve the promise when connected
 // The 'parms' are passed to the transport and service creation routimes.
 // If 'parms.testmode' is defined and 'true', test configuration is forced.
-// REturns a promise that is resolved when both transport and service are running.
+// Returns a promise that is resolved when both transport and service are running.
+//  parms.transport: WW, WS, test
+//  parms.transportURL: URL to use for connecting the transportId
+//  parms.service: BasilServer, Pesto
+//  parms.serviceId: optional identification string for this service connection
+//  parms.testmode: if present and true, force above params to test configuration
 export function ConnectTransportService(parms) {
     return new Promise((resolve, reject) => {
         if (parms.testmode) {
@@ -118,6 +123,9 @@ export function ConnectTransport(parms) {
 //     Basil client (Creating the BasilService for this end))
 // Expects parms.service = either 'BasilServer" or 'Pesto'
 // Returns a Promise that has a handle to the created processor or undefined.
+//  parms.service: BasilServer, Pesto
+//  parms.serviceId: identification string for this service connection
+//              if not present, a unique Id is created
 export function ConnectService(xport, parms) {
     return new Promise((resolve, reject) => {
         var svc;

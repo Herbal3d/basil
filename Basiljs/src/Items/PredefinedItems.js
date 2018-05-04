@@ -20,6 +20,12 @@ import { Displayable, DisplayableInstance } from 'xDisplayable';
 
 import * as Graphics from 'xGraphics';
 
+// Everything about the viewer is visible to the outside connections through
+//    the properties of BItems. This defines several environmental
+//    BItems that can be seen and controlled externally. This includes things from
+//    renderer performance information (PredefinedRendererInstance) to the
+//    scene camera (PredefinedCameraInstance).
+
 // Create the instances that exist for debugging and environment
 export function PredefinedBItemInit() {
   let parms = {};
@@ -83,7 +89,7 @@ export class PredefinedDebugInstance extends DisplayableInstance {
   }
 }
 
-// A special instance that displays it's 'Msg' property in the debug window
+// A special instance that returns parameters about the renderer
 export class PredefinedRendererInstance extends DisplayableInstance {
   constructor() {
     let parms = {};
