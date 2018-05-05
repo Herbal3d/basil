@@ -24,11 +24,6 @@ GP.GR = GR; // for debugging. Don't use for cross package access.
 // return a ThreeJS color number from an array of color values
 var colorFromArray = function(colorArr) {
     return new THREE.Color(colorArr[0], colorArr[1], colorArr[2]);
-    /*
-    return colorArr[0] * 255 * 65536
-        + colorArr[1] * 255 * 256
-        + colorArr[2] * 255;
-        */
 }
 
 // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
@@ -177,7 +172,7 @@ function OnContainerResize() {
   GR.renderer.setPixelRatio(window.devicePixelRatio);
 };
 
-// Access function for the camera.
+// Access function for the renderer itself
 export function THREErenderer() {
   return GR.renderer;
 }

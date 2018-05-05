@@ -51,6 +51,7 @@ export class BasilServiceConnection  extends BItem {
             'RequestInstancePropertiesReqMsg': [ this.procRequestInstanceProperties.bind(this), 'RequestInstancePropertiesRespMsg' ],
             'OpenSessionReqMsg': [ this.procOpenSession.bind(this), 'OpenSessionRespMsg' ],
             'CloseSessionReqMsg': [ this.procCloseSession.bind(this), 'CloseSessionRespMsg' ],
+            'MakeConnectionReqMsg': [ this.procMakeConnection.bind(this), 'MakeConnectionRespMsg' ],
             'AliveCheckReqMsg': [ this.procAliveCheck.bind(this), 'AliveCheckRespMsg' ],
             'AliveCheckRespMsg': [ this.procAliveCheckResp.bind(this), undefined ]
         };
@@ -150,7 +151,7 @@ export class BasilServiceConnection  extends BItem {
             newInstance.ownerId = this.id;    // So we know who created what
             BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
             if (req.propertiesToSet) {
-              newInstance.SetProperties(req.propertiesToSet.list);
+              newInstance.SetProperties(req.propertiesToSet);
             }
             newInstance.PlaceInWorld();  // place it in the world
             ret = {
@@ -180,7 +181,7 @@ export class BasilServiceConnection  extends BItem {
         if (req.identifier && req.props) {
           let obj = BItem.GetItem(req.identifier.id);
           if (obj) {
-            obj.SetProperties(req.props.list);
+            obj.SetProperties(req.props);
           }
           else {
             ret = BasilServiceConnection.MakeException('Object not found');
@@ -193,7 +194,7 @@ export class BasilServiceConnection  extends BItem {
         if (req.instanceId && req.props) {
           let obj = BItem.GetItem(req.instanceId.id);
           if (obj) {
-            obj.SetProperties(req.props.list);
+            obj.SetProperties(req.props);
           }
           else {
             ret = BasilServiceConnection.MakeException('Object not found');
@@ -241,14 +242,16 @@ export class BasilServiceConnection  extends BItem {
     procOpenSession(req) {
         return {
             'features': {
-              'list': {
                 'creepy': 'no',
                 'wow': '44'
-              }
             }
         };
     }
     procCloseSession(req) {
+        return {
+        };
+    }
+    procMakeConnection(req) {
         return {
         };
     }
@@ -299,7 +302,7 @@ export class BasilServiceConnection  extends BItem {
           list[prop] = val;
         }
       });
-      return { 'list': list };
+      return list;
     };
 }
 
