@@ -78,9 +78,9 @@ export class BTransport extends BItem {
 // Wrap the passed 'data' into a transport message.
 // If 'tcontext' is passed and there are RPC settings, add RPC to the transport.
 export function EncodeMessage(data, tcontext, tthis) {
-    let tester = tthis === undefined ? this : tthis;
+    let xport = tthis === undefined ? this : tthis;
     let tmsg = {
-        'sequenceNum': tester.sequenceNum++,
+        'sequenceNum': xport.sequenceNum++,
         'message': data,
     };
     if (tcontext) {
@@ -100,14 +100,14 @@ export function EncodeMessage(data, tcontext, tthis) {
 // Wrap the passed 'data' into a RPC transport message.
 // 'resolve' and 'reject' are functions for processing the reception of the response.
 export function EncodeRPCMessage(data, resolve, reject, tthis) {
-    let tester = tthis === undefined ? this : tthis;
+    let xport = tthis === undefined ? this : tthis;
     let tmsg = {
-        'sequenceNum': tester.sequenceNum++,
+        'sequenceNum': xport.sequenceNum++,
         'message': data,
-        'requestSession': tester.RPCsession++
+        'requestSession': xport.RPCsession++
     };
     // Remember callback information for the response to the message being sent
-    tester.RPCSessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
+    xport.RPCSessionCallback[tmsg.requestSession] = [ Date.now(), resolve, reject, tmsg ];
 
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return BTransportMsgs.BTransport.encode(cmsg).finish();
@@ -116,29 +116,29 @@ export function EncodeRPCMessage(data, resolve, reject, tthis) {
 // Check the input queue for messages and, if present, process one.
 // If 'tthis' is passed, it is used as the BTransport to push reception for.
 export function PushReception(tthis) {
-    let tester = tthis === undefined ? this : tthis;
-    let msg = tester.messages.shift();
+    let xport = tthis === undefined ? this : tthis;
+    let msg = xport.messages.shift();
     if (msg) {
-        tester.stats.messagesReceived++;
+        xport.stats.messagesReceived++;
         let dmsg = BTransportMsgs.BTransport.decode(msg)
-        // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
+        GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
 
         // If the message has the info for a response to a RPC, call the saved response handler
         let RPCResponseCalled = false;
         if (dmsg.requestSession) {
-            let session = tester.RPCSessionCallback[dmsg.requestSession];
+            let session = xport.RPCSessionCallback[dmsg.requestSession];
             if (session) {
                 // the session entry is a 4-tuple: [ time, resolve, reject, msgAsObject ]
-                tester.RPCSessionCallback.delete(dmsg.requestSession);
+                xport.RPCSessionCallback.delete(dmsg.requestSession);
                 (session[1])(dmsg.message);
                 RPCResponseCalled = true;
             }
         }
         if (!RPCResponseCalled) {
             // If the message is not an RPC reqpsonse, call the message processor
-            if (tester.receiveCallbackObject && tester.receiveCallbackObject.procMessage) {
+            if (xport.receiveCallbackObject && xport.receiveCallbackObject.procMessage) {
                 // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-                tester.receiveCallbackObject.procMessage(dmsg.message, dmsg);
+                xport.receiveCallbackObject.procMessage(dmsg.message, dmsg);
             }
         }
     }

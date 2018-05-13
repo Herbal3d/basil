@@ -73,42 +73,42 @@ export class BasilServiceConnection  extends BItem {
     // @param buff raw bytes of the message that was transported
     // @param tcontext transport context. Could be undefined but, if present, used for RPC
     procMessage(buff, tcontext) {
-        let newWay = 1;
         if (this.transport) {
             // the Buffer should be a BasilServerMessage
-            // try {
-                let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
-                msgs.forEach(msg => {
-                    let replyContents = undefined;
-                    // The message will have one or more message names with that message type
-                    Object.keys(msg).forEach( msgProp => {
-                        let template = this.receptionMessages2[msgProp];
-                        try {
-                          replyContents = template[0](msg[msgProp]);
-                        }
-                        catch (e) {
-                          replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
-                        }
-                        // GP.DebugLog('BasilServer.procMessage:'
-                        //        + ' prop=' + msgProp
-                        //        + ', rec=' + JSON.stringify(msg[msgProp])
-                        //        + ', reply=' + JSON.stringify(replyContents)
-                        // );
-                        if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
-                            // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
-                            // The message requires a response
-                            let rmsg = [];
-                            rmsg.push( { template[1]: replyContents } );
-                            // let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
-                            // Passing 'tcontext' gives the required info for creating the response header
-                            this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(rmsg).finish(), tcontext);
-                          }
-                    });
-                });
-            // }
-            // catch(e) {
-            //     GP.DebugLog('BasilServer: exception processing msg: ' + e);
-            // }
+            try {
+              let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
+              GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
+              msgs.BasilServerMessages.forEach( msg => {
+                let replyContents = undefined;
+                // The message will have one or more message names with that message type
+                Object.keys(msg).forEach( msgProp => {
+                    let template = this.receptionMessages2[msgProp];
+                    try {
+                      replyContents = template[0](msg[msgProp]);
+                    }
+                    catch (e) {
+                      replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
+                    }
+                    // GP.DebugLog('BasilServer.procMessage:'
+                    //        + ' prop=' + msgProp
+                    //        + ', rec=' + JSON.stringify(msg[msgProp])
+                    //        + ', reply=' + JSON.stringify(replyContents)
+                    // );
+                    if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
+                        // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
+                        // The message requires a response
+                        let rmsg = {};
+                        rmsg[template[1]] = replyContents;
+                        // let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
+                        // Passing 'tcontext' gives the required info for creating the response header
+                        this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(rmsg).finish(), tcontext);
+                    }
+                  });
+              });
+            }
+            catch(e) {
+               GP.DebugLog('BasilServer: exception processing msg: ' + e);
+            }
           }
     }
 

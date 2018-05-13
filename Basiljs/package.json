@@ -1,7 +1,19 @@
 {
-  "name": "Basiljs",
+  "name": "BasiljsViewer",
   "version": "1.0.0",
   "description": "Browser based virtual world viewer. Part of Herbal3D.",
+  "keywords": [],
+  "author": {
+    "name": "Robert Adams",
+    "email": "basil@misterblue.com",
+    "url": "https://misterblue.com"
+  },
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/Misterblue/basil",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/Misterblue/basil"
+  },
   "main": "Bundle.js",
   "scripts": {
     "build": "npm-run-all -s \"clean:dist\" \"build:basil\" \"build:wwtester\"",
@@ -11,9 +23,6 @@
     "build:wwtester": "webpack --config webpack.wwtester.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MPL 2.0",
   "dependencies": {
     "@protobufjs/aspromise": "^1.1.2",
     "@protobufjs/base64": "^1.1.2",
@@ -36,7 +45,7 @@
     "html-webpack-plugin": "^2.30.1",
     "jquery": "^3.3.1",
     "js-base64": "^2.4.3",
-    "less": "^2.7.3",
+    "less": "^3.0.4",
     "less-loader": "^4.0.5",
     "npm-run-all": "^4.1.2",
     "style-loader": "^0.19.1",
