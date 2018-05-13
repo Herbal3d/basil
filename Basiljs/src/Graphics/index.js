@@ -14,6 +14,7 @@
 import GP from 'GP';
 import Config from 'xConfig';
 import * as Eventing from 'xEventing';
+import { CombineParameters } from 'xUtilities';
 
 import { OrbitControls } from 'xThreeJSOrbit';
 import { GLTFLoader } from 'xThreeJSGLTF';
@@ -22,8 +23,11 @@ var GR = GR || {};
 GP.GR = GR; // for debugging. Don't use for cross package access.
 
 // return a ThreeJS color number from an array of color values
-var colorFromArray = function(colorArr) {
-    return new THREE.Color(colorArr[0], colorArr[1], colorArr[2]);
+var ColorFromValue = function(colorValue) {
+    if (Array.isArray(colorValue)) {
+        return new THREE.Color(colorValue[0], colorValue[1], colorValue[2]);
+    }
+    return new Three.Color(colorValue);
 }
 
 // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
@@ -81,6 +85,7 @@ export function GraphicsInit(container, canvas) {
 
   InitializeCamera(GR.scene, canvas);
   InitializeLights(GR.scene);
+  InitializeEnvironment();
 
   let parms = {}; // parameters specific to setting up WebGL in the renderer
   if (Config.webgl && Config.webgl.renderer) {
@@ -95,7 +100,7 @@ export function GraphicsInit(container, canvas) {
   GR.renderer = new THREE.WebGLRenderer(rendererParams);
 
   if (parms.clearColor) {
-      GR.renderer.setClearColor(colorFromArray(parms.clearColor));
+      GR.renderer.setClearColor(ColorFromValue(parms.clearColor));
   }
 
   if (parms.shadows) {
@@ -192,6 +197,49 @@ export function ClearScene() {
   StartRendering();
 }
 
+// Load an asset.
+// TODO: some formats have animations, cameras, ... What to do with those?
+// Passed parameters:
+// parms.auth authorization info
+// parms.url: URL to asset
+// parms.type = GLTF, DAE, OBJ, Collada
+// returns a promise of a handle to the ThreeJS node that is created
+export function LoadSimpleAsset(userAuth, parms) {
+    return new Promise(function(resolve, reject) {
+        let loaders = {
+            'GLTF': GLTFLoader,
+            'DAE': undefined,
+            'OBJ': undefined,
+            'Collada': undefined
+        }:
+        let loader = loaders[parms.Type];
+        if (loader) {
+            // To complicate things, ThreeJS loaders return different things
+            loader.load(parms.url, function(loaded) {
+                // Successful load
+                if (loaded.scene) {     // GLTF scene
+                    resolve(loaded.scene.children);
+                }
+                else if (loaded.scenes) {   // GLTF multiple scenes
+                    resolve(loaded.scenes[0].children);
+                }
+                let err = 'Graphics.LoadSimpleAsset: Could not understancd loaded contents.'
+                    + ' type=' + parms.type
+                    + ', url=' + parms.url;
+                reject(err);
+            },
+            function(e) {
+                // Failed load
+                reject(e);
+            });
+        }
+        else {
+            reject('No loader for type' + parms.type);
+        }
+    });
+
+}
+
 // Load multiple scenes.
 // The caller should clear and release the previous scene as this creates new.
 // Pass in an array: [ [url1, [x,y,x]], [url2,[x,y,x]], ...]
@@ -262,25 +310,13 @@ function InitializeCamera(theScene, canvas, passedParms) {
     return;
   }
 
-  let parms = {};
-  if (Config.webgl && Config.webgl.camera) {
-    parms = Config.webgl.camera;
-  }
-  if (passedParms) {
-    Object.assign(parms, passedParms);  // merge
-  }
-  let requiredParameters = new Map( [
-        [ 'name', 'cameraX' ],
-        [ 'initialViewDistance', 1000 ],
-        [ 'initialCameraPosition', [200, 50, 200] ],
-        [ 'initialCameraLookAt', [ 0, 0, 0] ],
-        [ 'addCameraHelper', false ],
-        [ 'addAxesHelper', false ]
-  ]);
-  requiredParameters.forEach( (val, parm) => {
-    if (typeof(parms[parm]) == 'undefined') {
-      parms[parm] = val;
-    }
+  let parms = CombineParameters(Config.webgl.camera, passedParms, {
+        'name': 'cameraX',
+        'initialViewDistance': 1000,
+        'initialCameraPosition': [200, 50, 200],
+        'initialCameraLookAt': [ 0, 0, 0],
+        'addCameraHelper': false,
+        'addAxesHelper': false
   });
 
   GR.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight,
@@ -303,22 +339,16 @@ function InitializeCamera(theScene, canvas, passedParms) {
 }
 
 function InitializeLights(theScene, passedParms) {
-  let parms = {};
-  if (Config.webgl && Config.webgl.lights) {
-    parms = Config.webgl.lights;
-  }
-  if (passedParms) {
-    Object.assign(parms, passedParms);  // merge
-  }
+  let parms = CombineParameters(Config.webgl.lights, passedParms, undefined);
 
   if (parms.ambient) {
-      var ambient = new THREE.AmbientLight(colorFromArray(parms.ambient.color),
+      var ambient = new THREE.AmbientLight(ColorFromValue(parms.ambient.color),
                                           Number(parms.ambient.intensity));
       GR.ambientLight = ambient;
       theScene.add(ambient);
   }
   if (parms.directional) {
-      var directional = new THREE.DirectionalLight(colorFromArray(parms.directional.color),
+      var directional = new THREE.DirectionalLight(ColorFromValue(parms.directional.color),
                                           Number(parms.directional.intensity));
       directional.position.fromArray(parms.directional.direction).normalize();
       GR.directionalLight = directional;
@@ -330,6 +360,31 @@ function InitializeLights(theScene, passedParms) {
       }
       theScene.add(directional);
   }
+}
+
+// Initialize environmental properties (fog, sky, ...)
+function InitialieEnvironment(theScene, passedParams) {
+    if (config.webgl && config.webgl.fog) {
+        parms = CombineParameters(Config.webgl.fog, passedParms, {
+            'type': 'linear',
+            'color': 'lightblue',
+            'far': 1000,
+            'density': 0.00025
+        });
+        let fogColor = ColorFromValue(parms.color);
+
+        if (parms.type == 'linear') {
+            let fogger = new THREE.Fog(fogColor, parms.far);
+            if (parms.name) fogger.name = parms.name;
+            if (parms.near) fogger.near = parms.near;
+            theScene.add(fogger);
+        }
+        if (parms.type == 'exponential') {
+            let fogger = new THREE.FogExp2(fogColor, parms.density);
+            if (parms.name) fogger.name = parms.name;
+            theScene.add(fogger);
+        }
+    }
 }
 
 // Add a test object to the scene

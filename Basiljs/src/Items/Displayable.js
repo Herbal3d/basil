@@ -12,10 +12,19 @@
 'use strict';
 
 import { BItem } from 'xBItem';
+import { LoadSimpleAsset } from 'xGraphics';
 
 export class Displayable extends BItem {
     constructor(id, auth, assetInfo) {
       super(id, auth, 'Displayable');
+      LoadSimpleAsset(auth, assetInfo)
+      .then(assetInfo => {
+          this.representation = assetInfo;
+      })
+      .catch(err => {
+          GP.DebugLog('Displayable: unable to load asset' + assetInfo.url
+                    + ': ' + err);
+      });
     }
 }
 

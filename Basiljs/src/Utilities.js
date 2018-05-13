@@ -36,3 +36,27 @@ export function CreateUniqueId(service, type) {
 export function CreateUniqueInstanceId() {
   return CreateUniqueId('instance');
 };
+
+// Configuration comes from the configuration file (Config), parameters at
+//    may be set in the context, and parameters that may be required.
+//    This takes those three inputs and creates one parameter block with
+//    the proper merge of those three sources.
+// Passed context parameters take highest priority, then config file, then
+//    default/required values.
+export function CombineParameters(configParams, passedParams, requiredParams) {
+    let parms = {};
+    if (configParams) {
+        parms = configParams;
+    }
+    if (passedParams)
+        Object.assign(parms, passedParams);
+    }
+    if (requiredParams) {
+        foreach (key in Object.keys(requiredParams)) {
+            if (typeof(parms.key) == 'undefined') {
+                parms[key] = requiredParams[key];
+            )
+        }
+    }
+    return parms;
+}
