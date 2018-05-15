@@ -3272,6 +3272,7 @@ export const BasilServer = $root.BasilServer = (() => {
             BasilServerMessageBody.prototype.AliveCheckRespMsg = null;
             BasilServerMessageBody.prototype.MakeConnectionReqMsg = null;
             BasilServerMessageBody.prototype.MakeConnectionRespMsg = null;
+            BasilServerMessageBody.prototype.RPCRequestSession = 0;
 
             BasilServerMessageBody.create = function create(properties) {
                 return new BasilServerMessageBody(properties);
@@ -3332,6 +3333,8 @@ export const BasilServer = $root.BasilServer = (() => {
                     $root.BasilServer.MakeConnectionReq.encode(message.MakeConnectionReqMsg, writer.uint32(202).fork()).ldelim();
                 if (message.MakeConnectionRespMsg != null && message.hasOwnProperty("MakeConnectionRespMsg"))
                     $root.BasilServer.MakeConnectionResp.encode(message.MakeConnectionRespMsg, writer.uint32(210).fork()).ldelim();
+                if (message.RPCRequestSession != null && message.hasOwnProperty("RPCRequestSession"))
+                    writer.uint32(2000).uint32(message.RPCRequestSession);
                 return writer;
             };
 
@@ -3423,6 +3426,9 @@ export const BasilServer = $root.BasilServer = (() => {
                         break;
                     case 26:
                         message.MakeConnectionRespMsg = $root.BasilServer.MakeConnectionResp.decode(reader, reader.uint32());
+                        break;
+                    case 250:
+                        message.RPCRequestSession = reader.uint32();
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -3571,6 +3577,9 @@ export const BasilServer = $root.BasilServer = (() => {
                     if (error)
                         return "MakeConnectionRespMsg." + error;
                 }
+                if (message.RPCRequestSession != null && message.hasOwnProperty("RPCRequestSession"))
+                    if (!$util.isInteger(message.RPCRequestSession))
+                        return "RPCRequestSession: integer expected";
                 return null;
             };
 
@@ -3708,6 +3717,8 @@ export const BasilServer = $root.BasilServer = (() => {
                         throw TypeError(".BasilServer.BasilServerMessage.BasilServerMessageBody.MakeConnectionRespMsg: object expected");
                     message.MakeConnectionRespMsg = $root.BasilServer.MakeConnectionResp.fromObject(object.MakeConnectionRespMsg);
                 }
+                if (object.RPCRequestSession != null)
+                    message.RPCRequestSession = object.RPCRequestSession >>> 0;
                 return message;
             };
 
@@ -3742,6 +3753,7 @@ export const BasilServer = $root.BasilServer = (() => {
                     object.AliveCheckRespMsg = null;
                     object.MakeConnectionReqMsg = null;
                     object.MakeConnectionRespMsg = null;
+                    object.RPCRequestSession = 0;
                 }
                 if (message.IdentifyDisplayableObjectReqMsg != null && message.hasOwnProperty("IdentifyDisplayableObjectReqMsg"))
                     object.IdentifyDisplayableObjectReqMsg = $root.BasilServer.IdentifyDisplayableObjectReq.toObject(message.IdentifyDisplayableObjectReqMsg, options);
@@ -3795,6 +3807,8 @@ export const BasilServer = $root.BasilServer = (() => {
                     object.MakeConnectionReqMsg = $root.BasilServer.MakeConnectionReq.toObject(message.MakeConnectionReqMsg, options);
                 if (message.MakeConnectionRespMsg != null && message.hasOwnProperty("MakeConnectionRespMsg"))
                     object.MakeConnectionRespMsg = $root.BasilServer.MakeConnectionResp.toObject(message.MakeConnectionRespMsg, options);
+                if (message.RPCRequestSession != null && message.hasOwnProperty("RPCRequestSession"))
+                    object.RPCRequestSession = message.RPCRequestSession;
                 return object;
             };
 
@@ -5606,7 +5620,6 @@ export const BTransport = $root.BTransport = (() => {
         BTransport.prototype.stream = 0;
         BTransport.prototype.queueTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         BTransport.prototype.sendTime = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-        BTransport.prototype.requestSession = 0;
         BTransport.prototype.traceID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         BTransport.prototype.parentSpanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         BTransport.prototype.spanID = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
@@ -5628,8 +5641,6 @@ export const BTransport = $root.BTransport = (() => {
                 writer.uint32(24).uint64(message.queueTime);
             if (message.sendTime != null && message.hasOwnProperty("sendTime"))
                 writer.uint32(32).uint64(message.sendTime);
-            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
-                writer.uint32(40).uint32(message.requestSession);
             if (message.traceID != null && message.hasOwnProperty("traceID"))
                 writer.uint32(64).uint64(message.traceID);
             if (message.parentSpanID != null && message.hasOwnProperty("parentSpanID"))
@@ -5665,9 +5676,6 @@ export const BTransport = $root.BTransport = (() => {
                     break;
                 case 4:
                     message.sendTime = reader.uint64();
-                    break;
-                case 5:
-                    message.requestSession = reader.uint32();
                     break;
                 case 8:
                     message.traceID = reader.uint64();
@@ -5713,9 +5721,6 @@ export const BTransport = $root.BTransport = (() => {
             if (message.sendTime != null && message.hasOwnProperty("sendTime"))
                 if (!$util.isInteger(message.sendTime) && !(message.sendTime && $util.isInteger(message.sendTime.low) && $util.isInteger(message.sendTime.high)))
                     return "sendTime: integer|Long expected";
-            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
-                if (!$util.isInteger(message.requestSession))
-                    return "requestSession: integer expected";
             if (message.traceID != null && message.hasOwnProperty("traceID"))
                 if (!$util.isInteger(message.traceID) && !(message.traceID && $util.isInteger(message.traceID.low) && $util.isInteger(message.traceID.high)))
                     return "traceID: integer|Long expected";
@@ -5760,8 +5765,6 @@ export const BTransport = $root.BTransport = (() => {
                     message.sendTime = object.sendTime;
                 else if (typeof object.sendTime === "object")
                     message.sendTime = new $util.LongBits(object.sendTime.low >>> 0, object.sendTime.high >>> 0).toNumber(true);
-            if (object.requestSession != null)
-                message.requestSession = object.requestSession >>> 0;
             if (object.traceID != null)
                 if ($util.Long)
                     (message.traceID = $util.Long.fromValue(object.traceID)).unsigned = true;
@@ -5816,7 +5819,6 @@ export const BTransport = $root.BTransport = (() => {
                     object.sendTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.sendTime = options.longs === String ? "0" : 0;
-                object.requestSession = 0;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, true);
                     object.traceID = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -5855,8 +5857,6 @@ export const BTransport = $root.BTransport = (() => {
                     object.sendTime = options.longs === String ? String(message.sendTime) : message.sendTime;
                 else
                     object.sendTime = options.longs === String ? $util.Long.prototype.toString.call(message.sendTime) : options.longs === Number ? new $util.LongBits(message.sendTime.low >>> 0, message.sendTime.high >>> 0).toNumber(true) : message.sendTime;
-            if (message.requestSession != null && message.hasOwnProperty("requestSession"))
-                object.requestSession = message.requestSession;
             if (message.traceID != null && message.hasOwnProperty("traceID"))
                 if (typeof message.traceID === "number")
                     object.traceID = options.longs === String ? String(message.traceID) : message.traceID;

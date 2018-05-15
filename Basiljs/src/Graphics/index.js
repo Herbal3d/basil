@@ -27,7 +27,7 @@ var ColorFromValue = function(colorValue) {
     if (Array.isArray(colorValue)) {
         return new THREE.Color(colorValue[0], colorValue[1], colorValue[2]);
     }
-    return new Three.Color(colorValue);
+    return new THREE.Color(colorValue);
 }
 
 // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
@@ -85,7 +85,7 @@ export function GraphicsInit(container, canvas) {
 
   InitializeCamera(GR.scene, canvas);
   InitializeLights(GR.scene);
-  InitializeEnvironment();
+  InitializeEnvironment(GR.scene);
 
   let parms = {}; // parameters specific to setting up WebGL in the renderer
   if (Config.webgl && Config.webgl.renderer) {
@@ -211,7 +211,7 @@ export function LoadSimpleAsset(userAuth, parms) {
             'DAE': undefined,
             'OBJ': undefined,
             'Collada': undefined
-        }:
+        };
         let loader = loaders[parms.Type];
         if (loader) {
             // To complicate things, ThreeJS loaders return different things
@@ -363,9 +363,9 @@ function InitializeLights(theScene, passedParms) {
 }
 
 // Initialize environmental properties (fog, sky, ...)
-function InitialieEnvironment(theScene, passedParams) {
-    if (config.webgl && config.webgl.fog) {
-        parms = CombineParameters(Config.webgl.fog, passedParms, {
+function InitializeEnvironment(theScene, passedParams) {
+    if (Config.webgl && Config.webgl.fog) {
+        let parms = CombineParameters(Config.webgl.fog, passedParams, {
             'type': 'linear',
             'color': 'lightblue',
             'far': 1000,
