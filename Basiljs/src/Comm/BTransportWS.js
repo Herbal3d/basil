@@ -27,16 +27,9 @@ export default class BTransportWS extends BTransport {
     Close() {
     }
     // Send the data. Places message in output queue
-    // 'tcontext' is optional and used for RPC responses.
     Send(data, tcontext) {
         GP.DebugLog('BTransportWS: call of undefined Send()');
         throw new BException('BTransportWS: call of undefined Send()');
-    }
-    // Send a messsage and expect a replay of some type.
-    // Returns a promise
-    SendRPC(data) {
-        GP.DebugLog('BTransportWS: call of undefined SendRPC()');
-        throw new BException('BTransportWS: call of undefined SendRPC()');
     }
     // Get data in the input queue. Returns a Promise as might wait for data.
     Receive() {

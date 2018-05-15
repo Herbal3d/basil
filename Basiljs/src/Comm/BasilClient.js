@@ -23,6 +23,9 @@ export class BasilClientConnection {
         this.clientID = clientID;
         this.transport = xport;
         this.aliveSequenceNum = 888;
+        this.RPCsession = 900222;
+        this.RPCSessionCallback = new Map();
+        this.transport.SetReceiveCallbackObject(this);
     };
     Start() {
     };
@@ -32,26 +35,47 @@ export class BasilClientConnection {
     SendAndPromiseResponse(msg, xport, reqName) {
         let smsg = {};
         smsg[ reqName + 'ReqMsg'] = msg;
-        let cmsg = BasilServerMsgs.BasilServerMessage.create(smsg);
+        smsg['RPCRequestSession'] = this.RPCsession++;
+        let smsgs = { 'BasilServerMessages': [ smsg ] };
+        let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
         let emsg = BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
         let xxport = xport;
-        let ret = new Promise( (resolve,reject) => {
-            xxport.SendRPC(emsg, xxport)
-            .then( resp => {
-                let response = BasilServerMsgs.BasilServerMessage.decode(resp);
-                if (response.hasOwnProperty( reqName + 'RespMsg')) {
-                    resolve(response[ reqName + 'RespMsg']);
+        // Return a promise and pass the 'resolve' function to the response message processor
+        return new Promise( (resolve,reject) => {
+            this.RPCSessionCallback[smsg.RPCRequestSession] = {
+              'date': Date.now(),
+              'resolve': resolve,
+              'reject': reject,
+              'requestName': reqName,
+              'rawMessage': smsgs
+            };
+            xxport.Send(emsg);
+        });
+    };
+
+    procMessage(resp) {
+      let smsgs = BasilServerMsgs.BasilServerMessage.decode(resp);
+      if (smsgs.BasilServerMessages) {
+        let msgs = smsgs.BasilServerMessages;
+        if (Array.isArray(msgs)) {
+          msgs.forEach( msg => {
+            if (msg.RPCRequestSession && msg.RPCRequestSession != 0) {
+              let session = this.RPCSessionCallback[msg.RPCRequestSession];
+              if (session) {
+                this.RPCSessionCallback.delete(msg.RPCRequestSession);
+                if (msg.hasOwnProperty( session.requestName + 'RespMsg')) {
+                  // if this is a properly formed response, return the body of the response
+                  (session.resolve)(msg[ session.requestName + 'RespMsg']);
                 }
                 else {
-                    reject('illegal response:' + JSON.stringify(response));
+                  (session[1])(msg);
                 }
-            })
-            .catch( e => {
-                reject(e);
-            });
-        });
-        return ret;
-    };
+              }
+            }
+          });
+        }
+      }
+    }
 
     IdentifyDisplayableObject(auth, asset, aabb) {
         let msg = {
@@ -111,7 +135,7 @@ export class BasilClientConnection {
     OpenSession(auth, propertyList) {
         let msg = {};
         if (auth) msg['auth'] = auth;
-        if (propertyList) msg['props'] = propertyList;
+        if (propertyList) msg['features'] = propertyList;
         return this.SendAndPromiseResponse(msg, this.transport, 'OpenSession');
     };
     CloseSession(auth, reason) {

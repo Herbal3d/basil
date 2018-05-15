@@ -29,14 +29,7 @@ GP.Ready = false;
 
 let parms  = {};
 GP.wwTransport = new BTransportWW(parms);
-/*
-GP.wwTransport.SetReceiveCallbackObject( {
-    'procMessage': function(buff, tcontext) {
-        let msg = BasilServerMsgs.BasilServerMessage.decode(buff);
-        // Do something with the messsage
-    }
-})
-*/
+
 GP.Ready = true;
 
 GP.client = BasilClient.NewBasilClient('client', GP.wwTransport, {} );
@@ -49,11 +42,10 @@ if (Config.predefinedInstances && Config.predefinedInstances.debugObjectId) {
     let auth = undefined;
     let id = GP.DebugObjectId;
     let props = {
-      'list': {
-        'Msg': msg
-      }
+      'Msg': msg
     };
     GP.client.UpdateInstanceProperty(auth, id, props);
+    // console.log('WW.DebugLog: ' + msg);
   }
 }
 
@@ -81,10 +73,8 @@ GP.client.OpenSession(undefined, {
       displayInfo: {
         displayableType: 'meshset',
         asset: {
-          list: {
-            'URL': 'http://home.livingroomcam.us:14600/basil/convoar/testtest88.gltf',
-            'loaderType': 'GLTF'
-          }
+          'URL': 'http://home.livingroomcam.us:14600/basil/convoar/testtest88.gltf',
+          'loaderType': 'GLTF'
         }
       }
     };
@@ -122,10 +112,10 @@ GP.client.OpenSession(undefined, {
                 GP.DebugLog('failed fetching of instance properties: ' + resp.exception.reason);
               }
               else {
-                if (resp.properties && resp.properties.list) {
+                if (resp.properties) {
                   GP.DebugLog('Fetched properties for ' + instanceId + ':');
-                  Object.keys(resp.properties.list).forEach(prop => {
-                    GP.DebugLog('    ' + prop + ' => ' + resp.properties.list[prop]);
+                  Object.keys(resp.properties).forEach(prop => {
+                    GP.DebugLog('    ' + prop + ' => ' + resp.properties[prop]);
                   });
                 }
               }

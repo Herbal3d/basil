@@ -14,7 +14,7 @@
 // Test transport.
 import GP from 'GP';
 
-import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './BTransport.js';
+import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
 import { BException } from 'xBException';
 
@@ -60,7 +60,7 @@ export default class BTransportTest extends BTransport {
             }
             // GP.DebugLog('TransportTest: creating msg: ' + JSON.stringify(bmsg));
             let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
-            test.Send(bdata, undefined, test);
+            test.Send(bdata, test);
         }
     }
     // Static function called from timeReceived
@@ -85,26 +85,12 @@ export default class BTransportTest extends BTransport {
     // BTransport.Send()
     // Send the data. Places message in output queue.
     // 'data' is the encoded binary types of the message.
-    // 'tcontext' is optional and used for RPC responses.
     // One can pass a 'this' context for calling on timer threads, etc
-    Send(data, tcontext, tthis) {
+    Send(data, tthis) {
         let tester = tthis === undefined ? this : tthis;
         let emsg = EncodeMessage(data, tcontext, tester);
         tester.messages.push(emsg);
         tester.messagesSent++;
-    }
-    // Send a messsage and expect a replay of some type.
-    // Returns a promise
-    // One can pass a 'this' context for calling on timer threads, etc
-    SendRPC(data, tthis) {
-        let tester = tthis === undefined ? this : tthis;
-        return new Promise((resolve, reject) => {
-            console.log('BTransportTest: SendRPC:' + data);
-            let emsg = EncodeRPCMessage(data, resolve, reject, tester);
-            tester.messages.push(emsg);
-            tester.RPCmessagesSent++;
-            tester.messagesSent++;
-         });
     }
     // Set a callback object for recevieving messages.
     // The passed object must have a 'procMessage' method

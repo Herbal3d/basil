@@ -13,7 +13,7 @@
 
 import GP from 'GP';
 
-import { BTransport, EncodeMessage, EncodeRPCMessage, PushReception } from './BTransport.js';
+import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
 import { BException } from 'xBException';
 
@@ -31,19 +31,22 @@ export default class BTransportWW extends BTransport {
                 this.isWorker = false;
                 let xport = this;   // for closeure of message function
                 this.worker.onmessage = function(d) {
+                    // GP.DebugLog('BTransportWW.onmessage: rcvd');
                     xport.messages.push(d.data);
                     xport.stats.messagesReceived++;
                     PushReception(xport);
-                }
+                };
                 this.worker.onerror = function(e) {
-                    GP.DebugLog('BTransportWW: worker error:'
+                    // GP.DebugLog('BTransportWW: worker error:'
+                    console.log('BTransportWW: worker error:'
                                 + ' ln: ' + e.lineno
                                 + ', reason: ' + e.message);
                     xport.Close();
-                }
+                };
             }
             catch(e) {
-                GP.DebugLog('BTransportWW: exception initializing worker: ' + e);
+                console.log('BTransportWW: exception initializing worker: ' + e);
+                // GP.DebugLog('BTransportWW: exception initializing worker: ' + e);
                 throw new BException('Exception initializing worker: ' + e);
             }
         }
@@ -65,11 +68,12 @@ export default class BTransportWW extends BTransport {
             this.worker = undefined;
         }
     }
+
     // Send the data. Places message in output queue
-    // 'tcontext' is optional and used for RPC responses.
-    Send(data, tcontext, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        let emsg = EncodeMessage(data, tcontext, xxport);
+    Send(data, tthis) {
+        let xxport = typeof(tthis) == 'undefined' ? this : tthis;
+        let emsg = EncodeMessage(data, xxport);
+        // GP.DebugLog('BTransportWW.Send: sending: ' + JSON.stringify(emsg));
         if (xxport.worker) {
             xxport.worker.postMessage(emsg);
         }
@@ -78,22 +82,7 @@ export default class BTransportWW extends BTransport {
         }
         xxport.stats.messagesSent++;
     }
-    // Send a messsage and expect a replay of some type.
-    // Returns a promise
-    SendRPC(data, tthis) {
-        let xxport = tthis === undefined ? this : tthis;
-        return new Promise((resolve, reject) => {
-            let emsg = EncodeRPCMessage(data, resolve, reject, xxport);
-            if (xxport.worker) {
-                xxport.worker.postMessage(emsg);
-            }
-            else {
-                postMessage(emsg);
-            }
-            xxport.stats.RPCmessagesSent++;
-            xxport.stats.messagesSent++;
-        });
-    }
+
     // Set a calback to be called whenever a message is received
     SetReceiveCallbackObject(callback) {
         this.receiveCallbackObject = callback;

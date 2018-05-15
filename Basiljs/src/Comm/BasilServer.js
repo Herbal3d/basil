@@ -71,39 +71,45 @@ export class BasilServiceConnection  extends BItem {
 
     // Process message received by BTransport
     // @param buff raw bytes of the message that was transported
-    // @param tcontext transport context. Could be undefined but, if present, used for RPC
-    procMessage(buff, tcontext) {
+    procMessage(buff, rawMessage) {
         if (this.transport) {
             // the Buffer should be a BasilServerMessage
             try {
               let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
-              GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
+              // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
               msgs.BasilServerMessages.forEach( msg => {
-                let replyContents = undefined;
                 // The message will have one or more message names with that message type
                 Object.keys(msg).forEach( msgProp => {
-                    let template = this.receptionMessages2[msgProp];
-                    try {
-                      replyContents = template[0](msg[msgProp]);
+                  let replyContents = undefined;
+                  let template = this.receptionMessages2[msgProp];
+                  if (typeof(template) == 'undefined') {
+                    return; // unknown flags are just ignored
+                  }
+                  try {
+                    replyContents = template[0](msg[msgProp]);
+                  }
+                  catch (e) {
+                    replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
+                  }
+                  // GP.DebugLog('BasilServer.procMessage:'
+                  //       + ' prop=' + msgProp
+                  //       + ', rec=' + JSON.stringify(msg[msgProp])
+                  //       + ', reply=' + JSON.stringify(replyContents)
+                  // );
+                  if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
+                    // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
+                    // There is a response to the message
+                    let rmsg = {};
+                    rmsg[template[1]] = replyContents;
+                    if (msg.RPCRequestSession) {
+                      // Return the binding that allows the other side to match the response
+                      rmsg['RPCRequestSession'] = msg.RPCRequestSession;
                     }
-                    catch (e) {
-                      replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
-                    }
-                    // GP.DebugLog('BasilServer.procMessage:'
-                    //        + ' prop=' + msgProp
-                    //        + ', rec=' + JSON.stringify(msg[msgProp])
-                    //        + ', reply=' + JSON.stringify(replyContents)
-                    // );
-                    if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
-                        // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
-                        // The message requires a response
-                        let rmsg = {};
-                        rmsg[template[1]] = replyContents;
-                        // let reply = BasilServerMsgs.BasilServerMessage.create(rmsg);
-                        // Passing 'tcontext' gives the required info for creating the response header
-                        this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(rmsg).finish(), tcontext);
-                    }
-                  });
+                    let bmsgs = { 'BasilServerMessages': [ rmsg ] };
+                    // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
+                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(bmsgs).finish(), this.transport);
+                  }
+                });
               });
             }
             catch(e) {
@@ -242,7 +248,7 @@ export class BasilServiceConnection  extends BItem {
     }
     procOpenSession(req) {
         return {
-            'features': {
+            'properties': {
                 'creepy': 'no',
                 'wow': '44'
             }
