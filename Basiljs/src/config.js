@@ -56,7 +56,7 @@ export default {
             'density': 0.00025,
             'near': 1,
             'far': 5000
-        }
+        },
         'renderer': {
           'ThreeJS': {
             // Parameters passed to the renderer when created.

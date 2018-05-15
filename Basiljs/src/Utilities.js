@@ -48,14 +48,14 @@ export function CombineParameters(configParams, passedParams, requiredParams) {
     if (configParams) {
         parms = configParams;
     }
-    if (passedParams)
+    if (passedParams) {
         Object.assign(parms, passedParams);
     }
     if (requiredParams) {
-        foreach (key in Object.keys(requiredParams)) {
+        for (let key in Object.keys(requiredParams)) {
             if (typeof(parms.key) == 'undefined') {
                 parms[key] = requiredParams[key];
-            )
+            }
         }
     }
     return parms;

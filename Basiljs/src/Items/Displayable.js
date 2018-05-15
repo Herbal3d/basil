@@ -11,6 +11,7 @@
 
 'use strict';
 
+import GP from 'GP';
 import { BItem } from 'xBItem';
 import { LoadSimpleAsset } from 'xGraphics';
 
