@@ -3,7 +3,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
@@ -42,8 +41,7 @@ module.exports = {
 
         'xControls': path.resolve(__dirname, 'src/Controls/index.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
-        // 'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
-        'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
+        // 'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
         'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
@@ -55,24 +53,25 @@ module.exports = {
     extensions: [ '.js', '.jsx' ]
   },
   plugins: [
-    // Cleans out the 'dist' directory at the start of each build
-    // Not necessary because of new build step to clean dist
-    // new CleanWebpackPlugin( ['dist']),
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     new webpack.HashedModuleIdsPlugin(),
+
     // Causes a separate bundle for the entry.vendor modules
     new webpack.optimize.CommonsChunkPlugin({
         name: 'jquery'
     }),
+
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
         THREE: 'xThreeJS',
         $: 'jquery'
     }),
+
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
     new webpack.optimize.CommonsChunkPlugin({
         name: 'runtime'
     }),
+
     // Create dist/Basil.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
@@ -81,8 +80,9 @@ module.exports = {
         template: 'src/Basil.html',
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
-        lang: 'en-US',
+        lang: 'en-US'
     }),
+
     new ExtractTextPlugin('Basiljs.css')
   ],
   externals: {

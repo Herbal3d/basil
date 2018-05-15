@@ -32,18 +32,22 @@ module.exports = {
   plugins: [
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     new webpack.HashedModuleIdsPlugin(),
+
     // Causes a separate bundle for the entry.vendor modules
     new webpack.optimize.CommonsChunkPlugin({
         name: 'jquery'
     }),
+
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
         $: 'jquery'
     }),
+
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
     new webpack.optimize.CommonsChunkPlugin({
         name: 'runtime'
     }),
+
     // Create dist/Basil.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
@@ -54,6 +58,7 @@ module.exports = {
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US',
     }),
+
     new ExtractTextPlugin('Basiljs.css')
   ],
   externals: {
