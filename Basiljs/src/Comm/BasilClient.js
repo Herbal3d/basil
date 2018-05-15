@@ -43,7 +43,7 @@ export class BasilClientConnection {
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( (resolve,reject) => {
             this.RPCSessionCallback[smsg.RPCRequestSession] = {
-              'date': Date.now(),
+              'timeRPCCreated': Date.now(),
               'resolve': resolve,
               'reject': reject,
               'requestName': reqName,
@@ -53,27 +53,46 @@ export class BasilClientConnection {
         });
     };
 
+    // Called when message received. At the moment, all messages are
+    //    be responses to RPC requests.
     procMessage(resp) {
       let smsgs = BasilServerMsgs.BasilServerMessage.decode(resp);
       if (smsgs.BasilServerMessages) {
-        let msgs = smsgs.BasilServerMessages;
-        if (Array.isArray(msgs)) {
-          msgs.forEach( msg => {
-            if (msg.RPCRequestSession && msg.RPCRequestSession != 0) {
-              let session = this.RPCSessionCallback[msg.RPCRequestSession];
-              if (session) {
-                this.RPCSessionCallback.delete(msg.RPCRequestSession);
+        smsgs.BasilServerMessages.forEach( msg => {
+          if (msg.RPCRequestSession && msg.RPCRequestSession != 0) {
+            let session = this.RPCSessionCallback[msg.RPCRequestSession];
+            if (session) {
+              this.RPCSessionCallback.delete(msg.RPCRequestSession);
+              try {
                 if (msg.hasOwnProperty( session.requestName + 'RespMsg')) {
                   // if this is a properly formed response, return the body of the response
                   (session.resolve)(msg[ session.requestName + 'RespMsg']);
                 }
                 else {
-                  (session[1])(msg);
+                  (session.resolve)(msg);
                 }
               }
+              catch (e) {
+                let errMsg = 'BasilClient.procMessage: exception processing msg: ' + e;
+                console.log(errMsg);
+                GP.DebugLog(errMsg);
+                (session.reject)(e);
+              }
             }
-          });
-        }
+            else {
+              let errMsg = 'BasilClient.procMessage: received msg which is not RPC response: '
+                        + JSON.stringify(msg);
+              console.log(errMsg);
+              GP.DebugLog(errMsg);
+            }
+          }
+          else {
+            let errMsg = 'BasilClient.procMessage: received misformed msg: '
+                      + JSON.stringify(msg);
+            console.log(errMsg);
+            GP.DebugLog(errMsg);
+          }
+        });
       }
     }
 
