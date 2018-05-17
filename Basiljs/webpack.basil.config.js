@@ -43,9 +43,15 @@ module.exports = {
         'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
         'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
+
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
         'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
+        'xThreeJSCollada': path.resolve(__dirname, 'src/jslibs/ColladaLoader.js'),
+        'xThreeJSDRACO': path.resolve(__dirname, 'src/jslibs/DRACOLoader.js'),
+        'xThreeJSFBX': path.resolve(__dirname, 'src/jslibs/FBXLoader.js'),
+        'xThreeJSOBJ': path.resolve(__dirname, 'src/jslibs/OBJLoader.js'),
+        'xThreeJSBVH': path.resolve(__dirname, 'src/jslibs/BVHLoader.js'),
 
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
         'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),

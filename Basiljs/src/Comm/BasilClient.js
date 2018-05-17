@@ -37,8 +37,14 @@ export class BasilClientConnection {
         smsg[ reqName + 'ReqMsg'] = msg;
         smsg['RPCRequestSession'] = this.RPCsession++;
         let smsgs = { 'BasilServerMessages': [ smsg ] };
-        let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
-        let emsg = BasilServerMsgs.BasilServerMessage.encode(cmsg).finish();
+        if (Config.Debug && Config.Debug.VerifyProtocol) {
+          if (BasilServerMsgs.BasilServerMessage.verify(smsgs)) {
+            GP.DebugLog('BasilClient.SendAndPromiseResponse: verification fail: '
+                    + JSON.stringify(smsgs));
+          }
+        }
+        // let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
+        let emsg = BasilServerMsgs.BasilServerMessage.encode(smsgs).finish();
         let xxport = xport;
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( (resolve,reject) => {
@@ -97,9 +103,7 @@ export class BasilClientConnection {
     }
 
     IdentifyDisplayableObject(auth, asset, aabb) {
-        let msg = {
-            'assetInfo': asset
-        };
+        let msg = { 'assetInfo': asset };
         if (auth) msg['auth'] = auth;
         if (aabb) msg['aabb'] = aabb;
         return this.SendAndPromiseResponse(msg, this.transport, 'IdentifyDisplayableObject');

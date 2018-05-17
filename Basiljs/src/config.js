@@ -84,7 +84,11 @@ export default {
     'WWTester': {
         'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,  // ms interval to generate AliveCheck's
-        'PrintDebugOnAliveResponse': true // print message on AliveCheck response
+        'PrintDebugOnAliveResponse': false // print message on AliveCheck response
+    },
+    'Debug': {
+      'VerifyProtocol': true,  // call 'verify' on created protocol messages
+      'BasilServerProcMessageDetail': false // DebugLog received messages and responses
     },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [

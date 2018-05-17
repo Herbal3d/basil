@@ -19,6 +19,13 @@ GP.IM = IM;
 
 IM.Items = new Map();
 
+export const BItemState = {
+  UNINITIALIZED: 'UNINITIALIZED',
+  LOADING: 'LOADING',
+  FAILED: 'FAILED',
+  READY: 'READY'
+};
+
 // All things referenced by the Basil interface are "items' and thus they
 //   have these access methods.
 // The main features of a BItem are:
@@ -31,17 +38,19 @@ IM.Items = new Map();
 //  An 'itemType' which identifies the type of the item.
 export class BItem {
     constructor(id, auth, itemType) {
-        this.props = new Map();
-        this.id = id;             // index this item is stored under
-        this.auth = auth;         // authorization information
-        this.ownerId = undefined; // this item is not yet associated with  some service/connection
-        this.itemType = itemType ? itemType : undefined;  // the type of the item
-        this.DefineProperties( {
-            'Type': { 'get': () => { return this.itemType; } },
-            'Id': { 'get': () => { return this.id; } },
-            'OwnerId': { 'get': () => { return this.ownerId; } }
-        });
-        BItem.AddItem(id, this);
+      this.props = new Map();
+      this.id = id;             // index this item is stored under
+      this.auth = auth;         // authorization information
+      this.ownerId = undefined; // this item is not yet associated with  some service/connection
+      this.itemType = itemType ? itemType : undefined;  // the type of the item
+      this.state = BItemState.UNINITIALIZED;
+      this.DefineProperties( {
+          'Type': { 'get': () => { return this.itemType; } },
+          'Id': { 'get': () => { return this.id; } },
+          'OwnerId': { 'get': () => { return this.ownerId; } },
+          'State': { 'get': () => { return this.state; } }
+      });
+      BItem.AddItem(id, this);
     }
 
     ReleaseItem() {
@@ -84,7 +93,11 @@ export class BItem {
     SetProperty(propertyName, value) {
       let propDesc = this.props.get(propertyName);
       if (propDesc && propDesc.set) {
+        // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
         propDesc.set(value);
+      }
+      else {
+        GP.DebugLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
       }
     }
 

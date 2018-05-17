@@ -18,6 +18,11 @@ import { CombineParameters } from 'xUtilities';
 
 import { OrbitControls } from 'xThreeJSOrbit';
 import { GLTFLoader } from 'xThreeJSGLTF';
+import { ColladaLoader } from 'xThreeJSCollada';
+import { DRACOLoader } from 'xThreeJSDRACO';
+import { FBXLoader } from 'xThreeJSFBX';
+import { OBJLoader } from 'xThreeJSOBJ';
+import { BVHLoader } from 'xThreeJSBVH';
 
 var GR = GR || {};
 GP.GR = GR; // for debugging. Don't use for cross package access.
@@ -202,50 +207,51 @@ export function ClearScene() {
 // Passed parameters:
 // parms.auth authorization info
 // parms.url: URL to asset
-// parms.type = GLTF, DAE, OBJ, Collada
+// parms.type = GLTF, Collada, OBJ, FBX
 // returns a promise of a handle to the ThreeJS node that is created
-export function LoadSimpleAsset(userAuth, parms) {
-    return new Promise(function(resolve, reject) {
-        let loaders = {
-            'GLTF': GLTFLoader,
-            'DAE': undefined,
-            'OBJ': undefined,
-            'Collada': undefined
-        };
-        let loader = loaders[parms.Type];
-        if (loader) {
-            // To complicate things, ThreeJS loaders return different things
-            loader.load(parms.url, function(loaded) {
-                // Successful load
-                if (loaded.scene) {     // GLTF scene
-                    resolve(loaded.scene.children);
-                }
-                else if (loaded.scenes) {   // GLTF multiple scenes
-                    resolve(loaded.scenes[0].children);
-                }
-                let err = 'Graphics.LoadSimpleAsset: Could not understancd loaded contents.'
-                    + ' type=' + parms.type
-                    + ', url=' + parms.url;
-                reject(err);
-            },
-            function(e) {
-                // Failed load
-                reject(e);
-            });
-        }
-        else {
-            reject('No loader for type' + parms.type);
-        }
-    });
-
-}
-
-// Load multiple scenes.
-// The caller should clear and release the previous scene as this creates new.
-// Pass in an array: [ [url1, [x,y,x]], [url2,[x,y,x]], ...]
-//     Where the [x,y,z] is a displacement base for the region.
-export function LoadSceneMultiple(urlsAndLocations, loadedCallback) {
-  // TODO:
+export function LoadSimpleAsset(userAuth, parms, progressCallback) {
+  GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
+  return new Promise(function(resolve, reject) {
+    let loader = undefined;
+    switch (parms.loaderType.toLowerCase()) {
+      case 'gltf':    loader = new THREE.GLTFLoader; break;
+      case 'collada': loader = new THREE.ColladaLoader; break;
+      case 'draco':   loader = new THREE.DRACOLoader; break;
+      case 'fbx':     loader = new THREE.FBXLoader; break;
+      case 'obj':     loader = new THREE.OBJLoader; break;
+      case 'bvh':     loader = new THREE.BVHLoader; break;
+    }
+    if (loader) {
+        GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + parms.url);
+        // To complicate things, ThreeJS loaders return different things
+        loader.load(parms.url, function(loaded) {
+          // Successful load
+          if (loaded.scene) {     // GLTF scene
+              resolve(loaded.scene.children);
+          }
+          else if (loaded.scenes) {   // GLTF multiple scenes
+              resolve(loaded.scenes[0].children);
+          }
+          let err = 'Graphics.LoadSimpleAsset: Could not understancd loaded contents.'
+              + ' type=' + parms.loaderType
+              + ', url=' + parms.url;
+          reject(err);
+        },
+        function(xhr) {
+          // loading progress
+          if (typeof(progressCallback) !== 'undefined') {
+            progressCallback(xhr);
+          }
+        },
+        function(e) {
+            // Failed load
+            reject(e);
+        });
+    }
+    else {
+        reject('No loader for type ' + parms.loaderType);
+    }
+  });
 }
 
 // Function to move the camera from where it is to a new place.

@@ -18,7 +18,8 @@ import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
 import { BItem } from 'xBItem';
 
 import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
-import { Displayable, DisplayableInstance } from 'xDisplayable';
+import { Displayable, DisplayableFactory,
+        DisplayableInstance, DisplayableInstanceFactory } from 'xDisplayable';
 
 var BS = BS || {};
 GP.BS = BS;
@@ -91,11 +92,13 @@ export class BasilServiceConnection  extends BItem {
                   catch (e) {
                     replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
                   }
-                  // GP.DebugLog('BasilServer.procMessage:'
-                  //       + ' prop=' + msgProp
-                  //       + ', rec=' + JSON.stringify(msg[msgProp])
-                  //       + ', reply=' + JSON.stringify(replyContents)
-                  // );
+                  if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
+                    GP.DebugLog('BasilServer.procMessage:'
+                         + ' prop=' + msgProp
+                         + ', rec=' + JSON.stringify(msg[msgProp])
+                         + ', reply=' + JSON.stringify(replyContents)
+                    );
+                  }
                   if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
                     // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
                     // There is a response to the message
@@ -106,6 +109,12 @@ export class BasilServiceConnection  extends BItem {
                       rmsg['RPCRequestSession'] = msg.RPCRequestSession;
                     }
                     let bmsgs = { 'BasilServerMessages': [ rmsg ] };
+                    if (Config.Debug && Config.Debug.VerifyProtocol) {
+                      if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
+                        GP.DebugLog('BasilServer.procMessage: verification fail: '
+                                + JSON.stringify(bmsgs));
+                      }
+                    }
                     // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
                     this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(bmsgs).finish(), this.transport);
                   }
@@ -121,8 +130,14 @@ export class BasilServiceConnection  extends BItem {
     procIdentifyDisplayableObject(req) {
         let ret = undefined;
         if (req.assetInfo) {
-          let id = CreateUniqueId('displayable');
-          let newItem = new Displayable(id, req.auth, req.assetInfo);
+          let id = undefined;
+          if (req.assetInfo.id) {
+            id = req.assetInfo.id.id;
+          }
+          else {
+            id = CreateUniqueId('displayable');
+          }
+          let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
           newItem.ownerId = this.id;    // So we know who created what
           if (newItem) {
             ret = {
@@ -150,13 +165,15 @@ export class BasilServiceConnection  extends BItem {
     // Given an object with recieved parameters, do operation and return response object
     procCreateObjectInstance(req) {
         let ret = undefined;
-        if (req.identifier && req.pos) {
+        if (req.identifier) {
           let baseDisplayable = BItem.GetItem(req.identifier.id);
           if (baseDisplayable) {
             let instanceId = CreateUniqueInstanceId();
-            let newInstance = new DisplayableInstance(instanceId, req.auth, baseDisplayable);
+            let newInstance = DisplayableInstanceFactory(instanceId, req.auth, baseDisplayable);
             newInstance.ownerId = this.id;    // So we know who created what
-            BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
+            if (req.pos) {
+                BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
+            }
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet);
             }
@@ -290,10 +307,11 @@ export class BasilServiceConnection  extends BItem {
 
     // Update an instance's position info based on a passed BasilType.InstancePostionInfo
     static UpdatePositionInfo(instance, posInfo) {
-      if (posInfo.pos) { instance.SetProperty('Position', posInfo.pos) }
-      if (posInfo.rot) { instance.SetProperty('Rotation', posInfo.rot) }
-      if (posInfo.posRef) { instance.SetProperty('PosCoordSystem', posInfo.posRef) }
-      if (posInfo.rotRef) { instance.SetProperty('RotCoordSystem', posInfo.rotRef) }
+      let coordPosition = posInfo.pos;  // get BasilType.CoordPosition
+      if (coordPosition.pos) { instance.SetProperty('Position', coordPosition.pos) }
+      if (coordPosition.rot) { instance.SetProperty('Rotation', coordPosition.rot) }
+      if (coordPosition.posRef) { instance.SetProperty('PosCoordSystem', coordPosition.posRef) }
+      if (coordPosition.rotRef) { instance.SetProperty('RotCoordSystem', coordPosition.rotRef) }
     };
 
     // Create a property list from an object. Values must be strings in the output.

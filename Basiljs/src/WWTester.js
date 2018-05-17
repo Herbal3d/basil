@@ -20,6 +20,8 @@ import * as BasilClient from 'xBasilClient';
 import BTransportWW from 'xBTransportWW';
 import { BException } from 'xBException';
 
+import { BasilType } from "xBasilServerMessages"
+
 GP.Config = Config;
 
 // Debug function to mimic the non-WebWorker one
@@ -68,17 +70,17 @@ GP.client.OpenSession(undefined, {
       }, Config.WWTester.AliveCheckPollMS);
     }
 
-    // Build an asset
+    let auth = undefined; // no authentication at the moment
     let anAsset = {
-      displayInfo: {
-        displayableType: 'meshset',
-        asset: {
-          'URL': 'http://home.livingroomcam.us:14600/basil/convoar/testtest88.gltf',
+      // 'id': { 'id': someID }, // not needed for creation
+      'displayInfo': {
+        'displayableType': 'meshset',
+        'asset': {
+          'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/testtest88.gltf',
           'loaderType': 'GLTF'
         }
       }
     };
-    let auth = undefined; // no authentication at the moment
     GP.client.IdentifyDisplayableObject(auth, anAsset)
     .then( resp => {
       if (resp.exception) {
@@ -88,16 +90,25 @@ GP.client.OpenSession(undefined, {
         let displayableId = resp.identifier.id;
         GP.DebugLog('Created displayable ' + displayableId);
         let instancePositionInfo = {
-          // 'id': instanceIdentifier,  // not needed for creation
+          // 'id': { 'id': someID },  // not needed for creation
           'pos': {
             'pos': { x: 10, y: 11, z: 12 },
-            'rot': { x: 0, y: 0, z: 0, w: 1 },
-            'posRef': 0,
-            'rotRef': 0
+            'rot': { x: 10, y: 11, z: 12 },
+            'posRef': BasilType.CoordSystem.WGS86,
+            'rotRef': BasilType.RotationSystem.WORLDR
           }
-          // 'vel': '0',
-          // 'path': pathDescription
         };
+        /*
+        let instancePositionInfo = BasilType.InstancePositionInfo( {
+          // 'id': BasilType.InstanceIdentifier( { 'id': someID }),  // not needed for creation
+          'pos': BasilType.CoordPosition( {
+            'pos': BasilType.Vector3( { x: 10, y: 11, z: 12 } ),
+            'rot': BasilType.Quaternion( { x: 10, y: 11, z: 12 } ),
+            'posRef': BasilType.CoordSystem.WGS86,
+            'rotRef': BasilType.RotationSystem.WORLDR
+          })
+        });
+        */
         GP.client.CreateObjectInstance(auth, displayableId, instancePositionInfo)
         .then( resp => {
           if (resp.exception) {
