@@ -11,8 +11,8 @@
   "license": "MPL-2.0",
   "homepage": "https://github.com/Misterblue/basil",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/Misterblue/basil"
+    "type": "git",
+    "url": "https://github.com/Misterblue/basil"
   },
   "main": "Bundle.js",
   "scripts": {
@@ -35,7 +35,7 @@
     "@protobufjs/pool": "^1.1.0",
     "@protobufjs/utf8": "^1.1.0",
     "@types/long": "^3.0.32",
-    "@types/node": "^8.9.4",
+    "@types/node": "^8.10.16",
     "long": "^4.0.0"
   },
   "devDependencies": {
@@ -43,7 +43,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "html-webpack-plugin": "^2.30.1",
     "jquery": "^3.3.1",
-    "js-base64": "^2.4.3",
+    "js-base64": "^2.4.5",
     "less": "^3.0.4",
     "less-loader": "^4.0.5",
     "npm-run-all": "^4.1.2",
