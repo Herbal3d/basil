@@ -13,7 +13,9 @@
 
 import GP from 'GP';
 import { BItem, BItemState } from 'xBItem';
-import { LoadSimpleAsset } from 'xGraphics';
+import { BasilType } from 'xBasilServerMessages';
+
+import * as Graphics from 'xGraphics';
 
 // Factory function to create Displayable since we may want
 //    to use Proxy's someday.
@@ -27,7 +29,7 @@ export class Displayable extends BItem {
       if (assetInfo && assetInfo.asset) {
         this.state = BItemState.LOADING;
         GP.DebugLog('Displayable.constructor: begining load of asset.State to LOADING');
-        LoadSimpleAsset(auth, assetInfo.asset)
+        Graphics.LoadSimpleAsset(auth, assetInfo.asset)
         .then(theAsset => {
           GP.DebugLog('Displayable.constructor: asset load successful. State to READY');
           this.representation = theAsset;
@@ -55,6 +57,7 @@ export class DisplayableInstance extends BItem {
     constructor(id, auth, baseDisplayable) {
         super(id, auth, 'DisplayableInstance');
         this.displayable = baseDisplayable;
+        this.node = undefined;
 
         this.gPos = [ 0, 0, 0 ];
         this.gRot = [ 0, 0, 0, 1];
@@ -132,8 +135,31 @@ export class DisplayableInstance extends BItem {
 
     // Place this instance in the displayed world data structure
     PlaceInWorld() {
+      BItem.WhenReady()
+      .then( item => {
+        if (typeof(item.node) == 'undefined') {
+          GP.DebugLog('DisplayableInstance.PlaceInWorld: creating THREE node for ' + item.id);
+          item.node = new THREE.Group();
+          item.node.name = item.id;
+          item.node.add(item.representation);
+        }
+        if (item.gPosCoordSystem == BasilType.CoordSystem.CAMERA) {
+          // item is camera relative
+          item.worldNode = Graphics.AddNodeToCamera(item.node);
+        }
+        else {
+          // item is world coordinate relative
+          item.worldNode = Graphics.AddNodeToWorld(item.node);
+        }
+
+      });
     }
     // Remove this instance from the displayed world data structure
     RemoveFromWorld() {
+      if (this.worldNode) {
+        Graphics.RemoveFromWorld(this.node);
+        Graphics.RemoveFromCamera(this.node);
+        this.worldNode = undefined;
+      }
     }
 }

@@ -202,6 +202,24 @@ export function ClearScene() {
   StartRendering();
 }
 
+// Add this new node to the world coordinate system
+export function AddNodeToWorld(node) {
+  GR.GroupWorldRel.add(node);
+}
+
+export function RemoveNodeFromWorld(node) {
+  GR.GroupWorldRel.remove(node);
+}
+
+// Add this node to the camera relative coordinate system
+export function AddNodeToCamera(node) {
+  GR.GroupCameraRel.add(node);
+}
+
+export function RemoveNodeFromCamera(node) {
+  GP.GroupCameraRel.remove(node);
+}
+
 // Load an asset.
 // TODO: some formats have animations, cameras, ... What to do with those?
 // Passed parameters:

@@ -57,10 +57,6 @@ cd "${PROTOBUFJSDIR}"
         $BASILPROTDIR/protocol/BTransport.proto \
         > "$JSLIBS/BasilServerMessages.js"
 
-# echo "=== Copy libraries into BasilJS"
-# cd "${PLACE}"
-# ./copyLibs.sh
-
 cd "${PLACE}"
 
 
