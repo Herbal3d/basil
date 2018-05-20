@@ -50,7 +50,7 @@ export default {
                 }
             }
         },
-        'fog': {
+        'fog-disabled': { // change to 'fog' to enable
             'type': 'linear',   // 'linear' or 'exponential'
             'color': 0xE6E6E6,
             'density': 0.00025,
@@ -76,7 +76,8 @@ export default {
       'debugObjectId': 'org.basil.b.Debugging.Display'
     },
     'assets': {
-        'gltfURLBase': '/basil/'
+        'gltfURLBase': '/basil/',
+        'assetFetchTimeoutMS': 5000
     },
     'eventing': {
         'eventPollIntervalMS': 500
@@ -87,7 +88,7 @@ export default {
         'PrintDebugOnAliveResponse': false // print message on AliveCheck response
     },
     'Debug': {
-      'VerifyProtocol': true,  // call 'verify' on created protocol messages
+      'VerifyProtocol': false,  // call 'verify' on created protocol messages
       'BasilServerProcMessageDetail': false // DebugLog received messages and responses
     },
     // Information for loading multiple Atropia regions with filename and displacement

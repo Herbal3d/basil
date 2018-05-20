@@ -76,7 +76,7 @@ GP.client.OpenSession(undefined, {
       'displayInfo': {
         'displayableType': 'meshset',
         'asset': {
-          'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/testtest88.gltf',
+          'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
           'loaderType': 'GLTF'
         }
       }
@@ -92,8 +92,8 @@ GP.client.OpenSession(undefined, {
         let instancePositionInfo = {
           // 'id': { 'id': someID },  // not needed for creation
           'pos': {
-            'pos': { x: 10, y: 11, z: 12 },
-            'rot': { x: 10, y: 11, z: 12 },
+            'pos': { x: 100, y: 101, z: 102 },
+            // 'rot': { x: 0, y: 0, z: 0, w: 1 },
             'posRef': BasilType.CoordSystem.WGS86,
             'rotRef': BasilType.RotationSystem.WORLDR
           }

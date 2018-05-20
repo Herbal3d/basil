@@ -244,16 +244,24 @@ export function LoadSimpleAsset(userAuth, parms, progressCallback) {
         // To complicate things, ThreeJS loaders return different things
         loader.load(parms.url, function(loaded) {
           // Successful load
-          if (loaded.scene) {     // GLTF scene
-              resolve(loaded.scene.children);
+          let scene = undefined;
+          if (loaded.scene) scene = loaded.scene;
+          if (loaded.scenes) scene = loaded.scenes[0];
+          let nodes = [];
+          if (scene) {
+            while (scene.children.length > 0) {
+              let first = scene.children[0];
+              scene.remove(first);
+              nodes.push(first);
+            }
+            resolve(nodes);
           }
-          else if (loaded.scenes) {   // GLTF multiple scenes
-              resolve(loaded.scenes[0].children);
+          else {
+            let err = 'Graphics.LoadSimpleAsset: Could not understand loaded contents.'
+                + ' type=' + parms.loaderType
+                + ', url=' + parms.url;
+            reject(err);
           }
-          let err = 'Graphics.LoadSimpleAsset: Could not understancd loaded contents.'
-              + ' type=' + parms.loaderType
-              + ', url=' + parms.url;
-          reject(err);
         },
         function(xhr) {
           // loading progress

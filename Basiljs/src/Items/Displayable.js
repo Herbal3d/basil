@@ -32,6 +32,7 @@ export class Displayable extends BItem {
         Graphics.LoadSimpleAsset(auth, assetInfo.asset)
         .then(theAsset => {
           GP.DebugLog('Displayable.constructor: asset load successful. State to READY');
+          GP.DebugLog('Displayable.constructor:' + ' numAsset=' + theAsset.length);
           this.representation = theAsset;
           this.state = BItemState.READY;
         })
@@ -57,7 +58,7 @@ export class DisplayableInstance extends BItem {
     constructor(id, auth, baseDisplayable) {
         super(id, auth, 'DisplayableInstance');
         this.displayable = baseDisplayable;
-        this.node = undefined;
+        this.worldNode = undefined;
 
         this.gPos = [ 0, 0, 0 ];
         this.gRot = [ 0, 0, 0, 1];
@@ -135,30 +136,43 @@ export class DisplayableInstance extends BItem {
 
     // Place this instance in the displayed world data structure
     PlaceInWorld() {
-      BItem.WhenReady()
+      if (this.worldNode) {
+        return; // already in world
+      }
+      BItem.WhenReady(this)
       .then( item => {
-        if (typeof(item.node) == 'undefined') {
+        if (typeof(item.worldNode) == 'undefined') {
           GP.DebugLog('DisplayableInstance.PlaceInWorld: creating THREE node for ' + item.id);
-          item.node = new THREE.Group();
-          item.node.name = item.id;
-          item.node.add(item.representation);
+          item.worldNode = new THREE.Group();
+          item.worldNode.name = item.id;
+          if (Array.isArray(item.displayable.representation)) {
+            item.displayable.representation.forEach( piece => {
+              item.worldNode.add(piece);
+            });
+          }
+          else {
+            item.worldNode.add(item.displayable.representation);
+          }
         }
         if (item.gPosCoordSystem == BasilType.CoordSystem.CAMERA) {
           // item is camera relative
-          item.worldNode = Graphics.AddNodeToCamera(item.node);
+          Graphics.AddNodeToCamera(item.worldNode);
         }
         else {
           // item is world coordinate relative
-          item.worldNode = Graphics.AddNodeToWorld(item.node);
+          Graphics.AddNodeToWorld(item.worldNode);
         }
-
+      })
+      .catch( (item, reason) => {
+        GP.DebugLog('DisplayableInstance.PlaceInWorld: item never ready. id=' + item.id);
       });
     }
+
     // Remove this instance from the displayed world data structure
     RemoveFromWorld() {
       if (this.worldNode) {
-        Graphics.RemoveFromWorld(this.node);
-        Graphics.RemoveFromCamera(this.node);
+        Graphics.RemoveNodeFromWorld(this.worldNode);
+        Graphics.RemoveNodeFromCamera(this.worldNode);
         this.worldNode = undefined;
       }
     }

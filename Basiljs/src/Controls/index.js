@@ -85,6 +85,7 @@ export function ShowDebug(onOff) {
 
 // Operation called on UI button click ('clickable').
 const OnClickableOps  = {
+  /*
   'loadGltf': function() {
       var url = Config.assets.gltfURLBase + $('#SelectGltf').val();
       GP.DebugLog('Controls: OnLoadButton: loading ' + url);
@@ -103,6 +104,7 @@ const OnClickableOps  = {
           DoLoadMultiple(atropiaRegions);
       }
     },
+    */
     'addTestObject': function() {
         Graphics.AddTestObject();
     },
@@ -121,6 +123,7 @@ function OnClickable(evnt) {
     }
 };
 
+/*
 function DoLoadMultiple(urlsAndLocations) {
     Graphics.ClearScene();
     Graphics.LoadSceneMultiple(urlsAndLocations, function() {
@@ -160,3 +163,4 @@ function DoLoadMultiple(urlsAndLocations) {
         Graphics.GraphicsStart(); // ClearScene possibly shuts down rendering
     });
 };
+*/

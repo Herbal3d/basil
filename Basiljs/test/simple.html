@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - glTF loader</title>
+		<title>BasilTest simple scene display</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -42,15 +42,36 @@
 		<script src="../src/jslibs/stats.min.js"></script>
 
 		<script>
-            // let GLTFTOLOAD = '../convoar/OneCutBoxTest.gltf';
-            // let GLTFTOLOAD = '../convoar/testtest88.gltf';
             // let GLTFTOLOAD = '../convoar/Atropia_01.gltf';
             // let GLTFTOLOAD = '../convoar/Atropia_10.gltf';
             // let GLTFTOLOAD = '../convoar/Atropia_11.gltf';
             // let GLTFTOLOAD = '../convoar/Region-3dworlds-20170604.gltf';
-            let GLTFTOLOAD = '../convoar/IMAOutpostAlphaForest.gltf';
+            // let GLTFTOLOAD = '../convoar/IMAOutpostAlphaForest.gltf';
             // let GLTFTOLOAD = '../convoar/PalmyraTemple.gltf';
             // let GLTFTOLOAD = '../convoar/universal_campus_01_0.7.3_03022012.gltf';
+            // let GLTFTOLOAD = '../convoar/testtest88/testtest88.gltf';
+
+						let repository = 'http://files.misterblue.com/BasilTest/';
+						let version = 'unoptimized';
+            let GLTFTOLOAD = repository + 'convoar/testtest88/' + version + '/testtest88.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/PalmyraTemple/' + version + '/PalmyraTemple.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/IMAOutpostAlphaForest/' + version + '/IMAOutpostAlphaForest.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Region-3dworldz-20170604/' + version + '/Region-3dworlds-20170604.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_00/' + version + '/Atropia_00.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_01/' + version + '/Atropia_01.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_02/' + version + '/Atropia_02.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_10/' + version + '/Atropia_10.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_11/' + version + '/Atropia_11.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_12/' + version + '/Atropia_12.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_20/' + version + '/Atropia_20.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_21/' + version + '/Atropia_21.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_22/' + version + '/Atropia_22.gltf';
+
+            // let GLTFTOLOAD = repository + 'gltf/Duck/glTF/Duck.gltf';
+            // let GLTFTOLOAD = repository + 'gltf/Duck/glTF-pbrSpecularGlossiness/Duck.gltf';
+            // let GLTFTOLOAD = repository + 'gltf/Duck/glTF-Draco/Duck.gltf';
+            // let GLTFTOLOAD = repository +	gltf/BoomBox/glTF/BoomBox.gltf';
+            // let GLTFTOLOAD = repository + 'gltf/DamagedHelmet/glTF/DamagedHelmet.gltf';
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -79,7 +100,7 @@
 				controls.target.set( 0, -0.2, -0.2 );
 				controls.update();
 
-                /*
+        /*
 				// envmap
 				var path = 'textures/cube/Bridge2/';
 				var format = '.jpg';
@@ -88,26 +109,14 @@
 					path + 'posy' + format, path + 'negy' + format,
 					path + 'posz' + format, path + 'negz' + format
 				] );
-                */
+        */
 
 				// model
+				console.log('Loading ' + GLTFTOLOAD);
 				var loader = new THREE.GLTFLoader();
 				loader.load( GLTFTOLOAD, function ( gltf ) {
-
-                    /*
-					gltf.scene.traverse( function ( child ) {
-
-						if ( child.isMesh ) {
-
-							child.material.envMap = envMap;
-
-						}
-
-					} );
-                    */
-
 					scene.add( gltf.scene );
-
+					PointCameraAtScene(scene, camera);
 				} );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -116,19 +125,69 @@
 				renderer.gammaOutput = true;
 				container.appendChild( renderer.domElement );
 
-				camera.position.set( 200, 50, 200 );
-                camera.lookAt( 100, 30, -100 );
-				controls.target.set( 100, 30, -100 );
-                // camera.lookAt( 128, 28, -100 );
-				// controls.target.set( 128, 28, -100 );
-				controls.update();
-
 				window.addEventListener( 'resize', onWindowResize, false );
 
 				// stats
 				stats = new Stats();
 				container.appendChild( stats.dom );
+			}
 
+			// Search the scene for a mesh and point the camera at that mesh
+			function PointCameraAtScene(thsScene, theCamera) {
+				let oneThing = FindThingInScene(thsScene);
+				if (oneThing) {
+					let pos = oneThing.position;
+					theCamera.position.set( pos.x + 100, pos.y + 50, pos.z + 100 );
+	        theCamera.lookAt( pos.x, pos.y, pos.z );
+					controls.target.set( pos.x, pos.y, pos.z );
+					console.log('Found target at' + ' <' + pos.x + ' ,' + pos.y + ' ,' + pos.z + '>' );
+				}
+				else {
+					let pos = new THREE.Vector3( 0, 0, 0);
+					theCamera.position.set( 100, 50, 100 );
+	        theCamera.lookAt( 0, 0, 0 );
+					controls.target.set( 0, 0, 0 );
+					// theCamera.position.set( 200, 50, 200 );
+	        // theCamera.lookAt( 100, 30, -100 );
+					// controls.target.set( 100, 30, -100 );
+	        // theCamera.lookAt( 128, 28, -100 );
+					// controls.target.set( 128, 28, -100 );
+					console.log('Camera pointing at default' + ' <' + pos.x + ' ,' + pos.y + ' ,' + pos.z + '>' );
+
+				}
+				controls.update();
+			}
+
+			// Find a mesh object in the scene. Any will do.
+			function FindThingInScene(theScene) {
+				let aThing = FindThingInArray(theScene.children, '');
+				return aThing;
+			}
+
+			function FindThingInArray(things, prefix) {
+				// console.log(prefix + 'FTIA: looking at array of len ' + things.length);
+				let ret = undefined;
+				for (let ii = 0; ii < things.length; ii++) {
+					let aThing = things[ii];
+					// console.log(prefix + 'FTIA: looking at child ' + aThing.uuid);
+					// if (aThing instanceof THREE.Mesh) {
+					if (aThing.type && (aThing.type == 'Mesh' || aThing.type == 'Group')) {
+						// console.log(prefix + 'FTIA: found ' + aThing.uuid);
+						ret = aThing;
+						break;
+					}
+					else {
+						if (aThing.children.length > 0) {
+							let aThing2 = FindThingInArray(aThing.children, prefix + '  ');
+							if (aThing2) {
+								// console.log(prefix + 'FTIA: found ' + aThing2.uuid);
+								ret = aThing2;
+								break;
+							}
+						}
+					}
+				}
+				return ret;
 			}
 
 			function onWindowResize() {

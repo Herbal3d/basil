@@ -12,6 +12,7 @@
 'use strict';
 
 import GP from 'GP';
+import Config from 'xConfig';
 
 // The management of the itme collection is done with static functions
 var IM = IM || {};
@@ -174,4 +175,42 @@ export class BItem {
     static ForgetItem(id) {
         IM.Items.delete(id);
     };
+
+    // Return a Promise that is resolved when item status is READY.
+    // Promise will be rejected if timeout interval.
+    // TODO: this is a kludge routine using polling. Use state change
+    //    events when they exist.
+    static WhenReady(item, timeoutMS) {
+      let checkInterval = 200;
+      if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
+        checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
+      }
+      let timeout = 5000;
+      if (Config.assets && Config.assets.assetFetchTimeoutMS) {
+        timeout = Number(Config.assets.assetFetchTimeoutMS);
+      }
+      if (timeoutMS) {  // use the passed timeout if specified
+        timeout = timeoutMS;
+      }
+      return new Promise( (resolve, reject) => {
+        if (item.GetProperty('State') == BItemState.READY) {
+          resolve(item);
+        }
+        else {
+          setTimeout( (calledTimeout) => {
+            let levelTimeout = calledTimeout - checkInterval;
+            if (item.GetProperty('State') == BItemState.READY) {
+              resolve(item);
+            }
+            if (levelTimeout < 0) {
+              reject(item);
+            }
+            // If still not ready, tail recursion to more waiting
+            BItem.WhenReady(item, levelTimeout)
+              .then(item => { resolve(item); } )
+              .catch(item => { reject(item); } );
+          }, checkInterval, timeout);
+        }
+      });
+    }
 }
