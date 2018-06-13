@@ -60,15 +60,20 @@
             // let GLTFTOLOAD = repository + 'convoar/PalmyraTemple/' + version + '/PalmyraTemple.gltf';
             // let GLTFTOLOAD = repository + 'convoar/IMAOutpostAlphaForest/' + version + '/IMAOutpostAlphaForest.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Region-3dworldz-20170604/' + version + '/Region-3dworlds-20170604.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/IST_01-14.10.03/' + version + '/IST_01-14.10.03.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_00/' + version + '/Atropia_00.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_01/' + version + '/Atropia_01.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_02/' + version + '/Atropia_02.gltf';
-            let GLTFTOLOAD = repository + 'convoar/Atropia_10/' + version + '/Atropia_10.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/Atropia_10/' + version + '/Atropia_10.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_11/' + version + '/Atropia_11.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_12/' + version + '/Atropia_12.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_20/' + version + '/Atropia_20.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_21/' + version + '/Atropia_21.gltf';
             // let GLTFTOLOAD = repository + 'convoar/Atropia_22/' + version + '/Atropia_22.gltf';
+
+            let GLTFTOLOAD = repository + 'convoar/sierpinski_triangle_122572_prims_01/' + version + '/sierpinski_triangle_122572_prims_01.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/GoneCity/' + version + '/GoneCity.gltf';
+            // let GLTFTOLOAD = repository + 'convoar/OSGHUG-cyberlandia/' + version + '/OSGHUG-cyberlandia.gltf';
 
             // let GLTFTOLOAD = repository + 'gltf/Duck/glTF/Duck.gltf';
             // let GLTFTOLOAD = repository + 'gltf/Duck/glTF-pbrSpecularGlossiness/Duck.gltf';
@@ -92,9 +97,23 @@
 				scene = new THREE.Scene();
 				// scene.background = envMap;
 
+                /*
 				light = new THREE.HemisphereLight( 0xbbbbff, 0x444422 );
 				light.position.set( 0, 1, 0 );
 				scene.add( light );
+                */
+
+                alight = new THREE.AmbientLight(new THREE.Color(0.1328, 0.1328, 0.1328), 0.9);
+                scene.add(alight);
+                dlight = new THREE.DirectionalLight(new THREE.Color(0.93, 0.93, 0.93), 1.0);
+                /*
+                dlight.castShadow = true;
+                dlight.shadow.bias = 0.0001;
+                dlight.shadow.mapSize.width = 2048;
+                dlight.shadow.mapSize.height = 2048;
+                */
+                scene.add(dlight);
+
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
                 scene.add(camera);
@@ -141,19 +160,19 @@
 				if (oneThing) {
 					let pos = oneThing.position;
 					theCamera.position.set( pos.x + 100, pos.y + 50, pos.z + 100 );
-	        theCamera.lookAt( pos.x, pos.y, pos.z );
+                    theCamera.lookAt( pos.x, pos.y, pos.z );
 					controls.target.set( pos.x, pos.y, pos.z );
 					console.log('Found target at' + ' <' + pos.x + ' ,' + pos.y + ' ,' + pos.z + '>' );
 				}
 				else {
 					let pos = new THREE.Vector3( 0, 0, 0);
 					theCamera.position.set( 100, 50, 100 );
-	        theCamera.lookAt( 0, 0, 0 );
+                    theCamera.lookAt( 0, 0, 0 );
 					controls.target.set( 0, 0, 0 );
 					// theCamera.position.set( 200, 50, 200 );
-	        // theCamera.lookAt( 100, 30, -100 );
+                    // theCamera.lookAt( 100, 30, -100 );
 					// controls.target.set( 100, 30, -100 );
-	        // theCamera.lookAt( 128, 28, -100 );
+                    // theCamera.lookAt( 128, 28, -100 );
 					// controls.target.set( 128, 28, -100 );
 					console.log('Camera pointing at default' + ' <' + pos.x + ' ,' + pos.y + ' ,' + pos.z + '>' );
 

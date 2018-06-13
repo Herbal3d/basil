@@ -8,6 +8,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   entry: {
     basil: './src/Basil.js',
+    config: './src/config.js',
     jquery: [
         'jquery'
     ]
@@ -88,7 +89,8 @@ module.exports = {
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US'
     }),
-
+    // Extract text from a bundle or bundles into a separate file.
+    //     ref: https://www.npmjs.com/package/extract-text-webpack-plugin
     new ExtractTextPlugin('Basiljs.css')
   ],
   externals: {

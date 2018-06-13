@@ -85,7 +85,12 @@ export default {
     'WWTester': {
         'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,  // ms interval to generate AliveCheck's
-        'PrintDebugOnAliveResponse': false // print message on AliveCheck response
+        'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
+        'TestAsset': {
+          // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+          'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
+          'loaderType': 'GLTF'
+        }
     },
     'Debug': {
       'VerifyProtocol': false,  // call 'verify' on created protocol messages

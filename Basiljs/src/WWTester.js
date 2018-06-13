@@ -81,6 +81,9 @@ GP.client.OpenSession(undefined, {
         }
       }
     };
+    if (Config.WWTester && Config.WWTester.TestAsset) {
+      anAsset.displayInfo.asset = Config.WWTester.TestAsset;
+    }
     GP.client.IdentifyDisplayableObject(auth, anAsset)
     .then( resp => {
       if (resp.exception) {
