@@ -15,7 +15,6 @@ var UC = UC || {};
 
 import GP from 'GP';
 // ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
-import * as $ from 'jquery';
 
 // ======================================================
 // UI structure for displaying XYZ coordinates
@@ -23,17 +22,18 @@ import * as $ from 'jquery';
 // Call 'Update' to update the values.
 export class UI_Coord {
     constructor(areaID) {
-        if ($(areaID)) {
-            $(areaID).empty();
+        var areaIDnode = document.querySelector(areaID);
+        if (areaIDnode) {
+            areaIDnode.empty();
             var Xdiv = document.createElement('div');
             Xdiv.setAttribute('class', 'coordEntry X');
             var Ydiv = document.createElement('div');
             Ydiv.setAttribute('class', 'coordEntry Y');
             var Zdiv = document.createElement('div');
             Zdiv.setAttribute('class', 'coordEntry Z');
-            $(areaID).append(Xdiv);
-            $(areaID).append(Ydiv);
-            $(areaID).append(Zdiv);
+            areaIDnode.append(Xdiv);
+            areaIDnode.append(Ydiv);
+            areaIDnode.append(Zdiv);
             this.areaID = areaID;
             // GP.DebugLog('Created UI_Coord element for ' + areaID);
         }
@@ -47,14 +47,14 @@ export class UI_Coord {
         if (this.areaID) {
             var areaID = this.areaID;
             if (xx.hasOwnProperty('x')) {
-                $(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
-                $(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
-                $(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
+                document.querySelector(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
+                document.querySelector(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
+                document.querySelector(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
             }
             else {
-                $(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
-                $(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
-                $(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
             }
         }
         else {
@@ -69,8 +69,9 @@ export class UI_Coord {
 // Call 'Update' to update the values.
 export class UI_Quat {
     constructor(areaID) {
-        if ($(areaID)) {
-            $(areaID).empty();
+      var areaIDnode = document.querySelector(areaID);
+        if (areaIDnode) {
+            areaIDnode.empty();
             var Xdiv = document.createElement('div');
             Xdiv.setAttribute('class', 'coordEntry X');
             var Ydiv = document.createElement('div');
@@ -79,10 +80,10 @@ export class UI_Quat {
             Zdiv.setAttribute('class', 'coordEntry Z');
             var Wdiv = document.createElement('div');
             Zdiv.setAttribute('class', 'coordEntry W');
-            $(areaID).append(Xdiv);
-            $(areaID).append(Ydiv);
-            $(areaID).append(Zdiv);
-            $(areaID).append(Wdiv);
+            areaIDnode.append(Xdiv);
+            areaIDnode.append(Ydiv);
+            areaIDnode.append(Zdiv);
+            areaIDnode.append(Wdiv);
             this.areaID = areaID;
         }
         else {
@@ -95,16 +96,16 @@ export class UI_Quat {
         if (this.areaID) {
             var areaID = this.areaID;
             if (xx.hasOwnProperty('x')) {
-                $(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
-                $(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
-                $(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
-                $(areaID + ' div[class~=W]').text(xx.w.toFixed(2));
+                document.querySelector(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
+                document.querySelector(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
+                document.querySelector(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
+                document.querySelector(areaID + ' div[class~=W]').text(xx.w.toFixed(2));
             }
             else {
-                $(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
-                $(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
-                $(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
-                $(areaID + ' div[class~=W]').text(this.FormatCoord(ww.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
+                document.querySelector(areaID + ' div[class~=W]').text(this.FormatCoord(ww.toFixed(2)));
             }
         }
         else {
@@ -119,8 +120,9 @@ export class UI_Quat {
 // Call 'Update' to update the values.
 export class UI_Text {
     constructor(areaID) {
-        if ($(areaID)) {
-            $(areaID).empty();
+        var areaIDnode = document.querySelector(areaID;
+        if (areaIDnode) {
+            areaIDnode.empty();
             this.areaID = areaID;
             // GP.DebugLog('Created UI_Text element for ' + areaID);
         }
@@ -132,7 +134,7 @@ export class UI_Text {
     Update(txt) {
         if (this.areaID) {
             var areaID = this.areaID;
-            $(areaID).text(txt);
+          document.querySelector(areaID).text(txt);
         }
         else {
             GP.DebugLog('Did not update UI_Text element because no areaID');

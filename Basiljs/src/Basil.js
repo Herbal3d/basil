@@ -47,17 +47,16 @@ GP.ConfigGetQueryVariable = function (variable) {
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
-    if (GP.EnableDebugLog && $('#DEBUGG')) {
-        if (classs)
-            $('#DEBUGG').append('<div class="' + classs + '">' + msg + '</div>');
-        else
-            $('#DEBUGG').append('<div>' + msg + '</div>');
-
-        if ($('#DEBUGG').children().length > Config.page.debugLogLines) {
-            $('#DEBUGG').children('div:first').remove();
-
-        }
-    }
+  var debugg = document.querySelector('#DEBUGG');
+  if (debugg) {
+    if (classs)
+      debugg.append('<div class="' + classs + '">' + msg + '</div>');
+    else
+      debugg.append('<div>' + msg + '</div>');
+      if (debugg.children().length > Config.page.debugLogLines) {
+        debugg.children('div:first').remove();
+      }
+  }
 };
 GP.DebugLog = function DebugLog(msg) {
     GP.LogMessage(msg, undefined);
@@ -129,6 +128,6 @@ if (Config.comm && Object.keys(Config.comm).length > 0) {
     GP.DebugLog('Basiljs: initial transport and service connected');
   })
   .catch( e => {
-    GP.DebugLog('Basiljs: failed connecting initial transport and service: ${e}');
+    GP.DebugLog('Basiljs: failed connecting initial transport and service: {e}');
   });
 };

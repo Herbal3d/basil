@@ -9,9 +9,6 @@ module.exports = {
   entry: {
     basil: './src/Basil.js',
     config: './src/config.js',
-    jquery: [
-        'jquery'
-    ]
   },
   output: {
     filename: '[name].[chunkhash].js',
@@ -63,15 +60,9 @@ module.exports = {
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     new webpack.HashedModuleIdsPlugin(),
 
-    // Causes a separate bundle for the entry.vendor modules
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'jquery'
-    }),
-
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
         THREE: 'xThreeJS',
-        $: 'jquery'
     }),
 
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
