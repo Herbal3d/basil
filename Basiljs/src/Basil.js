@@ -49,13 +49,15 @@ GP.ConfigGetQueryVariable = function (variable) {
 GP.LogMessage = function LogMessage(msg, classs) {
   var debugg = document.querySelector('#DEBUGG');
   if (debugg) {
-    if (classs)
-      debugg.append('<div class="' + classs + '">' + msg + '</div>');
-    else
-      debugg.append('<div>' + msg + '</div>');
-      if (debugg.children().length > Config.page.debugLogLines) {
-        debugg.children('div:first').remove();
-      }
+    var newLine = document.createElement('div');
+    newLine.appendChild(document.createTextNode(msg));
+    if (classs) {
+      newline.setAttribute('class', classs);
+    }
+    debugg.appendChild(newLine);
+    if (debugg.childElementCount > Config.page.debugLogLines) {
+      debugg.removeChild(debugg.firstChild);
+    }
   }
 };
 GP.DebugLog = function DebugLog(msg) {

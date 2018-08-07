@@ -24,7 +24,7 @@ export class UI_Coord {
     constructor(areaID) {
         var areaIDnode = document.querySelector(areaID);
         if (areaIDnode) {
-            areaIDnode.empty();
+            EmptyNode(areaIDnode);
             var Xdiv = document.createElement('div');
             Xdiv.setAttribute('class', 'coordEntry X');
             var Ydiv = document.createElement('div');
@@ -47,14 +47,14 @@ export class UI_Coord {
         if (this.areaID) {
             var areaID = this.areaID;
             if (xx.hasOwnProperty('x')) {
-                document.querySelector(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
-                document.querySelector(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
-                document.querySelector(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=X]'), xx.x.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Y]'), xx.y.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Z]'), xx.z.toFixed(2));
             }
             else {
-                document.querySelector(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
-                document.querySelector(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
-                document.querySelector(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=X]'), this.FormatCoord(xx.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Y]'), this.FormatCoord(yy.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Z]'), this.FormatCoord(zz.toFixed(2)));
             }
         }
         else {
@@ -71,7 +71,7 @@ export class UI_Quat {
     constructor(areaID) {
       var areaIDnode = document.querySelector(areaID);
         if (areaIDnode) {
-            areaIDnode.empty();
+            EmptyNode(areaIDnode);
             var Xdiv = document.createElement('div');
             Xdiv.setAttribute('class', 'coordEntry X');
             var Ydiv = document.createElement('div');
@@ -96,16 +96,16 @@ export class UI_Quat {
         if (this.areaID) {
             var areaID = this.areaID;
             if (xx.hasOwnProperty('x')) {
-                document.querySelector(areaID + ' div[class~=X]').text(xx.x.toFixed(2));
-                document.querySelector(areaID + ' div[class~=Y]').text(xx.y.toFixed(2));
-                document.querySelector(areaID + ' div[class~=Z]').text(xx.z.toFixed(2));
-                document.querySelector(areaID + ' div[class~=W]').text(xx.w.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=X]'), xx.x.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Y]'), xx.y.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Z]'), xx.z.toFixed(2));
+                SetNodeText(document.querySelector(areaID + ' div[class~=W]'), xx.w.toFixed(2));
             }
             else {
-                document.querySelector(areaID + ' div[class~=X]').text(this.FormatCoord(xx.toFixed(2)));
-                document.querySelector(areaID + ' div[class~=Y]').text(this.FormatCoord(yy.toFixed(2)));
-                document.querySelector(areaID + ' div[class~=Z]').text(this.FormatCoord(zz.toFixed(2)));
-                document.querySelector(areaID + ' div[class~=W]').text(this.FormatCoord(ww.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=X]'), this.FormatCoord(xx.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Y]'), this.FormatCoord(yy.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=Z]'), this.FormatCoord(zz.toFixed(2)));
+                SetNodeText(document.querySelector(areaID + ' div[class~=W]'), this.FormatCoord(ww.toFixed(2)));
             }
         }
         else {
@@ -120,9 +120,9 @@ export class UI_Quat {
 // Call 'Update' to update the values.
 export class UI_Text {
     constructor(areaID) {
-        var areaIDnode = document.querySelector(areaID;
+        var areaIDnode = document.querySelector(areaID);
         if (areaIDnode) {
-            areaIDnode.empty();
+            EmptyNode(areaIDnode);
             this.areaID = areaID;
             // GP.DebugLog('Created UI_Text element for ' + areaID);
         }
@@ -134,7 +134,7 @@ export class UI_Text {
     Update(txt) {
         if (this.areaID) {
             var areaID = this.areaID;
-          document.querySelector(areaID).text(txt);
+          SetNodeText(document.querySelector(areaID), txt);
         }
         else {
             GP.DebugLog('Did not update UI_Text element because no areaID');
@@ -143,6 +143,19 @@ export class UI_Text {
 };
 
 // ======================================================
+// Given a DOM node, remove all its children.
+export function EmptyNode(nn) {
+    while (nn.firstChild) {
+        nn.removeChild(nn.firstChild);
+    }
+};
 
+// Given a DOM node, empty the node and add the passed text as a text node.
+export function SetNodeText(nn, txt) {
+    EmptyNode(nn);
+    nn.appendChild(document.createTextNode(txt));
+};
+
+// ======================================================
 
 GP.UC = UC;

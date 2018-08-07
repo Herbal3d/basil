@@ -28,7 +28,10 @@ GP.CO = CO;         // added for debugging. Do not use for inter-package access
 
 export function ControlsInit() {
     // Make all 'class=clickable' page items create events
-    $('.clickable').click(OnClickable);
+    Array.from(document.getElementsByClassName('clickable')).forEach( nn => {
+        nn.addEventListener('click', OnClickable);
+        // nn.onClick = OnClickable;
+    });
 
     // Whether debug output window is initially displayed can be set in the configuration file
     ShowDebug(Config.page.showDebug);
@@ -74,12 +77,12 @@ export function ControlsStart() {
 // Call to set debug window to specified state. Pass state that is should be in
 export function ShowDebug(onOff) {
     if (onOff) {   // want it on
-        var showMS = Config.page.DebugShowMS ? Config.page.DebugShowMS : 800;
-        $('#DEBUGG').show(showMS);
+        // var showMS = Config.page.DebugShowMS ? Config.page.DebugShowMS : 800;
+        document.getElementById('DEBUGG').style.visibility = 'visible';
     }
     else {
-        var hideMS = Config.page.DebugHideMS ? Config.page.DebugHideMS : 400;
-        $('#DEBUGG').hide(hideMS);
+        // var hideMS = Config.page.DebugHideMS ? Config.page.DebugHideMS : 400;
+        document.getElementById('DEBUGG').style.visibility = 'hidden';
     }
 };
 
@@ -87,7 +90,7 @@ export function ShowDebug(onOff) {
 const OnClickableOps  = {
   /*
   'loadGltf': function() {
-      var url = Config.assets.gltfURLBase + $('#SelectGltf').val();
+      var url = Config.assets.gltfURLBase + document.querySelector$('#SelectGltf').val();
       GP.DebugLog('Controls: OnLoadButton: loading ' + url);
       DoLoadMultiple([ [ url, [0,0,0] ] ]);
   },
@@ -110,14 +113,15 @@ const OnClickableOps  = {
     },
     'showDebug': function() {
         // Make the state to the opposite of what it is now
-        ShowDebug(!$('#DEBUGG').is(':visible'));
+        ShowDebug(!(document.getElementById('DEBUGG').style.visibility !== 'hidden'));
     }
 };
 
 // Process the HTML element that has class 'clickable'
 // The attribute 'op' says what to do when the element is clicked.
 function OnClickable(evnt) {
-    var buttonOp = $(evnt.target).attr('op');
+    // var buttonOp = document.querySelector(evnt.target).getAttribute('op');
+    var buttonOp = evnt.target.getAttribute('op');
     if (OnClickableOps[buttonOp]) {
       OnClickableOps[buttonOp](evnt.target);
     }
