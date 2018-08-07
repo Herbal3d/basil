@@ -44,42 +44,64 @@
 		<script src="../src/jslibs/stats.min.js"></script>
 
 		<script>
-            // let GLTFTOLOAD = '../convoar/Atropia_01.gltf';
-            // let GLTFTOLOAD = '../convoar/Atropia_10.gltf';
-            // let GLTFTOLOAD = '../convoar/Atropia_11.gltf';
-            // let GLTFTOLOAD = '../convoar/Region-3dworlds-20170604.gltf';
-            // let GLTFTOLOAD = '../convoar/IMAOutpostAlphaForest.gltf';
-            // let GLTFTOLOAD = '../convoar/PalmyraTemple.gltf';
-            // let GLTFTOLOAD = '../convoar/universal_campus_01_0.7.3_03022012.gltf';
-            // let GLTFTOLOAD = '../convoar/testtest88/testtest88.gltf';
+            // From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
+            // Used to fetch invocation parameters. The request better be well formed as
+            //     parsing is pretty simplistic and unforgiving.
+            ConfigGetQueryVariable = function (variable) {
+                var query = window.location.search.substring(1);
+                var vars = query.split('&');
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split('=');
+                        if (decodeURIComponent(pair[0]) == variable) {
+                            return decodeURIComponent(pair[1]);
+                        }
+                    }
+                return undefined;
+            };
 
             let repository = 'https://files.misterblue.com/BasilTest/';
-            let version = 'mergedmaterials';
-            // let version = 'unoptimized';
-            // let GLTFTOLOAD = repository + 'convoar/testtest88/' + version + '/testtest88.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/PalmyraTemple/' + version + '/PalmyraTemple.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/IMAOutpostAlphaForest/' + version + '/IMAOutpostAlphaForest.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Region-3dworldz-20170604/' + version + '/Region-3dworlds-20170604.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/IST_01-14.10.03/' + version + '/IST_01-14.10.03.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_00/' + version + '/Atropia_00.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_01/' + version + '/Atropia_01.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_02/' + version + '/Atropia_02.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_10/' + version + '/Atropia_10.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_11/' + version + '/Atropia_11.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_12/' + version + '/Atropia_12.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_20/' + version + '/Atropia_20.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_21/' + version + '/Atropia_21.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/Atropia_22/' + version + '/Atropia_22.gltf';
 
-            let GLTFTOLOAD = repository + 'convoar/sierpinski_triangle_122572_prims_01/' + version + '/sierpinski_triangle_122572_prims_01.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/GoneCity/' + version + '/GoneCity.gltf';
-            // let GLTFTOLOAD = repository + 'convoar/OSGHUG-cyberlandia/' + version + '/OSGHUG-cyberlandia.gltf';
+            let baseName = ConfigGetQueryVariable('b');
+            let version = ConfigGetQueryVariable('v');
+            if (typeof(version) === 'undefined') {
+                version = 'unoptimized';
+                // version = 'mergedmaterials';
+            }
 
-            // let GLTFTOLOAD = repository + 'gltf/Duck/glTF/Duck.gltf';
-            // let GLTFTOLOAD = repository + 'gltf/Duck/glTF-pbrSpecularGlossiness/Duck.gltf';
-            // let GLTFTOLOAD = repository + 'gltf/Duck/glTF-Draco/Duck.gltf';
-            // let GLTFTOLOAD = repository +	gltf/BoomBox/glTF/BoomBox.gltf';
-            // let GLTFTOLOAD = repository + 'gltf/DamagedHelmet/glTF/DamagedHelmet.gltf';
+            let GLTFTOLOAD = repository + 'convoar/testtest88/' + version + '/testtest88.gltf';
+
+            if (baseName) {
+                GLTFTOLOAD =  repository + 'convoar/' + baseName + '/' + version + '/' + baseName + '.gltf';
+            }
+            else {
+                // GLTFTOLOAD = repository + 'convoar/testtest88/' + version + '/testtest88.gltf';
+                // GLTFTOLOAD = repository + 'convoar/PalmyraTemple/' + version + '/PalmyraTemple.gltf';
+                // GLTFTOLOAD = repository + 'convoar/IMAOutpostAlphaForest/' + version + '/IMAOutpostAlphaForest.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Region-3dworldz-20170604/' + version + '/Region-3dworlds-20170604.gltf';
+                // GLTFTOLOAD = repository + 'convoar/IST_01-14.10.03/' + version + '/IST_01-14.10.03.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_00/' + version + '/Atropia_00.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_01/' + version + '/Atropia_01.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_02/' + version + '/Atropia_02.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_10/' + version + '/Atropia_10.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_11/' + version + '/Atropia_11.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_12/' + version + '/Atropia_12.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_20/' + version + '/Atropia_20.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_21/' + version + '/Atropia_21.gltf';
+                // GLTFTOLOAD = repository + 'convoar/Atropia_22/' + version + '/Atropia_22.gltf';
+
+                // GLTFTOLOAD = repository + 'convoar/sierpinski_triangle_122572_prims_01/' + version + '/sierpinski_triangle_122572_prims_01.gltf';
+                // GLTFTOLOAD = repository + 'convoar/GoneCity/' + version + '/GoneCity.gltf';
+                // GLTFTOLOAD = repository + 'convoar/OSGHUG-cyberlandia/' + version + '/OSGHUG-cyberlandia.gltf';
+
+                GLTFTOLOAD = repository + 'convoar/Fantasy/' + version + '/Fantasy.gltf';
+                // GLTFTOLOAD = repository + 'convoar/ZadarooSwamp/' + version + '/ZadarooSwamp.gltf';
+
+                // GLTFTOLOAD = repository + 'gltf/Duck/glTF/Duck.gltf';
+                // GLTFTOLOAD = repository + 'gltf/Duck/glTF-pbrSpecularGlossiness/Duck.gltf';
+                // GLTFTOLOAD = repository + 'gltf/Duck/glTF-Draco/Duck.gltf';
+                // GLTFTOLOAD = repository +	gltf/BoomBox/glTF/BoomBox.gltf';
+                // GLTFTOLOAD = repository + 'gltf/DamagedHelmet/glTF/DamagedHelmet.gltf';
+            }
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -136,10 +158,16 @@
 				// model
 				console.log('Loading ' + GLTFTOLOAD);
 				var loader = new THREE.GLTFLoader();
-				loader.load( GLTFTOLOAD, function ( gltf ) {
+				loader.load( GLTFTOLOAD,
+                    /* onLoad */ function ( gltf ) {
 					scene.add( gltf.scene );
 					PointCameraAtScene(scene, camera);
-				} );
+                    },
+                    /* onProgress */ null,
+                    /* onError */ function(e) {
+                        console.log('Error loading: ' + e.type);
+                    }
+                );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
