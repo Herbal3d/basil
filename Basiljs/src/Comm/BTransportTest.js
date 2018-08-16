@@ -88,7 +88,7 @@ export default class BTransportTest extends BTransport {
     // One can pass a 'this' context for calling on timer threads, etc
     Send(data, tthis) {
         let tester = tthis === undefined ? this : tthis;
-        let emsg = EncodeMessage(data, tcontext, tester);
+        let emsg = EncodeMessage(data, tester);
         tester.messages.push(emsg);
         tester.messagesSent++;
     }
@@ -100,10 +100,10 @@ export default class BTransportTest extends BTransport {
     }
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {
-        return this.messsages.length > 0;
+        return this.messages.length > 0;
     }
     get isConnected() {
-        return (this.TransportTestsPollIntervalID !== undefined);
+        return (GP.TR.TransportTestsPollIntervalID !== undefined);
     }
     // Return a map with statistics
     get stats() {
@@ -111,7 +111,7 @@ export default class BTransportTest extends BTransport {
     }
     // Returns a longer identifying name of transport (usually includes endpoint name)
     get info() {
-        return this.type + ' none';
+        return this.itemType + ' none';
     }
 
 }

@@ -1,3 +1,4 @@
+//@ts-check
 // Copyright 2018 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,16 +12,20 @@
 
 'use strict';
 
+// @ts-ignore
 import GP from 'GP';
 
 import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
+// @ts-ignore
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
+// @ts-ignore
 import { BException } from 'xBException';
 
 // There are two halfs: the 'service' and the 'worker'.
 export default class BTransportWW extends BTransport {
     constructor(parms) {
         super(parms);
+        // @ts-ignore
         if (typeof WorkerGlobalScope === 'undefined') {
             // We're the master
             // parms.transportURL is WebWorker URL to connect to
@@ -78,6 +83,7 @@ export default class BTransportWW extends BTransport {
             xxport.worker.postMessage(emsg);
         }
         else {
+            // @ts-ignore
             postMessage(emsg);
         }
         xxport.stats.messagesSent++;
@@ -91,6 +97,7 @@ export default class BTransportWW extends BTransport {
 
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {
+        // @ts-ignore
         return this.messsages.length > 0;
     }
     get isConnected() {

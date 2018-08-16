@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // Copyright 2018 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,7 +54,7 @@ GP.LogMessage = function LogMessage(msg, classs) {
     var newLine = document.createElement('div');
     newLine.appendChild(document.createTextNode(msg));
     if (classs) {
-      newline.setAttribute('class', classs);
+      newLine.setAttribute('class', classs);
     }
     debugg.appendChild(newLine);
     if (debugg.childElementCount > Config.page.debugLogLines) {

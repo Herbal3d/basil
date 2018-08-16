@@ -1,3 +1,4 @@
+//@ts-check
 // Copyright 2018 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +15,9 @@
 // Global holding event subscription state
 var EV = EV || {};
 
+// @ts-ignore
 import GP from 'GP';
+// @ts-ignore
 import Config from 'xConfig';
 
 // A simple pub/sub system. An event producer registers a topic
@@ -59,6 +62,7 @@ let TopicEntry = function(topicName) {
     this.topic = topicName;
     this.subs = [];
 };
+// @ts-ignore
 TopicEntry.prototype.hasSubscriptions = function(sub) {
     return this.subs.length > 0;
 };
@@ -68,7 +72,7 @@ TopicEntry.prototype.addSubscription = function(sub) {
 TopicEntry.prototype.removeSubscription = function(sub) {
     for (let ii=0; ii<this.subs.length; ii++) {
         if (this.subs[ii].id == sub.id) {
-            subs.splice(ii, 1);
+            this.subs.splice(ii, 1);
         }
     }
 };
@@ -139,6 +143,7 @@ export function register(topic, registar) {
 };
 
 // Unregister a topic.
+// @ts-ignore
 export function unregister(topicEntry, topic) {
     // cannot unregister a topic yet
         GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);

@@ -1,4 +1,3 @@
-
 // Copyright 2018 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +13,7 @@
 
 import GP from 'GP';
 import { BTransport } from './BTransport.js';
+import { BException } from 'xBException';
 
 // There are two halfs: the 'service' and the 'worker'.
 export default class BTransportWS extends BTransport {
