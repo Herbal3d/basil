@@ -1,5 +1,6 @@
-// As copied from example at https://webpack.js.org/guides/getting-started/
-//    This is not ES6 'import' format so update this file someday
+// Webpack file for the main Basil viewer page.
+
+//    (the following is not ES6 'import' format so update this file someday)
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -8,13 +9,14 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   entry: {
     basil: './src/Basil.js',
+    // declare the config file as a separate entry so it is not packed with the main viewer
     config: './src/config.js',
   },
   output: {
+    // use webpack.HashedModuleIdsPlugin to create unique filenames for each build
     filename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist')
   },
-  // devtool: 'inline-source-map',
   // Create aliases for the main components so filenames aren't required in each file
   //      ref: https://webpack.js.org/configuration/resolve/
   resolve: {
@@ -85,7 +87,7 @@ module.exports = {
     new ExtractTextPlugin('Basiljs.css')
   ],
   externals: {
-      // Hack for creating the GP global variable
+      // Hack for creating the GP global debug variable
       'GP': '{}'
   },
   module: {
