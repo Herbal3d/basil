@@ -44,10 +44,7 @@ export function CreateUniqueInstanceId() {
 // Passed context parameters take highest priority, then config file, then
 //    default/required values.
 export function CombineParameters(configParams, passedParams, requiredParams) {
-    let parms = {};
-    if (configParams) {
-        parms = configParams;
-    }
+    let parms = configParams ? configParams : {};
     if (passedParams) {
         Object.assign(parms, passedParams);
     }
@@ -59,4 +56,42 @@ export function CombineParameters(configParams, passedParams, requiredParams) {
         }
     }
     return parms;
+}
+
+// Parse and return or set a possible three-tuple.
+// Used for 3 term vector.
+// Accepts a JSON string array: "[ xValue, yValue, zValue ]"
+//         a JSON value map: "{ "x": xValue, "y": yValue, "z": zValue }"
+//         a three value JavaScript array: [ xValue, yValue, zValue ]
+//         a three value JavaScript map: [ x: xValue, y: yValue, z: zValue ]
+// Returns a three valued JavaScript array.
+export function ParseThreeTuple(tuple, dst) {
+  let val = tuple
+  if (typeof tuple == 'String') {
+    val = JSON.Parse(tuple);
+  }
+  if (val.x && val.y && val.z) {
+    val = [ val.x, val.y, val.z ]
+  }
+  // consider doing some validity checking (length, type, ...)
+  return val
+}
+
+// Parse and return or set a possible four-tuple.
+// Used for 4 term vector (like rotation).
+// Accepts a JSON string array: "[ wValue, xValue, yValue, zValue ]"
+//         a JSON value map: "{ "w": wValue, "x": xValue, "y": yValue, "z": zValue }"
+//         a three value JavaScript array: [ wValue, xValue, yValue, zValue ]
+//         a three value JavaScript map: [ w: wValue, x: xValue, y: yValue, z: zValue ]
+// Returns a three valued JavaScript array.
+export function ParseFourTuple(tuple, dst) {
+  let val = tuple
+  if (typeof tuple == 'String') {
+    val = JSON.Parse(tuple);
+  }
+  if (val.x && val.y && val.z && val.w) {
+    val = [ val.x, val.y, val.z, val.w ]
+  }
+  // consider doing some validity checking (length, type, ...)
+  return val
 }

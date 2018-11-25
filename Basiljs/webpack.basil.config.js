@@ -27,7 +27,7 @@ module.exports = {
         'xBException': path.resolve(__dirname, 'src/BException.js'),
         'xUtilities': path.resolve(__dirname, 'src/Utilities.js'),
 
-        'xComm': path.resolve(__dirname, 'src/Comm/index.js'),
+        'xComm': path.resolve(__dirname, 'src/Comm/Comm.js'),
         'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),
         'xBTransportWW': path.resolve(__dirname, 'src/Comm/BTransportWW.js'),
         'xBTransportWS': path.resolve(__dirname, 'src/Comm/BTransportWS.js'),
@@ -39,10 +39,10 @@ module.exports = {
         'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
         'xPredefinedItems': path.resolve(__dirname, 'src/Items/PredefinedItems.js'),
 
-        'xControls': path.resolve(__dirname, 'src/Controls/index.js'),
-        'xEventing': path.resolve(__dirname, 'src/Eventing/index.js'),
+        'xControls': path.resolve(__dirname, 'src/Controls/Controls.js'),
+        'xEventing': path.resolve(__dirname, 'src/Eventing/Eventing.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
-        'xGraphics': path.resolve(__dirname, 'src/Graphics/index.js'),
+        'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics.js'),
 
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),

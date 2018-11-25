@@ -12,8 +12,9 @@
 'use strict';
 
 import GP from 'GP';
-import { BItem, BItemState } from 'xBItem';
+import { BItem, BItemType, BItemState } from 'xBItem';
 import { BasilType } from 'xBasilServerMessages';
+import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
 
 import * as Graphics from 'xGraphics';
 
@@ -25,7 +26,7 @@ export function DisplayableFactory(id, auth, assetInfo) {
 
 export class Displayable extends BItem {
     constructor(id, auth, assetInfo) {
-      super(id, auth, 'Displayable');
+      super(id, auth, BItemType.DISPLAYABLE);
       if (assetInfo && assetInfo.asset) {
         this.state = BItemState.LOADING;
         GP.DebugLog('Displayable.constructor: begining load of asset.State to LOADING');
@@ -50,13 +51,13 @@ export class Displayable extends BItem {
 
 // Factory function to create DisplayableInstances since we may want
 //    to use Proxy's someday.
-export function DisplayableInstanceFactory(id, auth, baseDisplayable) {
-  return new DisplayableInstance(id, auth, baseDisplayable);
+export function InstanceFactory(id, auth, baseDisplayable) {
+  return new Instance(id, auth, baseDisplayable);
 }
 
-export class DisplayableInstance extends BItem {
+export class Instance extends BItem {
     constructor(id, auth, baseDisplayable) {
-        super(id, auth, 'DisplayableInstance');
+        super(id, auth, BItemType.INSTANCE);
         this.displayable = baseDisplayable;
         this.worldNode = undefined;
 
@@ -76,19 +77,7 @@ export class DisplayableInstance extends BItem {
             'Position': {
                 'get': () => { return this.gPos; },
                 'set': (val) => {
-                    if (typeof(val) == 'string') {
-                      val = JSON.Parse(val);
-                    }
-                    if (Array.isArray(val) && val.length >= 3) {
-                      this.gPos[0] = Float(val[0]);
-                      this.gPos[1] = Float(val[1]);
-                      this.gPos[2] = Float(val[2]);
-                    }
-                    else if (val.x && val.y && val.z) {
-                      this.gPos[0] = val.x;
-                      this.gPos[1] = val.y;
-                      this.gPos[2] = val.z;
-                    }
+                    this.gPos = ParseThreeTuple(val);
                     this.gRotgPosModified = true;
                     if (typeof(this.procgPositionSet) !== 'undefined') {
                         procgPositionSet(this);
@@ -98,21 +87,7 @@ export class DisplayableInstance extends BItem {
             'Rotation': {
                 'get': () => { return this.gRot; },
                 'set': (val) => {
-                    if (typeof(val) == 'string') {
-                      val = JSON.Parse(val);
-                    }
-                    if (Array.isArray(val) && val.length >= 4) {
-                        this.gRot[0] = Float(val[0]);
-                        this.gRot[1] = Float(val[1]);
-                        this.gRot[2] = Float(val[2]);
-                        this.gRot[4] = Float(val[4]);
-                    }
-                    else if (val.x && val.y && val.z && val.w) {
-                      this.gPos[0] = val.x;
-                      this.gPos[1] = val.y;
-                      this.gPos[2] = val.z;
-                      this.gPos[4] = val.w;
-                    }
+                    this.gRot = ParseFourTuple(val);
                     this.gRotgPosModified = true;
                     if (typeof(this.procgRotationSet) !== 'undefined') {
                         procgRotationSet(this);
@@ -132,48 +107,5 @@ export class DisplayableInstance extends BItem {
                 }
             }
         } );
-    }
-
-    // Place this instance in the displayed world data structure
-    PlaceInWorld() {
-      if (this.worldNode) {
-        return; // already in world
-      }
-      BItem.WhenReady(this)
-      .then( item => {
-        if (typeof(item.worldNode) == 'undefined') {
-          GP.DebugLog('DisplayableInstance.PlaceInWorld: creating THREE node for ' + item.id);
-          item.worldNode = new THREE.Group();
-          item.worldNode.name = item.id;
-          if (Array.isArray(item.displayable.representation)) {
-            item.displayable.representation.forEach( piece => {
-              item.worldNode.add(piece);
-            });
-          }
-          else {
-            item.worldNode.add(item.displayable.representation);
-          }
-        }
-        if (item.gPosCoordSystem == BasilType.CoordSystem.CAMERA) {
-          // item is camera relative
-          Graphics.AddNodeToCamera(item.worldNode);
-        }
-        else {
-          // item is world coordinate relative
-          Graphics.AddNodeToWorld(item.worldNode);
-        }
-      })
-      .catch( (item, reason) => {
-        GP.DebugLog('DisplayableInstance.PlaceInWorld: item never ready. id=' + item.id);
-      });
-    }
-
-    // Remove this instance from the displayed world data structure
-    RemoveFromWorld() {
-      if (this.worldNode) {
-        Graphics.RemoveNodeFromWorld(this.worldNode);
-        Graphics.RemoveNodeFromCamera(this.worldNode);
-        this.worldNode = undefined;
-      }
     }
 }

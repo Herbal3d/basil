@@ -23,9 +23,9 @@ GP.Config = Config;
 
 import { Base64 } from 'js-base64';
 
-import { GraphicsInit, GraphicsStart } from 'xGraphics';
-import { ControlsInit, ControlsStart } from 'xControls';
-import { CommInit, CommStart, ConnectTransportService } from 'xComm';
+import { Graphics } from 'xGraphics';
+import { Controls } from 'xControls';
+import { Comm } from 'xComm';
 import { PredefinedBItemInit } from 'xPredefinedItems';
 
 // Force the processing of the CSS format file
@@ -114,15 +114,15 @@ if (Config && Config.page && Config.page.collectDebug
 let container = document.getElementById(Config.page.webGLcontainerId);
 let canvas = document.getElementById(Config.page.webGLcanvasId);
 
-GraphicsInit(container, canvas);
-ControlsInit();
-CommInit();
+GP.GR = new Graphics(container, canvas);
+GP.CO = new Controlst();
+GP.CM = new Comm();
 
 // Initialize the BItem system with predefined items (camera, renderer, debug, ...)
 PredefinedBItemInit();
 
-GraphicsStart();
-CommStart();
+GP.GR.GraphicsStart();
+GP.CO.CommStart();
 GP.Ready = true;
 
 // If there are connection parameters, start the first connection

@@ -15,7 +15,8 @@ import GP from 'GP';
 import Config from 'xConfig';
 
 import { BItem } from 'xBItem';
-import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
+import { CreateUniqueId, CreateUniqueInstanceId,
+      parseThreeTuble, parseFourTuble} from 'xUtilities';
 import { Displayable, DisplayableInstance } from 'xDisplayable';
 
 import * as Graphics from 'xGraphics';
@@ -28,16 +29,13 @@ import * as Graphics from 'xGraphics';
 
 // Create the instances that exist for debugging and environment
 export function PredefinedBItemInit() {
-  let parms = {};
-  if (Config.predefinedInstances) {
-    parms = Config.predefinedInstances;
-  }
+  let parms = Config.predefinedInstances ? Config.predefinedInstances : {};
   let predefinedDisplayable = new PredefinedDisplayable();
   if (parms.debugObjectId) {
-    GP.debugInstance = new PredefinedDebugInstance();
+    GP.debugInstance = new PredefinedDebugInstance(predefinedDisplayable);
   }
-  GP.rendererInstance = new PredefinedRendererInstance();
-  GP.cameraInstance = new PredefinedCameraInstance();
+  GP.rendererInstance = new PredefinedRendererInstance(predefinedDisplayable);
+  GP.cameraInstance = new PredefinedCameraInstance(predefinedDisplayable);
 };
 
 // A dummy Displayable used by the rest of these predefined instances
@@ -63,17 +61,11 @@ export class PredefinedDisplayable extends Displayable {
 
 // A special instance that displays it's 'Msg' property in the debug window
 export class PredefinedDebugInstance extends DisplayableInstance {
-  constructor() {
-    let parms = {};
-    if (Config.predefinedInstances) {
-      parms = Config.predefinedInstances;
-    }
-    let id = 'org.basil.b.defaultDebugInstance';
-    if (parms.debugObjectId) {
-      id = parms.debugObjectId;
-    }
+  constructor(useDisplayable) {
+    let parms = Config.predefinedInstances ? Config.predefinedInstances : {};
+    let id = parms.debugObjectId ? parms.debugObjectId : 'org.basil.b.defaultDebugInstance';
     let auth = undefined;
-    super(id, auth, GP.predefinedDisplayable);
+    super(id, auth, useDisplayable);
     this.itemType = 'DebugInstance';
     this.lastMessage = 'none';
 
@@ -91,17 +83,11 @@ export class PredefinedDebugInstance extends DisplayableInstance {
 
 // A special instance that returns parameters about the renderer
 export class PredefinedRendererInstance extends DisplayableInstance {
-  constructor() {
-    let parms = {};
-    if (Config.predefinedInstances) {
-      parms = Config.predefinedInstances;
-    }
-    let id = 'org.basil.b.renderer';
-    if (parms.rendererInstanceId) {
-      id = parms.rendererInstanceId;
-    }
+  constructor(useDisplayable) {
+    let parms = Config.predefinedInstances ? Config.predefinedInstances : {};
+    let id = parms.rendererInstanceId ? parms.rendererInstanceId : 'org.basil.b.renderer';
     let auth = undefined;
-    super(id, auth, GP.predefinedDisplayable);
+    super(id, auth, useDisplayable);
     this.itemType = 'RendererInstance';
 
     super.DefineProperties( {
@@ -120,7 +106,7 @@ export class PredefinedRendererInstance extends DisplayableInstance {
 
 // A special instance that displays it's 'Msg' property in the debug window
 export class PredefinedCameraInstance extends DisplayableInstance {
-  constructor() {
+  constructor(useDisplayable) {
     let parms = {};
     if (Config.predefinedInstances) {
       parms = Config.predefinedInstances;
@@ -130,39 +116,27 @@ export class PredefinedCameraInstance extends DisplayableInstance {
       id = parms.cameraInstanceId;
     }
     let auth = undefined;
-    super(id, auth, GP.predefinedDisplayable);
+    super(id, auth, useDisplayable);
     this.itemType = 'CameraInstance';
 
     super.DefineProperties( {
         'Position': {
             'get': () => { return this.gPos; },
             'set': (val) => {
-                if (typeof val == 'String') {
-                  val = JSON.Parse(val);
-                }
-                if (typeof val == 'Array' && val.length == 3) {
-                    this.gPos[0] = Float(val[0]);
-                    this.gPos[1] = Float(val[1]);
-                    this.gPos[2] = Float(val[2]);
-                }
+                parseThreeTuple(val, this.gPos);
                 this.gRotgPosModified = true;
-                if (this.procgPositionSet !== undefined) {
-                    procgPositionSet(this);
+                if (typeof(this.procgPositionSet) !== 'undefined') {
+                    this.procgPositionSet(this);
                 }
             }
         },
         'Rotation': {
             'get': () => { return this.gRot; },
             'set': (val) => {
-                if (typeof val == 'Array' && val.length == 4) {
-                    this.gRot[0] = Float(val[0]);
-                    this.gRot[1] = Float(val[1]);
-                    this.gRot[2] = Float(val[2]);
-                    this.gRot[4] = Float(val[4]);
-                }
+                parseFourTuple(val, this.gRot);
                 this.gRotgPosModified = true;
-                if (this.procgRotationSet !== undefined) {
-                    procgRotationSet(this);
+                if (typeof(this.procgRotationSet) !== 'undefined') {
+                    this.procgRotationSet(this);
                 }
             }
         }

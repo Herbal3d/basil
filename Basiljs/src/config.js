@@ -18,6 +18,7 @@ export default {
     },
     // Parameters for the webgl environment
     'webgl': {
+        'graphicsId': 'org.basil.b.graphics',
         'engine': 'ThreeJS',
         'camera': {
             'name': 'camera1',
