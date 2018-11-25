@@ -15,13 +15,41 @@ import GP from 'GP';
 import { BItem, BItemType, BItemState } from 'xBItem';
 import { BasilType } from 'xBasilServerMessages';
 import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
+import { DisplayableCamera } from 'xDisplayableCamera';
+import { DisplayableMeshSet } from 'xDisplayableMeshSet';
 
 import * as Graphics from 'xGraphics';
+
+export const DisplayableType = {
+  UNKNOWN: 'UNKNOWN',
+  CAMERA: 'Camera',
+  MESHSET: 'MeshSet'
+}
 
 // Factory function to create Displayable since we may want
 //    to use Proxy's someday.
 export function DisplayableFactory(id, auth, assetInfo) {
-  return new Displayable(id, auth, assetInfo);
+  let ret = undefined;
+  if (assetInfo && assetInfo.asset
+            && assetInfo.asset.displayInfo
+            && assetInfo.asset.displayInfo.displayableType) {
+    let displayType = assetinfo.asset.displayInfo.displayType;
+    switch (assetInfo,asset.displayInfo.displayType) {
+      case DisplayableType.CAMERA:
+          ret = new DisplayableCamera(id, auth, assetInfo);
+        break;
+      case DisplayableType.MESHSET:
+          ret = new DisplayableMeshSet(id, auth, assetInfo);
+        break;
+      default:
+          GP.DebugLog('DisplayableFactory: Unknown asset type: ' + displayType);
+        break;
+    }
+  }
+  else {
+    ret = new Displayable(id, auth, assetInfo);
+  }
+  return ret;
 }
 
 export class Displayable extends BItem {
@@ -40,8 +68,6 @@ export class Displayable extends BItem {
         .catch(err => {
           this.state = BItemState.FAILED;
           GP.DebugLog('Displayable: unable to load asset' + JSON.stringify(assetInfo)
-                      + ': ' + err);
-        });
       }
       else {
         this.state = BItemState.READY;
@@ -67,6 +93,9 @@ export class Instance extends BItem {
         this.gRotCoordSystem = 0;
         this.gRotgPosModified = false;  // flag saying gRot or gPos modified
 
+        this.gRotPosModified = undefined;
+        this.gRotPosModified = undefined;
+
         // Note: some of these are over-ridden by other modules.
         //    If these are changed, check PredefinedCameraInstance.j
         super.DefineProperties( {
@@ -75,22 +104,30 @@ export class Instance extends BItem {
                 'get': () => { return this.displayable.state; }
             },
             'Position': {
-                'get': () => { return this.gPos; },
+                'get': () => {
+                  if (typeof this.procgPosPreGet == 'function') {
+                    procgPosPreGet(this);
+                  }
+                  return this.gPos; },
                 'set': (val) => {
-                    this.gPos = ParseThreeTuple(val);
-                    this.gRotgPosModified = true;
-                    if (typeof(this.procgPositionSet) !== 'undefined') {
-                        procgPositionSet(this);
-                    }
+                  this.gPos = ParseThreeTuple(val);
+                  this.gRotgPosModified = true;
+                  if (typeof this.procgPosModified == 'function') {
+                      procgPosModified(this);
+                  }
                 }
             },
             'Rotation': {
-                'get': () => { return this.gRot; },
+                'get': () => {
+                  if (typeof this.procgRotPreGet == 'function') {
+                    procgRotPreGet(this);
+                  }
+                  return this.gRot; },
                 'set': (val) => {
                     this.gRot = ParseFourTuple(val);
                     this.gRotgPosModified = true;
-                    if (typeof(this.procgRotationSet) !== 'undefined') {
-                        procgRotationSet(this);
+                    if (typeof this.procgRotModified == 'function') {
+                        procgRotModified(this);
                     }
                 }
             },

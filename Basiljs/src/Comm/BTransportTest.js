@@ -86,11 +86,10 @@ export default class BTransportTest extends BTransport {
     // Send the data. Places message in output queue.
     // 'data' is the encoded binary types of the message.
     // One can pass a 'this' context for calling on timer threads, etc
-    Send(data, tthis) {
-        let tester = tthis === undefined ? this : tthis;
-        let emsg = EncodeMessage(data, tester);
-        tester.messages.push(emsg);
-        tester.messagesSent++;
+    Send(data) {
+        let emsg = EncodeMessage(data, this);
+        this.messages.push(emsg);
+        this.messagesSent++;
     }
     // Set a callback object for recevieving messages.
     // The passed object must have a 'procMessage' method

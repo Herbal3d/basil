@@ -37,7 +37,8 @@ module.exports = {
 
         'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
         'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
-        'xPredefinedItems': path.resolve(__dirname, 'src/Items/PredefinedItems.js'),
+        'xDisplayableCamera': path.resolve(__dirname, 'src/Graphics/DisplayableCamera.js'),
+        'xDisplayableMeshSet': path.resolve(__dirname, 'src/Graphics/DisplayableMeshSet.js'),
 
         'xControls': path.resolve(__dirname, 'src/Controls/Controls.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/Eventing.js'),

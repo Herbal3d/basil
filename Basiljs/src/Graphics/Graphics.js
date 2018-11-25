@@ -1,4 +1,4 @@
-// Copyright 2018 Robert Adams
+// Copyright 2018 Robert Adame
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -25,37 +25,35 @@ import { FBXLoader } from 'xThreeJSFBX';
 import { OBJLoader } from 'xThreeJSOBJ';
 import { BVHLoader } from 'xThreeJSBVH';
 
+// Class that wraps the renderer implementation.
 export class Graphics extends BItem {
   constructor(container, canvas) {
     GP.DebugLog('Graphics: constructor');
-    let id = (Config.webgl && Config.webgl.graphicsId) ? Config.webgl.graphicsId : 'default.graphics';
+    let id = (Config.webgl && Config.webgl.graphicsId) ? Config.webgl.graphicsId : 'org.basil.b.renderer';
     let auth = undefined;
-    let itemType = BItemType.RENDERER;
-    super(id, auth, itemType);
+    super(id, auth, BItemType.RENDERER);
     this.container = container;
     this.canvas = canvas;
 
     this.scene = new THREE.Scene();
 
-    this._initializeCamera(this.scene, this.canvas);
-    this._initializeLights(this.scene);
-    this._initializeEnvironment(this.scene);
+    this._initializeCamera();
+    this._initializeLights();
+    this._initializeEnvironment();
 
     // parameters specific to setting up WebGL in the renderer
-    let parms =(Config.webgl && Config.webgl.renderer) ? Config.webgl.renderer : {};
+    let renderParms =(Config.webgl && Config.webgl.renderer) ? Config.webgl.renderer : {};
 
-    let rendererParams = {};  // parameters to pass to the THREE.renderer creation
-    if (parms.ThreeJS) {
-      rendererParams = parms.ThreeJS;
-    }
+    // parameters to pass to the THREE.renderer creation
+    let rendererParams = renderParms.ThreeJS ? renderParms.ThreeJS : {};
     rendererParams.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer(rendererParams);
 
-    if (parms.clearColor) {
-        this.renderer.setClearColor(Graphics.ColorFromValue(parms.clearColor));
+    if (renderParms.clearColor) {
+        this.renderer.setClearColor(Graphics._colorFromValue(renderParms.clearColor));
     }
 
-    if (parms.shadows) {
+    if (renderParms.shadows) {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
     }
@@ -65,7 +63,7 @@ export class Graphics extends BItem {
     this.container.addEventListener('resize', this._onContainerResize, false);
 
     // For the moment, camera control comes from the user
-    this._initializeCameraControl(this.scene, this.container);
+    this._initializeCameraControl();
 
     // Clock used to keep track of frame time and FPS
     this.clock = new THREE.Clock();
@@ -81,9 +79,32 @@ export class Graphics extends BItem {
     // Graphics generate a bunch of events so people can display stuff
     this._generateCameraEvents();
     this._generateRendererStatEvents();
+
+    // Set up the BItem environment.
+    // The Renderer is just a BItem.
+    super.DefineProperties( {
+      'Capabilities': {
+        'get': function() {
+            return JSON.stringify(this.renderer.capabilities);
+          }.bind(this),
+      },
+      'Extensions': {
+        'get': function() {
+          return JSON.stringify(this.renderer.extensions);
+        }.bind(this),
+      },
+      'Info': {
+        'get': function() {
+          return JSON.stringify(this.renderer.info);
+        }.bind(this),
+      }
+    } );
+
+    // Graphics creates an Instance to represent the camera.
+    this._initializeCameraInstance();
   };
 
-  GraphicsStart() {
+  Start() {
     this._startRendering();
   };
 
@@ -129,21 +150,11 @@ export class Graphics extends BItem {
     this.renderer.setPixelRatio(window.devicePixelRatio);
   };
 
-  // Access function for the renderer itself
-  THREErenderer() {
-    return this.renderer;
-  }
-
-  // Access function for the camera.
-  THREEcamera() {
-    return this.camera;
-  }
-
   // Remove everything from the scene
   ClearScene() {
     this.StopRendering();
 
-    Graphics.disposeScene();
+    this._disposeScene();
     GP.DebugLog('Graphics: cleared scene');
 
     this.StartRendering();
@@ -314,7 +325,7 @@ export class Graphics extends BItem {
     );
   }
 
-  _initializeCamera(theScene, canvas, passedParms) {
+  _initializeCamera(passedParms) {
     if (this.camera) {
       return;
     }
@@ -329,36 +340,37 @@ export class Graphics extends BItem {
           'addAxesHelper': false
     });
 
-    this.camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight,
+    this.camera = new THREE.PerspectiveCamera( 75,
+                      this.canvas.clientWidth / this.canvas.clientHeight,
                       1, parms.initialViewDistance );
     // this.camera.up = new THREE.Vector3(0, 1, 0);
-    theScene.add(this.camera);
+    this.scene.add(this.camera);
 
     this.SetCameraPosition(parms.initialCameraPosition);
     this.PointCameraAt(parms.initialCameraLookAt);
 
     if (parms.addCameraHelper) {
         this.cameraHelper = new THREE.CameraHelper(this.camera);
-        theScene.add(this.cameraHelper);
+        this.scene.add(this.cameraHelper);
     }
     if (parms.addAxesHelper) {
         let helperSize = parms.axesHelperSize || 5;
         this.axesHelper = new THREE.AxesHelper(Number(helperSize));
-        theScene.add(this.axesHelper);
+        this.scene.add(this.axesHelper);
     }
   }
 
-  _initializeLights(theScene, passedParms) {
+  _initializeLights(passedParms) {
     let parms = CombineParameters(Config.webgl.lights, passedParms, undefined);
 
     if (parms.ambient) {
-        var ambient = new THREE.AmbientLight(Graphics.ColorFromValue(parms.ambient.color),
+        var ambient = new THREE.AmbientLight(Graphics._colorFromValue(parms.ambient.color),
                                             Number(parms.ambient.intensity));
         this.ambientLight = ambient;
-        theScene.add(ambient);
+        this.scene.add(ambient);
     }
     if (parms.directional) {
-        var directional = new THREE.DirectionalLight(Graphics.ColorFromValue(parms.directional.color),
+        var directional = new THREE.DirectionalLight(Graphics._colorFromValue(parms.directional.color),
                                             Number(parms.directional.intensity));
         directional.position.fromArray(parms.directional.direction).normalize();
         this.directionalLight = directional;
@@ -368,12 +380,12 @@ export class Graphics extends BItem {
             directional.shadow.mapSize.width = parms.directional.shadows.mapWidth;
             directional.shadow.mapSize.height = parms.directional.shadows.mapHeight;
         }
-        theScene.add(directional);
+        this.scene.add(directional);
     }
   }
 
   // Initialize environmental properties (fog, sky, ...)
-  _initializeEnvironment(theScene, passedParams) {
+  _initializeEnvironment(passedParams) {
       if (Config.webgl && Config.webgl.fog) {
           let parms = CombineParameters(Config.webgl.fog, passedParams, {
               'type': 'linear',
@@ -381,21 +393,53 @@ export class Graphics extends BItem {
               'far': 1000,
               'density': 0.00025
           });
-          let fogColor = Graphics.ColorFromValue(parms.color);
+          let fogColor = Graphics._colorFromValue(parms.color);
 
           if (parms.type == 'linear') {
               let fogger = new THREE.Fog(fogColor, parms.far);
               if (parms.name) fogger.name = parms.name;
               if (parms.near) fogger.near = parms.near;
-              theScene.add(fogger);
+              this.scene.add(fogger);
           }
           if (parms.type == 'exponential') {
               let fogger = new THREE.FogExp2(fogColor, parms.density);
               if (parms.name) fogger.name = parms.name;
-              theScene.add(fogger);
+              this.scene.add(fogger);
           }
       }
   }
+
+  _initializeCameraInstance(passedParams) {
+    // Set up a camera Instance.
+    // Cameras can be displayed so there is a type.
+    let cparam = Config.webgl && Config.webgl.camera : Config.webgl.camera : {};
+    let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
+    let cauth = undefined;
+    let cassetInfo = {
+      'asset': {
+        'assetInfo': {
+          'displayInfo': {
+            'displayableType': DisplayableType.CAMERA
+          }
+        }
+      }
+    };
+    let cameraBItem = new DisplayableFactory(cid, cauth, cassetInfo);
+    let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.instance.camera';
+    this.cameraInstance = new Instance(cinstance, cauth, cameraBItem);
+    cameraInstance.procgPosPreGet = function(inst) {
+      inst.gPos = this.camera.position.toArray();
+    }.bind(this);
+    cameraInstance.procgPosModified = function(inst) {
+      this.camera.position = (new THREE.Vector3()).fromArray(inst.gPos);
+    }.bind(this);
+    cameraInstance.procgRotPreGet = function(inst) {
+      inst.gRot = this.camera.rotation.toArray();
+    }.bind(this);
+    cameraInstance.procgRotModified = function(inst) {
+      this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
+    }.bind(this);
+  };
 
   // Add a test object to the scene
   AddTestObject() {
@@ -408,11 +452,11 @@ export class Graphics extends BItem {
   };
 
   // For initial debugging, camera is controlled by the console
-  _initializeCameraControl(theScene, theContainer) {
+  _initializeCameraControl() {
     let control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     control.enableDamping = true;
     control.dampingFactor = 0.25;
-    controls.screenSpacePanning = true;
+    control.screenSpacePanning = true;
     control.minDistance = 50;
     control.maxDistance = this.camera.far;
     this.cameraControl = control;
@@ -456,8 +500,8 @@ export class Graphics extends BItem {
       });
   }
 
-  // return a ThreeJS color number from an array of color values
-  static function ColorFromValue(colorValue) {
+  // Return a ThreeJS color number from an array of color values
+  static function _colorFromValue(colorValue) {
       if (Array.isArray(colorValue)) {
           return new THREE.Color(colorValue[0], colorValue[1], colorValue[2]);
       }
@@ -466,7 +510,7 @@ export class Graphics extends BItem {
 
   // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
   // From https://stackoverflow.com/questions/33152132/three-js-collada-whats-the-proper-way-to-dispose-and-release-memory-garbag/33199591#33199591
-  static function disposeNode (node) {
+  _disposeNode(node) {
       if (node instanceof THREE.Mesh) {
           if (node.geometry) {
               node.geometry.dispose ();
@@ -495,18 +539,18 @@ export class Graphics extends BItem {
   }   // disposeNode
 
   // disposeHierarchy (YOUR_OBJECT3D, disposeNode);
-  static function disposeHierarchy (node) {
+  _disposeHierarchy(node) {
       for (var i = node.children.length - 1; i >= 0; i--) {
           var child = node.children[i];
-          Graphics.disposeHierarchy(child);
-          Graphics.disposeNode(child);
+          this._disposeHierarchy(child);
+          this._disposeNode(child);
       }
-      Graphics.disposeNode(node);
+      this._disposeNode(node);
   }
 
-  static function disposeScene(scene) {
+  _disposeScene(scene) {
     for (var ii = scene.children.length - 1; ii >= 0; ii--) {
-        Graphics.disposeHierarchy(scene.children[ii], node => { scene.remove(node)});
+        this._disposeHierarchy(scene.children[ii], node => { scene.remove(node)});
     }
   }
 

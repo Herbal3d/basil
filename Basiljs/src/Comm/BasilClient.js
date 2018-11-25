@@ -15,9 +15,7 @@ import GP from 'GP';
 import Config from 'xConfig';
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
 
-var BS = BS || {};
-GP.BS = BS;
-
+// Client connection used in WebWorker and testing instances
 export class BasilClientConnection {
     constructor(clientID, xport, parms) {
         this.clientID = clientID;
@@ -32,7 +30,7 @@ export class BasilClientConnection {
     Close() {
     };
     // function that sends the request and returns a Promise for the response.
-    SendAndPromiseResponse(msg, xport, reqName) {
+    SendAndPromiseResponse(msg, reqName) {
         let smsg = {};
         smsg[ reqName + 'ReqMsg'] = msg;
         smsg['RPCRequestSession'] = this.RPCsession++;
@@ -45,9 +43,8 @@ export class BasilClientConnection {
         }
         // let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
         let emsg = BasilServerMsgs.BasilServerMessage.encode(smsgs).finish();
-        let xxport = xport;
         // Return a promise and pass the 'resolve' function to the response message processor
-        return new Promise( (resolve,reject) => {
+        return new Promise( function(resolve,reject) {
             this.RPCSessionCallback[smsg.RPCRequestSession] = {
               'timeRPCCreated': Date.now(),
               'resolve': resolve,
@@ -55,8 +52,8 @@ export class BasilClientConnection {
               'requestName': reqName,
               'rawMessage': smsgs
             };
-            xxport.Send(emsg);
-        });
+            this.transport.Send(emsg);
+        }.bind(this));
     };
 
     // Called when message received. At the moment, all messages are
@@ -106,66 +103,66 @@ export class BasilClientConnection {
         let msg = { 'assetInfo': asset };
         if (auth) msg['auth'] = auth;
         if (aabb) msg['aabb'] = aabb;
-        return this.SendAndPromiseResponse(msg, this.transport, 'IdentifyDisplayableObject');
+        return this.SendAndPromiseResponse(msg, 'IdentifyDisplayableObject');
     };
     ForgetDisplayableObject(auth, id) {
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
-        return this.SendAndPromiseResponse(msg, this.transport, 'ForgetDisplayableObject');
+        return this.SendAndPromiseResponse(msg, 'ForgetDisplayableObject');
     };
     CreateObjectInstance(auth, id, instancePositionInfo, propertyList) {
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (instancePositionInfo) msg['pos'] = instancePositionInfo;
         if (propertyList) msg['props'] = propertyList;
-        return this.SendAndPromiseResponse(msg, this.transport, 'CreateObjectInstance');
+        return this.SendAndPromiseResponse(msg, 'CreateObjectInstance');
     };
     DeleteObjectInstance(auth, id) {
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
-        return this.SendAndPromiseResponse(msg, this.transport, 'DeleteObjectInstance');
+        return this.SendAndPromiseResponse(msg, 'DeleteObjectInstance');
     };
     UpdateObjectProperty(auth, id, propertyList) {
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['props'] = propertyList;
-        return this.SendAndPromiseResponse(msg, this.transport, 'UpdateObjectProperty');
+        return this.SendAndPromiseResponse(msg, 'UpdateObjectProperty');
     };
     UpdateInstanceProperty(auth, id, propertyList) {
         let msg = { 'instanceId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['props'] = propertyList;
-        return this.SendAndPromiseResponse(msg, this.transport, 'UpdateInstanceProperty');
+        return this.SendAndPromiseResponse(msg, 'UpdateInstanceProperty');
     };
     UpdateInstancePosition(auth, id,  pos) {
         let msg = { 'instanceId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (pos) msg['pos'] = pos;
-        return this.SendAndPromiseResponse(msg, this.transport, 'UpdateInstancePosition');
+        return this.SendAndPromiseResponse(msg, 'UpdateInstancePosition');
     };
     RequestObjectProperties(auth, id, filter) {
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
-        return this.SendAndPromiseResponse(msg, this.transport, 'RequestObjectProperties');
+        return this.SendAndPromiseResponse(msg, 'RequestObjectProperties');
     };
     RequestInstanceProperties(auth, id, filter) {
         let msg = { 'instanceId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
-        return this.SendAndPromiseResponse(msg, this.transport, 'RequestInstanceProperties');
+        return this.SendAndPromiseResponse(msg, 'RequestInstanceProperties');
     };
     OpenSession(auth, propertyList) {
         let msg = {};
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['features'] = propertyList;
-        return this.SendAndPromiseResponse(msg, this.transport, 'OpenSession');
+        return this.SendAndPromiseResponse(msg, 'OpenSession');
     };
     CloseSession(auth, reason) {
         let msg = {};
         if (auth) msg['auth'] = auth;
         if (reason) msg['reason'] = reason;
-        return this.SendAndPromiseResponse(msg, this.transport, 'CloseSession');
+        return this.SendAndPromiseResponse(msg, 'CloseSession');
     };
     AliveCheck(auth) {
         let msg = {};
@@ -173,7 +170,7 @@ export class BasilClientConnection {
         msg['time'] = Date.now(),
         msg['sequenceNum']  = this.aliveSequenceNum++
         // throw 'BasilClient.AliveCheck: sending: ' + JSON.stringify(msg);
-        return this.SendAndPromiseResponse(msg, this.transport, 'AliveCheck');
+        return this.SendAndPromiseResponse(msg, 'AliveCheck');
     };
 };
 

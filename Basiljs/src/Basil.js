@@ -17,6 +17,7 @@
 // Global parameters and variables. "GP.variable"
 import GP from 'GP';
 import Config from 'xConfig';
+import { BItem, BItemType, BItemState } from 'xBItem';
 
 GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
@@ -49,16 +50,18 @@ GP.ConfigGetQueryVariable = function (variable) {
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
-  var debugg = document.querySelector('#DEBUGG');
-  if (debugg) {
-    var newLine = document.createElement('div');
-    newLine.appendChild(document.createTextNode(msg));
-    if (classs) {
-      newLine.setAttribute('class', classs);
-    }
-    debugg.appendChild(newLine);
-    if (debugg.childElementCount > Config.page.debugLogLines) {
-      debugg.removeChild(debugg.firstChild);
+  if (GP.EnableDebugLog) {
+    var debugg = document.querySelector('#DEBUGG');
+    if (debugg) {
+      var newLine = document.createElement('div');
+      newLine.appendChild(document.createTextNode(msg));
+      if (classs) {
+        newLine.setAttribute('class', classs);
+      }
+      debugg.appendChild(newLine);
+      if (debugg.childElementCount > Config.page.debugLogLines) {
+        debugg.removeChild(debugg.firstChild);
+      }
     }
   }
 };
@@ -109,25 +112,23 @@ if (configParams) {
 if (Config && Config.page && Config.page.collectDebug
             && typeof(Config.page.collectDebug) == 'boolean') {
   GP.EnableDebugLog = Config.page.collectDebug;
+  GP.debugItem = new DebugBItem();
 }
 
 let container = document.getElementById(Config.page.webGLcontainerId);
 let canvas = document.getElementById(Config.page.webGLcanvasId);
 
 GP.GR = new Graphics(container, canvas);
-GP.CO = new Controlst();
+GP.CO = new Controls();
 GP.CM = new Comm();
 
-// Initialize the BItem system with predefined items (camera, renderer, debug, ...)
-PredefinedBItemInit();
-
-GP.GR.GraphicsStart();
-GP.CO.CommStart();
+GP.GR.Start();
+GP.CM.Start();
 GP.Ready = true;
 
 // If there are connection parameters, start the first connection
 if (Config.comm && Object.keys(Config.comm).length > 0) {
-  ConnectTransportService(Config.comm)
+  GP.CM.ConnectTransportService(Config.comm)
   .then( () => {
     GP.DebugLog('Basiljs: initial transport and service connected');
   })
@@ -135,3 +136,23 @@ if (Config.comm && Object.keys(Config.comm).length > 0) {
     GP.DebugLog('Basiljs: failed connecting initial transport and service: {e}');
   });
 };
+
+// A special instance that displays it's 'Msg' property in the debug window
+export class DebugBItem extends BItem {
+  constructor() {
+    super('org.basil.b.debug.bitem', undefined);
+    this.lastMessage = 'none';
+
+    super.DefineProperties( {
+      'Msg': {
+        'get': function() {
+          return this.lastMessage;
+        }.bind(this),
+        'set': function(val) {
+          this.lastMessage = val;
+          GP.DebugLog('WORKER: ' + val);
+        }.bind(this)
+      }
+    } );
+  }
+}

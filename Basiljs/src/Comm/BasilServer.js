@@ -14,18 +14,13 @@
 import GP from 'GP';
 
 import Config from 'xConfig';
+import { BItem, BItemType } from 'xBItem';
+
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
-import { BItem } from 'xBItem';
 
 import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
 import { Displayable, DisplayableFactory,
-        DisplayableInstance, DisplayableInstanceFactory } from 'xDisplayable';
-
-var BS = BS || {};
-GP.BS = BS;
-
-// All of the servers that have been connected
-BS.servers = {};
+          Instance, InstanceFactory } from 'xDisplayable';
 
 // The browser is the Basil server so requests are sent to us
 export class BasilServiceConnection  extends BItem {
@@ -33,7 +28,7 @@ export class BasilServiceConnection  extends BItem {
     // @param transp BTransport instance to talk over
     // @param parms a map of extra parameters for this service
     constructor(serverId, transp, parms) {
-        super(serverId, parms.serviceAuth);
+        super(serverId, parms.serviceAuth, BItemType.SERVICE);
         this.transport = transp;
         this.aliveReplySequenceNum = 2000;
         this.sessionId = undefined;
@@ -329,23 +324,4 @@ export class BasilServiceConnection  extends BItem {
       });
       return list;
     };
-}
-
-// Create a new server connection and return same
-// Returns a BasilServiceConnection or undefined if an error.
-export function NewBasilServerConnection(serverId, transport, parms) {
-    if (BS.servers[serverId]) {
-        GP.DebugLog('BasilServer: Not creating service. Existing Id:' + serverId);
-        return undefined;
-    }
-    let newConnection = new BasilServiceConnection(serverId, transport, parms);
-    BS.servers[serverId] = newConnection;
-    newConnection.serverId = serverId;
-    newConnection.Start();
-    GP.DebugLog('BasilServer: created new service connection for Id ' + serverId);
-    return newConnection;
-}
-
-export function GetProperties(filter) {
-
 }

@@ -13,47 +13,60 @@
 
 import GP from 'GP';
 
-var TR = TR || {};
-GP.TR = TR;
-
 import { BException } from 'xBException';
 import { BTransport as BTransportMsgs } from 'xBasilServerMessages';
-import { BItem } from 'xBItem';
+import { BItem, BItemType } from 'xBItem';
 
 // Template for transport implmentations.
 export class BTransport extends BItem {
-    constructor(parms) {
-        super(parms.transportId, parms.transportAuth);
-        this.itemType = 'unknown';
-        this.messages = [];
-        this.stats = {};
-        this.stats.messagesSent = 0;
-        this.stats.messagesReceived = 0;
-        this.sequenceNum = 111;
-        this.aliveSequenceNum = 333;
+  constructor(parms) {
+      super(parms.transportId, parms.transportAuth, BItemType.TRANSPORT);
+      this.messages = [];
+      this.stats = {};
+      this.stats.messagesSent = 0;
+      this.stats.messagesReceived = 0;
+      this.sequenceNum = 111;
+      this.aliveSequenceNum = 333;
 
-        // The properties that can be read as a BItem
-        super.DefineProperties( {
-            'ItemType': { 'get': () => { return this.itemType; } },
-            'MessagesSent': { 'get': () => { return this.stats.messagesSent; } },
-            'MessagesReceived': { 'get': () => { return this.stats.messagesReceived; } },
-            'Stats': { 'get': () => { return this.stats; } },
-            'QueueSize': { 'get': () => { return this.messages.length; } }
-        } );
-    }
-    Close() {
-    }
-    // Send the data. Places message in output queue
-    Send(data, tcontext) {
-        GP.DebugLog('BTransport: call of undefined Send()');
-        throw new BException('BTransport: call of undefined Send()');
-    }
-    // Set a callback object for recevieving messages.
-    // The passed object must have a 'procMessage' method
-    SetReceiveCallbackObject(callback) {
-        GP.DebugLog('BTransport: call of undefined SetReceiveCallback()');
-        throw new BException('BTransport: call of undefined SetReceiveCallback()');
-    }
+      // The properties that can be read as a BItem
+      super.DefineProperties( {
+          'MessagesSent': { 'get': function() { return this.stats.messagesSent; }.bind(this) },
+          'MessagesReceived': { 'get': function() { return this.stats.messagesReceived; }.bind(this) },
+          'Stats': { 'get': function() { return this.stats; }.bind(this) },
+          'QueueSize': { 'get': function() { return this.messages.length; }.bind(this) }
+      } );
+  }
+  Close() {
+  }
+  // Send the data. Places message in output queue
+  Send(data, tcontext) {
+      GP.DebugLog('BTransport: call of undefined Send()');
+      throw new BException('BTransport: call of undefined Send()');
+  }
+  // Set a callback object for recevieving messages.
+  // The passed object must have a 'procMessage' method
+  SetReceiveCallbackObject(callback) {
+    GP.DebugLog('BTransport: call of undefined SetReceiveCallback()');
+    throw new BException('BTransport: call of undefined SetReceiveCallback()');
+  }
+
+  // Check the input queue for messages and, if present, process one.
+  // If 'tthis' is passed, it is used as the BTransport to push reception for.
+  PushReception() {
+      let msg = this.messages.shift();
+      if (msg) {
+          this.stats.messagesReceived++;
+          let dmsg = BTransportMsgs.BTransport.decode(msg)
+          // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
+
+          if (this.receiveCallbackObject
+                  && this.receiveCallbackObject.procMessage) {
+                  && typeof this.receiveCallbackObject.procMessage == 'function')
+              // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
+              this.receiveCallbackObject.procMessage(dmsg.message, dmsg);
+          }
+      }
+  }
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {
         return false;
@@ -73,21 +86,4 @@ export function EncodeMessage(data, tthis) {
     };
     let cmsg = BTransportMsgs.BTransport.create(tmsg);
     return BTransportMsgs.BTransport.encode(cmsg).finish();
-}
-
-// Check the input queue for messages and, if present, process one.
-// If 'tthis' is passed, it is used as the BTransport to push reception for.
-export function PushReception(tthis) {
-    let xport = typeof(tthis) == 'undefined' ? this : tthis;
-    let msg = xport.messages.shift();
-    if (msg) {
-        xport.stats.messagesReceived++;
-        let dmsg = BTransportMsgs.BTransport.decode(msg)
-        // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
-
-        if (xport.receiveCallbackObject && xport.receiveCallbackObject.procMessage) {
-            // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-            xport.receiveCallbackObject.procMessage(dmsg.message, dmsg);
-        }
-    }
 }

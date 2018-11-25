@@ -31,7 +31,11 @@ export const BItemType = {
   UNKNOWN: 'UNKNOWN',
   DISPLAYABLE: 'Displayable',
   INSTANCE: 'Instance',
-  RENDERER: 'Renderer'
+  RENDERER: 'Renderer',
+  CONTROLS: 'Controls',
+  COMM: 'Comm',
+  SERVICE: 'Service',
+  TRANSPORT: 'Transport'
 }
 
 // All things referenced by the Basil interface are "items' and thus they

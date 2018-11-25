@@ -21,6 +21,8 @@ export default {
         'graphicsId': 'org.basil.b.graphics',
         'engine': 'ThreeJS',
         'camera': {
+            'cameraId': 'org.basil.b.camera1',
+            'cameraInstanceId': 'org.basil.b.instance.camera1',
             'name': 'camera1',
             'initialCameraPosition': [ 200, 50, 200 ],
             'initialViewDistance': 2000,

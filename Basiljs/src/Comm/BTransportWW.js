@@ -34,20 +34,19 @@ export default class BTransportWW extends BTransport {
             try {
                 this.worker = new Worker(parms.transportURL);
                 this.isWorker = false;
-                let xport = this;   // for closeure of message function
                 this.worker.onmessage = function(d) {
                     // GP.DebugLog('BTransportWW.onmessage: rcvd');
-                    xport.messages.push(d.data);
-                    xport.stats.messagesReceived++;
-                    PushReception(xport);
-                };
+                    this.messages.push(d.data);
+                    this.stats.messagesReceived++;
+                    this.PushReception();
+                }.bind(this);
                 this.worker.onerror = function(e) {
                     // GP.DebugLog('BTransportWW: worker error:'
                     console.log('BTransportWW: worker error:'
                                 + ' ln: ' + e.lineno
                                 + ', reason: ' + e.message);
-                    xport.Close();
-                };
+                    this.Close();
+                }.bind(this);
             }
             catch(e) {
                 console.log('BTransportWW: exception initializing worker: ' + e);
@@ -60,11 +59,10 @@ export default class BTransportWW extends BTransport {
             GP.DebugLog('BTransportWW: setting up worker');
             this.itemType = 'BTransport.TransportWW.Client';
             this.isWorker = true;
-            let xport = this;   // for closeure of message function
             onmessage = function(d) {
-                xport.messages.push(d.data);
-                PushReception(xport);
-            }
+                this.messages.push(d.data);
+                this.PushReception();
+            }.bind(this);
         }
     }
     Close() {
@@ -75,18 +73,17 @@ export default class BTransportWW extends BTransport {
     }
 
     // Send the data. Places message in output queue
-    Send(data, tthis) {
-        let xxport = typeof(tthis) == 'undefined' ? this : tthis;
-        let emsg = EncodeMessage(data, xxport);
+    Send(data) {
+        let emsg = EncodeMessage(data, this);
         // GP.DebugLog('BTransportWW.Send: sending: ' + JSON.stringify(emsg));
-        if (xxport.worker) {
-            xxport.worker.postMessage(emsg);
+        if (this.worker) {
+            this.worker.postMessage(emsg);
         }
         else {
             // @ts-ignore
             postMessage(emsg);
         }
-        xxport.stats.messagesSent++;
+        this.stats.messagesSent++;
     }
 
     // Set a calback to be called whenever a message is received
