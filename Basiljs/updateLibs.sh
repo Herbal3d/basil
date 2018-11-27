@@ -66,5 +66,3 @@ cd "${PROTOBUFJSDIR}"
 
 cd "${PLACE}"
 
-
-
