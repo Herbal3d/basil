@@ -97,7 +97,7 @@ export class Controls extends BItem {
         break;  // DEBUG DEBUG
       case 'showDebug':
         // Make the state to the opposite of what it is now
-        ShowDebug(!(document.getElementById('DEBUGG').style.visibility !== 'hidden'));
+        this.ShowDebug(!(document.getElementById('DEBUGG').style.visibility !== 'hidden'));
         break;
       /*
       case 'loadGltf':
