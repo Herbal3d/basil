@@ -19,8 +19,8 @@ import { BItem, BItemType } from 'xBItem';
 import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
 
 import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
-import { Displayable, DisplayableFactory,
-          Instance, InstanceFactory } from 'xDisplayable';
+import { DisplayableFactory, InstanceFactory } from 'xFactories';
+
 
 // The browser is the Basil server so requests are sent to us
 export class BasilServiceConnection  extends BItem {
@@ -125,13 +125,7 @@ export class BasilServiceConnection  extends BItem {
     procIdentifyDisplayableObject(req) {
         let ret = undefined;
         if (req.assetInfo) {
-          let id = undefined;
-          if (req.assetInfo.id) {
-            id = req.assetInfo.id.id;
-          }
-          else {
-            id = CreateUniqueId('displayable');
-          }
+          let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
           let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
           newItem.ownerId = this.id;    // So we know who created what
           if (newItem) {
@@ -164,7 +158,7 @@ export class BasilServiceConnection  extends BItem {
           let baseDisplayable = BItem.GetItem(req.identifier.id);
           if (baseDisplayable) {
             let instanceId = CreateUniqueInstanceId();
-            let newInstance = DisplayableInstanceFactory(instanceId, req.auth, baseDisplayable);
+            let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
             newInstance.ownerId = this.id;    // So we know who created what
             if (req.pos) {
                 BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
@@ -172,7 +166,7 @@ export class BasilServiceConnection  extends BItem {
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet);
             }
-            newInstance.PlaceInWorld();  // place it in the world
+            baseDisplayable.graphics.PlaceInWorld(newInstance);
             ret = {
               'instanceId': {
                 'id': newInstance.id

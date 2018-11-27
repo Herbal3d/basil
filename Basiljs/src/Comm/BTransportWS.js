@@ -16,7 +16,7 @@ import { BTransport } from './BTransport.js';
 import { BException } from 'xBException';
 
 // There are two halfs: the 'service' and the 'worker'.
-export default class BTransportWS extends BTransport {
+export class BTransportWS extends BTransport {
     constructor(parms) {
         super(parms);
         GP.DebugLog('BTransportWS constructor');

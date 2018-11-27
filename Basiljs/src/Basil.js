@@ -27,7 +27,6 @@ import { Base64 } from 'js-base64';
 import { Graphics } from 'xGraphics';
 import { Controls } from 'xControls';
 import { Comm } from 'xComm';
-import { PredefinedBItemInit } from 'xPredefinedItems';
 
 // Force the processing of the CSS format file
 import './Basiljs.less';
@@ -73,6 +72,26 @@ GP.ReportError = function ReportError(msg) {
     GP.LogMessage(msg, 'errorMsg');
 };
 
+// A special instance that displays it's 'Msg' property in the debug window
+export class DebugBItem extends BItem {
+  constructor() {
+    super('org.basil.b.debug.bitem', undefined);
+    this.lastMessage = 'none';
+
+    super.DefineProperties( {
+      'Msg': {
+        'get': function() {
+          return this.lastMessage;
+        }.bind(this),
+        'set': function(val) {
+          this.lastMessage = val;
+          GP.DebugLog('WORKER: ' + val);
+        }.bind(this)
+      }
+    } );
+  }
+}
+
 // =====================================================
 /*
     Pattern for Basil is for each package to define a global variable to hold
@@ -112,6 +131,7 @@ if (configParams) {
 if (Config && Config.page && Config.page.collectDebug
             && typeof(Config.page.collectDebug) == 'boolean') {
   GP.EnableDebugLog = Config.page.collectDebug;
+  // This BItem receives remote messages and calls DebugLog
   GP.debugItem = new DebugBItem();
 }
 
@@ -136,23 +156,3 @@ if (Config.comm && Object.keys(Config.comm).length > 0) {
     GP.DebugLog('Basiljs: failed connecting initial transport and service: {e}');
   });
 };
-
-// A special instance that displays it's 'Msg' property in the debug window
-export class DebugBItem extends BItem {
-  constructor() {
-    super('org.basil.b.debug.bitem', undefined);
-    this.lastMessage = 'none';
-
-    super.DefineProperties( {
-      'Msg': {
-        'get': function() {
-          return this.lastMessage;
-        }.bind(this),
-        'set': function(val) {
-          this.lastMessage = val;
-          GP.DebugLog('WORKER: ' + val);
-        }.bind(this)
-      }
-    } );
-  }
-}

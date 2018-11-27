@@ -15,6 +15,6 @@ import GP from 'GP';
 
 import Config from 'xConfig';
 
-class PestoClient {
+export class PestoClient {
 
 }

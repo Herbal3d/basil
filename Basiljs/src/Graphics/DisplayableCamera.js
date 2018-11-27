@@ -11,17 +11,18 @@
 
 'use strict';
 
-import GP from 'GP';
-import { BItem, BItemType, BItemState } from 'xBItem';
-import { BasilType } from 'xBasilServerMessages';
-import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
+// holds the controls context for this threejs instance
 
-export class Displayable extends BItem {
+import GP from 'GP';
+import Config from 'xConfig';
+import { BItem, BItemType, BItemState } from 'xBItem';
+import { Displayable } from 'xDisplayable';
+
+export class DisplayableCamera extends Displayable {
   constructor(id, auth, displayInfo) {
-    super(id, auth, BItemType.DISPLAYABLE);
-    // A kludge that give all Displayables a handle to the Graphics instance.
-    // In the future, there might be multiple graphics engines.
-    this.graphics = GP.GR;
+    GP.DebugLog('DisplayableCamera: constructor');
+    super(id, auth, displayInfo);
+    this.SetReady();
   }
 }
-Displayable.DisplayableKey = "UNKNOWN";
+DisplayableCamera.DisplayableType = "camera";

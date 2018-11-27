@@ -31,19 +31,25 @@ module.exports = {
         'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),
         'xBTransportWW': path.resolve(__dirname, 'src/Comm/BTransportWW.js'),
         'xBTransportWS': path.resolve(__dirname, 'src/Comm/BTransportWS.js'),
+        'xBTransportTest': path.resolve(__dirname, 'src/Comm/BTransportTest.js'),
         'xBasilServer': path.resolve(__dirname, 'src/Comm/BasilServer.js'),
         'xBasilClient': path.resolve(__dirname, 'src/Comm/BasilClient.js'),
+        'xPestoClient': path.resolve(__dirname, 'src/Comm/PestoClient.js'),
         'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
-
-        'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
-        'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
-        'xDisplayableCamera': path.resolve(__dirname, 'src/Graphics/DisplayableCamera.js'),
-        'xDisplayableMeshSet': path.resolve(__dirname, 'src/Graphics/DisplayableMeshSet.js'),
 
         'xControls': path.resolve(__dirname, 'src/Controls/Controls.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/Eventing.js'),
+
+        'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
+        'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
+        'xInstance': path.resolve(__dirname, 'src/Items/Instance.js'),
+        'xFactories': path.resolve(__dirname, 'src/Items/Factories.js'),
+
+        'xDisplayableCamera': path.resolve(__dirname, 'src/Graphics/DisplayableCamera.js'),
+        'xDisplayableMeshSet': path.resolve(__dirname, 'src/Graphics/DisplayableMeshSet.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
         'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics.js'),
+        'xCoord': path.resolve(__dirname, 'src/Graphics/Coord.js'),
 
         'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
         'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),

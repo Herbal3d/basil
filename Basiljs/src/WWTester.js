@@ -16,8 +16,8 @@
 import GP from 'GP';
 
 import Config from 'xConfig';
-import * as BasilClient from 'xBasilClient';
-import BTransportWW from 'xBTransportWW';
+import { BasilClientConnection } from 'xBasilClient';
+import { BTransportWW } from 'xBTransportWW';
 import { BException } from 'xBException';
 
 import { BasilType } from "xBasilServerMessages"
@@ -34,7 +34,7 @@ GP.wwTransport = new BTransportWW(parms);
 
 GP.Ready = true;
 
-GP.client = BasilClient.NewBasilClient('client', GP.wwTransport, {} );
+GP.client = new BasilClientConnection('client', GP.wwTransport, {} );
 
 // Once client is created and connected, debug messsages can be sent to the
 //    predefined debug instance.

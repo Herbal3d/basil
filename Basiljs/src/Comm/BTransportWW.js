@@ -16,13 +16,11 @@
 import GP from 'GP';
 
 import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
-// @ts-ignore
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
-// @ts-ignore
 import { BException } from 'xBException';
 
 // There are two halfs: the 'service' and the 'worker'.
-export default class BTransportWW extends BTransport {
+export class BTransportWW extends BTransport {
     constructor(parms) {
         super(parms);
         // @ts-ignore
@@ -47,6 +45,7 @@ export default class BTransportWW extends BTransport {
                                 + ', reason: ' + e.message);
                     this.Close();
                 }.bind(this);
+                this.SetReady();
             }
             catch(e) {
                 console.log('BTransportWW: exception initializing worker: ' + e);
@@ -63,10 +62,12 @@ export default class BTransportWW extends BTransport {
                 this.messages.push(d.data);
                 this.PushReception();
             }.bind(this);
+            this.SetReady();
         }
     }
     Close() {
         if (this.worker) {
+            this.SetState(BItemState.SHUTDOWN);
             this.worker.terminate();
             this.worker = undefined;
         }

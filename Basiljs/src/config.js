@@ -14,15 +14,15 @@ export default {
         'webGLcanvasId': 'webGLcanvas',
         'collectDebug': true,
         'showDebug': true,
-        'debugLogLines': 35
+        'debugLogLines': 30
     },
     // Parameters for the webgl environment
     'webgl': {
         'graphicsId': 'org.basil.b.graphics',
         'engine': 'ThreeJS',
         'camera': {
-            'cameraId': 'org.basil.b.camera1',
-            'cameraInstanceId': 'org.basil.b.instance.camera1',
+            'cameraId': 'org.basil.b.camera.1',
+            'cameraInstanceId': 'org.basil.b.instance.camera.1',
             'name': 'camera1',
             'initialCameraPosition': [ 200, 50, 200 ],
             'initialViewDistance': 2000,
@@ -72,15 +72,10 @@ export default {
           'shadows': false
         },
     },
-    'predefinedInstances': {
-      'generatedInstanceBasename': 'org.basil.b.',  // ends with a period
-      'predefinedDisplayableName': 'org.basil.b.predefinedDisplayable.000',
-      'cameraBasename': 'org.basil.b.camera',
-      'debugObjectId': 'org.basil.b.Debugging.Display'
-    },
     'assets': {
         'gltfURLBase': '/basil/',
-        'assetFetchTimeoutMS': 5000
+        'assetFetchTimeoutMS': 5000,
+        'assetFetchCheckIntervalMS': 200
     },
     'eventing': {
         'eventPollIntervalMS': 500
@@ -97,7 +92,7 @@ export default {
     },
     'Debug': {
       'VerifyProtocol': false,  // call 'verify' on created protocol messages
-      'BasilServerProcMessageDetail': false // DebugLog received messages and responses
+      'BasilServerProcMessageDetail': true // DebugLog received messages and responses
     },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [

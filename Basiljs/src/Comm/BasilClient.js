@@ -173,7 +173,3 @@ export class BasilClientConnection {
         return this.SendAndPromiseResponse(msg, 'AliveCheck');
     };
 };
-
-export function NewBasilClient(clientID, xport, parms) {
-    return new BasilClientConnection(clientID, xport, parms);
-};

@@ -60,8 +60,8 @@ export class BTransport extends BItem {
           // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
 
           if (this.receiveCallbackObject
-                  && this.receiveCallbackObject.procMessage) {
-                  && typeof this.receiveCallbackObject.procMessage == 'function')
+                  && this.receiveCallbackObject.procMessage
+                  && (typeof this.receiveCallbackObject.procMessage == 'function')) {
               // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
               this.receiveCallbackObject.procMessage(dmsg.message, dmsg);
           }

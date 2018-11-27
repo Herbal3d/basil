@@ -86,15 +86,26 @@ export class Controls extends BItem {
     }
   };
 
-  // Operation called on UI button click ('clickable').
-  const OnClickableOps  = {
-    /*
-    'loadGltf': function() {
+  // Process the HTML element that has class 'clickable'
+  // The attribute 'op' says what to do when the element is clicked.
+  _onClickable(evnt) {
+    // var buttonOp = document.querySelector(evnt.target).getAttribute('op');
+    var buttonOp = evnt.target.getAttribute('op');
+    switch (buttonOp) {
+      case 'addTestObject':  // DEBUG DEBUG
+        GP.GR.AddTestObject();  // DEBUG DEBUG
+        break;  // DEBUG DEBUG
+      case 'showDebug':
+        // Make the state to the opposite of what it is now
+        ShowDebug(!(document.getElementById('DEBUGG').style.visibility !== 'hidden'));
+        break;
+      /*
+      case 'loadGltf':
         var url = Config.assets.gltfURLBase + document.querySelector$('#SelectGltf').val();
         GP.DebugLog('Controls: OnLoadButton: loading ' + url);
         DoLoadMultiple([ [ url, [0,0,0] ] ]);
-    },
-    'loadAtropia': function() {
+        break;
+      case 'loadAtropia':
         GP.DebugLog('Controls: OnLoadAtropia');
         let atropiaValue = Config.Atropia;
         if (atropiaValue) {
@@ -106,25 +117,11 @@ export class Controls extends BItem {
             });
             DoLoadMultiple(atropiaRegions);
         }
-      },
+        break;
       */
-      'addTestObject': function() {
-        // DEBUG DEBUG
-        GP.GR.AddTestObject();
-      },
-      'showDebug': function() {
-        // Make the state to the opposite of what it is now
-        ShowDebug(!(document.getElementById('DEBUGG').style.visibility !== 'hidden'));
-      }
-  };
-
-  // Process the HTML element that has class 'clickable'
-  // The attribute 'op' says what to do when the element is clicked.
-  _onClickable(evnt) {
-    // var buttonOp = document.querySelector(evnt.target).getAttribute('op');
-    var buttonOp = evnt.target.getAttribute('op');
-    if (this.OnClickableOps[buttonOp]) {
-      this.OnClickableOps[buttonOp](evnt.target);
+      default:
+        GP.ReportError('Controls: Unknown button op: ' + buttonOp);
+        break;
     }
   };
 

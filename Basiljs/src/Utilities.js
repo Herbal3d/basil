@@ -26,8 +26,7 @@ export function CreateUniqueId(service, type) {
   }
   return GP.UniqueIdBasename
                 + service
-                + '.'
-                + (type ? type : 'default')
+                + (type ? ( '.' + type ) : '')
                 + '.'
                 + String(GP.UniqueIdCount++);
 };

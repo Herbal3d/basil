@@ -14,8 +14,12 @@
 import GP from 'GP';
 import Config from 'xConfig';
 import { BItem, BItemType, BItemState } from 'xBItem';
+
 import * as Eventing from 'xEventing';
 import { CombineParameters, ParseThreeTuple } from 'xUtilities';
+
+import { DisplayableFactory, InstanceFactory } from 'xFactories';
+import * as Coord from 'xCoord';
 
 import { OrbitControls } from 'xThreeJSOrbit';
 import { GLTFLoader } from 'xThreeJSGLTF';
@@ -50,7 +54,7 @@ export class Graphics extends BItem {
     this.renderer = new THREE.WebGLRenderer(rendererParams);
 
     if (renderParms.clearColor) {
-        this.renderer.setClearColor(Graphics._colorFromValue(renderParms.clearColor));
+        this.renderer.setClearColor(this._colorFromValue(renderParms.clearColor));
     }
 
     if (renderParms.shadows) {
@@ -106,11 +110,12 @@ export class Graphics extends BItem {
 
   Start() {
     this._startRendering();
+    this.SetReady();
   };
 
   _startRendering() {
     if (this.renderer) {
-      this.renderer.animate(this._doRendering);
+      this.renderer.setAnimationLoop(this._doRendering.bind(this));
     }
   };
 
@@ -200,7 +205,7 @@ export class Graphics extends BItem {
           item.worldNode.add(item.displayable.representation);
         }
       }
-      if (item.gPosCoordSystem == BasilType.CoordSystem.CAMERA) {
+      if (item.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
         // item is camera relative
         this._addNodeToCamera(item.worldNode);
       }
@@ -210,18 +215,18 @@ export class Graphics extends BItem {
       }
     })
     .catch( (item, reason) => {
-      GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + item.id);
+      GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + item);
     });
-  }
+  };
 
   // Remove this instance from the displayed world data structure
-  function RemoveFromWorld(inst) {
+  RemoveFromWorld(inst) {
     if (inst.worldNode) {
       this._removeNodeFromWorld(inst.worldNode);
       this._removeNodeFromCamera(inst.worldNode);
       inst.worldNode = undefined;
     }
-  }
+  };
 
   // Load an asset.
   // TODO: some formats have animations, cameras, ... What to do with those?
@@ -229,7 +234,8 @@ export class Graphics extends BItem {
   // parms.auth authorization info
   // parms.url: URL to asset
   // parms.type = GLTF, Collada, OBJ, FBX
-  // returns a promise of a handle to the ThreeJS node that is created
+  // Returns a promise of a handle to ThreeJS node(s) read and created.
+  // Note: only returns the nodes. For animations, etc, need a different routine.
   LoadSimpleAsset(userAuth, parms, progressCallback) {
     GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
     return new Promise(function(resolve, reject) {
@@ -364,13 +370,13 @@ export class Graphics extends BItem {
     let parms = CombineParameters(Config.webgl.lights, passedParms, undefined);
 
     if (parms.ambient) {
-        var ambient = new THREE.AmbientLight(Graphics._colorFromValue(parms.ambient.color),
+        var ambient = new THREE.AmbientLight(this._colorFromValue(parms.ambient.color),
                                             Number(parms.ambient.intensity));
         this.ambientLight = ambient;
         this.scene.add(ambient);
     }
     if (parms.directional) {
-        var directional = new THREE.DirectionalLight(Graphics._colorFromValue(parms.directional.color),
+        var directional = new THREE.DirectionalLight(this._colorFromValue(parms.directional.color),
                                             Number(parms.directional.intensity));
         directional.position.fromArray(parms.directional.direction).normalize();
         this.directionalLight = directional;
@@ -393,7 +399,7 @@ export class Graphics extends BItem {
               'far': 1000,
               'density': 0.00025
           });
-          let fogColor = Graphics._colorFromValue(parms.color);
+          let fogColor = this._colorFromValue(parms.color);
 
           if (parms.type == 'linear') {
               let fogger = new THREE.Fog(fogColor, parms.far);
@@ -412,21 +418,16 @@ export class Graphics extends BItem {
   _initializeCameraInstance(passedParams) {
     // Set up a camera Instance.
     // Cameras can be displayed so there is a type.
-    let cparam = Config.webgl && Config.webgl.camera : Config.webgl.camera : {};
+    let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
     let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
     let cauth = undefined;
-    let cassetInfo = {
-      'asset': {
-        'assetInfo': {
-          'displayInfo': {
-            'displayableType': DisplayableType.CAMERA
-          }
-        }
-      }
+    let cdisplayInfo = {
+      'displayableType': 'camera'
     };
-    let cameraBItem = new DisplayableFactory(cid, cauth, cassetInfo);
-    let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.instance.camera';
-    this.cameraInstance = new Instance(cinstance, cauth, cameraBItem);
+    let cameraBItem = DisplayableFactory(cid, cauth, cdisplayInfo);
+    let cInstanceId = cparam.cameraInstanceId ? cparam.cameraInstanceId : 'org.basil.b.instance.camera';
+    let cameraInstance = InstanceFactory(cInstanceId, cauth, cameraBItem);
+    this.cameraInstance = cameraInstance;
     cameraInstance.procgPosPreGet = function(inst) {
       inst.gPos = this.camera.position.toArray();
     }.bind(this);
@@ -465,7 +466,8 @@ export class Graphics extends BItem {
   // Generate subscribable periodic when camera info (position) changes
   _generateCameraEvents() {
     this.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
-    this.eventCameraInfo.timer = Eventing.createTimedEventProcessor(this.eventCameraInfo, function(topic) {
+    this.eventCameraInfo.timer = Eventing.createTimedEventProcessor(
+                          this.eventCameraInfo, function(topic) {
         if (this.eventCameraInfo.hasSubscriptions) {
             if (this.eventCameraInfo.prevCamPosition == undefined) {
                 this.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
@@ -482,7 +484,7 @@ export class Graphics extends BItem {
                 this.eventCameraInfo.prevCamPosition = newPos;
             }
         }
-    });
+    }.bind(this));
   }
 
   // Start the generation of renderer statistic events
@@ -497,11 +499,11 @@ export class Graphics extends BItem {
               dispInfo.render.fps = this.fps;
               Eventing.fire(this.eventDisplayInfo, dispInfo);
           }
-      });
+      }.bind(this) );
   }
 
   // Return a ThreeJS color number from an array of color values
-  static function _colorFromValue(colorValue) {
+  _colorFromValue(colorValue) {
       if (Array.isArray(colorValue)) {
           return new THREE.Color(colorValue[0], colorValue[1], colorValue[2]);
       }

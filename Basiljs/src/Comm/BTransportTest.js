@@ -14,44 +14,45 @@
 // Test transport.
 import GP from 'GP';
 
-import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
+import { BTransport, EncodeMessage } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
 import { BException } from 'xBException';
 
 // TransportTest uses some global variables to keep track of running tests
-GP.TR.TransportTestsRunning = [];
-GP.TR.TransportTestsAliveIntervalID = undefined;
-GP.TR.TransportTestsPollIntervalID = undefined;
+GP.TransportTestsRunning = [];
+GP.TransportTestsAliveIntervalID = undefined;
+GP.TransportTestsPollIntervalID = undefined;
 
-export default class BTransportTest extends BTransport {
+export class BTransportTest extends BTransport {
 
     constructor(parms) {
         super(parms);
         GP.DebugLog('BTransportTest: constructor');
         this.itemTYpe = 'BTransport.TransportTest';
-        if (GP.TR.TransportTestsRunning === undefined) {
+        if (GP.TransportTestsRunning === undefined) {
             // Attach test variables to the transport globel variable for debugging
-            GP.TR.TransportTestsRunning = [];
+            GP.TransportTestsRunning = [];
         }
-        GP.TR.TransportTestsRunning.push(this);
+        GP.TransportTestsRunning.push(this);
 
         // Timer that generates Alive messages for testing
-        if (GP.TR.TransportTestsAliveIntervalID === undefined) {
-            GP.TR.TransportTestsAliveIntervalID = setInterval(function() {
+        if (GP.TransportTestsAliveIntervalID === undefined) {
+            GP.TransportTestsAliveIntervalID = setInterval(function() {
                 BTransportTest.ProcessAliveInterval();
             }, parms.testInterval ? parms.testInterval : 1000)
         }
         // Timer to poll message queue and process received messsages
-        if (GP.TR.TransportTestsPollIntervalID === undefined) {
-            GP.TR.TransportTestsPollIntervalID = setInterval(function() {
+        if (GP.TransportTestsPollIntervalID === undefined) {
+            GP.TransportTestsPollIntervalID = setInterval(function() {
                 BTransportTest.ProcessPollInterval();
             }, parms.testPollInterval ? parms.testPollInterval : 500)
         }
+        this.SetState(BItemState.READY);
     }
     // Static function called from timer
     // Check each of thet tests and have them generate an alive message
     static ProcessAliveInterval() {
-        for (let test of GP.TR.TransportTestsRunning) {
+        for (let test of GP.TransportTestsRunning) {
             let bmsg = {
                 'AliveCheckReqMsg': {
                     'time': Date.now(),
@@ -66,20 +67,20 @@ export default class BTransportTest extends BTransport {
     // Static function called from timeReceived
     // Check of the tests and see if they have messsages. Is so receive and callback.
     static ProcessPollInterval() {
-        for (let test of GP.TR.TransportTestsRunning) {
-            PushReception(test);
+        for (let test of GP.TransportTestsRunning) {
+            test.PushReception();
         }
     }
     // BTransport.Close()
     Close() {
         GP.DebugLog('BTransportTest: close');
-        if (GP.TR.TransportTestsAliveIntervalID) {
-            clearInterval(GP.TR.TransportTestsAliveIntervalID);
-            GP.TR.TransportTestsAliveIntervalID = undefined;
+        if (GP.TransportTestsAliveIntervalID) {
+            clearInterval(GP.TransportTestsAliveIntervalID);
+            GP.TransportTestsAliveIntervalID = undefined;
         }
-        if (GP.TR.TransportTestsPollIntervalID) {
-            clearInterval(GP.TR.TransportTestsPollIntervalID);
-            GP.TR.TransportTestsPollIntervalID = undefined;
+        if (GP.TransportTestsPollIntervalID) {
+            clearInterval(GP.TransportTestsPollIntervalID);
+            GP.TransportTestsPollIntervalID = undefined;
         }
     }
     // BTransport.Send()
@@ -102,7 +103,7 @@ export default class BTransportTest extends BTransport {
         return this.messages.length > 0;
     }
     get isConnected() {
-        return (GP.TR.TransportTestsPollIntervalID !== undefined);
+        return (GP.TransportTestsPollIntervalID !== undefined);
     }
     // Return a map with statistics
     get stats() {

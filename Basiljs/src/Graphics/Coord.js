@@ -14,9 +14,27 @@
 import GP from 'GP';
 import Config from 'xConfig';
 
-var CO = CO || {};
-GP.CO = CO; // for debugging. Don't use for cross package access.
-
 // The coordinate system transforms are handled by several top level nodes
 //   in the THREE scene tree. At the top, there are two nodes which age the
 //   camera relative nodes and the other is the world relative nodes.
+
+// Numbers must correspond to the values in BasilTypes
+export const CoordSystem = {
+  'WGS86': 0,
+  'CAMERA': 1,
+  'CAMERAABS': 2,
+  'VIRTUAL': 3,
+  'MOON': 4,
+  'MARS': 5,
+  'REL1': 6,
+  'REL2': 7,
+  'REL3': 8
+};
+
+export const RotationSystem = {
+  'WORLDR': 0,  // world relative
+  'FORR': 0,    // frame of reference relative
+  'CAMERAR': 0, // camera relative
+}
+
+// Eventually add a bunch of functions for coordinate conversion, etc>

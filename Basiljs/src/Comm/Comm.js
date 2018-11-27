@@ -13,16 +13,17 @@
 
 import GP from 'GP';
 import Config from 'xConfig';
+import { BItem, BItemType, BItemState } from 'xBItem';
 
-import BasilServiceConnection from './BasilServer.js';
-import PestoClient from './PestoClient.js';
-import BTransportWW from './BTransportWW.js';
-import BTransportWS from './BTransportWS.js';
-import BTransportTest from './BTransportTest.js';
+import { BasilServiceConnection } from 'xBasilServer';
+import { PestoClient } from 'xPestoClient';
+import { BTransportWW } from 'xBTransportWW';
+import { BTransportWS } from 'xBTransportWS';
+import { BTransportTest } from 'xBTransportTest';
 
 import { CreateUniqueId } from 'xUtilities';
 
-export class Comm(parms) extends BItem {
+export class Comm extends BItem {
   constructor() {
     GP.DebugLog('Comm: constructor');
     super('org.basil.b.comm', undefined, BItemType.COMM);
@@ -33,6 +34,7 @@ export class Comm(parms) extends BItem {
   }
 
   Start() {
+    this.SetReady();
   };
 
   // Initialize a transport and a service and resolve the promise when connected
@@ -90,7 +92,9 @@ export class Comm(parms) extends BItem {
       return new Promise(function(resolve, reject) {
           let xport = undefined;
           try {
-              let transportId = parms.transportId ? parms.transportId : CreateUniqueId('transport', parms.transport);
+              if (typeof parms.transportId == 'undefined') {
+                parms.transportId = CreateUniqueId('transport', parms.transport);
+              }
               if (parms.transport) {
                   switch (parms.transport) {
                       case 'WW':
@@ -131,21 +135,28 @@ export class Comm(parms) extends BItem {
       return new Promise(function(resolve, reject) {
           let svc = undefined;
           let serviceType = parms.service ? parms.service : 'BasilServer';
-          let serverId = parms.serviceId ? parms.serviceId : CreateUniqueId('service', serviceType);
           switch (serviceType) {
               case 'BasilServer':
+                  let serverId = parms.serviceId ? parms.serviceId : CreateUniqueId('service', serviceType);
                   if (this.servers[serverId]) {
                       GP.DebugLog('BasilServer: Not creating service. Existing Id:' + serverId);
                       reject('Comm.ConnectService: connecting service with existing Id');
                   }
                   svc = new BasilServiceConnection(serverId, xport, parms);
-                  this.servers[serverId] = svc;
                   svc.serverId = serverId;
+                  this.servers[serverId] = svc;
                   svc.Start();
-                  GP.DebugLog('Comm.Connect: created BasilService: ' + serviceType + ', Id=' + serverId);
+                  svc.SetReady();
+                  GP.DebugLog('Comm.Connect: created BasilServer. Id=' + serverId);
                   break;
               case 'Pesto':
-                  svc = new PestoClient(parms.serviceId, xport, parms);
+                  let pestoId = parms.pestoId ? parms.pestoId : CreateUniqueId('service', serviceType);
+                  svc = new PestoClient(parms.pestoId, xport, parms);
+                  svc.serverId = pestoId;
+                  this.servers[pestoId] = svc;
+                  svc.Start();
+                  svc.SetReady();
+                  GP.DebugLog('Comm.Connect: created PestoClient. Id=' + pestorId);
                   break;
               default:
                   GP.ReportError('Comm.Connect: service type unknown: ' + parms.service)

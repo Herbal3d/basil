@@ -24,7 +24,8 @@ export const BItemState = {
   UNINITIALIZED: 'UNINITIALIZED',
   LOADING: 'LOADING',
   FAILED: 'FAILED',
-  READY: 'READY'
+  READY: 'READY',
+  SHUTDOWN: 'SHUTDOWN'
 };
 
 export const BItemType = {
@@ -170,42 +171,57 @@ export class BItem {
       }
     };
 
+    // Set the state of this BItem.
+    // Someday may need to add actions around state changes
+    SetState(newState) {
+      this.state = newState;
+    }
+    // Helper function so caller doesn't need to have BItem imports.
+    SetReady() {
+      this.SetState(BItemState.READY);
+    }
+
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.
     // TODO: this is a kludge routine using polling. Use state change
     //    events when they existw
     WhenReady(timeoutMS) {
-      let checkInterval = 200;
-      if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
-        checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
-      }
-      let timeout = 5000;
-      if (Config.assets && Config.assets.assetFetchTimeoutMS) {
-        timeout = Number(Config.assets.assetFetchTimeoutMS);
-      }
-      if (timeoutMS) {  // use the passed timeout if specified
-        timeout = timeoutMS;
-      }
-      return new Promise( (resolve, reject) => {
-        if (this.GetProperty('State') == BItemState.READY) {
+      return new Promise( function(resolve, reject) {
+        if (this.state == BItemState.READY) {
           resolve(this);
         }
         else {
-          setTimeout( (calledTimeout) => {
+          let checkInterval = 200;
+          if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
+            checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
+          }
+          let timeout = 5000;
+          if (Config.assets && Config.assets.assetFetchTimeoutMS) {
+            timeout = Number(Config.assets.assetFetchTimeoutMS);
+          }
+          if (timeoutMS) {  // use the passed timeout if specified
+            timeout = timeoutMS;
+          }
+          // Wait for 'checkInterval' and test again for 'READY'.
+          setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
             let levelTimeout = calledTimeout - checkInterval;
-            if (this.GetProperty('State') == BItemState.READY) {
-              resolve(this);
+            if (this.state == BItemState.READY) {
+              resolver(this);
             }
-            if (levelTimeout < 0) {
-              reject(this);
+            if (levelTimeout <= 0) {
+              rejecter(this);
             }
             // If still not ready, tail recursion to more waiting
-            item.WhenReady(levelTimeout)
-              .then(xitem => { resolve(xitem); } )
-              .catch(xitem => { reject(xitem); } );
-          }, checkInterval, timeout);
+            this.WhenReady(levelTimeout)
+              .then(xitem => {
+                resolver(xitem);
+              })
+              .catch(xitem => {
+                rejecter(xitem);
+              });
+          }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
         }
-      });
+      }.bind(this));
     }
 
     // Add an item to the database of items.
