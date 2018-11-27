@@ -92,7 +92,7 @@ export default {
     },
     'Debug': {
       'VerifyProtocol': false,  // call 'verify' on created protocol messages
-      'BasilServerProcMessageDetail': true // DebugLog received messages and responses
+      'BasilServerProcMessageDetail': false // DebugLog received messages and responses
     },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [
