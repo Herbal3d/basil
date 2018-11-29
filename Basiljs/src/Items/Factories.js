@@ -18,6 +18,7 @@ import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
 import { DisplayableCamera } from 'xDisplayableCamera';
 import { DisplayableMeshSet } from 'xDisplayableMeshSet';
 import { Instance } from 'xInstance'
+import { InstanceMeshSet } from 'xInstanceMeshSet'
 
 // Factory function to create Displayable since we may want
 //    to use Proxy's someday.
@@ -48,5 +49,5 @@ export function DisplayableFactory(id, auth, displayInfo) {
 // Factory function to create DisplayableInstances since we may want
 //    to use Proxy's someday.
 export function InstanceFactory(id, auth, baseDisplayable) {
-  return new Instance(id, auth, baseDisplayable);
+  return new InstanceMeshSet(id, auth, baseDisplayable);
 }

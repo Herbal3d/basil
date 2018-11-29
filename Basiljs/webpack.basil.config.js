@@ -47,6 +47,7 @@ module.exports = {
 
         'xDisplayableCamera': path.resolve(__dirname, 'src/Graphics/DisplayableCamera.js'),
         'xDisplayableMeshSet': path.resolve(__dirname, 'src/Graphics/DisplayableMeshSet.js'),
+        'xInstanceMeshSet': path.resolve(__dirname, 'src/Graphics/InstanceMeshSet.js'),
         // 'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
         'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics.js'),
         'xCoord': path.resolve(__dirname, 'src/Graphics/Coord.js'),

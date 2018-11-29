@@ -185,6 +185,8 @@ export class BItem {
     // Promise will be rejected if timeout interval.
     // TODO: this is a kludge routine using polling. Use state change
     //    events when they existw
+    // TODO: a debug option that keeps a list of what is being waited for.
+    //    Would make a useful display when things are slow/hung.
     WhenReady(timeoutMS) {
       return new Promise( function(resolve, reject) {
         if (this.state == BItemState.READY) {

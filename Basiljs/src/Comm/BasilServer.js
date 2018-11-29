@@ -68,58 +68,58 @@ export class BasilServiceConnection  extends BItem {
     // Process message received by BTransport
     // @param buff raw bytes of the message that was transported
     procMessage(buff, rawMessage) {
-        if (this.transport) {
-            // the Buffer should be a BasilServerMessage
-            try {
-              let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
-              // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
-              msgs.BasilServerMessages.forEach( msg => {
-                // The message will have one or more message names with that message type
-                Object.keys(msg).forEach( msgProp => {
-                  let replyContents = undefined;
-                  let template = this.receptionMessages2[msgProp];
-                  if (typeof(template) == 'undefined') {
-                    return; // unknown flags are just ignored
+      if (this.transport) {
+        // the Buffer should be a BasilServerMessage
+        try {
+          let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
+          // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
+          msgs.BasilServerMessages.forEach( msg => {
+            // The message will have one or more message names with that message type
+            Object.keys(msg).forEach( msgProp => {
+              let replyContents = undefined;
+              let template = this.receptionMessages2[msgProp];
+              if (typeof(template) == 'undefined') {
+                return; // unknown flags are just ignored
+              }
+              try {
+                replyContents = template[0](msg[msgProp]);
+              }
+              catch (e) {
+                replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
+              }
+              if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
+                GP.DebugLog('BasilServer.procMessage:'
+                     + ' prop=' + msgProp
+                     + ', rec=' + JSON.stringify(msg[msgProp])
+                     + ', reply=' + JSON.stringify(replyContents)
+                );
+              }
+              if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
+                // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
+                // There is a response to the message
+                let rmsg = {};
+                rmsg[template[1]] = replyContents;
+                if (msg.RPCRequestSession) {
+                  // Return the binding that allows the other side to match the response
+                  rmsg['RPCRequestSession'] = msg.RPCRequestSession;
+                }
+                let bmsgs = { 'BasilServerMessages': [ rmsg ] };
+                if (Config.Debug && Config.Debug.VerifyProtocol) {
+                  if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
+                  GP.DebugLog('BasilServer.procMessage: verification fail: '
+                            + JSON.stringify(bmsgs));
                   }
-                  try {
-                    replyContents = template[0](msg[msgProp]);
-                  }
-                  catch (e) {
-                    replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
-                  }
-                  if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
-                    GP.DebugLog('BasilServer.procMessage:'
-                         + ' prop=' + msgProp
-                         + ', rec=' + JSON.stringify(msg[msgProp])
-                         + ', reply=' + JSON.stringify(replyContents)
-                    );
-                  }
-                  if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
-                    // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
-                    // There is a response to the message
-                    let rmsg = {};
-                    rmsg[template[1]] = replyContents;
-                    if (msg.RPCRequestSession) {
-                      // Return the binding that allows the other side to match the response
-                      rmsg['RPCRequestSession'] = msg.RPCRequestSession;
-                    }
-                    let bmsgs = { 'BasilServerMessages': [ rmsg ] };
-                    if (Config.Debug && Config.Debug.VerifyProtocol) {
-                      if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
-                        GP.DebugLog('BasilServer.procMessage: verification fail: '
-                                + JSON.stringify(bmsgs));
-                      }
-                    }
-                    // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
-                    this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(bmsgs).finish(), this.transport);
-                  }
-                });
-              });
-            }
-            catch(e) {
-               GP.DebugLog('BasilServer: exception processing msg: ' + e);
-            }
-          }
+                }
+                // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
+                this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(bmsgs).finish(), this.transport);
+              }
+            });
+          });
+        }
+        catch(e) {
+           GP.DebugLog('BasilServer: exception processing msg: ' + e);
+        }
+      }
     }
 
     procIdentifyDisplayableObject(req) {
@@ -127,8 +127,8 @@ export class BasilServiceConnection  extends BItem {
         if (req.assetInfo) {
           let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
           let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
-          newItem.ownerId = this.id;    // So we know who created what
           if (newItem) {
+            newItem.ownerId = this.id;    // So we know who created what
             ret = {
                 'identifier': {
                   'id': newItem.GetProperty('Id')

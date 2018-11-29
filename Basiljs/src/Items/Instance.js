@@ -27,8 +27,10 @@ export class Instance extends BItem {
         this.gRotCoordSystem = 0;
         this.gRotgPosModified = false;  // flag saying gRot or gPos modified
 
+        this.gRotPosPreGet = undefined;
         this.gRotPosModified = undefined;
-        this.gRotPosModified = undefined;
+        this.gRotRotPreGet = undefined;
+        this.gRotRotModified = undefined;
 
         // Note: some of these are over-ridden by other modules.
         //    If these are changed, check PredefinedCameraInstance.j
@@ -45,6 +47,7 @@ export class Instance extends BItem {
                   return this.gPos; },
                 'set': (val) => {
                   this.gPos = ParseThreeTuple(val);
+                  GP.DebugLog('Instance.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
                   this.gRotgPosModified = true;
                   if (typeof this.procgPosModified == 'function') {
                       procgPosModified(this);

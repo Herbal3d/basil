@@ -194,16 +194,19 @@ export class Graphics extends BItem {
     .then( item => {
       if (typeof(item.worldNode) == 'undefined') {
         GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + item.id);
-        item.worldNode = new THREE.Group();
-        item.worldNode.name = item.id;
+        let worldNode = new THREE.Group();
+        worldNode.position.fromArray(item.gPos);
+        worldNode.rotation.fromArray(item.gRot);
+        worldNode.name = item.id;
         if (Array.isArray(item.displayable.representation)) {
           item.displayable.representation.forEach( piece => {
-            item.worldNode.add(piece);
+            worldNode.add(piece);
           });
         }
         else {
-          item.worldNode.add(item.displayable.representation);
+          worldNode.add(item.displayable.representation);
         }
+        item.worldNode = worldNode;
       }
       if (item.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
         // item is camera relative
