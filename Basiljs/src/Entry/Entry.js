@@ -10,3 +10,13 @@
 // limitations under the License.
 
 'use strict';
+
+import GP from 'GP';
+import Config from 'xConfig';
+import { Base64 } from 'js-base64';
+
+GGP = GP;   // easy linkage to global context for debugging
+GP.Config = Config;
+
+// Force the processing of the css format file
+import './Entry.less';

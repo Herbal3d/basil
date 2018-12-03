@@ -3,22 +3,17 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: {
-    entry: './src/Entry/Entry.js',
-    jquery: [
-        'jquery'
-    ]
+    entry: './src/Entry/Entry.js'
   },
   output: {
     filename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist')
   },
-  // devtool: 'inline-source-map',
-  // Create aliases for the main components so filenames aren't required in each file
-  //      ref: https://webpack.js.org/configuration/resolve/
   resolve: {
     modules: [ path.resolve(__dirname, "src/jslibs"), "node_modules" ],
     // Aliases so individual files don't reference the filenames
@@ -29,37 +24,31 @@ module.exports = {
     },
     extensions: [ '.js', '.jsx' ]
   },
-  plugins: [
-    // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
-    new webpack.HashedModuleIdsPlugin(),
-
-    // Causes a separate bundle for the entry.vendor modules
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'jquery'
-    }),
-
-    // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
-    new webpack.ProvidePlugin({
-        $: 'jquery'
-    }),
-
+  optimization: {
     // Causes the runtime to be put in a separate bundle rather than included in each bundle
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'runtime'
-    }),
-
-    // Create dist/Basil.html from my template
+    splitChunks: {
+      chunks: 'all'
+    },
+    runtimeChunk: true,
+    // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
+    moduleIds: 'hashed'
+  },
+  plugins: [
+    // Create dist/Entry.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
-        inject: true,
+        inject: 'body',
         filename: 'Entry.html',
         template: 'src/Entry.html',
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
-        lang: 'en-US',
+        lang: 'en-US'
     }),
-
-    new ExtractTextPlugin('Basiljs.css')
+    // Extract text from a bundle or bundles into a separate file.
+    //     ref: https://github.com/webpack-contrib/mini-css-extract-plugin
+    new MiniCssExtractPlugin({
+      filename: "[name].css"
+    })
   ],
   externals: {
       // Hack for creating the GP global variable
@@ -67,32 +56,24 @@ module.exports = {
   },
   module: {
     rules: [
-        {
-            // process less files to the dist directory
-            //    ref: https://webpack.js.org/loaders/less-loader/
-            test: /\.less$/,
-            use: ExtractTextPlugin.extract({
-                use: [
-                    { loader: 'css-loader' },
-                    { loader: 'less-loader' }
-                ],
-                fallback: 'style-loader'    // use style-loader in development
-            })
-        },
-        {
-            // move css files to the dist directory
-            //    ref: https://webpack.js.org/loaders/css-loader/
-            test: /\.css$/,
-            use: [ 'css-loader' ]
-        },
-        {
-            // move image files to the dist directory
-            //    ref: https://webpack.js.org/loaders/file-loader/
-            test: /\.(png|svg|jpg|gif)$/,
-            use: [ 'file-loader' ]
-        }
-
+      {
+        // process less files to the dist directory
+        //    ref: https://webpack.js.org/loaders/less-loader/
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader'
+        ],
+      },
+      {
+        // move image files to the dist directory
+        //    ref: https://webpack.js.org/loaders/file-loader/
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [ 'file-loader' ]
+      }
     ]
   }
 
 };
+// vim: set tabstop=2 shiftwidth=2 expandtab autoindent :

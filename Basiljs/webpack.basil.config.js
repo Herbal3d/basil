@@ -4,9 +4,10 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: {
     basil: './src/Basil.js',
     // declare the config file as a separate entry so it is not packed with the main viewer
@@ -66,24 +67,25 @@ module.exports = {
     },
     extensions: [ '.js', '.jsx' ]
   },
-  plugins: [
+  optimization: {
+    // Causes the runtime to be put in a separate bundle rather than included in each bundle
+    splitChunks: {
+      chunks: 'all'
+    },
+    runtimeChunk: true,
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
-    new webpack.HashedModuleIdsPlugin(),
-
+    moduleIds: 'hashed'
+  },
+  plugins: [
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
         THREE: 'xThreeJS',
     }),
 
-    // Causes the runtime to be put in a separate bundle rather than included in each bundle
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'runtime'
-    }),
-
     // Create dist/Basil.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
-        inject: true,
+        inject: 'body',
         filename: 'Basil.html',
         template: 'src/Basil.html',
         // googleAnalytics.trackingId: 'xyz',
@@ -91,8 +93,11 @@ module.exports = {
         lang: 'en-US'
     }),
     // Extract text from a bundle or bundles into a separate file.
-    //     ref: https://www.npmjs.com/package/extract-text-webpack-plugin
-    new ExtractTextPlugin('Basiljs.css')
+    //     ref: https://github.com/webpack-contrib/mini-css-extract-plugin
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      chunkFilename: "[id].css"
+    })
   ],
   externals: {
       // Hack for creating the GP global debug variable
@@ -100,32 +105,25 @@ module.exports = {
   },
   module: {
     rules: [
-        {
-            // process less files to the dist directory
-            //    ref: https://webpack.js.org/loaders/less-loader/
-            test: /\.less$/,
-            use: ExtractTextPlugin.extract({
-                use: [
-                    { loader: 'css-loader' },
-                    { loader: 'less-loader' }
-                ],
-                fallback: 'style-loader'    // use style-loader in development
-            })
-        },
-        {
-            // move css files to the dist directory
-            //    ref: https://webpack.js.org/loaders/css-loader/
-            test: /\.css$/,
-            use: [ 'css-loader' ]
-        },
-        {
-            // move image files to the dist directory
-            //    ref: https://webpack.js.org/loaders/file-loader/
-            test: /\.(png|svg|jpg|gif)$/,
-            use: [ 'file-loader' ]
-        }
-
+      {
+        // process less files to the dist directory
+        //    ref: https://webpack.js.org/loaders/less-loader/
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader'
+        ],
+      },
+      {
+        // move image files to the dist directory
+        //    ref: https://webpack.js.org/loaders/file-loader/
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [ 'file-loader' ]
+      }
     ]
   }
 
 };
+
+// vim: set tabstop=2 shiftwidth=2 expandtab autoindent :
