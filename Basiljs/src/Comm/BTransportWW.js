@@ -75,7 +75,7 @@ export class BTransportWW extends BTransport {
 
     // Send the data. Places message in output queue
     Send(data) {
-        let emsg = EncodeMessage(data, this);
+        let emsg = this.EncodeMessage(data);
         // GP.DebugLog('BTransportWW.Send: sending: ' + JSON.stringify(emsg));
         if (this.worker) {
             this.worker.postMessage(emsg);

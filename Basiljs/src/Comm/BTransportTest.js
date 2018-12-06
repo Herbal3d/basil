@@ -88,7 +88,7 @@ export class BTransportTest extends BTransport {
     // 'data' is the encoded binary types of the message.
     // One can pass a 'this' context for calling on timer threads, etc
     Send(data) {
-        let emsg = EncodeMessage(data, this);
+        let emsg = this.EncodeMessage(data);
         this.messages.push(emsg);
         this.messagesSent++;
     }

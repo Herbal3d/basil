@@ -17,35 +17,62 @@ import { BException } from 'xBException';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWS extends BTransport {
-    constructor(parms) {
-        super(parms);
-        GP.DebugLog('BTransportWS constructor');
-        this.itemTYpe = 'BTransport.TransportWS';
+  constructor(parms) {
+    super(parms);
+    GP.DebugLog('BTransportWS constructor');
+    this.itemTYpe = 'BTransport.TransportWS';
+    try {
+      this.tempSocket = new WebSocket(params.transportURL):
+      if (this.tempSocket) {
+        this.socket.addEventListener('open', event => {
+          // Socket is opened so put it in a place where everyone can use it
+          this.socket = this.tempSocket;
+          socket.addEventListener('message', event -> {
+            this.messages.push(d.data);
+            this.stats.messagesReceived++;
+            this.PushReception();
+          });
+        });
+      }
+      else {
+        let errMsg = 'BTransportWS: could not open websocket: ' + parms.transportURL;
+        console.log(errMsg);
+        GP.DebugLog(errMsg);
+        throw new BException(errMsg);
+      }
     }
-    Open(connectionString) {
+    catch (e) {
+      let errMsg = 'BTransportWS: exception opening websocket: ' + e;
+      console.log(errMsg);
+      GP.DebugLog(errMsg);
+      throw new BException(errMsg);
     }
-    Close() {
+  }
+  Close() {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = undefined;
     }
-    // Send the data. Places message in output queue
-    Send(data, tcontext) {
-        GP.DebugLog('BTransportWS: call of undefined Send()');
-        throw new BException('BTransportWS: call of undefined Send()');
+  }
+  // Send the data. Places message in output queue
+  Send(data, tcontext) {
+    if (socket) {
+      let emsg = this.EncodeMessage(data);
+      socket.send(emsg);
+      this.stats.messagesSent++;
     }
-    // Get data in the input queue. Returns a Promise as might wait for data.
-    Receive() {
-        GP.DebugLog('BTransportWS: call of undefined Receive()');
-        throw new BException('BTransportWS: call of undefined Receive()');
-    }
-    // Set a calback to be called whenever a message is received
-    SetReceiveCallback(callback) {
-        GP.DebugLog('BTransportWS: call of undefined SetReceiveCallback()');
-        throw new BException('BTransportWS: call of undefined SetReceiveCallback()');
-    }
-    // Return 'true' is there is data in the input queue
-    get isDataAvailable() {
-        return false;
-    }
-    get isConnected() {
-        return false;
-    }
+
+  }
+  // Set a calback to be called whenever a message is received
+  SetReceiveCallback(callback) {
+    this.receiveCallbackObject = callback;
+    // GP.DebugLog('BTransportWS: set receiveCallback');
+  }
+  // Return 'true' is there is data in the input queue
+  get isDataAvailable() {
+    return this.messsages.length > 0;
+  }
+  get isConnected() {
+    return (typeof this.socket !== 'undefined');
+  }
 }

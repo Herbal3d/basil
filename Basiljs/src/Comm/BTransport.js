@@ -74,16 +74,15 @@ export class BTransport extends BItem {
     get isConnected() {
         return false;
     }
-}
 
-// UTILITY FUNCTIONS USED BY children
-// Wrap the passed 'data' into a transport message.
-export function EncodeMessage(data, tthis) {
-    let xport = tthis === undefined ? this : tthis;
-    let tmsg = {
-        'sequenceNum': xport.sequenceNum++,
-        'message': data,
-    };
-    let cmsg = BTransportMsgs.BTransport.create(tmsg);
-    return BTransportMsgs.BTransport.encode(cmsg).finish();
+  // UTILITY FUNCTIONS USED BY children
+  // Wrap the passed 'data' into a transport message.
+  EncodeMessage(data) {
+      let tmsg = {
+          'sequenceNum': this.sequenceNum++,
+          'message': data,
+      };
+      let cmsg = BTransportMsgs.BTransport.create(tmsg);
+      return BTransportMsgs.BTransport.encode(cmsg).finish();
+  }
 }
