@@ -16,113 +16,103 @@ import GP from 'GP';
 import Config from 'xConfig';
 import { BItem, BItemType } from 'xBItem';
 
-import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
+import { flatbuffers } from 'xFlatbuffers';
+import { FBConv } from 'xFBConverters';
+import { org.herbal3d.protocol.basil as BTypes } from 'xBasilTypes';
+import { org.herbal3d.protocol.basil.server as BServer } from 'xBasilServer';
 
 import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
 import { DisplayableFactory, InstanceFactory } from 'xFactories';
 
-
 // The browser is the Basil server so requests are sent to us
-export class BasilServiceConnection  extends BItem {
+export class BasilServer  extends BItem {
     // @param serverId a unique Id for accessing this server instance
     // @param transp BTransport instance to talk over
     // @param parms a map of extra parameters for this service
-    constructor(serverId, transp, parms) {
-        super(serverId, parms.serviceAuth, BItemType.SERVICE);
-        this.transport = transp;
-        this.aliveReplySequenceNum = 2000;
-        this.sessionId = undefined;
+  constructor(serverId, transp, parms) {
+    super(serverId, parms.serviceAuth, BItemType.SERVICE);
+    this.transport = transp;
+    this.aliveReplySequenceNum = 2000;
+    this.sessionId = undefined;
 
-        // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
-        //      If the _reply_name is 'undefined', then the message doesn't expect a response.
-        this.receptionMessages2 = {
-            'IdentifyDisplayableObjectReqMsg': [ this.procIdentifyDisplayableObject.bind(this), 'IdentifyDisplayableObjectRespMsg' ],
-            'ForgetDisplayableObjectReqMsg': [ this.procForgetDisplayableObject.bind(this), 'ForgetDisplayableObjectRespMsg' ],
-            'CreateObjectInstanceReqMsg': [ this.procCreateObjectInstance.bind(this), 'CreateObjectInstanceRespMsg' ],
-            'DeleteObjectInstanceReqMsg': [ this.procDeleteObjectInstance.bind(this), 'DeleteObjectInstanceRespMsg' ],
-            'UpdateObjectPropertyReqMsg': [ this.procUpdateObjectProperty.bind(this), 'UpdateObjectPropertyRespMsg' ],
-            'UpdateInstancePropertyReqMsg': [ this.procUpdateInstanceProperty.bind(this), 'UpdateInstancePropertyRespMsg' ],
-            'UpdateInstancePositionReqMsg': [ this.procUpdateInstancePosition.bind(this), 'UpdateInstancePositionRespMsg' ],
-            'RequestObjectPropertiesReqMsg': [ this.procRequestObjectProperties.bind(this), 'RequestObjectPropertiesRespMsg' ],
-            'RequestInstancePropertiesReqMsg': [ this.procRequestInstanceProperties.bind(this), 'RequestInstancePropertiesRespMsg' ],
-            'OpenSessionReqMsg': [ this.procOpenSession.bind(this), 'OpenSessionRespMsg' ],
-            'CloseSessionReqMsg': [ this.procCloseSession.bind(this), 'CloseSessionRespMsg' ],
-            'MakeConnectionReqMsg': [ this.procMakeConnection.bind(this), 'MakeConnectionRespMsg' ],
-            'AliveCheckReqMsg': [ this.procAliveCheck.bind(this), 'AliveCheckRespMsg' ],
-            'AliveCheckRespMsg': [ this.procAliveCheckResp.bind(this), undefined ]
-        };
-    }
-    Start() {
-        if (this.transport) {
-            // the recieve callback will call 'procMessage'.
-            this.transport.SetReceiveCallbackObject(this);
-        }
-    }
-    Close() {
-        if (this.transport) {
-            this.transport.Close(); // also clears receiveCallback
-            this.transport = undefined;
-        }
-    }
-
-    // Process message received by BTransport
-    // @param buff raw bytes of the message that was transported
-    procMessage(buff, rawMessage) {
+    // templates = [BasilServerMessage_entry_name, message_processor, BasilServerMessage_reply_name]
+    //      If the _reply_name is 'undefined', then the message doesn't expect a response.
+    this.messageProcessors = {
+        'IdentifyDisplayableObjectReq': this.procIdentifyDisplayableObject.bind(this),
+        'ForgetDisplayableObjectReq': this.procForgetDisplayableObject.bind(this),
+        'CreateObjectInstanceReq': this.procCreateObjectInstance.bind(this),
+        'DeleteObjectInstanceReq': this.procDeleteObjectInstance.bind(this),
+        'UpdateObjectPropertyReq': this.procUpdateObjectProperty.bind(this),
+        'UpdateInstancePropertyReq': this.procUpdateInstanceProperty.bind(this),
+        'UpdateInstancePositionReq': this.procUpdateInstancePosition.bind(this),
+        'RequestObjectPropertiesReq': this.procRequestObjectProperties.bind(this),
+        'RequestInstancePropertiesReq': this.procRequestInstanceProperties.bind(this),
+        'OpenSessionReq': this.procOpenSession.bind(this),
+        'CloseSessionReq': this.procCloseSession.bind(this),
+        'MakeConnectionReq': this.procMakeConnection.bind(this),
+        'AliveCheckReq': this.procAliveCheck.bind(this),
+        'AliveCheckResp': this.procAliveCheckResp.bind(this)
+    };
+  }
+  Start() {
       if (this.transport) {
-        // the Buffer should be a BasilServerMessage
-        try {
-          let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
-          // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
-          msgs.BasilServerMessages.forEach( msg => {
-            // The message will have one or more message names with that message type
-            Object.keys(msg).forEach( msgProp => {
-              let replyContents = undefined;
-              let template = this.receptionMessages2[msgProp];
-              if (typeof(template) == 'undefined') {
-                return; // unknown flags are just ignored
-              }
-              try {
-                replyContents = template[0](msg[msgProp]);
-              }
-              catch (e) {
-                replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
-              }
-              if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
-                GP.DebugLog('BasilServer.procMessage:'
-                     + ' prop=' + msgProp
-                     + ', rec=' + JSON.stringify(msg[msgProp])
-                     + ', reply=' + JSON.stringify(replyContents)
-                );
-              }
-              if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
-                // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
-                // There is a response to the message
-                let rmsg = {};
-                rmsg[template[1]] = replyContents;
-                if (msg.RPCRequestSession) {
-                  // Return the binding that allows the other side to match the response
-                  rmsg['RPCRequestSession'] = msg.RPCRequestSession;
-                }
-                let bmsgs = { 'BasilServerMessages': [ rmsg ] };
-                if (Config.Debug && Config.Debug.VerifyProtocol) {
-                  if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
-                  GP.DebugLog('BasilServer.procMessage: verification fail: '
-                            + JSON.stringify(bmsgs));
-                  }
-                }
-                // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
-                this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(bmsgs).finish(), this.transport);
-              }
-            });
-          });
+          // the recieve callback will call 'procMessage'.
+          this.transport.SetReceiveCallbackObject(this);
+      }
+  }
+  Close() {
+      if (this.transport) {
+          this.transport.Close(); // also clears receiveCallback
+          this.transport = undefined;
+      }
+  }
+
+  // Process message received by BTransport
+  // @param transportMsg a flatbuffer handle to a bTransportMsg
+  procMessage(transportMsg) {
+    if (this.transport) {
+      // the Buffer should be a BasilServerMessage
+      try {
+        // The msgType number indexes the message name which give up the processor
+        let messageTypeName = BMessage.ServerMessage[transportMsg.msgType()];
+        let processor = this.messageProcessors[messageTypeName];
+        // Start a message buffer builder for any response to send back
+        let fbb = new flatbuffers.Builder();
+        // Add a tag on the builder that will hold the type of message built.
+        fbb.replyMsgType = BMessage.ServerMessage.NONE;
+
+        let replyMsgOffset = processor(transportMsg, fbb);
+        if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
+          GP.DebugLog('BasilServer.procMessage:'
+               + ' prop=' + messageTypeName
+               + ', rec=' + JSON.stringify(transportMsg.msg())
+               + ', reply=' + JSON.stringify(replyMsg)
+          );
         }
-        catch(e) {
-           GP.DebugLog('BasilServer: exception processing msg: ' + e);
+        if (fbb.replyMsgType != BMessage.ServerMessage.NONE) {
+          // Generate a reply.
+          // The information from the received BResponseRequest is returned
+          //     so the receiver can match the call with the response.
+          let receivedSession = transportMsg.responseSession();
+          if (receivedRequest) {
+            this.transport.Send(fbb, replyMsgOffset, fbb.replyMsgType, respOffset);
+          }
+          else {
+            // If the incoming request didn't have a session number, just return message.
+            this.transport.Send(fbb, replyMsgOffset, fbb.replyMsgType);
+          }
         }
       }
+      catch(e) {
+         GP.DebugLog('BasilServer: exception processing msg: ' + e);
+      }
     }
+  }
 
-    procIdentifyDisplayableObject(req) {
+    procIdentifyDisplayableObject(buff) {
+      let msg = buff.msg(new BServer.IdentifyDisplayableObject());
+
+
         let ret = undefined;
         if (req.assetInfo) {
           let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
@@ -136,11 +126,11 @@ export class BasilServiceConnection  extends BItem {
             };
           }
           else {
-            ret = BasilServiceConnection.MakeException('Could not create object');
+            ret = BasilServer.MakeException('Could not create object');
           }
         }
         else {
-          ret = BasilServiceConnection.MakeException('No assetInfo specified');
+          ret = BasilServer.MakeException('No assetInfo specified');
         }
         return ret;
     }
@@ -161,7 +151,7 @@ export class BasilServiceConnection  extends BItem {
             let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
             newInstance.ownerId = this.id;    // So we know who created what
             if (req.pos) {
-                BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
+                BasilServer.UpdatePositionInfo(newInstance, req.pos);
             }
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet);
@@ -174,7 +164,7 @@ export class BasilServiceConnection  extends BItem {
             };
           }
           else {
-            ret = BasilServiceConnection.MakeException('Displayable was not found: ' + req.identifier.id);
+            ret = BasilServer.MakeException('Displayable was not found: ' + req.identifier.id);
           }
         }
         else {
@@ -197,7 +187,7 @@ export class BasilServiceConnection  extends BItem {
             obj.SetProperties(req.props);
           }
           else {
-            ret = BasilServiceConnection.MakeException('Object not found');
+            ret = BasilServer.MakeException('Object not found');
           }
         }
         return ret;
@@ -210,7 +200,7 @@ export class BasilServiceConnection  extends BItem {
             obj.SetProperties(req.props);
           }
           else {
-            ret = BasilServiceConnection.MakeException('Object not found');
+            ret = BasilServer.MakeException('Object not found');
           }
         }
         return ret;
@@ -219,7 +209,7 @@ export class BasilServiceConnection  extends BItem {
       if (req.instanceId && req.pos) {
         let instance = BItem.GetItem(req.instanceId.id);
         if (instance) {
-          BasilServiceConnection.UpdatePositionInfo(instance, req.pos);
+          BasilServer.UpdatePositionInfo(instance, req.pos);
         }
       }
       return {};
@@ -230,10 +220,10 @@ export class BasilServiceConnection  extends BItem {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
         let obj = BItem.GetItem(req.identifier.id);
         if (obj) {
-          ret = { 'properties': BasilServiceConnection.CreatePropertyList(obj.FetchProperties(filter)) };
+          ret = { 'properties': BasilServer.CreatePropertyList(obj.FetchProperties(filter)) };
         }
         else {
-          ret = BasilServiceConnection.MakeException('Object not found: ' + req.identifier.id);
+          ret = BasilServer.MakeException('Object not found: ' + req.identifier.id);
         }
         return ret;
       };
@@ -244,10 +234,10 @@ export class BasilServiceConnection  extends BItem {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
         let instance = BItem.GetItem(req.instanceId.id);
         if (instance) {
-          ret = { 'properties': BasilServiceConnection.CreatePropertyList(instance.FetchProperties(filter)) };
+          ret = { 'properties': BasilServer.CreatePropertyList(instance.FetchProperties(filter)) };
         }
         else {
-          ret = BasilServiceConnection.MakeException('Instance not found: ' + req.instanceId.id);
+          ret = BasilServer.MakeException('Instance not found: ' + req.instanceId.id);
         }
         return ret;
       };

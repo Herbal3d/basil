@@ -13,7 +13,12 @@
 
 import GP from 'GP';
 import Config from 'xConfig';
-import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
+
+import { BasilServer } from 'xBasilServer';
+
+import {flatbuffers} from 'xFlatbuffers';
+import {org.herbal3d.protocol.basil as BTypes} from 'xBasilTypes';
+import {org.herbal3d.protocol.basil.server as BServer} from 'xBasilServer';
 
 // Client connection used in WebWorker and testing instances
 export class BasilClientConnection {
@@ -30,87 +35,77 @@ export class BasilClientConnection {
     Close() {
     };
     // function that sends the request and returns a Promise for the response.
-    SendAndPromiseResponse(msg, reqName) {
-        let smsg = {};
-        smsg[ reqName + 'ReqMsg'] = msg;
-        smsg['RPCRequestSession'] = this.RPCsession++;
-        let smsgs = { 'BasilServerMessages': [ smsg ] };
-        if (Config.Debug && Config.Debug.VerifyProtocol) {
-          if (BasilServerMsgs.BasilServerMessage.verify(smsgs)) {
-            GP.DebugLog('BasilClient.SendAndPromiseResponse: verification fail: '
-                    + JSON.stringify(smsgs));
-          }
-        }
-        // let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
-        let emsg = BasilServerMsgs.BasilServerMessage.encode(smsgs).finish();
-        // Return a promise and pass the 'resolve' function to the response message processor
-        return new Promise( function(resolve,reject) {
-            this.RPCSessionCallback[smsg.RPCRequestSession] = {
-              'timeRPCCreated': Date.now(),
-              'resolve': resolve,
-              'reject': reject,
-              'requestName': reqName,
-              'rawMessage': smsgs
-            };
-            this.transport.Send(emsg);
+    SendAndPromiseResponse(fbb, msg, msgType) {
+      let thisSession = this.RPCsession++;
+      return new Promise( function(resolve,reject) {
+          this.RPCSessionCallback[thisSession] = {
+            'timeRPCCreated': Date.now(),
+            'resolve': resolve,
+            'reject': reject,
+          };
+          this.transport.Send(fbb, msg, msgType, thisSession);
         }.bind(this));
     };
 
     // Called when message received. At the moment, all messages are
     //    be responses to RPC requests.
     procMessage(resp) {
-      let smsgs = BasilServerMsgs.BasilServerMessage.decode(resp);
-      if (smsgs.BasilServerMessages) {
-        smsgs.BasilServerMessages.forEach( msg => {
-          if (msg.RPCRequestSession && msg.RPCRequestSession != 0) {
-            let session = this.RPCSessionCallback[msg.RPCRequestSession];
-            if (session) {
-              this.RPCSessionCallback.delete(msg.RPCRequestSession);
-              try {
-                if (msg.hasOwnProperty( session.requestName + 'RespMsg')) {
-                  // if this is a properly formed response, return the body of the response
-                  (session.resolve)(msg[ session.requestName + 'RespMsg']);
-                }
-                else {
-                  (session.resolve)(msg);
-                }
-              }
-              catch (e) {
-                let errMsg = 'BasilClient.procMessage: exception processing msg: ' + e;
-                console.log(errMsg);
-                GP.DebugLog(errMsg);
-                (session.reject)(e);
-              }
-            }
-            else {
-              let errMsg = 'BasilClient.procMessage: received msg which is not RPC response: '
-                        + JSON.stringify(msg);
-              console.log(errMsg);
-              GP.DebugLog(errMsg);
-            }
+      let fbBuff = new flatbuffer.ByteBuffer(resp);
+      let rcv = BMessage.BTransportMsg.getRootAsBTransportMsg(fbBuff);
+      // We expect any message received to be a response to a request
+      let session = rcv.responseSession();
+      if (session) {
+        if (this.RPCSessionCallback.has(session)) {
+          let sessionInfo = this.RPCSessionCallback[session];
+          try {
+            this.RPCSessionCallback.delete(session);
+            let serverMsgName = BServer.ServerMessage[rcv.msgType];
+            // NOTE: the receiver gets a flatbuffer structure
+            (sessionInfo.resolve)(rcv.msg(new BServer[serverMsgName]()));
           }
-          else {
-            let errMsg = 'BasilClient.procMessage: received misformed msg: '
-                      + JSON.stringify(msg);
+          catch (e) {
+            let errMsg = 'BasilClient.procMessage: exception processing msg: ' + e;
             console.log(errMsg);
             GP.DebugLog(errMsg);
+            (sessionInfo.reject)(e);
           }
-        });
+        }
+        else {
+          let errMsg = 'BasilClient.procMessage: received RPC msg for unknown session:'
+                      + session;
+          console.log(errMsg);
+          GP.DebugLog(errMsg);
+        }
+      }
+      else {
+        let errMsg = 'BasilClient.procMessage: received msg which is not RPC response');
+        console.log(errMsg);
+        GP.DebugLog(errMsg);
       }
     }
 
     IdentifyDisplayableObject(auth, asset, aabb) {
-        let msg = { 'assetInfo': asset };
-        if (auth) msg['auth'] = auth;
-        if (aabb) msg['aabb'] = aabb;
-        return this.SendAndPromiseResponse(msg, 'IdentifyDisplayableObject');
+      let fbb = flatbuffers.Builder();
+      let packedAsset = BasilServer.PackAssetInfo(fbb, asset);
+      let packedAuth = auth ? BasilServer.PackAuth(fbb, auth) : undefined;
+      let packedAabb = aabb ? BasilServer.PackAabb(fbb, aabb) : undefined;
+      BServer.IdentifyDisplayableObjectReq.startIdentifyDisplayableObjectReq(fbb);
+      BServer.IdentifyDisplayableObjectReq.addAssetInfo(fbb, packedAsset);
+      if (packedAuth) BServer.IdentifyDisplayableObjectReq.addAuth(fbb, packedAuth);
+      if (packedAabb) BServer.IdentifyDisplayableObjectReq.addAabb(fbb, packedAabb);
+      let msg = BServer.IdentifyDisplayableObjectReq.endIdentifyDisplayableObjectReq(fbb);
+      return this.SendAndPromiseResponse(fbb, msg, BServer.ServerMessage.IdentifyDisplayableObjectReq);
     };
     ForgetDisplayableObject(auth, id) {
-        let msg = { 'identifier': { 'id': id } };
-        if (auth) msg['auth'] = auth;
-        return this.SendAndPromiseResponse(msg, 'ForgetDisplayableObject');
+      let fbb = flatbuffers.Builder();
+      let packedAuth = auth ? BasilServer.PackAuth(fbb, auth) : undefined;
+      BServer.ForgetDisplayableObjectReq.startIdentifyDisplayableObjectReq(fbb);
+      BServer.ForgetDisplayableObjectReq.addIdentifier(fbb, fbb.createString(id));
+      if (packedAuth) BServer.IdentifyDisplayableObjectReq.addAuth(fbb, packedAuth);
+      return this.SendAndPromiseResponse(fbb, msg, BServer.ServerMessage.ForgetDisplayableObjectReq);
     };
     CreateObjectInstance(auth, id, instancePositionInfo, propertyList) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (instancePositionInfo) msg['pos'] = instancePositionInfo;
@@ -118,53 +113,62 @@ export class BasilClientConnection {
         return this.SendAndPromiseResponse(msg, 'CreateObjectInstance');
     };
     DeleteObjectInstance(auth, id) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg, 'DeleteObjectInstance');
     };
     UpdateObjectProperty(auth, id, propertyList) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, 'UpdateObjectProperty');
     };
     UpdateInstanceProperty(auth, id, propertyList) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'instanceId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, 'UpdateInstanceProperty');
     };
     UpdateInstancePosition(auth, id,  pos) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'instanceId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (pos) msg['pos'] = pos;
         return this.SendAndPromiseResponse(msg, 'UpdateInstancePosition');
     };
     RequestObjectProperties(auth, id, filter) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'identifier': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, 'RequestObjectProperties');
     };
     RequestInstanceProperties(auth, id, filter) {
+      let fbb = flatbuffers.Builder();
         let msg = { 'instanceId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, 'RequestInstanceProperties');
     };
     OpenSession(auth, propertyList) {
+      let fbb = flatbuffers.Builder();
         let msg = {};
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['features'] = propertyList;
         return this.SendAndPromiseResponse(msg, 'OpenSession');
     };
     CloseSession(auth, reason) {
+      let fbb = flatbuffers.Builder();
         let msg = {};
         if (auth) msg['auth'] = auth;
         if (reason) msg['reason'] = reason;
         return this.SendAndPromiseResponse(msg, 'CloseSession');
     };
     AliveCheck(auth) {
+      let fbb = flatbuffers.Builder();
         let msg = {};
         if (auth) msg['auth'] = auth;
         msg['time'] = Date.now(),

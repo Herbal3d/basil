@@ -19,6 +19,8 @@ import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
 import { BException } from 'xBException';
 
+import { FBConv } from 'xFBConverters';
+
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWW extends BTransport {
     constructor(parms) {
@@ -74,17 +76,18 @@ export class BTransportWW extends BTransport {
     }
 
     // Send the data. Places message in output queue
-    Send(data) {
-        let emsg = EncodeMessage(data, this);
-        // GP.DebugLog('BTransportWW.Send: sending: ' + JSON.stringify(emsg));
-        if (this.worker) {
-            this.worker.postMessage(emsg);
-        }
-        else {
-            // @ts-ignore
-            postMessage(emsg);
-        }
-        this.stats.messagesSent++;
+    Send(fbb, msgOffset, msgType, respSession, respSessionKey, auth) {
+      let emsg = FBConv.PackMessage(fbb, this, msgOffset, msgType,
+                  respSession, respSessionKey, auth);
+      fbb.finish(emsg); // all done packing
+      if (this.worker) {
+          this.worker.postMessage(fbb.asInt8Array());
+      }
+      else {
+          // @ts-ignore
+          postMessage(fbb.asInt8Array()));
+      }
+      this.stats.messagesSent++;
     }
 
     // Set a calback to be called whenever a message is received

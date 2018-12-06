@@ -15,7 +15,7 @@ import GP from 'GP';
 import Config from 'xConfig';
 import { BItem, BItemType, BItemState } from 'xBItem';
 
-import { BasilServiceConnection } from 'xBasilServer';
+import { BasilServer } from 'xBasilServer';
 import { PestoClient } from 'xPestoClient';
 import { BTransportWW } from 'xBTransportWW';
 import { BTransportWS } from 'xBTransportWS';
@@ -142,7 +142,7 @@ export class Comm extends BItem {
                       GP.DebugLog('BasilServer: Not creating service. Existing Id:' + serverId);
                       reject('Comm.ConnectService: connecting service with existing Id');
                   }
-                  svc = new BasilServiceConnection(serverId, xport, parms);
+                  svc = new BasilServer(serverId, xport, parms);
                   svc.serverId = serverId;
                   this.servers[serverId] = svc;
                   svc.Start();

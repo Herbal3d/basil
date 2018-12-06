@@ -36,7 +36,10 @@ module.exports = {
         'xBasilServer': path.resolve(__dirname, 'src/Comm/BasilServer.js'),
         'xBasilClient': path.resolve(__dirname, 'src/Comm/BasilClient.js'),
         'xPestoClient': path.resolve(__dirname, 'src/Comm/PestoClient.js'),
-        'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
+        'xFBConverters': path.resolve(__dirname, 'src/Comm/FBConverters.js'),
+        'xBasilTypes': path.resolve(__dirname, 'src/jslibs/BasilTypes_generated.js'),
+        'xBasilServer': path.resolve(__dirname, 'src/jslibs/BasilServer_generated.js'),
+        'xBMessage': path.resolve(__dirname, 'src/jslibs/BMessage_generated.js'),
 
         'xControls': path.resolve(__dirname, 'src/Controls/Controls.js'),
         'xEventing': path.resolve(__dirname, 'src/Eventing/Eventing.js'),

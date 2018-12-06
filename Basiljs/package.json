@@ -24,7 +24,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "js-base64": "^2.4.9",
     "@protobufjs/aspromise": "^1.1.2",
     "@protobufjs/base64": "^1.1.2",
     "@protobufjs/codegen": "^2.0.4",
@@ -37,6 +36,7 @@
     "@protobufjs/utf8": "^1.1.0",
     "@types/long": "^3.0.32",
     "@types/node": "^8.10.26",
+    "js-base64": "^2.4.9",
     "long": "^4.0.0"
   },
   "devDependencies": {
