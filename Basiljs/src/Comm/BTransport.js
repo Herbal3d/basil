@@ -14,7 +14,7 @@
 import GP from 'GP';
 
 import { BException } from 'xBException';
-import { BTransport as BTransportMsgs } from 'xBasilServerMessages';
+import { BMesssage } from 'xBasilServerMessages';
 import { BItem, BItemType } from 'xBItem';
 
 // Template for transport implmentations.
@@ -82,7 +82,7 @@ export class BTransport extends BItem {
           'sequenceNum': this.sequenceNum++,
           'message': data,
       };
-      let cmsg = BTransportMsgs.BTransport.create(tmsg);
-      return BTransportMsgs.BTransport.encode(cmsg).finish();
+      let cmsg = BMessage.BMessage.create(tmsg);
+      return BMessage.BMessage.encode(cmsg).finish();
   }
 }

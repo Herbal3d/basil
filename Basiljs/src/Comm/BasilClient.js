@@ -12,8 +12,8 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
-import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
+import Config from '../config.js';
+import { BasilServer as BasilServerMsgs } from "../jslibs/BasilServerMessages.js"
 
 // Client connection used in WebWorker and testing instances
 export class BasilClientConnection {
@@ -121,7 +121,7 @@ export class BasilClientConnection {
         if (auth) msg['auth'] = auth;
         if (instancePositionInfo) msg['pos'] = instancePositionInfo;
         if (propertyList) msg['props'] = propertyList;
-        if (instanceId) msg]'instanceId'] = { 'id': instanceId };
+        if (instanceId) msg['instanceId'] = { 'id': instanceId };
         return this.SendAndPromiseResponse(msg, 'CreateObjectInstance');
     };
     DeleteObjectInstance(auth, instanceId) {

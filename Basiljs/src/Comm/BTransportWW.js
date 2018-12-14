@@ -15,9 +15,9 @@
 // @ts-ignore
 import GP from 'GP';
 
-import { BTransport, EncodeMessage, PushReception } from './BTransport.js';
-import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
-import { BException } from 'xBException';
+import { BTransport } from './BTransport.js';
+import { BItemState } from '../Items/BItem';
+import { BException } from '../BException';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWW extends BTransport {

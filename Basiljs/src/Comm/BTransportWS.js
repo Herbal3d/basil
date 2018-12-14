@@ -22,12 +22,12 @@ export class BTransportWS extends BTransport {
     GP.DebugLog('BTransportWS constructor');
     this.itemTYpe = 'BTransport.TransportWS';
     try {
-      this.tempSocket = new WebSocket(params.transportURL):
+      this.tempSocket = new WebSocket(params.transportURL);
       if (this.tempSocket) {
         this.socket.addEventListener('open', event => {
           // Socket is opened so put it in a place where everyone can use it
           this.socket = this.tempSocket;
-          socket.addEventListener('message', event -> {
+          socket.addEventListener('message', event => {
             this.messages.push(d.data);
             this.stats.messagesReceived++;
             this.PushReception();

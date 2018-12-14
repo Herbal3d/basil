@@ -74,49 +74,48 @@ export class BasilServiceConnection  extends BItem {
           let msgs = BasilServerMsgs.BasilServerMessageBody.decode(buff);
           // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
           msgs.BasilServerMessages.forEach( msg => {
-              let replyContents = undefined;
-              let reqName = msg.BasilServerMesssage.get();
-              let template = this.receptionMessages2[reqName];
-              if (typeof template == 'undefined') {
-                return; // unknown flags are just ignored
+            let replyContents = undefined;
+            let reqName = msg.BasilServerMesssage.get();
+            let template = this.receptionMessages2[reqName];
+            if (typeof template == 'undefined') {
+              return; // unknown flags are just ignored
+            }
+            try {
+              replyContents = template[0](msg.BasilServerMessage[reqName]);
+            }
+            catch (e) {
+              replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
+            }
+            if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
+              GP.DebugLog('BasilServer.procMessage:'
+                    + ' prop=' + msgProp
+                    + ', rec=' + JSON.stringify(msg.BasilServerMessage)
+                    + ', reply=' + JSON.stringify(replyContents)
+              );
+            }
+            if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
+              // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
+              // There is a response to the message
+              let rmsg = {};
+              rmsg[template[1]] = replyContents;
+              if (msg.ResponseReq) {
+                // Return the binding that allows the other side to match the response
+                rmsg['ResponseReq'] = { 'responseSession': msg.ResponseReq.responseSession };
               }
-              try {
-                replyContents = template[0](msg.BasilServerMessage[reqName]);
-              }
-              catch (e) {
-                replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
-              }
-              if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
-                GP.DebugLog('BasilServer.procMessage:'
-                     + ' prop=' + msgProp
-                     + ', rec=' + JSON.stringify(msg.BasilServerMessage)
-                     + ', reply=' + JSON.stringify(replyContents)
-                );
-              }
-              if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
-                // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
-                // There is a response to the message
-                let rmsg = {};
-                rmsg[template[1]] = replyContents;
-                if (msg.ResponseReq) {
-                  // Return the binding that allows the other side to match the response
-                  rmsg['ResponseReq'] = { 'responseSession': msg.ResponseReq.responseSession };
+              let bmsgs = { 'BasilServerMessages': [ rmsg ] };
+              if (Config.Debug && Config.Debug.VerifyProtocol) {
+                if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
+                GP.DebugLog('BasilServer.procMessage: verification fail: '
+                          + JSON.stringify(bmsgs));
                 }
-                let bmsgs = { 'BasilServerMessages': [ rmsg ] };
-                if (Config.Debug && Config.Debug.VerifyProtocol) {
-                  if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
-                  GP.DebugLog('BasilServer.procMessage: verification fail: '
-                            + JSON.stringify(bmsgs));
-                  }
-                }
-                // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
-                this.transport.Send(BasilServerMsgs.BasilServerMessageBody.encode(bmsgs).finish());
               }
-            });
+              // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
+              this.transport.Send(BasilServerMsgs.BasilServerMessageBody.encode(bmsgs).finish());
+            }
           });
         }
         catch(e) {
-           GP.DebugLog('BasilServer: exception processing msg: ' + e);
+          GP.DebugLog('BasilServer: exception processing msg: ' + e);
         }
       }
     }
