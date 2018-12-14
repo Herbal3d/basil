@@ -91,8 +91,9 @@ export default {
         }
     },
     'Debug': {
-      'VerifyProtocol': false,  // call 'verify' on created protocol messages
-      'BasilServerProcMessageDetail': false // DebugLog received messages and responses
+      'VerifyProtocol': false,                  // call 'verify' on created protocol messages
+      'BasilServerProcMessageDetail': false,    // DebugLog received messages and responses
+      'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
     },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [

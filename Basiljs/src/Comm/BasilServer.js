@@ -75,42 +75,46 @@ export class BasilServiceConnection  extends BItem {
           // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
           msgs.BasilServerMessages.forEach( msg => {
             let replyContents = undefined;
-            let reqName = msg.BasilServerMesssage.get();
-            let template = this.receptionMessages2[reqName];
-            if (typeof template == 'undefined') {
-              return; // unknown flags are just ignored
-            }
-            try {
-              replyContents = template[0](msg.BasilServerMessage[reqName]);
-            }
-            catch (e) {
-              replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
-            }
-            if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
-              GP.DebugLog('BasilServer.procMessage:'
-                    + ' prop=' + msgProp
-                    + ', rec=' + JSON.stringify(msg.BasilServerMessage)
-                    + ', reply=' + JSON.stringify(replyContents)
-              );
-            }
-            if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
-              // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
-              // There is a response to the message
-              let rmsg = {};
-              rmsg[template[1]] = replyContents;
-              if (msg.ResponseReq) {
-                // Return the binding that allows the other side to match the response
-                rmsg['ResponseReq'] = { 'responseSession': msg.ResponseReq.responseSession };
+            // The following line is supposed to return the 'oneOf' field name. Doesn't seem to work.
+            // let reqName = msg.BasilServerMesssage;
+            // Do our own search for the message field
+            let reqName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
+            let template = reqName ? this.receptionMessages2[reqName] : undefined;
+            if (template) {
+              try {
+                replyContents = template[0](msg[reqName]);
               }
-              let bmsgs = { 'BasilServerMessages': [ rmsg ] };
-              if (Config.Debug && Config.Debug.VerifyProtocol) {
-                if (BasilServerMsgs.BasilServerMessage.verify(bmsgs)) {
-                GP.DebugLog('BasilServer.procMessage: verification fail: '
-                          + JSON.stringify(bmsgs));
+              catch (e) {
+                replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
+              }
+              if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
+                GP.DebugLog('BasilServer.procMessage:'
+                      + ' prop=' + msgProp
+                      + ', rec=' + JSON.stringify(msg)
+                      + ', reply=' + JSON.stringify(replyContents)
+                );
+              }
+              if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
+                // GP.DebugLog('BasilServer.procMessage: response: ' + JSON.stringify(replyContents));
+                // There is a response to the message
+                let rmsg = {};
+                rmsg[template[1]] = replyContents;
+                if (msg.ResponseReq) {
+                  // Return the binding that allows the other side to match the response
+                  rmsg['ResponseReq'] = { 'responseSession': msg.ResponseReq.responseSession };
                 }
+                let bmsgs = { 'BasilServerMessages': [ rmsg ] };
+                if (Config.Debug && Config.Debug.VerifyProtocol) {
+                  if (BasilServerMsgs.BasilServerMessageBody.verify(bmsgs)) {
+                    GP.ErrorLog('BasilServer.procMessage: verification fail: ' + JSON.stringify(bmsgs));
+                  }
+                }
+                // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
+                this.transport.Send(BasilServerMsgs.BasilServerMessageBody.encode(bmsgs).finish());
               }
-              // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
-              this.transport.Send(BasilServerMsgs.BasilServerMessageBody.encode(bmsgs).finish());
+            }
+            else {
+              GP.ErrorLog('BasilServer.procMessage: unknown server message: ' + reqName);
             }
           });
         }
@@ -128,7 +132,7 @@ export class BasilServiceConnection  extends BItem {
           if (newItem) {
             newItem.ownerId = this.id;    // So we know who created what
             ret = {
-                'identifier': {
+                'objectId': {
                   'id': newItem.GetProperty('Id')
                 }
             };
@@ -144,16 +148,16 @@ export class BasilServiceConnection  extends BItem {
     }
     procForgetDisplayableObject(req) {
         let ret = {};
-        if (req.identifier && req.identifier.id) {
-          BItem.ForgetItem(req.identifier.id);
+        if (req.objectId && req.objectId.id) {
+          BItem.ForgetItem(req.objectId.id);
         }
         return ret;
     }
     // Given an object with recieved parameters, do operation and return response object
     procCreateObjectInstance(req) {
         let ret = undefined;
-        if (req.identifier) {
-          let baseDisplayable = BItem.GetItem(req.identifier.id);
+        if (req.objectId) {
+          let baseDisplayable = BItem.GetItem(req.objectId.id);
           if (baseDisplayable) {
             let instanceId = CreateUniqueInstanceId();
             let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
@@ -172,7 +176,7 @@ export class BasilServiceConnection  extends BItem {
             };
           }
           else {
-            ret = BasilServiceConnection.MakeException('Displayable was not found: ' + req.identifier.id);
+            ret = BasilServiceConnection.MakeException('Displayable was not found: ' + req.objectId.id);
           }
         }
         else {
@@ -181,16 +185,16 @@ export class BasilServiceConnection  extends BItem {
         return ret;
     }
     procDeleteObjectInstance(req) {
-        if (req.identifier) {
-          BItem.ForgetItem(req.identifier.id);
+        if (req.objectId) {
+          BItem.ForgetItem(req.objectId.id);
         }
         return {
         };
     }
     procUpdateObjectProperty(req) {
         let ret = {};
-        if (req.identifier && req.props) {
-          let obj = BItem.GetItem(req.identifier.id);
+        if (req.objectId && req.props) {
+          let obj = BItem.GetItem(req.objectId.id);
           if (obj) {
             obj.SetProperties(req.props);
           }
@@ -224,14 +228,14 @@ export class BasilServiceConnection  extends BItem {
     }
     procRequestObjectProperties(req) {
       let ret = {};
-      if (req.identifier) {
+      if (req.objectId) {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
-        let obj = BItem.GetItem(req.identifier.id);
+        let obj = BItem.GetItem(req.objectId.id);
         if (obj) {
           ret = { 'properties': BasilServiceConnection.CreatePropertyList(obj.FetchProperties(filter)) };
         }
         else {
-          ret = BasilServiceConnection.MakeException('Object not found: ' + req.identifier.id);
+          ret = BasilServiceConnection.MakeException('Object not found: ' + req.objectId.id);
         }
         return ret;
       };

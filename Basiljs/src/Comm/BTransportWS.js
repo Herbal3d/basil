@@ -55,10 +55,9 @@ export class BTransportWS extends BTransport {
     }
   }
   // Send the data. Places message in output queue
-  Send(data, tcontext) {
+  Send(data) {
     if (socket) {
-      let emsg = this.EncodeMessage(data);
-      socket.send(emsg);
+      socket.send(data);
       this.stats.messagesSent++;
     }
 

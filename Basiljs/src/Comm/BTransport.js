@@ -55,14 +55,14 @@ export class BTransport extends BItem {
       let msg = this.messages.shift();
       if (msg) {
           this.stats.messagesReceived++;
-          let dmsg = BTransportMsgs.BTransport.decode(msg)
+          // let dmsg = BTransportMsgs.BTransport.decode(msg)
           // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
 
           if (this.receiveCallbackObject
                   && this.receiveCallbackObject.procMessage
                   && (typeof this.receiveCallbackObject.procMessage == 'function')) {
               // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-              this.receiveCallbackObject.procMessage(dmsg.message, dmsg);
+              this.receiveCallbackObject.procMessage(msg, msg);
           }
       }
   }
@@ -73,15 +73,4 @@ export class BTransport extends BItem {
     get isConnected() {
         return false;
     }
-
-  // UTILITY FUNCTIONS USED BY children
-  // Wrap the passed 'data' into a transport message.
-  EncodeMessage(data) {
-      let tmsg = {
-          'sequenceNum': this.sequenceNum++,
-          'message': data,
-      };
-      let cmsg = BMessage.BMessage.create(tmsg);
-      return BMessage.BMessage.encode(cmsg).finish();
-  }
 }

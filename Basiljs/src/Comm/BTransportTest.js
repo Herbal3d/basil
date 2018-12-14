@@ -14,7 +14,7 @@
 // Test transport.
 import GP from 'GP';
 
-import { BTransport, EncodeMessage } from './BTransport.js';
+import { BTransport } from './BTransport.js';
 import { BasilServer as BasilServerMsgs } from '../jslibs/BasilServerMessages.js';
 
 // TransportTest uses some global variables to keep track of running tests
@@ -85,10 +85,8 @@ export class BTransportTest extends BTransport {
     // BTransport.Send()
     // Send the data. Places message in output queue.
     // 'data' is the encoded binary types of the message.
-    // One can pass a 'this' context for calling on timer threads, etc
     Send(data) {
-        let emsg = this.EncodeMessage(data);
-        this.messages.push(emsg);
+        this.messages.push(data);
         this.messagesSent++;
     }
     // Set a callback object for recevieving messages.

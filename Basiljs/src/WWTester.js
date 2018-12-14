@@ -25,6 +25,7 @@ GP.Config = Config;
 
 // Debug function to mimic the non-WebWorker one
 GP.DebugLog = function(msg) {};
+GP.ErrorLog = function(msg) {};
 
 GP.Ready = false;
 
@@ -37,16 +38,25 @@ GP.client = new BasilClientConnection('client', GP.wwTransport, {} );
 
 // Once client is created and connected, debug messsages can be sent to the
 //    predefined debug instance.
-if (Config.predefinedInstances && Config.predefinedInstances.debugObjectId) {
-  GP.DebugObjectId = Config.predefinedInstances.debugObjectId;
+if (Config.Debug && Config.Debug.DebugLogInstanceName) {
+  GP.DebugInstanceId = Config.Debug.DebugLogInstanceName;
   GP.DebugLog = function(msg) {
     let auth = undefined;
-    let id = GP.DebugObjectId;
+    let instanceId = GP.DebugInstanceId;
     let props = {
       'Msg': msg
     };
-    GP.client.UpdateInstanceProperty(auth, id, props);
+    GP.client.UpdateInstanceProperty(auth, instanceId, props);
     // console.log('WW.DebugLog: ' + msg);
+  }
+  GP.ErrorLog = function(msg) {
+    let auth = undefined;
+    let instanceId = GP.DebugInstanceId;
+    let props = {
+      'ErrorMsg': msg
+    };
+    GP.client.UpdateInstanceProperty(auth, instanceId, props);
+    // console.log('WW.ErrorLog: ' + msg);
   }
 }
 
@@ -89,7 +99,7 @@ GP.client.OpenSession(undefined, {
         GP.DebugLog('failed creation of displayable:' + resp.exception.reason);
       }
       else {
-        let displayableId = resp.identifier.id;
+        let displayableId = resp.objectId.id;
         GP.DebugLog('Created displayable ' + displayableId);
         let instancePositionInfo = {
           // 'id': { 'id': someID },  // not needed for creation

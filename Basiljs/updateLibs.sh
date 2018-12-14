@@ -11,9 +11,9 @@ JSLIBS=${PLACE}/src/jslibs
 UPDATEDATE=$(date +%Y%m%d)
 echo "${UPDATEDATE}" > "${JSLIBS}/update.date"
 
-DOUPDATETHREEJS="yes"
-DOUPDATEBASILPROTO="yes"
-DOUPDATEPROTOBUF="yes"
+DOUPDATETHREEJS="no"
+DOUPDATEBASILPROTO="no"
+DOUPDATEPROTOBUF="no"
 DOBUILDBASILPROTO="yes"
 
 THREEDIR=$PLACE/../../three.js
@@ -71,7 +71,6 @@ if [[ "$DOBUILDBASILPROTO" == "yes" ]] ; then
         --no-comments \
         $BASILPROTODIR/protocol/BasilServer.proto \
         $BASILPROTODIR/protocol/BasilTypes.proto \
-        $BASILPROTODIR/protocol/BMessage.proto \
         > "$JSLIBS/BasilServerMessages.js"
 
 else

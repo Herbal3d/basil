@@ -32,22 +32,22 @@ export class BasilClientConnection {
     // function that sends the request and returns a Promise for the response.
     SendAndPromiseResponse(msg, reqName) {
         let smsg = {};
+        let responseSession = this.RPCsession++;
         smsg[ reqName + 'ReqMsg'] = msg;
         smsg['ResponseReq'] = {
-          'responseSession': this.RPCsession++
+          'responseSession': responseSession
         };
         let smsgs = { 'BasilServerMessages': [ smsg ] };
         if (Config.Debug && Config.Debug.VerifyProtocol) {
-          if (BasilServerMsgs.BasilServerMessage.verify(smsgs)) {
-            GP.DebugLog('BasilClient.SendAndPromiseResponse: verification fail: '
+          if (BasilServerMsgs.BasilServerMessageBody.verify(smsgs)) {
+            GP.ErrorLog('BasilClient.SendAndPromiseResponse: verification fail: '
                     + JSON.stringify(smsgs));
           }
         }
-        // let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
         let emsg = BasilServerMsgs.BasilServerMessageBody.encode(smsgs).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( function(resolve,reject) {
-            this.RPCSessionCallback[smsg.RPCRequestSession] = {
+            this.RPCSessionCallback[responseSession] = {
               'timeRPCCreated': Date.now(),
               'resolve': resolve,
               'reject': reject,
@@ -64,16 +64,16 @@ export class BasilClientConnection {
       let smsgs = BasilServerMsgs.BasilServerMessageBody.decode(resp);
       if (smsgs.BasilServerMessages) {
         smsgs.BasilServerMessages.forEach( msg => {
-          if (msg.ResponseReq && msg.ResponseReq.responseSession != 0) {
+          if (msg.ResponseReq && msg.ResponseReq.responseSession) {
             let sessionIndex = msg.ResponseReq.responseSession;
             let session = this.RPCSessionCallback[sessionIndex];
             if (session) {
               this.RPCSessionCallback.delete(sessionIndex);
               try {
-                let respName = msg.BasilServerMesssage.get();
-                if (respName.endsWith('RespMsg')) {
+                let respName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
+                if (respName) {
                   // if this is a properly formed response, return the body of the response
-                  (session.resolve)(msg.BasilServerMessage[respName], msg, respName);
+                  (session.resolve)(msg[respName], msg, respName);
                 }
                 else {
                   // If not a response, just resolve with the whole message
@@ -83,7 +83,7 @@ export class BasilClientConnection {
               catch (e) {
                 let errMsg = 'BasilClient.procMessage: exception processing msg: ' + e;
                 console.log(errMsg);
-                GP.DebugLog(errMsg);
+                GP.ErrorLog(errMsg);
                 (session.reject)(e);
               }
             }
@@ -91,14 +91,13 @@ export class BasilClientConnection {
               let errMsg = 'BasilClient.procMessage: received msg which is not RPC response: '
                         + JSON.stringify(msg);
               console.log(errMsg);
-              GP.DebugLog(errMsg);
+              GP.ErrorLog(errMsg);
             }
           }
           else {
-            let errMsg = 'BasilClient.procMessage: received misformed msg: '
-                      + JSON.stringify(msg);
+            let errMsg = 'BasilClient.procMessage: received misformed msg: ' + JSON.stringify(msg);
             console.log(errMsg);
-            GP.DebugLog(errMsg);
+            GP.ErrorLog(errMsg);
           }
         });
       }

@@ -3275,6 +3275,108 @@ export const BasilServer = $root.BasilServer = (() => {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
+        BasilServerMessageBody.BResponseRequest = (function() {
+
+            function BResponseRequest(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            BResponseRequest.prototype.responseSession = 0;
+            BResponseRequest.prototype.responseSessionKey = "";
+
+            BResponseRequest.create = function create(properties) {
+                return new BResponseRequest(properties);
+            };
+
+            BResponseRequest.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.responseSession != null && message.hasOwnProperty("responseSession"))
+                    writer.uint32(8).uint32(message.responseSession);
+                if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
+                    writer.uint32(18).string(message.responseSessionKey);
+                return writer;
+            };
+
+            BResponseRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            BResponseRequest.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.BasilServerMessageBody.BResponseRequest();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.responseSession = reader.uint32();
+                        break;
+                    case 2:
+                        message.responseSessionKey = reader.string();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            BResponseRequest.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            BResponseRequest.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.responseSession != null && message.hasOwnProperty("responseSession"))
+                    if (!$util.isInteger(message.responseSession))
+                        return "responseSession: integer expected";
+                if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
+                    if (!$util.isString(message.responseSessionKey))
+                        return "responseSessionKey: string expected";
+                return null;
+            };
+
+            BResponseRequest.fromObject = function fromObject(object) {
+                if (object instanceof $root.BasilServer.BasilServerMessageBody.BResponseRequest)
+                    return object;
+                let message = new $root.BasilServer.BasilServerMessageBody.BResponseRequest();
+                if (object.responseSession != null)
+                    message.responseSession = object.responseSession >>> 0;
+                if (object.responseSessionKey != null)
+                    message.responseSessionKey = String(object.responseSessionKey);
+                return message;
+            };
+
+            BResponseRequest.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.responseSession = 0;
+                    object.responseSessionKey = "";
+                }
+                if (message.responseSession != null && message.hasOwnProperty("responseSession"))
+                    object.responseSession = message.responseSession;
+                if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
+                    object.responseSessionKey = message.responseSessionKey;
+                return object;
+            };
+
+            BResponseRequest.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return BResponseRequest;
+        })();
+
         BasilServerMessageBody.BasilServerMessage = (function() {
 
             function BasilServerMessage(properties) {
@@ -4138,7 +4240,7 @@ export const BMessage = $root.BMessage = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        BResponseRequest.prototype.responseSession = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        BResponseRequest.prototype.responseSession = 0;
         BResponseRequest.prototype.responseSessionKey = "";
 
         BResponseRequest.create = function create(properties) {
@@ -4149,7 +4251,7 @@ export const BMessage = $root.BMessage = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                writer.uint32(8).uint64(message.responseSession);
+                writer.uint32(8).uint32(message.responseSession);
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 writer.uint32(18).string(message.responseSessionKey);
             return writer;
@@ -4167,7 +4269,7 @@ export const BMessage = $root.BMessage = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.responseSession = reader.uint64();
+                    message.responseSession = reader.uint32();
                     break;
                 case 2:
                     message.responseSessionKey = reader.string();
@@ -4190,8 +4292,8 @@ export const BMessage = $root.BMessage = (() => {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                if (!$util.isInteger(message.responseSession) && !(message.responseSession && $util.isInteger(message.responseSession.low) && $util.isInteger(message.responseSession.high)))
-                    return "responseSession: integer|Long expected";
+                if (!$util.isInteger(message.responseSession))
+                    return "responseSession: integer expected";
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 if (!$util.isString(message.responseSessionKey))
                     return "responseSessionKey: string expected";
@@ -4203,14 +4305,7 @@ export const BMessage = $root.BMessage = (() => {
                 return object;
             let message = new $root.BMessage.BResponseRequest();
             if (object.responseSession != null)
-                if ($util.Long)
-                    (message.responseSession = $util.Long.fromValue(object.responseSession)).unsigned = true;
-                else if (typeof object.responseSession === "string")
-                    message.responseSession = parseInt(object.responseSession, 10);
-                else if (typeof object.responseSession === "number")
-                    message.responseSession = object.responseSession;
-                else if (typeof object.responseSession === "object")
-                    message.responseSession = new $util.LongBits(object.responseSession.low >>> 0, object.responseSession.high >>> 0).toNumber(true);
+                message.responseSession = object.responseSession >>> 0;
             if (object.responseSessionKey != null)
                 message.responseSessionKey = String(object.responseSessionKey);
             return message;
@@ -4221,18 +4316,11 @@ export const BMessage = $root.BMessage = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, true);
-                    object.responseSession = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.responseSession = options.longs === String ? "0" : 0;
+                object.responseSession = 0;
                 object.responseSessionKey = "";
             }
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                if (typeof message.responseSession === "number")
-                    object.responseSession = options.longs === String ? String(message.responseSession) : message.responseSession;
-                else
-                    object.responseSession = options.longs === String ? $util.Long.prototype.toString.call(message.responseSession) : options.longs === Number ? new $util.LongBits(message.responseSession.low >>> 0, message.responseSession.high >>> 0).toNumber(true) : message.responseSession;
+                object.responseSession = message.responseSession;
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 object.responseSessionKey = message.responseSessionKey;
             return object;

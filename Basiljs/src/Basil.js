@@ -68,15 +68,18 @@ GP.DebugLog = function DebugLog(msg) {
     GP.LogMessage(msg, undefined);
 };
 
-GP.ReportError = function ReportError(msg) {
+GP.ErrorLog = function ErrorLog(msg) {
     GP.LogMessage(msg, 'errorMsg');
 };
 
 // A special instance that displays it's 'Msg' property in the debug window
 export class DebugBItem extends BItem {
   constructor() {
-    super('org.basil.b.debug.bitem', undefined);
+    let debugInstanceName = (Config.Debug && Config.Debug.DebugLogInstanceName)
+                        ? Config.Debug.DebugLogInstanceName : 'org.basil.b.debug.bitem';
+    super(debugInstanceName, undefined);
     this.lastMessage = 'none';
+    this.lastErrorMessage = 'none';
 
     super.DefineProperties( {
       'Msg': {
@@ -86,6 +89,15 @@ export class DebugBItem extends BItem {
         'set': function(val) {
           this.lastMessage = val;
           GP.DebugLog('WORKER: ' + val);
+        }.bind(this)
+      },
+      'ErrorMsg': {
+        'get': function() {
+          return this.lastErrorMessage;
+        }.bind(this),
+        'set': function(val) {
+          this.lastErrorMessage = val;
+          GP.ErrorLog('WORKER: ' + val);
         }.bind(this)
       }
     } );
