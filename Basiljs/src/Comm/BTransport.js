@@ -13,9 +13,8 @@
 
 import GP from 'GP';
 
-import { BException } from 'xBException';
-import { BMesssage } from 'xBasilServerMessages';
-import { BItem, BItemType } from 'xBItem';
+import { BException } from '../BException.js';
+import { BItem, BItemType } from '../Items/BItem.js';
 
 // Template for transport implmentations.
 export class BTransport extends BItem {

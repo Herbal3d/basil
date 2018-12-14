@@ -12,10 +12,10 @@
 'use strict';
 
 import GP from 'GP';
-import { BItem, BItemType, BItemState } from 'xBItem';
-import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
 
-import { Instance } from 'xInstance';
+import { Instance } from '../Items/Instance.js';
 
 export class InstanceMeshSet extends Instance {
     constructor(id, auth, baseDisplayable) {

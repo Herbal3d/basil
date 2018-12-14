@@ -15,8 +15,7 @@
 import GP from 'GP';
 
 import { BTransport, EncodeMessage } from './BTransport.js';
-import { BasilServer as BasilServerMsgs } from 'xBasilServerMessages';
-import { BException } from 'xBException';
+import { BasilServer as BasilServerMsgs } from '../jslibs/BasilServerMessages.js';
 
 // TransportTest uses some global variables to keep track of running tests
 GP.TransportTestsRunning = [];

@@ -18,7 +18,7 @@ var EV = EV || {};
 // @ts-ignore
 import GP from 'GP';
 // @ts-ignore
-import Config from 'xConfig';
+import Config from '../config.js';
 
 // A simple pub/sub system. An event producer registers a topic
 //    and later 'fire's event on the topic. A envent consumer subscribers

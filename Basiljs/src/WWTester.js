@@ -15,12 +15,11 @@
 // Global parameters and variables. "GP.variable"
 import GP from 'GP';
 
-import Config from 'xConfig';
-import { BasilClientConnection } from 'xBasilClient';
-import { BTransportWW } from 'xBTransportWW';
-import { BException } from 'xBException';
+import Config from './config.js';
+import { BasilClientConnection } from './Comm/BasilClient.js';
+import { BTransportWW } from './Comm/BTransportWW.js';
 
-import { BasilType } from "xBasilServerMessages"
+import { BasilType } from './jslibs/BasilServerMessages.js'
 
 GP.Config = Config;
 

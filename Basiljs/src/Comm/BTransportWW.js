@@ -16,8 +16,8 @@
 import GP from 'GP';
 
 import { BTransport } from './BTransport.js';
-import { BItemState } from '../Items/BItem';
-import { BException } from '../BException';
+import { BItemState } from '../Items/BItem.js';
+import { BException } from '../BException.js';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWW extends BTransport {

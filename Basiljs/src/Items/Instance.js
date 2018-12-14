@@ -12,8 +12,8 @@
 'use strict';
 
 import GP from 'GP';
-import { BItem, BItemType, BItemState } from 'xBItem';
-import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
 
 export class Instance extends BItem {
     constructor(id, auth, baseDisplayable) {

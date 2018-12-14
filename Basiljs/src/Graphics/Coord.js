@@ -12,7 +12,7 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
+import Config from '../config.js';
 
 // The coordinate system transforms are handled by several top level nodes
 //   in the THREE scene tree. At the top, there are two nodes which age the

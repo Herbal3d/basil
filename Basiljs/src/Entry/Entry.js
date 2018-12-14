@@ -12,7 +12,7 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
+import Config from '../config.js';
 import { Base64 } from 'js-base64';
 
 GGP = GP;   // easy linkage to global context for debugging

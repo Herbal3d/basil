@@ -13,7 +13,7 @@
 
 import GP from 'GP';
 
-import Config from 'xConfig';
+import Config from '../config.js';
 
 export class PestoClient {
 

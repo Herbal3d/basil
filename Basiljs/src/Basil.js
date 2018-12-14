@@ -16,17 +16,17 @@
 
 // Global parameters and variables. "GP.variable"
 import GP from 'GP';
-import Config from 'xConfig';
-import { BItem, BItemType, BItemState } from 'xBItem';
+import Config from './config.js';
+import { BItem, BItemType, BItemState } from './Items/BItem.js';
 
 GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
 
 import { Base64 } from 'js-base64';
 
-import { Graphics } from 'xGraphics';
-import { Controls } from 'xControls';
-import { Comm } from 'xComm';
+import { Graphics } from './Graphics/Graphics.js';
+import { Controls } from './Controls/Controls.js';
+import { Comm } from './Comm/Comm.js';
 
 // Force the processing of the CSS format file
 import './Basiljs.less';

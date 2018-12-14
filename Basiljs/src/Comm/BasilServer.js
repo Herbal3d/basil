@@ -13,13 +13,13 @@
 
 import GP from 'GP';
 
-import Config from 'xConfig';
-import { BItem, BItemType } from 'xBItem';
+import Config from '../config.js';
+import { BItem, BItemType } from '../Items/BItem.js';
 
-import { BasilServer as BasilServerMsgs } from "xBasilServerMessages"
+import { BasilServer as BasilServerMsgs } from "../jslibs/BasilServerMessages.js"
 
-import { CreateUniqueId, CreateUniqueInstanceId } from 'xUtilities';
-import { DisplayableFactory, InstanceFactory } from 'xFactories';
+import { CreateUniqueId, CreateUniqueInstanceId } from '../Utilities.js';
+import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
 
 
 // The browser is the Basil server so requests are sent to us

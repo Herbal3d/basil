@@ -12,9 +12,7 @@
 'use strict';
 
 import GP from 'GP';
-import { BItem, BItemType, BItemState } from 'xBItem';
-import { BasilType } from 'xBasilServerMessages';
-import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
 export class Displayable extends BItem {
   constructor(id, auth, displayInfo) {

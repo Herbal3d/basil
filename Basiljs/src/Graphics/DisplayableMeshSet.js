@@ -14,9 +14,9 @@
 // holds the controls context for this threejs instance
 
 import GP from 'GP';
-import Config from 'xConfig';
-import { BItem, BItemType, BItemState } from 'xBItem';
-import { Displayable } from 'xDisplayable';
+import Config from '../config.js';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+import { Displayable } from '../Items/Displayable.js';
 
 export class DisplayableMeshSet extends Displayable {
   constructor(id, auth, displayInfo) {

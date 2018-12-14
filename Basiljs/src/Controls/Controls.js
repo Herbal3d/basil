@@ -14,10 +14,10 @@
 // holds the controls context for this threejs instance
 
 import GP from 'GP';
-import Config from 'xConfig';
-import { BItem, BItemType, BItemState } from 'xBItem';
+import Config from '../config.js';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import * as Eventing from 'xEventing';
+import * as Eventing from '../Eventing/Eventing.js';
 
 // Classes that implement different types of UI controls
 import * as UIControls from './UIControls.js';

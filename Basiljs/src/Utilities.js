@@ -12,7 +12,7 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
+import Config from './config.js';
 
 // Create a globally unique Id based on the service and type passed
 export function CreateUniqueId(service, type) {

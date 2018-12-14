@@ -12,7 +12,7 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
+import Config from '../config.js';
 
 // The management of the itme collection is done with static functions
 var IM = IM || {};

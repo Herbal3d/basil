@@ -12,13 +12,10 @@
 'use strict';
 
 import GP from 'GP';
-import { BItem, BItemType, BItemState } from 'xBItem';
-import { ParseThreeTuple, ParseFourTuple } from 'xUtilities';
 
-import { DisplayableCamera } from 'xDisplayableCamera';
-import { DisplayableMeshSet } from 'xDisplayableMeshSet';
-import { Instance } from 'xInstance'
-import { InstanceMeshSet } from 'xInstanceMeshSet'
+import { DisplayableCamera } from '../Graphics/DisplayableCamera.js';
+import { DisplayableMeshSet } from '../Graphics/DisplayableMeshSet.js';
+import { InstanceMeshSet } from '../Graphics/InstanceMeshSet.js'
 
 // Factory function to create Displayable since we may want
 //    to use Proxy's someday.

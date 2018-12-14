@@ -24,44 +24,6 @@ module.exports = {
     modules: [ path.resolve(__dirname, "src/jslibs"), "node_modules" ],
     // Aliases so individual files don't reference the filenames
     alias: {
-        'xConfig': path.resolve(__dirname, 'src/config.js'),
-        'xBException': path.resolve(__dirname, 'src/BException.js'),
-        'xUtilities': path.resolve(__dirname, 'src/Utilities.js'),
-
-        'xComm': path.resolve(__dirname, 'src/Comm/Comm.js'),
-        'xBTransport': path.resolve(__dirname, 'src/Comm/BTransport.js'),
-        'xBTransportWW': path.resolve(__dirname, 'src/Comm/BTransportWW.js'),
-        'xBTransportWS': path.resolve(__dirname, 'src/Comm/BTransportWS.js'),
-        'xBTransportTest': path.resolve(__dirname, 'src/Comm/BTransportTest.js'),
-        'xBasilServer': path.resolve(__dirname, 'src/Comm/BasilServer.js'),
-        'xBasilClient': path.resolve(__dirname, 'src/Comm/BasilClient.js'),
-        'xPestoClient': path.resolve(__dirname, 'src/Comm/PestoClient.js'),
-        'xBasilServerMessages': path.resolve(__dirname, 'src/jslibs/BasilServerMessages.js'),
-
-        'xControls': path.resolve(__dirname, 'src/Controls/Controls.js'),
-        'xEventing': path.resolve(__dirname, 'src/Eventing/Eventing.js'),
-
-        'xBItem': path.resolve(__dirname, 'src/Items/BItem.js'),
-        'xDisplayable': path.resolve(__dirname, 'src/Items/Displayable.js'),
-        'xInstance': path.resolve(__dirname, 'src/Items/Instance.js'),
-        'xFactories': path.resolve(__dirname, 'src/Items/Factories.js'),
-
-        'xDisplayableCamera': path.resolve(__dirname, 'src/Graphics/DisplayableCamera.js'),
-        'xDisplayableMeshSet': path.resolve(__dirname, 'src/Graphics/DisplayableMeshSet.js'),
-        'xInstanceMeshSet': path.resolve(__dirname, 'src/Graphics/InstanceMeshSet.js'),
-        // 'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics-ThreeJS.js'),
-        'xGraphics': path.resolve(__dirname, 'src/Graphics/Graphics.js'),
-        'xCoord': path.resolve(__dirname, 'src/Graphics/Coord.js'),
-
-        'xThreeJS': path.resolve(__dirname, 'src/jslibs/three.min.js'),
-        'xThreeJSOrbit': path.resolve(__dirname, 'src/jslibs/OrbitControls.js'),
-        'xThreeJSGLTF': path.resolve(__dirname, 'src/jslibs/GLTFLoader.js'),
-        'xThreeJSCollada': path.resolve(__dirname, 'src/jslibs/ColladaLoader.js'),
-        'xThreeJSDRACO': path.resolve(__dirname, 'src/jslibs/DRACOLoader.js'),
-        'xThreeJSFBX': path.resolve(__dirname, 'src/jslibs/FBXLoader.js'),
-        'xThreeJSOBJ': path.resolve(__dirname, 'src/jslibs/OBJLoader.js'),
-        'xThreeJSBVH': path.resolve(__dirname, 'src/jslibs/BVHLoader.js'),
-
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
         'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
     },
@@ -79,7 +41,7 @@ module.exports = {
   plugins: [
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
     new webpack.ProvidePlugin({
-        THREE: 'xThreeJS',
+        THREE: path.resolve(__dirname, 'src/jslibs/three.min.js')
     }),
 
     // Create dist/Basil.html from my template

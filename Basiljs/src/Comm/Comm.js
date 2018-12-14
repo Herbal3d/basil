@@ -12,16 +12,15 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
-import { BItem, BItemType, BItemState } from 'xBItem';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import { BasilServiceConnection } from 'xBasilServer';
-import { PestoClient } from 'xPestoClient';
-import { BTransportWW } from 'xBTransportWW';
-import { BTransportWS } from 'xBTransportWS';
-import { BTransportTest } from 'xBTransportTest';
+import { BasilServiceConnection } from './BasilServer.js';
+import { PestoClient } from './PestoClient.js';
+import { BTransportWW } from './BTransportWW.js';
+import { BTransportWS } from './BTransportWS.js';
+import { BTransportTest } from './BTransportTest.js';
 
-import { CreateUniqueId } from 'xUtilities';
+import { CreateUniqueId } from '../Utilities.js';
 
 export class Comm extends BItem {
   constructor() {

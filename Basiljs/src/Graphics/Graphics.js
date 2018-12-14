@@ -12,22 +12,23 @@
 'use strict';
 
 import GP from 'GP';
-import Config from 'xConfig';
-import { BItem, BItemType, BItemState } from 'xBItem';
+import Config from '../config.js';
+import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import * as Eventing from 'xEventing';
-import { CombineParameters, ParseThreeTuple } from 'xUtilities';
+import * as Eventing from '../Eventing/Eventing.js';
+import { CombineParameters, ParseThreeTuple } from '../Utilities.js';
 
-import { DisplayableFactory, InstanceFactory } from 'xFactories';
-import * as Coord from 'xCoord';
+import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
+import * as Coord from './Coord.js';
 
-import { OrbitControls } from 'xThreeJSOrbit';
-import { GLTFLoader } from 'xThreeJSGLTF';
-import { ColladaLoader } from 'xThreeJSCollada';
-import { DRACOLoader } from 'xThreeJSDRACO';
-import { FBXLoader } from 'xThreeJSFBX';
-import { OBJLoader } from 'xThreeJSOBJ';
-import { BVHLoader } from 'xThreeJSBVH';
+// Even though these are not explicilty referenced, this causes webpack to include the libraries.
+import { OrbitControls } from '../jslibs/OrbitControls.js';
+import { GLTFLoader } from '../jslibs/GLTFLoader.js';
+import { ColladaLoader } from '../jslibs/ColladaLoader.js';
+import { DRACOLoader } from '../jslibs/DRACOLoader.js';
+import { FBXLoader } from '../jslibs/FBXLoader.js';
+import { OBJLoader } from '../jslibs/OBJLoader.js';
+import { BVHLoader } from '../jslibs/BVHLoader.js';
 
 // Class that wraps the renderer implementation.
 export class Graphics extends BItem {

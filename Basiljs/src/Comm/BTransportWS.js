@@ -13,7 +13,7 @@
 
 import GP from 'GP';
 import { BTransport } from './BTransport.js';
-import { BException } from 'xBException';
+import { BException } from '../BException.js';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWS extends BTransport {
