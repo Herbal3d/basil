@@ -71,18 +71,17 @@ export class BasilServiceConnection  extends BItem {
       if (this.transport) {
         // the Buffer should be a BasilServerMessage
         try {
-          let msgs = BasilServerMsgs.BasilServerMessage.decode(buff);
+          let msgs = BasilServerMsgs.BasilServerMessageBody.decode(buff);
           // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
           msgs.BasilServerMessages.forEach( msg => {
-            // The message will have one or more message names with that message type
-            Object.keys(msg).forEach( msgProp => {
               let replyContents = undefined;
-              let template = this.receptionMessages2[msgProp];
-              if (typeof(template) == 'undefined') {
+              let reqName = msg.BasilServerMesssage.get();
+              let template = this.receptionMessages2[reqName];
+              if (typeof template == 'undefined') {
                 return; // unknown flags are just ignored
               }
               try {
-                replyContents = template[0](msg[msgProp]);
+                replyContents = template[0](msg.BasilServerMessage[reqName]);
               }
               catch (e) {
                 replyContents = BasilServiceConnection.MakeException('Exception processing: ' + e);
@@ -90,7 +89,7 @@ export class BasilServiceConnection  extends BItem {
               if (Config.Debug && Config.Debug.BasilServerProcMessageDetail) {
                 GP.DebugLog('BasilServer.procMessage:'
                      + ' prop=' + msgProp
-                     + ', rec=' + JSON.stringify(msg[msgProp])
+                     + ', rec=' + JSON.stringify(msg.BasilServerMessage)
                      + ', reply=' + JSON.stringify(replyContents)
                 );
               }
@@ -99,9 +98,9 @@ export class BasilServiceConnection  extends BItem {
                 // There is a response to the message
                 let rmsg = {};
                 rmsg[template[1]] = replyContents;
-                if (msg.RPCRequestSession) {
+                if (msg.ResponseReq) {
                   // Return the binding that allows the other side to match the response
-                  rmsg['RPCRequestSession'] = msg.RPCRequestSession;
+                  rmsg['ResponseReq'] = { 'responseSession': msg.ResponseReq.responseSession };
                 }
                 let bmsgs = { 'BasilServerMessages': [ rmsg ] };
                 if (Config.Debug && Config.Debug.VerifyProtocol) {
@@ -111,7 +110,7 @@ export class BasilServiceConnection  extends BItem {
                   }
                 }
                 // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
-                this.transport.Send(BasilServerMsgs.BasilServerMessage.encode(bmsgs).finish(), this.transport);
+                this.transport.Send(BasilServerMsgs.BasilServerMessageBody.encode(bmsgs).finish());
               }
             });
           });

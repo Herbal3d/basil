@@ -71,7 +71,7 @@ if [[ "$DOBUILDBASILPROTO" == "yes" ]] ; then
         --no-comments \
         $BASILPROTODIR/protocol/BasilServer.proto \
         $BASILPROTODIR/protocol/BasilTypes.proto \
-        $BASILPROTODIR/protocol/BTransport.proto \
+        $BASILPROTODIR/protocol/BMessage.proto \
         > "$JSLIBS/BasilServerMessages.js"
 
 else

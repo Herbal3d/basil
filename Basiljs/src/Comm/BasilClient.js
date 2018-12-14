@@ -33,7 +33,9 @@ export class BasilClientConnection {
     SendAndPromiseResponse(msg, reqName) {
         let smsg = {};
         smsg[ reqName + 'ReqMsg'] = msg;
-        smsg['RPCRequestSession'] = this.RPCsession++;
+        smsg['ResponseReq'] = {
+          'responseSession': this.RPCsession++
+        };
         let smsgs = { 'BasilServerMessages': [ smsg ] };
         if (Config.Debug && Config.Debug.VerifyProtocol) {
           if (BasilServerMsgs.BasilServerMessage.verify(smsgs)) {
@@ -42,7 +44,7 @@ export class BasilClientConnection {
           }
         }
         // let cmsg = BasilServerMsgs.BasilServerMessage.create(smsgs);
-        let emsg = BasilServerMsgs.BasilServerMessage.encode(smsgs).finish();
+        let emsg = BasilServerMsgs.BasilServerMessageBody.encode(smsgs).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( function(resolve,reject) {
             this.RPCSessionCallback[smsg.RPCRequestSession] = {
@@ -59,20 +61,23 @@ export class BasilClientConnection {
     // Called when message received. At the moment, all messages are
     //    be responses to RPC requests.
     procMessage(resp) {
-      let smsgs = BasilServerMsgs.BasilServerMessage.decode(resp);
+      let smsgs = BasilServerMsgs.BasilServerMessageBody.decode(resp);
       if (smsgs.BasilServerMessages) {
         smsgs.BasilServerMessages.forEach( msg => {
-          if (msg.RPCRequestSession && msg.RPCRequestSession != 0) {
-            let session = this.RPCSessionCallback[msg.RPCRequestSession];
+          if (msg.ResponseReq && msg.ResponseReq.responseSession != 0) {
+            let sessionIndex = msg.ResponseReq.responseSession;
+            let session = this.RPCSessionCallback[sessionIndex];
             if (session) {
-              this.RPCSessionCallback.delete(msg.RPCRequestSession);
+              this.RPCSessionCallback.delete(sessionIndex);
               try {
-                if (msg.hasOwnProperty( session.requestName + 'RespMsg')) {
+                let respName = msg.BasilServerMesssage.get();
+                if (respName.endsWith('RespMsg')) {
                   // if this is a properly formed response, return the body of the response
-                  (session.resolve)(msg[ session.requestName + 'RespMsg']);
+                  (session.resolve)(msg.BasilServerMessage[respName], msg, respName);
                 }
                 else {
-                  (session.resolve)(msg);
+                  // If not a response, just resolve with the whole message
+                  (session.resolve)(msg, respName);
                 }
               }
               catch (e) {
@@ -99,55 +104,57 @@ export class BasilClientConnection {
       }
     }
 
-    IdentifyDisplayableObject(auth, asset, aabb) {
+    IdentifyDisplayableObject(auth, asset, id, aabb) {
         let msg = { 'assetInfo': asset };
         if (auth) msg['auth'] = auth;
+        if (id) msg['objectId'] = { 'id': id };
         if (aabb) msg['aabb'] = aabb;
         return this.SendAndPromiseResponse(msg, 'IdentifyDisplayableObject');
     };
     ForgetDisplayableObject(auth, id) {
-        let msg = { 'identifier': { 'id': id } };
+        let msg = { 'objectId': { 'id': id } };
         if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg, 'ForgetDisplayableObject');
     };
-    CreateObjectInstance(auth, id, instancePositionInfo, propertyList) {
-        let msg = { 'identifier': { 'id': id } };
+    CreateObjectInstance(auth, objectId, instancePositionInfo, propertyList, instanceId) {
+        let msg = { 'objectId': { 'id': objectId } };
         if (auth) msg['auth'] = auth;
         if (instancePositionInfo) msg['pos'] = instancePositionInfo;
         if (propertyList) msg['props'] = propertyList;
+        if (instanceId) msg]'instanceId'] = { 'id': instanceId };
         return this.SendAndPromiseResponse(msg, 'CreateObjectInstance');
     };
-    DeleteObjectInstance(auth, id) {
-        let msg = { 'identifier': { 'id': id } };
+    DeleteObjectInstance(auth, instanceId) {
+        let msg = { 'instanceId': { 'id': instanceId } };
         if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg, 'DeleteObjectInstance');
     };
-    UpdateObjectProperty(auth, id, propertyList) {
-        let msg = { 'identifier': { 'id': id } };
+    UpdateObjectProperty(auth, objectId, propertyList) {
+        let msg = { 'objectId': { 'id': objectId } };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, 'UpdateObjectProperty');
     };
-    UpdateInstanceProperty(auth, id, propertyList) {
-        let msg = { 'instanceId': { 'id': id } };
+    UpdateInstanceProperty(auth, instanceId, propertyList) {
+        let msg = { 'instanceId': { 'id': instanceId } };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['props'] = propertyList;
         return this.SendAndPromiseResponse(msg, 'UpdateInstanceProperty');
     };
-    UpdateInstancePosition(auth, id,  pos) {
-        let msg = { 'instanceId': { 'id': id } };
+    UpdateInstancePosition(auth, instanceId,  pos) {
+        let msg = { 'instanceId': { 'id': instanceId } };
         if (auth) msg['auth'] = auth;
         if (pos) msg['pos'] = pos;
         return this.SendAndPromiseResponse(msg, 'UpdateInstancePosition');
     };
-    RequestObjectProperties(auth, id, filter) {
-        let msg = { 'identifier': { 'id': id } };
+    RequestObjectProperties(auth, objectId, filter) {
+        let msg = { 'objectId': { 'id': objectId } };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, 'RequestObjectProperties');
     };
-    RequestInstanceProperties(auth, id, filter) {
-        let msg = { 'instanceId': { 'id': id } };
+    RequestInstanceProperties(auth, instanceId, filter) {
+        let msg = { 'instanceId': { 'id': instanceId } };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, 'RequestInstanceProperties');
