@@ -159,7 +159,7 @@ export class BasilServiceConnection  extends BItem {
         if (req.objectId) {
           let baseDisplayable = BItem.GetItem(req.objectId.id);
           if (baseDisplayable) {
-            let instanceId = CreateUniqueInstanceId();
+            let instanceId = req.instanceId ? req.instanceId.id : CreateUniqueInstanceId();
             let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
             newInstance.ownerId = this.id;    // So we know who created what
             if (req.pos) {
