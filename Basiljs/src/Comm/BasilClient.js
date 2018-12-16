@@ -13,17 +13,32 @@
 
 import GP from 'GP';
 import Config from '../config.js';
-import { BasilServer as BasilServerMsgs } from "../jslibs/BasilServerMessages.js"
+
+import { gRPC } from "@grpc/grpc-js";
 
 // Client connection used in WebWorker and testing instances
 export class BasilClientConnection {
-    constructor(clientID, xport, parms) {
+    constructor(clientID, parms) {
         this.clientID = clientID;
-        this.transport = xport;
         this.aliveSequenceNum = 888;
         this.RPCsession = 900222;
         this.RPCSessionCallback = new Map();
-        this.transport.SetReceiveCallbackObject(this);
+
+        try {
+            // https://github.com/grpc/grpc-node/tree/master/packages/proto-loader
+            const packageDef = gRPC.loadSync(path.resolve(__dirname, 'BasilServer.proto'), {
+                'keepCase': true,
+                'longs': String,
+                'enums': String,
+                'defaults': true,
+                'oneof': true,    // Set virtual onof properties to present field name
+                'includeDirs': 'protocol'
+                });
+            const packageObject = gRPC.loadPackageDefinition(packageDef);
+        }
+        catch (e) {
+
+        }
     };
     Start() {
     };

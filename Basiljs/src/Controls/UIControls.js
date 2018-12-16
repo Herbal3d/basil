@@ -11,10 +11,7 @@
 
 'use strict';
 
-var UC = UC || {};
-
 import GP from 'GP';
-// ('controls' does not reference ThreeJS. All graphics go through the graphics routine.)
 
 // ======================================================
 // UI structure for displaying XYZ coordinates
@@ -155,7 +152,3 @@ export function SetNodeText(nn, txt) {
     EmptyNode(nn);
     nn.appendChild(document.createTextNode(txt));
 };
-
-// ======================================================
-
-GP.UC = UC;

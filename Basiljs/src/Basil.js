@@ -105,16 +105,18 @@ export class DebugBItem extends BItem {
 }
 
 // =====================================================
-/*
-    Pattern for Basil is for each package to define a global variable to hold
-    local state. This is two character (GR, EV, CM, CO, ...). There is one
-    global var named 'GP' that has references to everything but that is ONLY
-    for use in debugging.
+/* The GP variable is for debugging only. Most of the major components
+   have an instance there and reference GP for outputting debug information.
+   It is NOT intended to be used for general commuinication between modules.
 */
 
 GP.Ready = false;
 
-// Can be called with communication configuration parameters in the URL
+// Called with communication configuration parameters in the URL.
+// The 'c' parameter is Base64 encoded JSON data which is merged into
+//    'Config' thus it can specify any configuration parameter but
+//    most commonly has a 'comm' section for setting up the
+//    initial connections from this viewer to space servers.
 let configParams = GP.ConfigGetQueryVariable('c');
 if (typeof(configParams) == 'undefined') {
     // If no communication parameters are given, use testing parameters
@@ -147,13 +149,16 @@ if (Config && Config.page && Config.page.collectDebug
   GP.debugItem = new DebugBItem();
 }
 
+// Names of display regions on web page.
 let container = document.getElementById(Config.page.webGLcontainerId);
 let canvas = document.getElementById(Config.page.webGLcanvasId);
 
+// Create the major component instances (Singletons)
 GP.GR = new Graphics(container, canvas);
 GP.CO = new Controls();
 GP.CM = new Comm();
 
+// Push the 'Start' button
 GP.GR.Start();
 GP.CM.Start();
 GP.Ready = true;

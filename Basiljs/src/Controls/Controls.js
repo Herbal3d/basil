@@ -15,12 +15,12 @@
 
 import GP from 'GP';
 import Config from '../config.js';
-import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+import { BItem, BItemType } from '../Items/BItem.js';
 
 import * as Eventing from '../Eventing/Eventing.js';
 
 // Classes that implement different types of UI controls
-import * as UIControls from './UIControls.js';
+import { UI_Text, UI_Coord } from './UIControls.js';
 
 export class Controls extends BItem {
   constructor() {
@@ -37,7 +37,7 @@ export class Controls extends BItem {
     this.ShowDebug(Config.page.showDebug);
 
     // Update the camera position for debugging
-    this.infoCameraCoord = new UIControls.UI_Coord('div[b-info=camPosition]');
+    this.infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
     if (this.infoCameraCoord) {
       this.eventCameraInfo = new Eventing.subscribe('display.cameraInfo', function(camInfo) {
         if (camInfo && camInfo.position && this.infoCameraCoord) {
@@ -47,13 +47,13 @@ export class Controls extends BItem {
     }
 
     // UPdate the renderer info
-    this.infoFPS = new UIControls.UI_Text('div[b-info=infoFPS]');
-    this.infoDrawCalls = new UIControls.UI_Text('div[b-info=infoDrawCalls]');
-    this.infoVertices = new UIControls.UI_Text('div[b-info=infoVertices]');
-    this.infoTriangles = new UIControls.UI_Text('div[b-info=infoTriangles]');
-    // this.infoPoints = new UIControls.UI_Text('div[b-info=infoPoints]');
-    this.infoTextureMem = new UIControls.UI_Text('div[b-info=infoTextureMem]');
-    this.infoGeometryMem = new UIControls.UI_Text('div[b-info=infoGeometryMem]');
+    this.infoFPS = new UI_Text('div[b-info=infoFPS]');
+    this.infoDrawCalls = new UI_Text('div[b-info=infoDrawCalls]');
+    this.infoVertices = new UI_Text('div[b-info=infoVertices]');
+    this.infoTriangles = new UI_Text('div[b-info=infoTriangles]');
+    // this.infoPoints = new UI_Text('div[b-info=infoPoints]');
+    this.infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
+    this.infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
     if (this.infoDrawCalls) {
         this.eventDisplayInfo = new Eventing.subscribe('display.info', function(info) {
             if (info && info.render && this.infoDrawCalls) {
@@ -88,6 +88,7 @@ export class Controls extends BItem {
 
   // Process the HTML element that has class 'clickable'
   // The attribute 'op' says what to do when the element is clicked.
+  //    <element class="clickable" op="operation"/>
   _onClickable(evnt) {
     // var buttonOp = document.querySelector(evnt.target).getAttribute('op');
     var buttonOp = evnt.target.getAttribute('op');
