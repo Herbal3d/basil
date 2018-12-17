@@ -12,9 +12,8 @@
 // limitations under the License.
 
 'use strict';
-/* global GP */ // debugging global context (ESlint)
 
-// Global parameters and variables. "GP.variable"
+// Global debugging parameters and variables. "GP.variable"
 import GP from 'GP';
 import Config from './config.js';
 import { BItem, BItemType, BItemState } from './Items/BItem.js';
@@ -123,7 +122,9 @@ if (typeof(configParams) == 'undefined') {
     let testConfigParams = {
         'comm': {
             'testmode': true,
-            'testWWURL': './wwtester.js'
+            'SpaceServer': {
+              'connectionURL': 'connectionURL'
+            }
         }
     };
     configParams = Base64.encode(JSON.stringify(testConfigParams));
@@ -164,12 +165,12 @@ GP.CM.Start();
 GP.Ready = true;
 
 // If there are connection parameters, start the first connection
-if (Config.comm && Object.keys(Config.comm).length > 0) {
-  GP.CM.ConnectTransportService(Config.comm)
+if (Config.comm && Config.comm.SpaceServer) {
+  GP.CM.ConnectSpaceServer(Config.comm.SpaceServer)
   .then( () => {
-    GP.DebugLog('Basiljs: initial transport and service connected');
+    GP.DebugLog('Basiljs: initial connection to SpaceServer successful');
   })
   .catch( e => {
-    GP.DebugLog('Basiljs: failed connecting initial transport and service: {e}');
+    GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));
   });
 };

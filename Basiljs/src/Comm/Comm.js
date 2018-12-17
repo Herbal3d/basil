@@ -14,13 +14,15 @@
 import GP from 'GP';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import { BasilServiceConnection } from './BasilServer.js';
-import { PestoClient } from './PestoClient.js';
-import { BTransportWW } from './BTransportWW.js';
-import { BTransportWS } from './BTransportWS.js';
-import { BTransportTest } from './BTransportTest.js';
+// import { BasilServiceConnection } from './BasilServer.js';
+// import { PestoClient } from './PestoClient.js';
+// import { BTransportWW } from './BTransportWW.js';
+// import { BTransportWS } from './BTransportWS.js';
+// import { BTransportTest } from './BTransportTest.js';
 
 import { CreateUniqueId } from '../Utilities.js';
+import { SpaceServerConnection } from './SpaceServer.js';
+import { BException } from '../BException.js';
 
 export class Comm extends BItem {
   constructor() {
@@ -36,6 +38,21 @@ export class Comm extends BItem {
     this.SetReady();
   };
 
+  // Return a promise around connecting to the SpaceServer mentioned in the parameters
+  ConnectSpaceServer(parms) {
+      return new Promise( function(resolve, reject) {
+          try {
+            let connection = new SpaceServerConnection(parms);
+            connection.Start();
+            resolve(connection);
+          }
+          catch (e) {
+              reject('Comm.ConnectSpaceServer: exception connecting: ' + JSON.stringify(e));
+          }
+      }.bind(this));
+  }
+
+  /*
   // Initialize a transport and a service and resolve the promise when connected
   // The 'parms' are passed to the transport and service creation routimes.
   // If 'parms.testmode' is defined and 'true', test configuration is forced.
@@ -165,4 +182,5 @@ export class Comm extends BItem {
           resolve(svc);
       }.bind(this));
   };
+  */
 }

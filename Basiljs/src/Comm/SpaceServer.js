@@ -1,0 +1,385 @@
+// Copyright 2018 Robert Adams
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+'use strict';
+
+import GP from 'GP';
+import Config from '../config.js';
+
+import { gRPC } from "@grpc/grpc-js";
+import { BasilMsgs } from "../jslibs/BasilServerMessages.js"
+import { CombineParameters } from '../Utilities.js';
+import { BException } from '../BException.js';
+
+// Make a streaming connection to and from a Space Server.
+// 
+// parms.connectionURL = 'URL'
+// parms.connectionSecurity = 'unsecured' | 'secured'
+// if 'secured':
+//    parms.certificate = ''
+export class SpaceServerConnection extends BItem {
+    constructor(clientId, parms) {
+        // Merge the passed parameters with required parameter defaults
+        this.params = CombineParameters(Config.comm.SpaceServer, parms, {
+            'connectionURL': 'https://unknonwn.example.com:111222',
+            'connectionSecurity': 'unsecured',
+            'connectionTimeoutMS': 5000,
+            'beginningSequenceNumber': 111,
+            'clientConnectionOptions': {}
+        });
+        this.clientID = clientID;
+        this.receivedMsgs = [];
+        this.stats = {};
+        this.stats.messagesSent = 0;
+        this.stats.messagesReceived = 0;
+        this.sequenceNum = this.params.beginningSequenceNumber;
+
+        // Make the connection to the server.
+        // We don't wait.
+        let creds = this._BuildCredentialsFromParams(this.params);
+        let options = this.params.clientConnectionOptions;
+        this.client = new gRPC.Client(address, creds, options);
+
+        // templates = BasilServerMessage_entry_name: [ message_processor, BasilServerMessage_reply_name ]
+        //      If the _reply_name is 'undefined', then the message doesn't expect a response.
+        this.receptionMessages = {
+            'IdentifyDisplayableObjectReqMsg': [ this._ProcIdentifyDisplayableObject.bind(this), 'IdentifyDisplayableObjectRespMsg' ],
+            'ForgetDisplayableObjectReqMsg': [ this._ProcForgetDisplayableObject.bind(this), 'ForgetDisplayableObjectRespMsg' ],
+            'CreateObjectInstanceReqMsg': [ this._ProcCreateObjectInstance.bind(this), 'CreateObjectInstanceRespMsg' ],
+            'DeleteObjectInstanceReqMsg': [ this._ProcDeleteObjectInstance.bind(this), 'DeleteObjectInstanceRespMsg' ],
+            'UpdateObjectPropertyReqMsg': [ this._ProcUpdateObjectProperty.bind(this), 'UpdateObjectPropertyRespMsg' ],
+            'UpdateInstancePropertyReqMsg': [ this._ProcUpdateInstanceProperty.bind(this), 'UpdateInstancePropertyRespMsg' ],
+            'UpdateInstancePositionReqMsg': [ this._ProcUpdateInstancePosition.bind(this), 'UpdateInstancePositionRespMsg' ],
+            'RequestObjectPropertiesReqMsg': [ this._ProcRequestObjectProperties.bind(this), 'RequestObjectPropertiesRespMsg' ],
+            'RequestInstancePropertiesReqMsg': [ this._ProcRequestInstanceProperties.bind(this), 'RequestInstancePropertiesRespMsg' ],
+            'OpenSessionReqMsg': [ this._ProcOpenSession.bind(this), 'OpenSessionRespMsg' ],
+            'CloseSessionReqMsg': [ this._ProcCloseSession.bind(this), 'CloseSessionRespMsg' ],
+            'MakeConnectionReqMsg': [ this._ProcMakeConnection.bind(this), 'MakeConnectionRespMsg' ],
+            'AliveCheckReqMsg': [ this._ProcAliveCheck.bind(this), 'AliveCheckRespMsg' ],
+            'AliveCheckRespMsg': [ this._ProcAliveCheckResp.bind(this), undefined ]
+        };
+    }
+
+    Start() {
+        if (this.client) {
+            let deadline = Date.now() + this.params.connectionTimeoutMS;
+            this.client.waitForReady(deadline, function(e) {
+                if (typeof e === 'undefined') {
+                    let metadata = new gRPC.Metadata();
+                    let options = {
+                        'deadline': Date.now() + this.params.connectionTimeoutMS
+                    };
+                    // Since JavaScript doesn't yet have a static .proto file reader for services,
+                    //    this just sets up a bi-directional stream to the main server operation.
+                    this.duplexStream = this.client.makeBidiStreamRequest(
+                        'ServerConnection',
+                        this._SerializeToSend.bind(this),
+                        this._DeserializeReceived.bind(this),
+                        metadata, options
+                    );
+                    this.duplexStream.on('data', function(data) {
+                        this._ProcessReceived(data);
+                    }.bind(this) );
+                }
+                else {
+                    let errorMsg = 'SpaceServerConnection.construct: connection failed: '
+                            + JSON.stringify(e);
+                    GP.ErrorLog(errorMsg);
+                    throw(new BException(errorMsg));
+                }
+            }.bind(this) );
+        }
+        else {
+            let errorMsg = 'SpaceServerConnection.Start: start called when no client created';
+            GP.ErrorLog(errorMsg);
+            throw(new BException(errorMsg));
+        }
+    }
+
+    Send(dataObject) {
+        if (this.duplexStream) {
+            // let writeFlags = gRPC.writeFlags.BUFFER_HINT | gRPC.writeFlags.NO_COMPRESS;
+            let writeFlags = 0;
+            let completionFunction = undefined;
+            this.duplexStream.write(dataObject, writeFlags, completionFunction);
+        }
+    }
+
+    // Build the connection credentials from the parameters.
+    // TODO: put real code here.
+    _BuildCredentialsFromParams(parms) {
+        return new gRPC.credentials.createInsecure();
+    }
+
+    // Accept an Object and serialize it into a SpaceStreamMessage for sending.
+    _SerializeToSend(val) {
+        if (Config.Debug && Config.Debug.VerifyProtocol) {
+            if (BasilMsgs.SpaceStreamMessage.verify(val)) {
+                GP.ErrorLog('SpaceServer._SerializeToSend: verification fail: ' + JSON.stringify(val));
+            }
+        }
+        // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
+        return BasilMsgs.SpaceStreamMessage.encode(val).finish();
+
+    }
+
+    // Accept a serialized ViewerStreamMessage and convert it into an Object.
+    _DeserializeReceived(data) {
+        return BasilMsgs.ViewerStreamMessage.decode(data);
+    }
+
+    // Received a message from the stream.
+    _ProcessReceived(msgs) {
+        try {
+            let rmsgs = [];
+            msgs.ViewerMessages.forEach( msg => {
+                let replyContents = undefined;
+                let reqName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
+                let template = reqName ? this.receptionMessages[reqName] : undefined;
+                if (template) {
+                    try {
+                        replyContents = template[0](msg[reqName]);
+                    }
+                    catch (e) {
+                        replyContents = SpaceServerConnection.MakeException('Exception processing: ' + e);
+                    }
+                    if (Config.Debug && Config.Debug.SpaceServerProcMessageDetail) {
+                        GP.DebugLog('SpaceServer.procMessage:'
+                            + ' prop=' + msgProp
+                            + ', rec=' + JSON.stringify(msg)
+                            + ', reply=' + JSON.stringify(replyContents)
+                        );
+                    }
+                    if (typeof(replyContents) !== 'undefined' && typeof(template[1]) !== 'undefined') {
+                        // GP.DebugLog('SpaceServer.procMessage: response: ' + JSON.stringify(replyContents));
+                        // There is a response to the message
+                        let rmsg = {};
+                        rmsg[template[1]] = replyContents;
+                        if (msg.ResponseReq) {
+                            // Return the binding that allows the other side to match the response
+                            rmsg['ResponseReq'] = { 'responseSession': msg.ResponseReq.responseSession };
+                        }
+                        rmsgs.push(rmsg);
+                    }
+                }
+                else {
+                    GP.ErrorLog('SpaceServer.procMessage: unknown server message: ' + reqName);
+                }
+            });
+            if (rmsgs.length > 0) {
+                let smsgs = { 'SpaceMessages': rmsgs };
+                if (Config.Debug && Config.Debug.VerifyProtocol) {
+                    if (BasilMsgs.SpaceServerMessage.verify(smsgs)) {
+                        GP.ErrorLog('SpaceServer.procMessage: verification fail: ' + JSON.stringify(smsgs));
+                    }
+                }
+                // GP.DebugLog('SpaceServer.procMessage: sending ' + JSON.stringify(bmsgs));
+                this.Send(smsgs);
+            }
+        }
+        catch (e) {
+          GP.DebugLog('SpaceServer: exception processing msg: ' + e);
+        }
+    }
+
+    _ProcIdentifyDisplayableObject(req) {
+        let ret = undefined;
+        if (req.assetInfo) {
+          let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
+          let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
+          if (newItem) {
+            newItem.ownerId = this.id;    // So we know who created what
+            ret = {
+                'objectId': {
+                  'id': newItem.GetProperty('Id')
+                }
+            };
+          }
+          else {
+            ret = BasilServiceConnection.MakeException('Could not create object');
+          }
+        }
+        else {
+          ret = BasilServiceConnection.MakeException('No assetInfo specified');
+        }
+        return ret;
+    }
+    _ProcForgetDisplayableObject(req) {
+        let ret = {};
+        if (req.objectId && req.objectId.id) {
+          BItem.ForgetItem(req.objectId.id);
+        }
+        return ret;
+    }
+    // Given an object with recieved parameters, do operation and return response object
+    _ProcCreateObjectInstance(req) {
+        let ret = undefined;
+        if (req.objectId) {
+          let baseDisplayable = BItem.GetItem(req.objectId.id);
+          if (baseDisplayable) {
+            let instanceId = CreateUniqueInstanceId();
+            let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
+            newInstance.ownerId = this.id;    // So we know who created what
+            if (req.pos) {
+                BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
+            }
+            if (req.propertiesToSet) {
+              newInstance.SetProperties(req.propertiesToSet);
+            }
+            baseDisplayable.graphics.PlaceInWorld(newInstance);
+            ret = {
+              'instanceId': {
+                'id': newInstance.id
+              }
+            };
+          }
+          else {
+            ret = BasilServiceConnection.MakeException('Displayable was not found: ' + req.objectId.id);
+          }
+        }
+        else {
+          ret = BasilSErver.MakeException('Displayable or position not specified');
+        }
+        return ret;
+    }
+    _ProcDeleteObjectInstance(req) {
+        if (req.objectId) {
+          BItem.ForgetItem(req.objectId.id);
+        }
+        return {
+        };
+    }
+    _ProcUpdateObjectProperty(req) {
+        let ret = {};
+        if (req.objectId && req.props) {
+          let obj = BItem.GetItem(req.objectId.id);
+          if (obj) {
+            obj.SetProperties(req.props);
+          }
+          else {
+            ret = BasilServiceConnection.MakeException('Object not found');
+          }
+        }
+        return ret;
+    }
+    _ProcUpdateInstanceProperty(req) {
+        let ret = {};
+        if (req.instanceId && req.props) {
+          let obj = BItem.GetItem(req.instanceId.id);
+          if (obj) {
+            obj.SetProperties(req.props);
+          }
+          else {
+            ret = BasilServiceConnection.MakeException('Object not found');
+          }
+        }
+        return ret;
+    }
+    _ProcUpdateInstancePosition(req) {
+      if (req.instanceId && req.pos) {
+        let instance = BItem.GetItem(req.instanceId.id);
+        if (instance) {
+          BasilServiceConnection.UpdatePositionInfo(instance, req.pos);
+        }
+      }
+      return {};
+    }
+    _ProcRequestObjectProperties(req) {
+      let ret = {};
+      if (req.objectId) {
+        let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
+        let obj = BItem.GetItem(req.objectId.id);
+        if (obj) {
+          ret = { 'properties': BasilServiceConnection.CreatePropertyList(obj.FetchProperties(filter)) };
+        }
+        else {
+          ret = BasilServiceConnection.MakeException('Object not found: ' + req.objectId.id);
+        }
+        return ret;
+      };
+    }
+    _ProcRequestInstanceProperties(req) {
+      let ret = {};
+      if (req.instanceId) {
+        let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
+        let instance = BItem.GetItem(req.instanceId.id);
+        if (instance) {
+          ret = { 'properties': BasilServiceConnection.CreatePropertyList(instance.FetchProperties(filter)) };
+        }
+        else {
+          ret = BasilServiceConnection.MakeException('Instance not found: ' + req.instanceId.id);
+        }
+        return ret;
+      };
+    }
+    _ProcOpenSession(req) {
+        return {
+            'properties': {
+                'creepy': 'no',
+                'wow': '44'
+            }
+        };
+    }
+    _ProcCloseSession(req) {
+        return {
+        };
+    }
+    _ProcMakeConnection(req) {
+        return {
+        };
+    }
+    _ProcAliveCheck(req) {
+        return {
+            'time': Date.now(),
+            'sequenceNum': this.aliveReplySequenceNum++,
+            'timeReceived': req['time'],
+            'sequenceNumReceived': req['sequenceNum']
+        };
+    };
+    _ProcAliveCheckResp(req) {
+        // Match response with sent alive check
+        return {
+        };
+    };
+
+    // Create an exception object
+    static MakeException(reason, hints) {
+      let except = { 'exception': {} };
+      if (reason) { except.exception.reason = reason; }
+      if (hints) { except.exception.hints = hints; }
+      return except;
+    };
+
+    // Update an instance's position info based on a passed BasilType.InstancePostionInfo
+    static UpdatePositionInfo(instance, posInfo) {
+      let coordPosition = posInfo.pos;  // get BasilType.CoordPosition
+      if (coordPosition.pos) { instance.SetProperty('Position', coordPosition.pos) }
+      if (coordPosition.rot) { instance.SetProperty('Rotation', coordPosition.rot) }
+      if (coordPosition.posRef) { instance.SetProperty('PosCoordSystem', coordPosition.posRef) }
+      if (coordPosition.rotRef) { instance.SetProperty('RotCoordSystem', coordPosition.rotRef) }
+    };
+
+    // Create a well formed property list from an object. Values must be strings in the output.
+    // Note the check for 'undefined'. Property lists cannot have undefined values.
+    static CreatePropertyList(obj) {
+      let list = {};
+      Object.keys(obj).forEach(prop => {
+        let val = obj[prop];
+        if (typeof(val) != 'undefined') {
+          if (typeof(val) != 'string') {
+            val = JSON.stringify(val);
+          }
+          list[prop] = val;
+        }
+      });
+      return list;
+    };
+}

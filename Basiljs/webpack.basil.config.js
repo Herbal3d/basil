@@ -27,14 +27,13 @@ module.exports = {
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
         'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
     },
-    extensions: [ '.js', '.jsx' ]
+    extensions: [ '.js', '.jsx', '.json' ]
   },
   optimization: {
-    // Causes the runtime to be put in a separate bundle rather than included in each bundle
     splitChunks: {
       chunks: 'all'
     },
-    runtimeChunk: true,
+    runtimeChunk: false,
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     moduleIds: 'hashed'
   },

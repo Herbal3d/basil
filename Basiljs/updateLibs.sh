@@ -16,7 +16,7 @@ DOUPDATEBASILPROTO="no"
 DOUPDATEPROTOBUF="no"
 DOBUILDBASILPROTO="yes"
 
-THREEDIR=$PLACE/../../three.js
+THREEDIR=$PLACE/../../../three.js
 if [[ "$DOUPDATETHREEJS" == "yes" ]] ; then
     echo "=== Fetch ThreeJS"
     cd "$THREEDIR"
@@ -47,7 +47,7 @@ else
     echo "=== Not updating Basil-protocol"
 fi
 
-PROTOBUFJSDIR=$PLACE/../../protobuf.js
+PROTOBUFJSDIR=$PLACE/../../../protobuf.js
 if [[ "$DOUPDATEPROTOBUF" == "yes" ]] ; then
     echo "=== Updating protobuf.js"
     cd "${PROTOBUFJSDIR}"

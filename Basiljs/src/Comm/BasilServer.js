@@ -16,7 +16,7 @@ import GP from 'GP';
 import Config from '../config.js';
 import { BItem, BItemType } from '../Items/BItem.js';
 
-import { BasilServer as BasilServerMsgs } from "../jslibs/BasilServerMessages.js"
+import { BasilMsgs } from "../jslibs/BasilServerMessages.js"
 
 import { CreateUniqueId, CreateUniqueInstanceId } from '../Utilities.js';
 import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
@@ -71,7 +71,7 @@ export class BasilServiceConnection  extends BItem {
       if (this.transport) {
         // the Buffer should be a BasilServerMessage
         try {
-          let msgs = BasilServerMsgs.BasilServerMessageBody.decode(buff);
+          let msgs = BasilMsgs.BasilServerMessageBody.decode(buff);
           // GP.DebugLog('BasilServer.procMessage: ' + JSON.stringify(msgs));
           msgs.BasilServerMessages.forEach( msg => {
             let replyContents = undefined;
@@ -105,12 +105,12 @@ export class BasilServiceConnection  extends BItem {
                 }
                 let bmsgs = { 'BasilServerMessages': [ rmsg ] };
                 if (Config.Debug && Config.Debug.VerifyProtocol) {
-                  if (BasilServerMsgs.BasilServerMessageBody.verify(bmsgs)) {
+                  if (BasilMsgs.BasilServerMessageBody.verify(bmsgs)) {
                     GP.ErrorLog('BasilServer.procMessage: verification fail: ' + JSON.stringify(bmsgs));
                   }
                 }
                 // GP.DebugLog('BasilServer.procMessage: sending ' + JSON.stringify(bmsgs));
-                this.transport.Send(BasilServerMsgs.BasilServerMessageBody.encode(bmsgs).finish());
+                this.transport.Send(BasilMsgs.BasilServerMessageBody.encode(bmsgs).finish());
               }
             }
             else {
@@ -287,12 +287,8 @@ export class BasilServiceConnection  extends BItem {
     // Create an exception object
     static MakeException(reason, hints) {
       let except = { 'exception': {} };
-      if (reason) {
-        except.exception.reason = reason;
-      }
-      if (hints) {
-        except.exception.hints = hints;
-      }
+      if (reason) { except.exception.reason = reason; }
+      if (hints) { except.exception.hints = hints; }
       return except;
     };
 
@@ -305,7 +301,7 @@ export class BasilServiceConnection  extends BItem {
       if (coordPosition.rotRef) { instance.SetProperty('RotCoordSystem', coordPosition.rotRef) }
     };
 
-    // Create a property list from an object. Values must be strings in the output.
+    // Create a well formed property list from an object. Values must be strings in the output.
     // Note the check for 'undefined'. Property lists cannot have undefined values.
     static CreatePropertyList(obj) {
       let list = {};
