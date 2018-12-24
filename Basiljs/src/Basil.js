@@ -122,9 +122,9 @@ if (typeof(configParams) == 'undefined') {
     let testConfigParams = {
         'comm': {
             'testmode': true,
-            'SpaceServer': {
-              'connectionURL': 'connectionURL'
-            }
+            'transportURL': './wwtester.js',
+            'transport': 'WW',
+            'service': 'SpaceServer'
         }
     };
     configParams = Base64.encode(JSON.stringify(testConfigParams));
@@ -165,10 +165,11 @@ GP.CM.Start();
 GP.Ready = true;
 
 // If there are connection parameters, start the first connection
-if (Config.comm && Config.comm.SpaceServer) {
-  GP.CM.ConnectSpaceServer(Config.comm.SpaceServer)
+if (Config.comm && Config.comm.transportURL) {
+  GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
+  GP.CM.ConnectTransportAndService(Config.comm)
   .then( () => {
-    GP.DebugLog('Basiljs: initial connection to SpaceServer successful');
+    GP.DebugLog('Basiljs: initial connection transport and service successful');
   })
   .catch( e => {
     GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));

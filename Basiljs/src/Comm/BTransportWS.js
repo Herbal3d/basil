@@ -64,7 +64,7 @@ export class BTransportWS extends BTransport {
   }
   // Set a calback to be called whenever a message is received
   SetReceiveCallback(callback) {
-    this.receiveCallbackObject = callback;
+    this.receiveCallback = callback;
     // GP.DebugLog('BTransportWS: set receiveCallback');
   }
   // Return 'true' is there is data in the input queue

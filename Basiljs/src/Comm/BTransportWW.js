@@ -14,23 +14,29 @@
 
 // @ts-ignore
 import GP from 'GP';
+import Config from '../config.js';
 
 import { BTransport } from './BTransport.js';
 import { BItemState } from '../Items/BItem.js';
+import { CombineParameters } from '../Utilities.js';
 import { BException } from '../BException.js';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWW extends BTransport {
     constructor(parms) {
-        super(parms);
+        let params = CombineParameters(Config.comm.TransportWW, parms, {
+            'transportURL': undefined   // name of Worker to connect to
+        });
+        super(params);
+        this.params = params;
         // @ts-ignore
         if (typeof WorkerGlobalScope === 'undefined') {
             // We're the master
-            // parms.transportURL is WebWorker URL to connect to
+            // this.params.transportURL is WebWorker URL to connect to
             GP.DebugLog('BTransportWW: setting up server');
             this.itemType = 'BTransport.TransportWW.Server';
             try {
-                this.worker = new Worker(parms.transportURL);
+                this.worker = new Worker(this.params.transportURL);
                 this.isWorker = false;
                 this.worker.onmessage = function(d) {
                     // GP.DebugLog('BTransportWW.onmessage: rcvd');
@@ -86,8 +92,8 @@ export class BTransportWW extends BTransport {
     }
 
     // Set a calback to be called whenever a message is received
-    SetReceiveCallbackObject(callback) {
-        this.receiveCallbackObject = callback;
+    SetReceiveCallback(callback) {
+        this.receiveCallback = callback;
         // GP.DebugLog('BTransportWW: set receiveCallback');
     }
 

@@ -12,9 +12,33 @@
 'use strict';
 
 import GP from 'GP';
-
 import Config from '../config.js';
 
-export class PestoClient {
+import { MsgProcessor } from './MsgProcessor.js';
+import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
+
+import { CreateUniqueId, CombineParameters } from '../Utilities.js';
+
+export class PestoClient extends MsgProcessor {
+    constructor(pTransport, pParams) {
+        // Merge the passed parameters with required parameter defaults
+        let params = CombineParameters(Config.comm.PestoClient, pParams, {
+            'id': undefined     // unique generated if non-specified
+        });
+        params.id = params.id ? params.id : CreateUniqueId('PestoClient');
+        super(params.id, undefined);
+        this.params = params;
+        this.xport = pTransport;
+
+        // templates = entry_name: [ message_processor, BasilServerMessage_reply_name ]
+        //      If the _reply_name is 'undefined', then the message doesn't expect a response.
+        this.RegisterMsgsProcessed(this.transport, /*    sends */ BasilSpaceStream.SpaceStreamMessage,
+                                                   /* receives */ BasilSpaceStream.BasilStreamMessage, {
+        });
+    }
+
+    Start() {
+    }
+
 
 }

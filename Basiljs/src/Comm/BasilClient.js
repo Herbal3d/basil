@@ -14,109 +14,45 @@
 import GP from 'GP';
 import Config from '../config.js';
 
-import { gRPC } from "@grpc/grpc-js";
+import { MsgProcessor } from './MsgProcessor.js';
+import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
 
-// Client connection used in WebWorker and testing instances
-export class BasilClientConnection {
-    constructor(clientID, parms) {
-        this.clientID = clientID;
-        this.aliveSequenceNum = 888;
-        this.RPCsession = 900222;
-        this.RPCSessionCallback = new Map();
+import { CombineParameters, CreateUniqueId } from '../Utilities.js';
 
-        try {
-            // https://github.com/grpc/grpc-node/tree/master/packages/proto-loader
-            const packageDef = gRPC.loadSync(path.resolve(__dirname, 'BasilServer.proto'), {
-                'keepCase': true,
-                'longs': String,
-                'enums': String,
-                'defaults': true,
-                'oneof': true,    // Set virtual onof properties to present field name
-                'includeDirs': 'protocol'
-                });
-            const packageObject = gRPC.loadPackageDefinition(packageDef);
-        }
-        catch (e) {
-
-        }
+// Interface of a client talking to a Basil Viewer over the Basil/SpaceServer stream connection
+export class BasilClientConnection extends MsgProcessor {
+    constructor(pTransport, pParams) {
+        // Merge the passed parameters with required parameter defaults
+        let params = CombineParameters(Config.comm.BasilClient, pParams, {
+            'id': undefined     // unique generated if not specified
+        });
+        params.id = params.id ? params.id : CreateUniqueId('BasilClientConnection');
+        super(params.id, undefined);
+        this.params = params;
+        this.xport = pTransport;
+        this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
+                                                /* receives */ BasilSpaceStream.SpaceStreamMessage, {
+            'IdentifyDisplayableObjectRespMsg': this.HandleResponse.bind(this),
+            'ForgetDisplayableObjectRespMsg': this.HandleResponse.bind(this),
+            'CreateObjectInstanceRespMsg': this.HandleResponse.bind(this),
+            'DeleteObjectInstanceRespMsg': this.HandleResponse.bind(this),
+            'UpdateObjectPropertyRespMsg': this.HandleResponse.bind(this),
+            'UpdateInstancePropertyRespMsg': this.HandleResponse.bind(this),
+            'UpdateInstancePositionRespMsg': this.HandleResponse.bind(this),
+            'RequestObjectPropertiesRespMsg': this.HandleResponse.bind(this),
+            'RequestInstancePropertiesRespMsg': this.HandleResponse.bind(this),
+            'CloseSessionRespMsg': this.HandleResponse.bind(this),
+        });
     };
+
     Start() {
+        if (this.xport) {
+            this.xport.SetReceiveCallback(this._ProcMessage.bind(this));
+        }
     };
+
     Close() {
     };
-    // function that sends the request and returns a Promise for the response.
-    SendAndPromiseResponse(msg, reqName) {
-        let smsg = {};
-        let responseSession = this.RPCsession++;
-        smsg[ reqName + 'ReqMsg'] = msg;
-        smsg['ResponseReq'] = {
-          'responseSession': responseSession
-        };
-        let smsgs = { 'BasilServerMessages': [ smsg ] };
-        if (Config.Debug && Config.Debug.VerifyProtocol) {
-          if (BasilServerMsgs.BasilServerMessageBody.verify(smsgs)) {
-            GP.ErrorLog('BasilClient.SendAndPromiseResponse: verification fail: '
-                    + JSON.stringify(smsgs));
-          }
-        }
-        let emsg = BasilServerMsgs.BasilServerMessageBody.encode(smsgs).finish();
-        // Return a promise and pass the 'resolve' function to the response message processor
-        return new Promise( function(resolve,reject) {
-            this.RPCSessionCallback[responseSession] = {
-              'timeRPCCreated': Date.now(),
-              'resolve': resolve,
-              'reject': reject,
-              'requestName': reqName,
-              'rawMessage': smsgs
-            };
-            this.transport.Send(emsg);
-        }.bind(this));
-    };
-
-    // Called when message received. At the moment, all messages are
-    //    be responses to RPC requests.
-    procMessage(resp) {
-      let smsgs = BasilServerMsgs.BasilServerMessageBody.decode(resp);
-      if (smsgs.BasilServerMessages) {
-        smsgs.BasilServerMessages.forEach( msg => {
-          if (msg.ResponseReq && msg.ResponseReq.responseSession) {
-            let sessionIndex = msg.ResponseReq.responseSession;
-            let session = this.RPCSessionCallback[sessionIndex];
-            if (session) {
-              this.RPCSessionCallback.delete(sessionIndex);
-              try {
-                let respName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
-                if (respName) {
-                  // if this is a properly formed response, return the body of the response
-                  (session.resolve)(msg[respName], msg, respName);
-                }
-                else {
-                  // If not a response, just resolve with the whole message
-                  (session.resolve)(msg, respName);
-                }
-              }
-              catch (e) {
-                let errMsg = 'BasilClient.procMessage: exception processing msg: ' + e;
-                console.log(errMsg);
-                GP.ErrorLog(errMsg);
-                (session.reject)(e);
-              }
-            }
-            else {
-              let errMsg = 'BasilClient.procMessage: received msg which is not RPC response: '
-                        + JSON.stringify(msg);
-              console.log(errMsg);
-              GP.ErrorLog(errMsg);
-            }
-          }
-          else {
-            let errMsg = 'BasilClient.procMessage: received misformed msg: ' + JSON.stringify(msg);
-            console.log(errMsg);
-            GP.ErrorLog(errMsg);
-          }
-        });
-      }
-    }
 
     IdentifyDisplayableObject(auth, asset, id, aabb) {
         let msg = { 'assetInfo': asset };
@@ -173,24 +109,10 @@ export class BasilClientConnection {
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg, 'RequestInstanceProperties');
     };
-    OpenSession(auth, propertyList) {
-        let msg = {};
-        if (auth) msg['auth'] = auth;
-        if (propertyList) msg['features'] = propertyList;
-        return this.SendAndPromiseResponse(msg, 'OpenSession');
-    };
     CloseSession(auth, reason) {
         let msg = {};
         if (auth) msg['auth'] = auth;
         if (reason) msg['reason'] = reason;
         return this.SendAndPromiseResponse(msg, 'CloseSession');
-    };
-    AliveCheck(auth) {
-        let msg = {};
-        if (auth) msg['auth'] = auth;
-        msg['time'] = Date.now(),
-        msg['sequenceNum']  = this.aliveSequenceNum++
-        // throw 'BasilClient.AliveCheck: sending: ' + JSON.stringify(msg);
-        return this.SendAndPromiseResponse(msg, 'AliveCheck');
     };
 };

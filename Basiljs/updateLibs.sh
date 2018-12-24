@@ -11,7 +11,7 @@ JSLIBS=${PLACE}/src/jslibs
 UPDATEDATE=$(date +%Y%m%d)
 echo "${UPDATEDATE}" > "${JSLIBS}/update.date"
 
-DOUPDATETHREEJS="no"
+DOUPDATETHREEJS="yes"
 DOUPDATEBASILPROTO="no"
 DOUPDATEPROTOBUF="no"
 DOBUILDBASILPROTO="yes"
@@ -69,6 +69,8 @@ if [[ "$DOBUILDBASILPROTO" == "yes" ]] ; then
     ./bin/pbjs -t static-module \
         --wrap es6 \
         --no-comments \
+        $BASILPROTODIR/protocol/BasilSpaceStream.proto \
+        $BASILPROTODIR/protocol/SpaceServer.proto \
         $BASILPROTODIR/protocol/BasilServer.proto \
         $BASILPROTODIR/protocol/BasilTypes.proto \
         > "$JSLIBS/BasilServerMessages.js"

@@ -12,39 +12,55 @@
 'use strict';
 
 import GP from 'GP';
+import Config from '../config.js';
 
-import { BException } from '../BException.js';
 import { BItem, BItemType } from '../Items/BItem.js';
+import { BException } from '../BException.js';
+import { CombineParameters, CreateUniqueId } from '../Utilities.js';
 
 // Template for transport implmentations.
 export class BTransport extends BItem {
-  constructor(parms) {
-      super(parms.transportId, parms.transportAuth, BItemType.TRANSPORT);
-      this.messages = [];
-      this.stats = {};
-      this.stats.messagesSent = 0;
-      this.stats.messagesReceived = 0;
-      this.sequenceNum = 111;
-      this.aliveSequenceNum = 333;
+    constructor(parms) {
+        let params = CombineParameters(Config.comm.Transport, parms, {
+            'transportId': undefined,
+            'transportAuth': undefined,
+            'initialSequenceNumber': 111,
+            'initialAliveSequenceNumber': 333
+        });
+        if (typeof params.transportId === 'undefined') {
+            // Really need a unique Id for every instance of transport
+            params.transportId = CreateUniqueId('transport', 'default');
+        }
+        super(params.transportId, params.transportAuth, BItemType.TRANSPORT);
+        this.params = params;
+        this.messages = [];
+        this.stats = {};
+        this.stats.messagesSent = 0;
+        this.stats.messagesReceived = 0;
+        this.sequenceNum = this.params.initialSequenceNumber;
+        this.aliveSequenceNum = this.params.initialAliveSequenceNumber;
+    
+        // The properties that can be read as a BItem
+        super.DefineProperties( {
+            'MessagesSent': { 'get': function() { return this.stats.messagesSent; }.bind(this) },
+            'MessagesReceived': { 'get': function() { return this.stats.messagesReceived; }.bind(this) },
+            'Stats': { 'get': function() { return this.stats; }.bind(this) },
+            'QueueSize': { 'get': function() { return this.messages.length; }.bind(this) }
+        } );
+    }
 
-      // The properties that can be read as a BItem
-      super.DefineProperties( {
-          'MessagesSent': { 'get': function() { return this.stats.messagesSent; }.bind(this) },
-          'MessagesReceived': { 'get': function() { return this.stats.messagesReceived; }.bind(this) },
-          'Stats': { 'get': function() { return this.stats; }.bind(this) },
-          'QueueSize': { 'get': function() { return this.messages.length; }.bind(this) }
-      } );
-  }
   Close() {
   }
+
   // Send the data. Places message in output queue
   Send(data, tcontext) {
       GP.DebugLog('BTransport: call of undefined Send()');
       throw new BException('BTransport: call of undefined Send()');
   }
+
   // Set a callback object for recevieving messages.
   // The passed object must have a 'procMessage' method
-  SetReceiveCallbackObject(callback) {
+  SetReceiveCallback(callback) {
     GP.DebugLog('BTransport: call of undefined SetReceiveCallback()');
     throw new BException('BTransport: call of undefined SetReceiveCallback()');
   }
@@ -58,11 +74,10 @@ export class BTransport extends BItem {
           // let dmsg = BTransportMsgs.BTransport.decode(msg)
           // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
 
-          if (this.receiveCallbackObject
-                  && this.receiveCallbackObject.procMessage
-                  && (typeof this.receiveCallbackObject.procMessage == 'function')) {
+          if (this.receiveCallback
+                  && (typeof this.receiveCallback == 'function')) {
               // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-              this.receiveCallbackObject.procMessage(msg, msg);
+              this.receiveCallback(msg);
           }
       }
   }

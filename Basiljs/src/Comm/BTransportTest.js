@@ -15,7 +15,7 @@
 import GP from 'GP';
 
 import { BTransport } from './BTransport.js';
-import { BasilMsgs } from '../jslibs/BasilServerMessages.js';
+import { BasilServer as BasilServerMsgs } from '../jslibs/BasilServerMessages.js';
 
 // TransportTest uses some global variables to keep track of running tests
 GP.TransportTestsRunning = [];
@@ -59,7 +59,7 @@ export class BTransportTest extends BTransport {
                 }
             }
             // GP.DebugLog('TransportTest: creating msg: ' + JSON.stringify(bmsg));
-            let bdata = BasilMsgs.BasilServerMessage.encode(bmsg).finish();
+            let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
             test.Send(bdata, test);
         }
     }
