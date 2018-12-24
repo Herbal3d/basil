@@ -12,3 +12,8 @@ package-lock.json
 # WebStorm user-specific
 .idea/workspace.xml
 .idea/tasks.xml
+
+# temp directories ignored to not confuse git tools
+convoar/
+Basiljs-nodejs/
+

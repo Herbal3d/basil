@@ -14,22 +14,21 @@
 import GP from 'GP';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import { BasilServiceConnection } from './BasilServer.js';
+import { SpaceServerConnection } from './SpaceServer.js';
 import { PestoClient } from './PestoClient.js';
+
 import { BTransportWW } from './BTransportWW.js';
 import { BTransportWS } from './BTransportWS.js';
 import { BTransportTest } from './BTransportTest.js';
 
-import { CreateUniqueId } from '../Utilities.js';
+import { CombineParameters } from '../Utilities.js';
+import { BException } from '../BException.js';
+import { BasilServerConnection } from './BasilServer.js';
 
 export class Comm extends BItem {
   constructor() {
     GP.DebugLog('Comm: constructor');
     super('org.basil.b.comm', undefined, BItemType.COMM);
-
-    // Comm keeps a list of the servers.
-    this.servers = {};
-    this.transports = {};
   }
 
   Start() {
@@ -38,30 +37,23 @@ export class Comm extends BItem {
 
   // Initialize a transport and a service and resolve the promise when connected
   // The 'parms' are passed to the transport and service creation routimes.
-  // If 'parms.testmode' is defined and 'true', test configuration is forced.
   // Returns a promise that is resolved when both transport and service are running.
-  //  parms.transport: WW, WS, test
-  //  parms.transportURL: URL to use for connecting the transportId
-  //  parms.service: BasilServer, Pesto
-  //  parms.serviceId: optional identification string for this service connection
-  //  parms.testmode: if present and true, force above params to test configuration
-  ConnectTransportService(parms) {
+  ConnectTransportAndService(parms) {
+      let params = CombineParameters(undefined, parms, {
+          'transport': 'WS',            // the type of transport to connect (WW, WS, test)
+          'transportURL': undefined,    // URL to connect transport to
+          'service': undefined          // service to add on top of that transport
+      });
       return new Promise(function(resolve, reject) {
-          if (parms.testmode) {
-              // Test mode sets up the WebWorker transport and a BasilServer here
-              parms.transport = 'WW';
-              parms.transportURL = parms.testWWURL;
-              parms.service = 'BasilServer';
-          }
-          if (parms.transport && parms.transportURL) {
-              GP.DebugLog('Comm.ConnectTransportService: transport: ' + parms.transport
-                          + '=>' + parms.transportURL);
-              this.ConnectTransport(parms)
+          if (params.transport && params.transportURL) {
+              GP.DebugLog('Comm.ConnectTransportService: transport: ' + params.transport
+                          + '=>' + params.transportURL);
+              this.ConnectTransport(params)
               .then (xport => {
                   GP.DebugLog('Comm.ConnectTransportService: transport connected');
-                  if (parms.service) {
-                      // GP.DebugLog('Comm.ConnectTransportService: service: ' + parms.service);
-                      return this.ConnectService(xport, parms);
+                  if (params.service) {
+                      // GP.DebugLog('Comm.ConnectTransportService: service: ' + params.service);
+                      return this.ConnectService(xport, params);
                   }
                   else {
                       return null;
@@ -74,7 +66,7 @@ export class Comm extends BItem {
                   resolve();
               })
               .catch ( e => {
-                  GP.ReportError('Comm.ConnectTransportService: failed initialization: ' + e);
+                  GP.ErrorLog('Comm.ConnectTransportService: failed initialization: ' + e);
                   reject(e);
               })
           }
@@ -82,37 +74,37 @@ export class Comm extends BItem {
   };
 
   // Make a connection to a service.
-  // 'parms' is a map with:
-  //      'transport' = 'ww', 'test', 'ws' (default 'ws')
-  //      'transportURL' = if set, will do an 'open' with that URL and pass these parms
-  //      'service': 'Basil', 'Pesto' (default ('Basil')
   // 'parms' is passed to the created transport/service
   ConnectTransport(parms) {
+      let params = CombineParameters(undefined, parms, {
+          'transportId': undefined,     // identifier for the created transport
+          'transport': 'WS',            // the type of transport to connect (WW, WS, test)
+          'transportURL': undefined     // URL to connect transport to
+      });
       return new Promise(function(resolve, reject) {
           let xport = undefined;
           try {
-              if (typeof parms.transportId == 'undefined') {
-                parms.transportId = CreateUniqueId('transport', parms.transport);
-              }
-              if (parms.transport) {
-                  switch (parms.transport) {
+              if (params.transport) {
+                  switch (params.transport) {
                       case 'WW':
-                          xport = new BTransportWW(parms);
+                          xport = new BTransportWW(params);
                           break;
                       case 'WS':
-                          xport = new BTransportWS(parms);
+                          xport = new BTransportWS(params);
                           break;
                       case 'Test':
-                          xport = new BTransportTest(parms);
+                          xport = new BTransportTest(params);
                           break;
                       default:
-                          GP.ReportError('Comm.Connect: transport type unknown: ' + parms.transport);
-                          reject('Comm.Connect: transport type unknown: ' + parms.transport);
+                          let errorMsg = 'Comm.Connect: transport type unknown: '
+                                        + JSON.stringify(params);
+                          GP.ErrorLog(errorMsg);
+                          reject(errorMsg);
                   }
               }
               else {
                   GP.DebugLog('Comm.Connect: defaulting to WS transport');
-                  xport = new BTransportWS(parms);
+                  xport = new BTransportWS(params);
               }
           }
           catch(e) {
@@ -127,39 +119,44 @@ export class Comm extends BItem {
   //     Basil client (Creating the BasilService for this end))
   // Expects parms.service = either 'BasilServer" or 'Pesto'
   // Returns a Promise that has a handle to the created processor or undefined.
-  //  parms.service: BasilServer, Pesto
-  //  parms.serviceId: identification string for this service connection
-  //              if not present, a unique Id is created
-  ConnectService(xport, parms) {
+  ConnectService(pTransport, pParams) {
+      let params = CombineParameters(undefined, pParams, {
+          'service': 'SpaceServer',     // or 'Pesto'
+          'serviceId': undefined,       // if not passed, unique one created
+          'pestoId': undefined          // if not passed, unique one created
+      });
       return new Promise(function(resolve, reject) {
           let svc = undefined;
-          let serviceType = parms.service ? parms.service : 'BasilServer';
+          let serviceType = params.service;
           switch (serviceType) {
-              case 'BasilServer':
-                  let serverId = parms.serviceId ? parms.serviceId : CreateUniqueId('service', serviceType);
-                  if (this.servers[serverId]) {
-                      GP.DebugLog('BasilServer: Not creating service. Existing Id:' + serverId);
-                      reject('Comm.ConnectService: connecting service with existing Id');
-                  }
-                  svc = new BasilServiceConnection(serverId, xport, parms);
-                  svc.serverId = serverId;
-                  this.servers[serverId] = svc;
+              case 'SpaceServer':
+                  svc = new SpaceServerClientConnection(pTransport, params);
+                  let basilSpace = new BasilServerConnection(pTransport, params);
+                  let aliveSpace = new AliveCheckBasilConnection(pTransport, params);
+                  aliveSpace.Start();
+                  aliveSpace.SetReady();
+                  basilSpace.Start();
+                  basilSpace.SetReady();
                   svc.Start();
                   svc.SetReady();
                   GP.DebugLog('Comm.Connect: created BasilServer. Id=' + serverId);
                   break;
               case 'Pesto':
-                  let pestoId = parms.pestoId ? parms.pestoId : CreateUniqueId('service', serviceType);
-                  svc = new PestoClient(parms.pestoId, xport, parms);
-                  svc.serverId = pestoId;
-                  this.servers[pestoId] = svc;
+                  svc = new PestoClientConnection(pTransport, params);
+                  let basilPesto = new BasilServerConnection(pTransport, params);
+                  let alivePesto = new AliveCheckBasilConnection(pTransport, params);
+                  alivePesto.Start();
+                  alivePesto.SetReady();
+                  basilPesto.Start();
+                  basilPesto.SetReady();
                   svc.Start();
                   svc.SetReady();
                   GP.DebugLog('Comm.Connect: created PestoClient. Id=' + pestorId);
                   break;
               default:
-                  GP.ReportError('Comm.Connect: service type unknown: ' + parms.service)
-                  reject('Comm.Connect: service type unknown: ' + parms.service)
+                  let errorMsg = 'Comm.Connect: service type unknown: ' + JSON.stringify(params.service);
+                  GP.ErrorLog(errorMsg)
+                  reject(errorMsg)
           }
           GP.DebugLog('Comm.Connect: created service ' + svc.id)
           resolve(svc);

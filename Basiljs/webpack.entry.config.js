@@ -25,11 +25,10 @@ module.exports = {
     extensions: [ '.js', '.jsx' ]
   },
   optimization: {
-    // Causes the runtime to be put in a separate bundle rather than included in each bundle
     splitChunks: {
       chunks: 'all'
     },
-    runtimeChunk: true,
+    runtimeChunk: false,
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     moduleIds: 'hashed'
   },

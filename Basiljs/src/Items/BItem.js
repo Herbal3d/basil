@@ -46,16 +46,14 @@ export const BItemType = {
 //      Used for remote access and control of this thing.
 //  An 'id' which uniquely names this item.
 //  An 'auth' which is auth info for access to and from this item.
-//  An 'ownerId' which identifies an 'owner' of this item. Mostly used
-//      for cleaning up items when service is disconnected.
 //  An 'itemType' which identifies the type of the item.
 export class BItem {
-    constructor(id, auth, itemType) {
+    constructor(pId, pAuth, pItemType) {
       this.props = new Map();
-      this.id = id;             // index this item is stored under
-      this.auth = auth;         // authorization information
+      this.id = pId;             // index this item is stored under
+      this.auth = pAuth;         // authorization information
       this.ownerId = undefined; // this item is not yet associated with  some service/connection
-      this.itemType = itemType ? itemType : BItemType.UNKNOWN;  // the type of the item
+      this.itemType = pItemType ? pItemType : BItemType.UNKNOWN;  // the type of the item
       this.state = BItemState.UNINITIALIZED;
       this.DefineProperties( {
           'Type': { 'get': () => { return this.itemType; } },
@@ -63,7 +61,7 @@ export class BItem {
           'OwnerId': { 'get': () => { return this.ownerId; } },
           'State': { 'get': () => { return this.state; } }
       });
-      BItem.AddItem(id, this);
+      BItem.AddItem(this.id, this);
     }
 
     ReleaseItem() {
@@ -72,9 +70,9 @@ export class BItem {
 
     // Returns the value of the property or 'undefined' if either
     //    no such property or there isn't a value for it.
-    GetProperty(prop) {
+    GetProperty(pProp) {
       let ret = undefined;
-      let propDesc = this.props.get(prop);
+      let propDesc = this.props.get(pProp);
       if (propDesc && propDesc.get) {
         ret = propDesc.get();
         // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);

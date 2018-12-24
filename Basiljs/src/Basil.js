@@ -12,9 +12,8 @@
 // limitations under the License.
 
 'use strict';
-/* global GP */ // debugging global context (ESlint)
 
-// Global parameters and variables. "GP.variable"
+// Global debugging parameters and variables. "GP.variable"
 import GP from 'GP';
 import Config from './config.js';
 import { BItem, BItemType, BItemState } from './Items/BItem.js';
@@ -105,23 +104,27 @@ export class DebugBItem extends BItem {
 }
 
 // =====================================================
-/*
-    Pattern for Basil is for each package to define a global variable to hold
-    local state. This is two character (GR, EV, CM, CO, ...). There is one
-    global var named 'GP' that has references to everything but that is ONLY
-    for use in debugging.
+/* The GP variable is for debugging only. Most of the major components
+   have an instance there and reference GP for outputting debug information.
+   It is NOT intended to be used for general commuinication between modules.
 */
 
 GP.Ready = false;
 
-// Can be called with communication configuration parameters in the URL
+// Called with communication configuration parameters in the URL.
+// The 'c' parameter is Base64 encoded JSON data which is merged into
+//    'Config' thus it can specify any configuration parameter but
+//    most commonly has a 'comm' section for setting up the
+//    initial connections from this viewer to space servers.
 let configParams = GP.ConfigGetQueryVariable('c');
 if (typeof(configParams) == 'undefined') {
     // If no communication parameters are given, use testing parameters
     let testConfigParams = {
         'comm': {
             'testmode': true,
-            'testWWURL': './wwtester.js'
+            'transportURL': './wwtester.js',
+            'transport': 'WW',
+            'service': 'SpaceServer'
         }
     };
     configParams = Base64.encode(JSON.stringify(testConfigParams));
@@ -147,24 +150,32 @@ if (Config && Config.page && Config.page.collectDebug
   GP.debugItem = new DebugBItem();
 }
 
+// Names of display regions on web page.
 let container = document.getElementById(Config.page.webGLcontainerId);
 let canvas = document.getElementById(Config.page.webGLcanvasId);
 
+// Create the major component instances (Singletons)
 GP.GR = new Graphics(container, canvas);
 GP.CO = new Controls();
 GP.CM = new Comm();
 
+// Push the 'Start' button
 GP.GR.Start();
 GP.CM.Start();
 GP.Ready = true;
 
 // If there are connection parameters, start the first connection
-if (Config.comm && Object.keys(Config.comm).length > 0) {
-  GP.CM.ConnectTransportService(Config.comm)
-  .then( () => {
-    GP.DebugLog('Basiljs: initial transport and service connected');
+if (Config.comm && Config.comm.transportURL) {
+  GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
+  GP.CM.ConnectTransportAndService(Config.comm)
+  .then( srv => {
+    GP.DebugLog('Basiljs: initial connection transport and service successful');
+    srv.OpenSession(undefined, {})
+    .then( resp => {
+      GP.DebugLog('Basiljs: Session opened to SpaceServer');
+    });
   })
   .catch( e => {
-    GP.DebugLog('Basiljs: failed connecting initial transport and service: {e}');
+    GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));
   });
 };

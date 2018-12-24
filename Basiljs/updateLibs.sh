@@ -11,12 +11,12 @@ JSLIBS=${PLACE}/src/jslibs
 UPDATEDATE=$(date +%Y%m%d)
 echo "${UPDATEDATE}" > "${JSLIBS}/update.date"
 
-DOUPDATETHREEJS="no"
+DOUPDATETHREEJS="yes"
 DOUPDATEBASILPROTO="no"
 DOUPDATEPROTOBUF="no"
 DOBUILDBASILPROTO="yes"
 
-THREEDIR=$PLACE/../../three.js
+THREEDIR=$PLACE/../../../three.js
 if [[ "$DOUPDATETHREEJS" == "yes" ]] ; then
     echo "=== Fetch ThreeJS"
     cd "$THREEDIR"
@@ -47,7 +47,7 @@ else
     echo "=== Not updating Basil-protocol"
 fi
 
-PROTOBUFJSDIR=$PLACE/../../protobuf.js
+PROTOBUFJSDIR=$PLACE/../../../protobuf.js
 if [[ "$DOUPDATEPROTOBUF" == "yes" ]] ; then
     echo "=== Updating protobuf.js"
     cd "${PROTOBUFJSDIR}"
@@ -69,6 +69,8 @@ if [[ "$DOBUILDBASILPROTO" == "yes" ]] ; then
     ./bin/pbjs -t static-module \
         --wrap es6 \
         --no-comments \
+        $BASILPROTODIR/protocol/BasilSpaceStream.proto \
+        $BASILPROTODIR/protocol/SpaceServer.proto \
         $BASILPROTODIR/protocol/BasilServer.proto \
         $BASILPROTODIR/protocol/BasilTypes.proto \
         > "$JSLIBS/BasilServerMessages.js"
