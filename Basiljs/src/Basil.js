@@ -168,8 +168,12 @@ GP.Ready = true;
 if (Config.comm && Config.comm.transportURL) {
   GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
   GP.CM.ConnectTransportAndService(Config.comm)
-  .then( () => {
+  .then( srv => {
     GP.DebugLog('Basiljs: initial connection transport and service successful');
+    srv.OpenSession(undefined, {})
+    .then( resp => {
+      GP.DebugLog('Basiljs: Session opened to SpaceServer');
+    });
   })
   .catch( e => {
     GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));

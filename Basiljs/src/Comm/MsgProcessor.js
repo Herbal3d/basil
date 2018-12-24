@@ -25,14 +25,14 @@ class TransportReceiver {
     }
 
     Process(pRawMsg) {
-        let recvdMsg = this.decoder.decode(pRawMsg);
+        let msg = this.decoder.decode(pRawMsg);
         let replyContents = undefined;
         let reqName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
         let processor = MsgProcessor.processors.get(this.transport.id)[reqName];
         if (processor) {
             // The 'processor' specification is either an array consisting of:
-            //       [ processsorFunction, replyMsgName, otherParameters ]
-            //   where 'processorFunction' takes the parameters:
+            //       [ processorFunction, replyMsgName, otherParameters ]
+            //   where 'procesorFunction' takes the parameters:
             //       processorFunction(specificMsgBody, nameOfRequest, enclosingMsg, processorArray)
             //   The return of 'processorFunction' is the reply contents or 'undefined'.
             // If 'processor' is not an array, it is expected to be a function
@@ -99,7 +99,7 @@ export class MsgProcessor extends BItem {
     // Given a transport system and a set of message type processors,
     //    add the type processors for this transport.
     RegisterMsgProcess(pTransport, pEncoder, pDecoder, pProcessors) {
-        if (! MsgProcessor.processsors.has(pTransport.id)) {
+        if (! MsgProcessor.processors.has(pTransport.id)) {
             MsgProcessor.processors.set(pTransport.id, {});
             let xportReceiver = new TransportReceiver(pTransport, this, pEncoder, pDecoder);
             MsgProcessor.transportReceivers.set(pTransport.id, xportReceiver);
@@ -107,7 +107,7 @@ export class MsgProcessor extends BItem {
         }
         this.encoder = pEncoder;  // Remember outbound encoder for sending messages
         // Merge new message processors into the set of message processors
-        Object.assign(MsgProcessor.processors[pTransport.id], pProcessors);
+        Object.assign(MsgProcessor.processors.get(pTransport.id), pProcessors);
     }
 
     // Function that sends the request and returns a Promise for the response.

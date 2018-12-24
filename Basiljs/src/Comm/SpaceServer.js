@@ -30,12 +30,12 @@ export class SpaceServerConnection extends MsgProcessor {
         params.id = params.id ? params.id : CreateUniqueId('SpaceServer');
         super(params.id, undefined);
         this.params = params;
-        this.xport = pTransport;
+        this.transport = pTransport;
 
         // templates = entry_name: [ message_processor, BasilServerMessage_reply_name ]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
-        this.RegisterMsgsProcessed(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
-                                                   /* receives */ BasilSpaceStream.SpaceStreamMessage, {
+        this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
+                                                 /* receives */ BasilSpaceStream.SpaceStreamMessage, {
         });
     }
 

@@ -131,24 +131,24 @@ export class Comm extends BItem {
           switch (serviceType) {
               case 'SpaceServer':
                   svc = new SpaceServerClientConnection(pTransport, params);
-                  let basil = new BasilServerConnection(pTransport, params);
-                  let alive = new AliveCheckBasilConnection(pTransport, params);
-                  alive.Start();
-                  alive.SetReady();
-                  basil.Start();
-                  basil.SetReady();
+                  let basilSpace = new BasilServerConnection(pTransport, params);
+                  let aliveSpace = new AliveCheckBasilConnection(pTransport, params);
+                  aliveSpace.Start();
+                  aliveSpace.SetReady();
+                  basilSpace.Start();
+                  basilSpace.SetReady();
                   svc.Start();
                   svc.SetReady();
                   GP.DebugLog('Comm.Connect: created BasilServer. Id=' + serverId);
                   break;
               case 'Pesto':
                   svc = new PestoClientConnection(pTransport, params);
-                  let basilpesto = new BasilServerConnection(pTransport, params);
-                  let alivepesto = new AliveCheckBasilConnection(pTransport, params);
-                  alivepesto.Start();
-                  alivepesto.SetReady();
-                  basilpesto.Start();
-                  basilpesto.SetReady();
+                  let basilPesto = new BasilServerConnection(pTransport, params);
+                  let alivePesto = new AliveCheckBasilConnection(pTransport, params);
+                  alivePesto.Start();
+                  alivePesto.SetReady();
+                  basilPesto.Start();
+                  basilPesto.SetReady();
                   svc.Start();
                   svc.SetReady();
                   GP.DebugLog('Comm.Connect: created PestoClient. Id=' + pestorId);

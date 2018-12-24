@@ -43,14 +43,16 @@ export function CreateUniqueInstanceId() {
 export function CombineParameters(configParams, passedParams, requiredParams) {
     let parms = configParams ? configParams : {};
     if (passedParams) {
+        // passed parameters overwrite configuration file parameters
         Object.assign(parms, passedParams);
     }
     if (requiredParams) {
-        for (let key in Object.keys(requiredParams)) {
-            if (typeof(parms.key) == 'undefined') {
+        Object.keys(requiredParams).forEach( key => {
+            // If a required parameter has not been set, add the required param and default value
+            if (typeof(parms[key]) === 'undefined') {
                 parms[key] = requiredParams[key];
             }
-        }
+        })
     }
     return parms;
 }

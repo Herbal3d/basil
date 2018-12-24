@@ -20,6 +20,8 @@ import { BasilClientConnection } from './Comm/BasilClient.js';
 import { BTransportWW } from './Comm/BTransportWW.js';
 
 import { BasilType } from './jslibs/BasilServerMessages.js'
+import { SpaceServerConnection } from './Comm/SpaceServer.js';
+import { AliveCheckClientConnection } from './Comm/AliveCheckClient.js';
 
 GP.Config = Config;
 
@@ -34,7 +36,13 @@ GP.wwTransport = new BTransportWW(parms);
 
 GP.Ready = true;
 
-GP.client = new BasilClientConnection('client', GP.wwTransport, {} );
+console.log('Basiljs: before BasilClientConnection. TransportId=' + GP.wwTransport.id);
+GP.client = new BasilClientConnection(GP.wwTransport, {} );
+console.log('Basiljs: before SpaceServerConnection');
+GP.spaceServer = new SpaceServerConnection(GP.wwTransport, {});
+console.log('Basiljs: before AliveCheckClient');
+GP.aliveCheck = new AliveCheckClientConnection(GP.wwTransport, {});
+console.log('Basiljs: after AliveCheckClient');
 
 // Once client is created and connected, debug messsages can be sent to the
 //    predefined debug instance.
@@ -65,9 +73,10 @@ GP.client.OpenSession(undefined, {
 })
 .then( resp => {
     if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
+      let pollMS = Config.WWTester.AliveCheckPollMS ? Config.WWTester.AliveCheckPollMS : 10000;
       // Start alive polling
       GP.aliveIntervalID = setInterval(function() {
-          GP.client.AliveCheck()
+          GP.aliveCheck.AliveCheck()
           .then( resp => {
             if (Config.WWTester.PrintDebugOnAliveResponse) {
               GP.DebugLog('Keep alive response: ' + JSON.stringify(resp));
@@ -76,7 +85,7 @@ GP.client.OpenSession(undefined, {
           .catch( e => {
           // Got it back!
           });
-      }, Config.WWTester.AliveCheckPollMS);
+      }, pollMS);
     }
 
     let auth = undefined; // no authentication at the moment

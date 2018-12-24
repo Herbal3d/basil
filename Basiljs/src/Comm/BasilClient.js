@@ -29,7 +29,7 @@ export class BasilClientConnection extends MsgProcessor {
         params.id = params.id ? params.id : CreateUniqueId('BasilClientConnection');
         super(params.id, undefined);
         this.params = params;
-        this.xport = pTransport;
+        this.transport = pTransport;
         this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
                                                 /* receives */ BasilSpaceStream.SpaceStreamMessage, {
             'IdentifyDisplayableObjectRespMsg': this.HandleResponse.bind(this),
@@ -46,9 +46,6 @@ export class BasilClientConnection extends MsgProcessor {
     };
 
     Start() {
-        if (this.xport) {
-            this.xport.SetReceiveCallback(this._ProcMessage.bind(this));
-        }
     };
 
     Close() {
