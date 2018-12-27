@@ -19,7 +19,7 @@ import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
 
 import { CreateUniqueId, CombineParameters } from '../Utilities.js';
 
-export class PestoClient extends MsgProcessor {
+export class PestoClientConnection extends MsgProcessor {
     constructor(pTransport, pParams) {
         // Merge the passed parameters with required parameter defaults
         let params = CombineParameters(Config.comm.PestoClient, pParams, {

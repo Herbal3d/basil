@@ -29,14 +29,16 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
         BasilStreamMessage.prototype.RequestObjectPropertiesReqMsg = null;
         BasilStreamMessage.prototype.RequestInstancePropertiesReqMsg = null;
         BasilStreamMessage.prototype.CloseSessionReqMsg = null;
+        BasilStreamMessage.prototype.OpenSessionRespMsg = null;
         BasilStreamMessage.prototype.CloseSessionRespMsg = null;
+        BasilStreamMessage.prototype.CameraViewSessionRespMsg = null;
         BasilStreamMessage.prototype.AliveCheckReqMsg = null;
         BasilStreamMessage.prototype.AliveCheckRespMsg = null;
 
         let $oneOfFields;
 
         Object.defineProperty(BasilStreamMessage.prototype, "BasilMessage", {
-            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectReqMsg", "ForgetDisplayableObjectReqMsg", "CreateObjectInstanceReqMsg", "DeleteObjectInstanceReqMsg", "UpdateObjectPropertyReqMsg", "UpdateInstancePropertyReqMsg", "UpdateInstancePositionReqMsg", "RequestObjectPropertiesReqMsg", "RequestInstancePropertiesReqMsg", "CloseSessionReqMsg", "CloseSessionRespMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectReqMsg", "ForgetDisplayableObjectReqMsg", "CreateObjectInstanceReqMsg", "DeleteObjectInstanceReqMsg", "UpdateObjectPropertyReqMsg", "UpdateInstancePropertyReqMsg", "UpdateInstancePositionReqMsg", "RequestObjectPropertiesReqMsg", "RequestInstancePropertiesReqMsg", "CloseSessionReqMsg", "OpenSessionRespMsg", "CloseSessionRespMsg", "CameraViewSessionRespMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -69,8 +71,12 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                 $root.BasilServer.RequestInstancePropertiesReq.encode(message.RequestInstancePropertiesReqMsg, writer.uint32(82).fork()).ldelim();
             if (message.CloseSessionReqMsg != null && message.hasOwnProperty("CloseSessionReqMsg"))
                 $root.BasilServer.CloseSessionReq.encode(message.CloseSessionReqMsg, writer.uint32(90).fork()).ldelim();
+            if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg"))
+                $root.SpaceServer.OpenSessionResp.encode(message.OpenSessionRespMsg, writer.uint32(162).fork()).ldelim();
             if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg"))
-                $root.SpaceServer.CloseSessionResp.encode(message.CloseSessionRespMsg, writer.uint32(162).fork()).ldelim();
+                $root.SpaceServer.CloseSessionResp.encode(message.CloseSessionRespMsg, writer.uint32(170).fork()).ldelim();
+            if (message.CameraViewSessionRespMsg != null && message.hasOwnProperty("CameraViewSessionRespMsg"))
+                $root.SpaceServer.CameraViewResp.encode(message.CameraViewSessionRespMsg, writer.uint32(178).fork()).ldelim();
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg"))
                 $root.AliveCheck.AliveCheckReq.encode(message.AliveCheckReqMsg, writer.uint32(2002).fork()).ldelim();
             if (message.AliveCheckRespMsg != null && message.hasOwnProperty("AliveCheckRespMsg"))
@@ -123,7 +129,13 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                     message.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.decode(reader, reader.uint32());
                     break;
                 case 20:
+                    message.OpenSessionRespMsg = $root.SpaceServer.OpenSessionResp.decode(reader, reader.uint32());
+                    break;
+                case 21:
                     message.CloseSessionRespMsg = $root.SpaceServer.CloseSessionResp.decode(reader, reader.uint32());
+                    break;
+                case 22:
+                    message.CameraViewSessionRespMsg = $root.SpaceServer.CameraViewResp.decode(reader, reader.uint32());
                     break;
                 case 250:
                     message.AliveCheckReqMsg = $root.AliveCheck.AliveCheckReq.decode(reader, reader.uint32());
@@ -252,6 +264,16 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                         return "CloseSessionReqMsg." + error;
                 }
             }
+            if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg")) {
+                if (properties.BasilMessage === 1)
+                    return "BasilMessage: multiple values";
+                properties.BasilMessage = 1;
+                {
+                    let error = $root.SpaceServer.OpenSessionResp.verify(message.OpenSessionRespMsg);
+                    if (error)
+                        return "OpenSessionRespMsg." + error;
+                }
+            }
             if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg")) {
                 if (properties.BasilMessage === 1)
                     return "BasilMessage: multiple values";
@@ -260,6 +282,16 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                     let error = $root.SpaceServer.CloseSessionResp.verify(message.CloseSessionRespMsg);
                     if (error)
                         return "CloseSessionRespMsg." + error;
+                }
+            }
+            if (message.CameraViewSessionRespMsg != null && message.hasOwnProperty("CameraViewSessionRespMsg")) {
+                if (properties.BasilMessage === 1)
+                    return "BasilMessage: multiple values";
+                properties.BasilMessage = 1;
+                {
+                    let error = $root.SpaceServer.CameraViewResp.verify(message.CameraViewSessionRespMsg);
+                    if (error)
+                        return "CameraViewSessionRespMsg." + error;
                 }
             }
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg")) {
@@ -344,10 +376,20 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                     throw TypeError(".BasilSpaceStream.BasilStreamMessage.CloseSessionReqMsg: object expected");
                 message.CloseSessionReqMsg = $root.BasilServer.CloseSessionReq.fromObject(object.CloseSessionReqMsg);
             }
+            if (object.OpenSessionRespMsg != null) {
+                if (typeof object.OpenSessionRespMsg !== "object")
+                    throw TypeError(".BasilSpaceStream.BasilStreamMessage.OpenSessionRespMsg: object expected");
+                message.OpenSessionRespMsg = $root.SpaceServer.OpenSessionResp.fromObject(object.OpenSessionRespMsg);
+            }
             if (object.CloseSessionRespMsg != null) {
                 if (typeof object.CloseSessionRespMsg !== "object")
                     throw TypeError(".BasilSpaceStream.BasilStreamMessage.CloseSessionRespMsg: object expected");
                 message.CloseSessionRespMsg = $root.SpaceServer.CloseSessionResp.fromObject(object.CloseSessionRespMsg);
+            }
+            if (object.CameraViewSessionRespMsg != null) {
+                if (typeof object.CameraViewSessionRespMsg !== "object")
+                    throw TypeError(".BasilSpaceStream.BasilStreamMessage.CameraViewSessionRespMsg: object expected");
+                message.CameraViewSessionRespMsg = $root.SpaceServer.CameraViewResp.fromObject(object.CameraViewSessionRespMsg);
             }
             if (object.AliveCheckReqMsg != null) {
                 if (typeof object.AliveCheckReqMsg !== "object")
@@ -420,10 +462,20 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                 if (options.oneofs)
                     object.BasilMessage = "CloseSessionReqMsg";
             }
+            if (message.OpenSessionRespMsg != null && message.hasOwnProperty("OpenSessionRespMsg")) {
+                object.OpenSessionRespMsg = $root.SpaceServer.OpenSessionResp.toObject(message.OpenSessionRespMsg, options);
+                if (options.oneofs)
+                    object.BasilMessage = "OpenSessionRespMsg";
+            }
             if (message.CloseSessionRespMsg != null && message.hasOwnProperty("CloseSessionRespMsg")) {
                 object.CloseSessionRespMsg = $root.SpaceServer.CloseSessionResp.toObject(message.CloseSessionRespMsg, options);
                 if (options.oneofs)
                     object.BasilMessage = "CloseSessionRespMsg";
+            }
+            if (message.CameraViewSessionRespMsg != null && message.hasOwnProperty("CameraViewSessionRespMsg")) {
+                object.CameraViewSessionRespMsg = $root.SpaceServer.CameraViewResp.toObject(message.CameraViewSessionRespMsg, options);
+                if (options.oneofs)
+                    object.BasilMessage = "CameraViewSessionRespMsg";
             }
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg")) {
                 object.AliveCheckReqMsg = $root.AliveCheck.AliveCheckReq.toObject(message.AliveCheckReqMsg, options);
@@ -468,13 +520,14 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
         SpaceStreamMessage.prototype.MakeConnectionRespMsg = null;
         SpaceStreamMessage.prototype.OpenSessionReqMsg = null;
         SpaceStreamMessage.prototype.CloseSessionReqMsg = null;
+        SpaceStreamMessage.prototype.CameraViewReqMsg = null;
         SpaceStreamMessage.prototype.AliveCheckReqMsg = null;
         SpaceStreamMessage.prototype.AliveCheckRespMsg = null;
 
         let $oneOfFields;
 
         Object.defineProperty(SpaceStreamMessage.prototype, "SpaceMessage", {
-            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectRespMsg", "ForgetDisplayableObjectRespMsg", "CreateObjectInstanceRespMsg", "DeleteObjectInstanceRespMsg", "UpdateObjectPropertyRespMsg", "UpdateInstancePropertyRespMsg", "UpdateInstancePositionRespMsg", "RequestObjectPropertiesRespMsg", "RequestInstancePropertiesRespMsg", "CloseSessionRespMsg", "MakeConnectionRespMsg", "OpenSessionReqMsg", "CloseSessionReqMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["IdentifyDisplayableObjectRespMsg", "ForgetDisplayableObjectRespMsg", "CreateObjectInstanceRespMsg", "DeleteObjectInstanceRespMsg", "UpdateObjectPropertyRespMsg", "UpdateInstancePropertyRespMsg", "UpdateInstancePositionRespMsg", "RequestObjectPropertiesRespMsg", "RequestInstancePropertiesRespMsg", "CloseSessionRespMsg", "MakeConnectionRespMsg", "OpenSessionReqMsg", "CloseSessionReqMsg", "CameraViewReqMsg", "AliveCheckReqMsg", "AliveCheckRespMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -513,6 +566,8 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                 $root.SpaceServer.OpenSessionReq.encode(message.OpenSessionReqMsg, writer.uint32(162).fork()).ldelim();
             if (message.CloseSessionReqMsg != null && message.hasOwnProperty("CloseSessionReqMsg"))
                 $root.SpaceServer.CloseSessionReq.encode(message.CloseSessionReqMsg, writer.uint32(170).fork()).ldelim();
+            if (message.CameraViewReqMsg != null && message.hasOwnProperty("CameraViewReqMsg"))
+                $root.SpaceServer.CameraViewReq.encode(message.CameraViewReqMsg, writer.uint32(178).fork()).ldelim();
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg"))
                 $root.AliveCheck.AliveCheckReq.encode(message.AliveCheckReqMsg, writer.uint32(2002).fork()).ldelim();
             if (message.AliveCheckRespMsg != null && message.hasOwnProperty("AliveCheckRespMsg"))
@@ -572,6 +627,9 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                     break;
                 case 21:
                     message.CloseSessionReqMsg = $root.SpaceServer.CloseSessionReq.decode(reader, reader.uint32());
+                    break;
+                case 22:
+                    message.CameraViewReqMsg = $root.SpaceServer.CameraViewReq.decode(reader, reader.uint32());
                     break;
                 case 250:
                     message.AliveCheckReqMsg = $root.AliveCheck.AliveCheckReq.decode(reader, reader.uint32());
@@ -730,6 +788,16 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                         return "CloseSessionReqMsg." + error;
                 }
             }
+            if (message.CameraViewReqMsg != null && message.hasOwnProperty("CameraViewReqMsg")) {
+                if (properties.SpaceMessage === 1)
+                    return "SpaceMessage: multiple values";
+                properties.SpaceMessage = 1;
+                {
+                    let error = $root.SpaceServer.CameraViewReq.verify(message.CameraViewReqMsg);
+                    if (error)
+                        return "CameraViewReqMsg." + error;
+                }
+            }
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg")) {
                 if (properties.SpaceMessage === 1)
                     return "SpaceMessage: multiple values";
@@ -827,6 +895,11 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                     throw TypeError(".BasilSpaceStream.SpaceStreamMessage.CloseSessionReqMsg: object expected");
                 message.CloseSessionReqMsg = $root.SpaceServer.CloseSessionReq.fromObject(object.CloseSessionReqMsg);
             }
+            if (object.CameraViewReqMsg != null) {
+                if (typeof object.CameraViewReqMsg !== "object")
+                    throw TypeError(".BasilSpaceStream.SpaceStreamMessage.CameraViewReqMsg: object expected");
+                message.CameraViewReqMsg = $root.SpaceServer.CameraViewReq.fromObject(object.CameraViewReqMsg);
+            }
             if (object.AliveCheckReqMsg != null) {
                 if (typeof object.AliveCheckReqMsg !== "object")
                     throw TypeError(".BasilSpaceStream.SpaceStreamMessage.AliveCheckReqMsg: object expected");
@@ -912,6 +985,11 @@ export const BasilSpaceStream = $root.BasilSpaceStream = (() => {
                 object.CloseSessionReqMsg = $root.SpaceServer.CloseSessionReq.toObject(message.CloseSessionReqMsg, options);
                 if (options.oneofs)
                     object.SpaceMessage = "CloseSessionReqMsg";
+            }
+            if (message.CameraViewReqMsg != null && message.hasOwnProperty("CameraViewReqMsg")) {
+                object.CameraViewReqMsg = $root.SpaceServer.CameraViewReq.toObject(message.CameraViewReqMsg, options);
+                if (options.oneofs)
+                    object.SpaceMessage = "CameraViewReqMsg";
             }
             if (message.AliveCheckReqMsg != null && message.hasOwnProperty("AliveCheckReqMsg")) {
                 object.AliveCheckReqMsg = $root.AliveCheck.AliveCheckReq.toObject(message.AliveCheckReqMsg, options);
@@ -2650,7 +2728,7 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        BResponseRequest.prototype.responseSession = 0;
+        BResponseRequest.prototype.responseSession = "";
         BResponseRequest.prototype.responseSessionKey = "";
 
         BResponseRequest.create = function create(properties) {
@@ -2661,7 +2739,7 @@ export const BasilType = $root.BasilType = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                writer.uint32(8).uint32(message.responseSession);
+                writer.uint32(10).string(message.responseSession);
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 writer.uint32(18).string(message.responseSessionKey);
             return writer;
@@ -2679,7 +2757,7 @@ export const BasilType = $root.BasilType = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.responseSession = reader.uint32();
+                    message.responseSession = reader.string();
                     break;
                 case 2:
                     message.responseSessionKey = reader.string();
@@ -2702,8 +2780,8 @@ export const BasilType = $root.BasilType = (() => {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                if (!$util.isInteger(message.responseSession))
-                    return "responseSession: integer expected";
+                if (!$util.isString(message.responseSession))
+                    return "responseSession: string expected";
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 if (!$util.isString(message.responseSessionKey))
                     return "responseSessionKey: string expected";
@@ -2715,7 +2793,7 @@ export const BasilType = $root.BasilType = (() => {
                 return object;
             let message = new $root.BasilType.BResponseRequest();
             if (object.responseSession != null)
-                message.responseSession = object.responseSession >>> 0;
+                message.responseSession = String(object.responseSession);
             if (object.responseSessionKey != null)
                 message.responseSessionKey = String(object.responseSessionKey);
             return message;
@@ -2726,7 +2804,7 @@ export const BasilType = $root.BasilType = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.responseSession = 0;
+                object.responseSession = "";
                 object.responseSessionKey = "";
             }
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))

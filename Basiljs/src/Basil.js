@@ -48,20 +48,20 @@ GP.ConfigGetQueryVariable = function (variable) {
 // Global debug information printout.
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
-  if (GP.EnableDebugLog) {
-    var debugg = document.querySelector('#DEBUGG');
-    if (debugg) {
-      var newLine = document.createElement('div');
-      newLine.appendChild(document.createTextNode(msg));
-      if (classs) {
-        newLine.setAttribute('class', classs);
-      }
-      debugg.appendChild(newLine);
-      if (debugg.childElementCount > Config.page.debugLogLines) {
-        debugg.removeChild(debugg.firstChild);
-      }
+    if (GP.EnableDebugLog) {
+        var debugg = document.querySelector('#DEBUGG');
+        if (debugg) {
+            var newLine = document.createElement('div');
+            newLine.appendChild(document.createTextNode(msg));
+            if (classs) {
+            newLine.setAttribute('class', classs);
+            }
+            debugg.appendChild(newLine);
+            if (debugg.childElementCount > Config.page.debugLogLines) {
+                debugg.removeChild(debugg.firstChild);
+            }
+        }
     }
-  }
 };
 GP.DebugLog = function DebugLog(msg) {
     GP.LogMessage(msg, undefined);
@@ -73,34 +73,34 @@ GP.ErrorLog = function ErrorLog(msg) {
 
 // A special instance that displays it's 'Msg' property in the debug window
 export class DebugBItem extends BItem {
-  constructor() {
-    let debugInstanceName = (Config.Debug && Config.Debug.DebugLogInstanceName)
-                        ? Config.Debug.DebugLogInstanceName : 'org.basil.b.debug.bitem';
-    super(debugInstanceName, undefined);
-    this.lastMessage = 'none';
-    this.lastErrorMessage = 'none';
+    constructor() {
+        let debugInstanceName = (Config.Debug && Config.Debug.DebugLogInstanceName)
+                          ? Config.Debug.DebugLogInstanceName : 'org.basil.b.debug.bitem';
+        super(debugInstanceName, undefined);
+        this.lastMessage = 'none';
+        this.lastErrorMessage = 'none';
 
-    super.DefineProperties( {
-      'Msg': {
-        'get': function() {
-          return this.lastMessage;
-        }.bind(this),
-        'set': function(val) {
-          this.lastMessage = val;
-          GP.DebugLog('WORKER: ' + val);
-        }.bind(this)
-      },
-      'ErrorMsg': {
-        'get': function() {
-          return this.lastErrorMessage;
-        }.bind(this),
-        'set': function(val) {
-          this.lastErrorMessage = val;
-          GP.ErrorLog('WORKER: ' + val);
-        }.bind(this)
-      }
-    } );
-  }
+        super.DefineProperties( {
+            'Msg': {
+                'get': function() {
+                    return this.lastMessage;
+                }.bind(this),
+                'set': function(val) {
+                    this.lastMessage = val;
+                    GP.DebugLog('WORKER: ' + val);
+                }.bind(this)
+            },
+            'ErrorMsg': {
+                'get': function() {
+                    return this.lastErrorMessage;
+                }.bind(this),
+                'set': function(val) {
+                    this.lastErrorMessage = val;
+                    GP.ErrorLog('WORKER: ' + val);
+                }.bind(this)
+            }
+        } );
+    }
 }
 
 // =====================================================
@@ -124,7 +124,7 @@ if (typeof(configParams) == 'undefined') {
             'testmode': true,
             'transportURL': './wwtester.js',
             'transport': 'WW',
-            'service': 'SpaceServer'
+            'service': 'SpaceServerClient'
         }
     };
     configParams = Base64.encode(JSON.stringify(testConfigParams));
@@ -144,10 +144,10 @@ if (configParams) {
 
 // Whether to enable DebugLog writing somewhere
 if (Config && Config.page && Config.page.collectDebug
-            && typeof(Config.page.collectDebug) == 'boolean') {
-  GP.EnableDebugLog = Config.page.collectDebug;
-  // This BItem receives remote messages and calls DebugLog
-  GP.debugItem = new DebugBItem();
+              && typeof(Config.page.collectDebug) == 'boolean') {
+    GP.EnableDebugLog = Config.page.collectDebug;
+    // This BItem receives remote messages and calls DebugLog
+    GP.debugItem = new DebugBItem();
 }
 
 // Names of display regions on web page.
@@ -166,16 +166,24 @@ GP.Ready = true;
 
 // If there are connection parameters, start the first connection
 if (Config.comm && Config.comm.transportURL) {
-  GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
-  GP.CM.ConnectTransportAndService(Config.comm)
-  .then( srv => {
-    GP.DebugLog('Basiljs: initial connection transport and service successful');
-    srv.OpenSession(undefined, {})
-    .then( resp => {
-      GP.DebugLog('Basiljs: Session opened to SpaceServer');
+    GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
+    GP.CM.ConnectTransportAndService(Config.comm)
+    .then( srv => {
+        GP.DebugLog('Basiljs: initial connection transport and service successful');
+        try {
+            srv.OpenSession(undefined, {})
+            .then( resp => {
+                GP.DebugLog('Basiljs: Session opened to SpaceServer');
+            })
+            .catch( e => {
+                GP.DebugLog('Basiljs: error from OpenSession: ' + JSON.stringify(e));
+            });
+        }
+        catch (e) {
+            GP.DebugLog('Basiljs: exception from OpenSession: ' + e);
+        }
+    })
+    .catch( e => {
+        GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));
     });
-  })
-  .catch( e => {
-    GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));
-  });
 };

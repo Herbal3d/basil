@@ -71,13 +71,14 @@ export class BTransport extends BItem {
       let msg = this.messages.shift();
       if (msg) {
           this.stats.messagesReceived++;
-          // let dmsg = BTransportMsgs.BTransport.decode(msg)
-          // GP.DebugLog('BTransport.PushReception: rcvd" ' + JSON.stringify(dmsg));
 
           if (this.receiveCallback
                   && (typeof this.receiveCallback == 'function')) {
               // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
               this.receiveCallback(msg);
+          }
+          else {
+              GP.ErrorLog('BTransport.PushReception: msg received but no message processor');
           }
       }
   }

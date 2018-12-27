@@ -26,6 +26,7 @@ class TransportReceiver {
 
     Process(pRawMsg) {
         let msg = this.decoder.decode(pRawMsg);
+        // GP.DebugLog('TransportReceiver: received: ' + JSON.stringify(msg));
         let replyContents = undefined;
         let reqName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
         let processor = MsgProcessor.processors.get(this.transport.id)[reqName];
@@ -43,7 +44,7 @@ class TransportReceiver {
                     innerReply = processor[0](msg[reqName], reqName, msg, processor);
                 }
                 catch (e) {
-                    innerReply = MakeException('Exception processing: ' + e);
+                    innerReply = this.MakeException('Exception processing ' + reqName + ': ' + e);
                 }
                 finally {
                     if (innerReply) {
@@ -72,7 +73,7 @@ class TransportReceiver {
                                     + JSON.stringify(replyContents));
                 }
             }
-            this.Send(this.encoder.encode(replyContents).finish());
+            this.transport.Send(this.encoder.encode(replyContents).finish());
         }
     }
 
@@ -113,7 +114,8 @@ export class MsgProcessor extends BItem {
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
     SendAndPromiseResponse(pMsg, pReqName) {
-        let responseSession = this.RPCsession++;
+        let responseSession = this.RPCsession++ + '.' + this.id;
+        let smsg = {};
         smsg[ pReqName + 'ReqMsg'] = pMsg;
         smsg['ResponseReq'] = {
             'responseSession': responseSession
@@ -124,6 +126,7 @@ export class MsgProcessor extends BItem {
                             + JSON.stringify(smsg));
             }
         }
+        // GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSON.stringify(smsg));
         let emsg = this.encoder.encode(smsg).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( function(resolve,reject) {
@@ -135,28 +138,18 @@ export class MsgProcessor extends BItem {
                 'rawMessage': smsg
             };
             this.transport.Send(emsg);
-        });
+        }.bind(this));
     };
 
     // Function that handles the response type message
-    HandleResponse(pMsg) {
-        if (pMsg.ResponseReq && pMsg.ResponseReq.responseSession) {
-            let sessionIndex = pMsg.ResponseReq.responseSession;
+    HandleResponse(responseMsg, responseMsgName, containingMsg) {
+        if (containingMsg.ResponseReq && containingMsg.ResponseReq.responseSession) {
+            let sessionIndex = containingMsg.ResponseReq.responseSession;
             let session = this.RPCSessionCallback[sessionIndex];
             if (session) {
                 this.RPCSessionCallback.delete(sessionIndex);
                 try {
-                    let reqName = Object.keys(pMsg).filter(k => { return k.endsWith('Msg'); } ).shift();
-                    if (reqName) {
-                        (session.resolve)(pMsg[reqName], reqName);
-                    }
-                    else {
-                        let errMsg = 'MsgProcessor.HandleResponse: could not find message'
-                                        + JSON.stringify(pMsg);
-                        console.log(errMsg);
-                        GP.ErrorLog(errMsg);
-                        (session.reject)(errMsg);
-                    }
+                    (session.resolve)(responseMsg, responseMsgName);
                 }
                 catch (e) {
                     let errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + e;
@@ -179,4 +172,27 @@ export class MsgProcessor extends BItem {
             GP.ErrorLog(errMsg);
         }
     }
+    // Create an exception object
+    MakeException(reason, hints) {
+        let except = { 'exception': {} };
+        if (reason) { except.exception.reason = reason; }
+        if (hints) { except.exception.hints = hints; }
+        return except;
+    };
+
+    // Create a well formed property list from an object. Values must be strings in the output.
+    // Note the check for 'undefined'. Property lists cannot have undefined values.
+    CreatePropertyList(obj) {
+        let list = {};
+        Object.keys(obj).forEach(prop => {
+            let val = obj[prop];
+            if (typeof(val) != 'undefined') {
+                if (typeof(val) != 'string') {
+                    val = JSON.stringify(val);
+                }
+                list[prop] = val;
+            }
+        });
+        return list;
+    };
 }

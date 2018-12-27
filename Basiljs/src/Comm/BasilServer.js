@@ -55,6 +55,7 @@ export class BasilServerConnection  extends MsgProcessor {
         });
     }
     Start() {
+        this.SetReady();
     }
     Close() {
         if (this.transport) {
@@ -77,11 +78,11 @@ export class BasilServerConnection  extends MsgProcessor {
             };
           }
           else {
-            ret = BasilServiceConnection.MakeException('Could not create object');
+            ret = this.MakeException('Could not create object');
           }
         }
         else {
-          ret = BasilServiceConnection.MakeException('No assetInfo specified');
+          ret = this.MakeException('No assetInfo specified');
         }
         return ret;
     }
@@ -102,7 +103,7 @@ export class BasilServerConnection  extends MsgProcessor {
             let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
             newInstance.ownerId = this.id;    // So we know who created what
             if (req.pos) {
-                BasilServiceConnection.UpdatePositionInfo(newInstance, req.pos);
+                this.UpdatePositionInfo(newInstance, req.pos);
             }
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet);
@@ -115,7 +116,7 @@ export class BasilServerConnection  extends MsgProcessor {
             };
           }
           else {
-            ret = BasilServiceConnection.MakeException('Displayable was not found: ' + req.objectId.id);
+            ret = this.MakeException('Displayable was not found: ' + req.objectId.id);
           }
         }
         else {
@@ -127,8 +128,7 @@ export class BasilServerConnection  extends MsgProcessor {
         if (req.objectId) {
           BItem.ForgetItem(req.objectId.id);
         }
-        return {
-        };
+        return { };
     }
     _ProcUpdateObjectProperty(req) {
         let ret = {};
@@ -138,7 +138,7 @@ export class BasilServerConnection  extends MsgProcessor {
             obj.SetProperties(req.props);
           }
           else {
-            ret = BasilServiceConnection.MakeException('Object not found');
+            ret = this.MakeException('Object not found');
           }
         }
         return ret;
@@ -151,7 +151,7 @@ export class BasilServerConnection  extends MsgProcessor {
             obj.SetProperties(req.props);
           }
           else {
-            ret = BasilServiceConnection.MakeException('Object not found');
+            ret = this.MakeException('Object not found');
           }
         }
         return ret;
@@ -160,7 +160,7 @@ export class BasilServerConnection  extends MsgProcessor {
       if (req.instanceId && req.pos) {
         let instance = BItem.GetItem(req.instanceId.id);
         if (instance) {
-          BasilServiceConnection.UpdatePositionInfo(instance, req.pos);
+          this.UpdatePositionInfo(instance, req.pos);
         }
       }
       return {};
@@ -171,10 +171,10 @@ export class BasilServerConnection  extends MsgProcessor {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
         let obj = BItem.GetItem(req.objectId.id);
         if (obj) {
-          ret = { 'properties': BasilServiceConnection.CreatePropertyList(obj.FetchProperties(filter)) };
+          ret = { 'properties': this.CreatePropertyList(obj.FetchProperties(filter)) };
         }
         else {
-          ret = BasilServiceConnection.MakeException('Object not found: ' + req.objectId.id);
+          ret = this.MakeException('Object not found: ' + req.objectId.id);
         }
         return ret;
       };
@@ -185,10 +185,10 @@ export class BasilServerConnection  extends MsgProcessor {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
         let instance = BItem.GetItem(req.instanceId.id);
         if (instance) {
-          ret = { 'properties': BasilServiceConnection.CreatePropertyList(instance.FetchProperties(filter)) };
+          ret = { 'properties': this.CreatePropertyList(instance.FetchProperties(filter)) };
         }
         else {
-          ret = BasilServiceConnection.MakeException('Instance not found: ' + req.instanceId.id);
+          ret = this.MakeException('Instance not found: ' + req.instanceId.id);
         }
         return ret;
       };
@@ -198,40 +198,15 @@ export class BasilServerConnection  extends MsgProcessor {
         };
     }
     _ProcMakeConnection(req) {
-        return {
-        };
+        return { };
     }
 
-    // Create an exception object
-    static MakeException(reason, hints) {
-      let except = { 'exception': {} };
-      if (reason) { except.exception.reason = reason; }
-      if (hints) { except.exception.hints = hints; }
-      return except;
-    };
-
     // Update an instance's position info based on a passed BasilType.InstancePostionInfo
-    static UpdatePositionInfo(instance, posInfo) {
+    UpdatePositionInfo(instance, posInfo) {
       let coordPosition = posInfo.pos;  // get BasilType.CoordPosition
       if (coordPosition.pos) { instance.SetProperty('Position', coordPosition.pos) }
       if (coordPosition.rot) { instance.SetProperty('Rotation', coordPosition.rot) }
       if (coordPosition.posRef) { instance.SetProperty('PosCoordSystem', coordPosition.posRef) }
       if (coordPosition.rotRef) { instance.SetProperty('RotCoordSystem', coordPosition.rotRef) }
-    };
-
-    // Create a well formed property list from an object. Values must be strings in the output.
-    // Note the check for 'undefined'. Property lists cannot have undefined values.
-    static CreatePropertyList(obj) {
-      let list = {};
-      Object.keys(obj).forEach(prop => {
-        let val = obj[prop];
-        if (typeof(val) != 'undefined') {
-          if (typeof(val) != 'string') {
-            val = JSON.stringify(val);
-          }
-          list[prop] = val;
-        }
-      });
-      return list;
     };
 }

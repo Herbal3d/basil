@@ -15,7 +15,12 @@ import GP from 'GP';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
 import { SpaceServerConnection } from './SpaceServer.js';
-import { PestoClient } from './PestoClient.js';
+import { SpaceServerClientConnection } from './SpaceServerClient.js';
+import { BasilServerConnection } from './BasilServer.js';
+import { BasilClientConnection } from './BasilClient.js';
+import { AliveCheckBasilConnection } from './AliveCheckBasil.js';
+import { AliveCheckClientConnection } from './AliveCheckClient.js';
+import { PestoClientConnection } from './PestoClient.js';
 
 import { BTransportWW } from './BTransportWW.js';
 import { BTransportWS } from './BTransportWS.js';
@@ -23,7 +28,6 @@ import { BTransportTest } from './BTransportTest.js';
 
 import { CombineParameters } from '../Utilities.js';
 import { BException } from '../BException.js';
-import { BasilServerConnection } from './BasilServer.js';
 
 export class Comm extends BItem {
   constructor() {
@@ -52,18 +56,16 @@ export class Comm extends BItem {
               .then (xport => {
                   GP.DebugLog('Comm.ConnectTransportService: transport connected');
                   if (params.service) {
-                      // GP.DebugLog('Comm.ConnectTransportService: service: ' + params.service);
+                      // Connect to the service
                       return this.ConnectService(xport, params);
                   }
                   else {
-                      return null;
+                      // No service to connect to
+                      reject('Comm.ConnectTransportAndService: No service specified to connect');
                   }
               })
               .then (svc => {
-                  if (svc) {
-                      // GP.DebugLog('Comm.ConnectTransportService: service connected');
-                  }
-                  resolve();
+                  resolve(svc);
               })
               .catch ( e => {
                   GP.ErrorLog('Comm.ConnectTransportService: failed initialization: ' + e);
@@ -121,7 +123,7 @@ export class Comm extends BItem {
   // Returns a Promise that has a handle to the created processor or undefined.
   ConnectService(pTransport, pParams) {
       let params = CombineParameters(undefined, pParams, {
-          'service': 'SpaceServer',     // or 'Pesto'
+          'service': 'SpaceServerClient',     // or 'Pesto'
           'serviceId': undefined,       // if not passed, unique one created
           'pestoId': undefined          // if not passed, unique one created
       });
@@ -130,36 +132,40 @@ export class Comm extends BItem {
           let serviceType = params.service;
           switch (serviceType) {
               case 'SpaceServer':
-                  svc = new SpaceServerClientConnection(pTransport, params);
-                  let basilSpace = new BasilServerConnection(pTransport, params);
-                  let aliveSpace = new AliveCheckBasilConnection(pTransport, params);
-                  aliveSpace.Start();
-                  aliveSpace.SetReady();
-                  basilSpace.Start();
-                  basilSpace.SetReady();
-                  svc.Start();
-                  svc.SetReady();
-                  GP.DebugLog('Comm.Connect: created BasilServer. Id=' + serverId);
-                  break;
+                    svc = new SpaceServerConnection(pTransport, params);
+                    let basilSpace = new BasilClientConnection(pTransport, params);
+                    let aliveSpace = new AliveCheckClientConnection(pTransport, params);
+                    aliveSpace.Start();
+                    basilSpace.Start();
+                    svc.Start();
+                    GP.DebugLog('Comm.Connect: created SpaceServerConnection. Id=' + svc.id);
+                    resolve(svc);
+                    break;
+              case 'SpaceServerClient':
+                    svc = new SpaceServerClientConnection(pTransport, params);
+                    let basilSpaceClient = new BasilServerConnection(pTransport, params);
+                    let aliveSpaceClient = new AliveCheckBasilConnection(pTransport, params);
+                    aliveSpaceClient.Start();
+                    basilSpaceClient.Start();
+                    svc.Start();
+                    GP.DebugLog('Comm.Connect: created SpaceServerClientConnection. Id=' + svc.id);
+                    resolve(svc);
+                    break;
               case 'Pesto':
-                  svc = new PestoClientConnection(pTransport, params);
-                  let basilPesto = new BasilServerConnection(pTransport, params);
-                  let alivePesto = new AliveCheckBasilConnection(pTransport, params);
-                  alivePesto.Start();
-                  alivePesto.SetReady();
-                  basilPesto.Start();
-                  basilPesto.SetReady();
-                  svc.Start();
-                  svc.SetReady();
-                  GP.DebugLog('Comm.Connect: created PestoClient. Id=' + pestorId);
-                  break;
+                    svc = new PestoClientConnection(pTransport, params);
+                    let basilPesto = new BasilServerConnection(pTransport, params);
+                    let alivePesto = new AliveCheckBasilConnection(pTransport, params);
+                    alivePesto.Start();
+                    basilPesto.Start();
+                    svc.Start();
+                    GP.DebugLog('Comm.Connect: created PestoClientConnection. Id=' + svc.id);
+                    resolve(svc);
+                    break;
               default:
-                  let errorMsg = 'Comm.Connect: service type unknown: ' + JSON.stringify(params.service);
-                  GP.ErrorLog(errorMsg)
-                  reject(errorMsg)
+                    let errorMsg = 'Comm.Connect: service type unknown: ' + JSON.stringify(params.service);
+                    GP.ErrorLog(errorMsg)
+                    reject(errorMsg)
           }
-          GP.DebugLog('Comm.Connect: created service ' + svc.id)
-          resolve(svc);
-      }.bind(this));
+      });
   };
 }

@@ -46,6 +46,7 @@ export class BasilClientConnection extends MsgProcessor {
     };
 
     Start() {
+        this.SetReady();
     };
 
     Close() {

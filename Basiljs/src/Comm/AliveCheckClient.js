@@ -34,22 +34,31 @@ export class AliveCheckClientConnection extends MsgProcessor {
         this.aliveSequenceNum = this.params.beginningAliveSequenceNumber;
         this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
                                                 /* receives */ BasilSpaceStream.SpaceStreamMessage, {
-            'AliveCheckRespMsg': [ this._ProcAliveCheckResp.bind(this), undefined ]
+            'AliveCheckReqMsg': [ this._ProcAliveCheckReq.bind(this), 'AliveCheckRespMsg' ],
+            'AliveCheckRespMsg': this.HandleResponse.bind(this)
         });
+        this.SetReady();
     };
+
+    Start() {
+    }
+    Close() {
+    }
 
     AliveCheck(auth) {
         let msg = {};
         if (auth) msg['auth'] = auth;
         msg['time'] = Date.now(),
         msg['sequenceNum']  = this.aliveSequenceNum++
-        // GP.DebugLog('AliveCheckClient.AliveCheck: sending: ' + JSON.stringify(msg));
         return this.SendAndPromiseResponse(msg, 'AliveCheck');
     };
 
-    _ProcAliveCheckResp(req) {
-        // Match response with sent alive check
+    _ProcAliveCheckReq(req) {
         return {
+            'time': Date.now(),
+            'sequenceNum': this.aliveSequenceNum++,
+            'timeReceived': req.time,
+            'sequenceNumberReceived': req.sequenceNum
         };
     };
 }

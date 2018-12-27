@@ -21,7 +21,7 @@ import { CreateUniqueId, CombineParameters } from '../Utilities.js';
 
 // Interface for a client talking to a SpaceServer over the Basil/SpaceServer stream
 export class SpaceServerClientConnection extends MsgProcessor {
-    constructor(pClientId, pTransport, pParams) {
+    constructor(pTransport, pParams) {
         // Merge the passed parameters with required parameter defaults
         let params = CombineParameters(Config.comm.SpaceServerClient, pParams, {
             'id': undefined     // unique generated if non-specified
@@ -32,22 +32,14 @@ export class SpaceServerClientConnection extends MsgProcessor {
         this.transport = pTransport;
         this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.SpaceStreamMessage,
                                                 /* receives */ BasilSpaceStream.BasilStreamMessage, {
-            'IdentifyDisplayableObjectRespMsg': this.HandleResponse.bind(this),
-            'ForgetDisplayableObjectRespMsg': this.HandleResponse.bind(this),
-            'CreateObjectInstanceRespMsg': this.HandleResponse.bind(this),
-            'DeleteObjectInstanceRespMsg': this.HandleResponse.bind(this),
-            'UpdateObjectPropertyRespMsg': this.HandleResponse.bind(this),
-            'UpdateInstancePropertyRespMsg': this.HandleResponse.bind(this),
-            'UpdateInstancePositionRespMsg': this.HandleResponse.bind(this),
-            'RequestObjectPropertiesRespMsg': this.HandleResponse.bind(this),
-            'RequestInstancePropertiesRespMsg': this.HandleResponse.bind(this),
+            'OpenSessionRespMsg': this.HandleResponse.bind(this),
+            'CloseSessionRespMsg': this.HandleResponse.bind(this),
+            'CameraViewRespMsg': this.HandleResponse.bind(this),
         });
     };
 
     Start() {
-        if (this.xport) {
-            this.xport.SetReceiveCallback(this._ProcMessage.bind(this));
-        }
+        // this.SetReady(); // not ready until OpenSession happens
     };
 
     Close() {
@@ -56,7 +48,7 @@ export class SpaceServerClientConnection extends MsgProcessor {
     OpenSession(auth, propertyList) {
         let msg = {};
         if (auth) msg['auth'] = auth;
-        if (propertyList) msg['features'] = propertyList;
+        if (propertyList) msg['features'] = this.CreatePropertyList(propertyList);
         return this.SendAndPromiseResponse(msg, 'OpenSession');
     };
     CloseSession(auth, reason) {

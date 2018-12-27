@@ -36,10 +36,29 @@ export class SpaceServerConnection extends MsgProcessor {
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
         this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
                                                  /* receives */ BasilSpaceStream.SpaceStreamMessage, {
+            'OpenSessionReqMsg': [ this._ProcOpenSession.bind(this), 'OpenSessionRespMsg' ],
+            'CloseSessionReqMsg': [ this._ProcCloseSession.bind(this), 'CloseSessionRespMsg' ],
+            'CameraViewReqMsg': [ this._ProcCameraView.bind(this), 'CameraViewRespMsg' ],
         });
     }
 
     Start() {
+        // this.SetReady(); // not ready until OpenSession happens
+    }
+    Close() {
+    }
+
+    _ProcOpenSession(req) {
+        this.SetReady();
+        return {};
+    }
+
+    _ProcCloseSession(req) {
+        return {};
+    }
+
+    _ProcCameraView(req) {
+        return {};
     }
 
 }

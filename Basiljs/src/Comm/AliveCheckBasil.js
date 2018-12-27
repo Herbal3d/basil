@@ -34,9 +34,16 @@ export class AliveCheckBasilConnection extends MsgProcessor {
         this.aliveSequenceNum = this.params.beginningAliveSequenceNumber;
         this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.SpaceStreamMessage,
                                                 /* receives */ BasilSpaceStream.BasilStreamMessage, {
-            'AliveCheckRespMsg': [ this._ProcAliveCheckResp.bind(this), undefined ]
+            'AliveCheckReqMsg': [ this._ProcAliveCheckReq.bind(this), 'AliveCheckRespMsg' ],
+            'AliveCheckRespMsg': this.HandleResponse.bind(this)
         });
+        this.SetReady();
     };
+
+    Start() {
+    }
+    Close() {
+    }
 
     AliveCheck(auth) {
         let msg = {};
@@ -47,9 +54,12 @@ export class AliveCheckBasilConnection extends MsgProcessor {
         return this.SendAndPromiseResponse(msg, 'AliveCheck');
     };
 
-    _ProcAliveCheckResp(req) {
-        // Match response with sent alive check
+    _ProcAliveCheckReq(req) {
         return {
+            'time': Date.now(),
+            'sequenceNum': this.aliveSequenceNum++,
+            'timeReceived': req.time,
+            'sequenceNumberReceived': req.sequenceNum
         };
     };
 }

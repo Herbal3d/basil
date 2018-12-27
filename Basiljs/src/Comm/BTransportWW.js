@@ -39,7 +39,6 @@ export class BTransportWW extends BTransport {
                 this.worker = new Worker(this.params.transportURL);
                 this.isWorker = false;
                 this.worker.onmessage = function(d) {
-                    // GP.DebugLog('BTransportWW.onmessage: rcvd');
                     this.messages.push(d.data);
                     this.stats.messagesReceived++;
                     this.PushReception();
