@@ -114,7 +114,12 @@ export class MsgProcessor extends BItem {
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
     SendAndPromiseResponse(pMsg, pReqName) {
-        let responseSession = this.RPCsession++ + '.' + this.id;
+        // crypto.GetRandomValues could be slow. Maybe replace with Math.random.
+        //   let randomness = new Uint32Array(1);
+        //   crypto.getRandomValues(randomness);
+        //   let responseSession = randomness[0];
+        // let responseSession = (new Uint32Array((new Float32Array( [ Math.random() ] )).buffer))[0];
+        let responseSession = Math.floor( Math.random() * 536870912 );   // 2^30
         let smsg = {};
         smsg[ pReqName + 'ReqMsg'] = pMsg;
         smsg['ResponseReq'] = {
