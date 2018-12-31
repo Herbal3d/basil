@@ -13,65 +13,70 @@
 
 import GP from 'GP';
 import { BTransport } from './BTransport.js';
+import { BItemState } from '../Items/BItem.js';
+import { CombineParameters } from '../Utilities.js';
 import { BException } from '../BException.js';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWS extends BTransport {
-  constructor(parms) {
-    super(parms);
-    GP.DebugLog('BTransportWS constructor');
-    this.itemTYpe = 'BTransport.TransportWS';
-    try {
-      this.tempSocket = new WebSocket(params.transportURL);
-      if (this.tempSocket) {
-        this.socket.addEventListener('open', event => {
-          // Socket is opened so put it in a place where everyone can use it
-          this.socket = this.tempSocket;
-          socket.addEventListener('message', event => {
-            this.messages.push(d.data);
-            this.stats.messagesReceived++;
-            this.PushReception();
-          });
+    constructor(parms) {
+        let params = CombineParameters(Config.comm.TransportWW, parms, {
+            'transportURL': undefined   // name of Worker to connect to
         });
-      }
-      else {
-        let errMsg = 'BTransportWS: could not open websocket: ' + parms.transportURL;
-        console.log(errMsg);
-        GP.DebugLog(errMsg);
-        throw new BException(errMsg);
-      }
+        super(parms);
+        GP.DebugLog('BTransportWS constructor');
+        this.itemTYpe = 'BTransport.TransportWS';
+        try {
+            this.tempSocket = new WebSocket(params.transportURL);
+            if (this.tempSocket) {
+                this.socket.addEventListener('open', event => {
+                    // Socket is opened so put it in a place where everyone can use it
+                    this.socket = this.tempSocket;
+                    socket.addEventListener('message', event => {
+                        this.messages.push(d.data);
+                        this.stats.messagesReceived++;
+                        this.PushReception();
+                    });
+                });
+            }
+            else {
+                let errMsg = 'BTransportWS: could not open websocket: ' + parms.transportURL;
+                console.log(errMsg);
+                GP.DebugLog(errMsg);
+                throw new BException(errMsg);
+            }
+        }
+        catch (e) {
+            let errMsg = 'BTransportWS: exception opening websocket: ' + e;
+            console.log(errMsg);
+            GP.DebugLog(errMsg);
+            throw new BException(errMsg);
+        }
     }
-    catch (e) {
-      let errMsg = 'BTransportWS: exception opening websocket: ' + e;
-      console.log(errMsg);
-      GP.DebugLog(errMsg);
-      throw new BException(errMsg);
+    Close() {
+        if (this.socket) {
+            this.socket.close();
+            this.socket = undefined;
+        }
     }
-  }
-  Close() {
-    if (this.socket) {
-      this.socket.close();
-      this.socket = undefined;
+    // Send the data. Places message in output queue
+    Send(data) {
+        if (socket) {
+            socket.send(data);
+            this.stats.messagesSent++;
+        }
+  
     }
-  }
-  // Send the data. Places message in output queue
-  Send(data) {
-    if (socket) {
-      socket.send(data);
-      this.stats.messagesSent++;
+    // Set a calback to be called whenever a message is received
+    SetReceiveCallback(callback) {
+        this.receiveCallback = callback;
+        // GP.DebugLog('BTransportWS: set receiveCallback');
     }
-
-  }
-  // Set a calback to be called whenever a message is received
-  SetReceiveCallback(callback) {
-    this.receiveCallback = callback;
-    // GP.DebugLog('BTransportWS: set receiveCallback');
-  }
-  // Return 'true' is there is data in the input queue
-  get isDataAvailable() {
-    return this.messsages.length > 0;
-  }
-  get isConnected() {
-    return (typeof this.socket !== 'undefined');
-  }
+    // Return 'true' is there is data in the input queue
+    get isDataAvailable() {
+        return this.messsages.length > 0;
+    }
+    get isConnected() {
+        return (typeof this.socket !== 'undefined');
+    }
 }
