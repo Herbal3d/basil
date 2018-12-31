@@ -2728,7 +2728,7 @@ export const BasilType = $root.BasilType = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        BResponseRequest.prototype.responseSession = "";
+        BResponseRequest.prototype.responseSession = 0;
         BResponseRequest.prototype.responseSessionKey = "";
 
         BResponseRequest.create = function create(properties) {
@@ -2739,7 +2739,7 @@ export const BasilType = $root.BasilType = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                writer.uint32(10).string(message.responseSession);
+                writer.uint32(8).uint32(message.responseSession);
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 writer.uint32(18).string(message.responseSessionKey);
             return writer;
@@ -2757,7 +2757,7 @@ export const BasilType = $root.BasilType = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.responseSession = reader.string();
+                    message.responseSession = reader.uint32();
                     break;
                 case 2:
                     message.responseSessionKey = reader.string();
@@ -2780,8 +2780,8 @@ export const BasilType = $root.BasilType = (() => {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
-                if (!$util.isString(message.responseSession))
-                    return "responseSession: string expected";
+                if (!$util.isInteger(message.responseSession))
+                    return "responseSession: integer expected";
             if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
                 if (!$util.isString(message.responseSessionKey))
                     return "responseSessionKey: string expected";
@@ -2793,7 +2793,7 @@ export const BasilType = $root.BasilType = (() => {
                 return object;
             let message = new $root.BasilType.BResponseRequest();
             if (object.responseSession != null)
-                message.responseSession = String(object.responseSession);
+                message.responseSession = object.responseSession >>> 0;
             if (object.responseSessionKey != null)
                 message.responseSessionKey = String(object.responseSessionKey);
             return message;
@@ -2804,7 +2804,7 @@ export const BasilType = $root.BasilType = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.responseSession = "";
+                object.responseSession = 0;
                 object.responseSessionKey = "";
             }
             if (message.responseSession != null && message.hasOwnProperty("responseSession"))
