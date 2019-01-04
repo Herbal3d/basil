@@ -12,27 +12,32 @@
 'use strict';
 
 import GP from 'GP';
+import Config from '../config.js';
+
 import { BTransport } from './BTransport.js';
-import { BItemState } from '../Items/BItem.js';
 import { CombineParameters } from '../Utilities.js';
 import { BException } from '../BException.js';
 
 // There are two halfs: the 'service' and the 'worker'.
 export class BTransportWS extends BTransport {
-    constructor(parms) {
-        let params = CombineParameters(Config.comm.TransportWW, parms, {
+    constructor(pParams) {
+        let params = CombineParameters(Config.comm.TransportWW, pParams, {
             'transportURL': undefined   // name of Worker to connect to
         });
-        super(parms);
+        super(params);
+        this.params = params;
+        this.SetLoading();
         GP.DebugLog('BTransportWS constructor');
         this.itemTYpe = 'BTransport.TransportWS';
         try {
-            this.tempSocket = new WebSocket(params.transportURL);
-            if (this.tempSocket) {
+            let tempSocket = new WebSocket(this.params.transportURL);
+            GP.DebugLog('BTransportWS: websocket opened');
+            if (tempSocket) {
+                // Socket is opened so put it in a place where everyone can use it
+                this.socket = tempSocket;
                 this.socket.addEventListener('open', event => {
-                    // Socket is opened so put it in a place where everyone can use it
-                    this.socket = this.tempSocket;
-                    socket.addEventListener('message', event => {
+                    this.SetReady();
+                    this.socket.addEventListener('message', event => {
                         this.messages.push(d.data);
                         this.stats.messagesReceived++;
                         this.PushReception();
@@ -41,13 +46,15 @@ export class BTransportWS extends BTransport {
             }
             else {
                 let errMsg = 'BTransportWS: could not open websocket: ' + parms.transportURL;
+                this.SetFailed();
                 console.log(errMsg);
                 GP.DebugLog(errMsg);
                 throw new BException(errMsg);
             }
         }
         catch (e) {
-            let errMsg = 'BTransportWS: exception opening websocket: ' + e;
+            let errMsg = 'BTransportWS: exception opening websocket: ' + e.message;
+            this.SetFailed();
             console.log(errMsg);
             GP.DebugLog(errMsg);
             throw new BException(errMsg);
@@ -55,14 +62,15 @@ export class BTransportWS extends BTransport {
     }
     Close() {
         if (this.socket) {
+            this.SetShutdown();
             this.socket.close();
             this.socket = undefined;
         }
     }
     // Send the data. Places message in output queue
     Send(data) {
-        if (socket) {
-            socket.send(data);
+        if (this.socket) {
+            this.socket.send(data);
             this.stats.messagesSent++;
         }
   

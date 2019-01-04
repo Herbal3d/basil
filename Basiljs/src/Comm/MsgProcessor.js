@@ -16,6 +16,10 @@ import Config from '../config.js';
 
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
+// A class which is instanced for each transport system and
+//   maps received messsages to the message processors.
+// The static dictionary 'MsgProcessor.processors' contains the map of
+//   received message name to the processing routine for each transport Id.
 class TransportReceiver {
     constructor(pTransport, pContext, pEncoder, pDecoder) {
         this.transport = pTransport;
@@ -26,7 +30,7 @@ class TransportReceiver {
 
     Process(pRawMsg) {
         let msg = this.decoder.decode(pRawMsg);
-        // GP.DebugLog('TransportReceiver: received: ' + JSON.stringify(msg));
+        GP.DebugLog('TransportReceiver: received: ' + JSON.stringify(msg));
         let replyContents = undefined;
         let reqName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
         let processor = MsgProcessor.processors.get(this.transport.id)[reqName];
@@ -131,7 +135,7 @@ export class MsgProcessor extends BItem {
                             + JSON.stringify(smsg));
             }
         }
-        // GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSON.stringify(smsg));
+        GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSON.stringify(smsg));
         let emsg = this.encoder.encode(smsg).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( function(resolve,reject) {
@@ -148,6 +152,7 @@ export class MsgProcessor extends BItem {
 
     // Function that handles the response type message
     HandleResponse(responseMsg, responseMsgName, containingMsg) {
+        GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSON.stringify(containingMsg));
         if (containingMsg.ResponseReq && containingMsg.ResponseReq.responseSession) {
             let sessionIndex = containingMsg.ResponseReq.responseSession;
             let session = this.RPCSessionCallback[sessionIndex];

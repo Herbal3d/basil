@@ -119,11 +119,21 @@ GP.Ready = false;
 let configParams = GP.ConfigGetQueryVariable('c');
 if (typeof(configParams) == 'undefined') {
     // If no communication parameters are given, use testing parameters
+    /*
     let testConfigParams = {
         'comm': {
             'testmode': true,
             'transportURL': './wwtester.js',
             'transport': 'WW',
+            'service': 'SpaceServerClient'
+        }
+    };
+    */
+    let testConfigParams = {
+        'comm': {
+            'testmode': true,
+            'transportURL': 'ws://192.168.86.41:11440/',
+            'transport': 'WS',
             'service': 'SpaceServerClient'
         }
     };
@@ -176,7 +186,7 @@ if (Config.comm && Config.comm.transportURL) {
                 GP.DebugLog('Basiljs: Session opened to SpaceServer');
             })
             .catch( e => {
-                GP.DebugLog('Basiljs: error from OpenSession: ' + JSON.stringify(e));
+                GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);
             });
         }
         catch (e) {
@@ -184,6 +194,6 @@ if (Config.comm && Config.comm.transportURL) {
         }
     })
     .catch( e => {
-        GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + JSON.stringify(e));
+        GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + e.message);
     });
 };

@@ -174,10 +174,11 @@ export class BItem {
     SetState(newState) {
       this.state = newState;
     }
-    // Helper function so caller doesn't need to have BItem imports.
-    SetReady() {
-      this.SetState(BItemState.READY);
-    }
+    // Helper functions so caller doesn't need to have BItem imports.
+    SetReady() { this.SetState(BItemState.READY); }
+    SetFailed() { this.SetState(BItemState.FAILED); }
+    SetLoading() { this.SetState(BItemState.LOADING); }
+    SetShutdown() { this.SetState(BItemState.SHUTDOWN); }
 
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.

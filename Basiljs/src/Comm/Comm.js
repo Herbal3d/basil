@@ -110,10 +110,13 @@ export class Comm extends BItem {
               }
           }
           catch(e) {
-              reject('Comm.Connect: exception opening transport: ' + e);
+              reject('Comm.Connect: exception opening transport: ' + e.message);
           }
           GP.DebugLog('Comm.Connect: created transport ' + xport.id)
-          resolve(xport);
+          xport.WhenReady(5000)
+          .then( xxport => {
+            resolve(xxport);
+          })
       }.bind(this));
   };
 

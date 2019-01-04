@@ -17,7 +17,6 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { BTransport } from './BTransport.js';
-import { BItemState } from '../Items/BItem.js';
 import { CombineParameters } from '../Utilities.js';
 import { BException } from '../BException.js';
 
@@ -29,6 +28,7 @@ export class BTransportWW extends BTransport {
         });
         super(params);
         this.params = params;
+        this.SetLoading();
         // @ts-ignore
         if (typeof WorkerGlobalScope === 'undefined') {
             // We're the master
@@ -72,7 +72,7 @@ export class BTransportWW extends BTransport {
     }
     Close() {
         if (this.worker) {
-            this.SetState(BItemState.SHUTDOWN);
+            this.SetShutdown();
             this.worker.terminate();
             this.worker = undefined;
         }
