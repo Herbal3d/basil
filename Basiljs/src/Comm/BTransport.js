@@ -54,14 +54,14 @@ export class BTransport extends BItem {
 
   // Send the data. Places message in output queue
   Send(data, tcontext) {
-      GP.DebugLog('BTransport: call of undefined Send()');
+      GP.ErrorLog('BTransport: call of undefined Send()');
       throw new BException('BTransport: call of undefined Send()');
   }
 
   // Set a callback object for recevieving messages.
   // The passed object must have a 'procMessage' method
   SetReceiveCallback(callback) {
-    GP.DebugLog('BTransport: call of undefined SetReceiveCallback()');
+    GP.ErrorLog('BTransport: call of undefined SetReceiveCallback()');
     throw new BException('BTransport: call of undefined SetReceiveCallback()');
   }
 

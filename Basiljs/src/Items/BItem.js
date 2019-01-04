@@ -108,7 +108,7 @@ export class BItem {
         propDesc.set(value);
       }
       else {
-        GP.DebugLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
+        GP.ErrorLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
       }
     }
 

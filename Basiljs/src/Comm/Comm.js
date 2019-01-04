@@ -12,7 +12,9 @@
 'use strict';
 
 import GP from 'GP';
-import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+import Config from '../config.js';
+
+import { BItem, BItemType } from '../Items/BItem.js';
 
 import { SpaceServerConnection } from './SpaceServer.js';
 import { SpaceServerClientConnection } from './SpaceServerClient.js';
@@ -30,111 +32,117 @@ import { CombineParameters } from '../Utilities.js';
 import { BException } from '../BException.js';
 
 export class Comm extends BItem {
-  constructor() {
-    GP.DebugLog('Comm: constructor');
-    super('org.basil.b.comm', undefined, BItemType.COMM);
-  }
+    constructor() {
+        GP.DebugLog('Comm: constructor');
+        super('org.basil.b.comm', undefined, BItemType.COMM);
+    }
 
-  Start() {
-    this.SetReady();
-  };
+    Start() {
+        this.SetReady();
+    };
 
-  // Initialize a transport and a service and resolve the promise when connected
-  // The 'parms' are passed to the transport and service creation routimes.
-  // Returns a promise that is resolved when both transport and service are running.
-  ConnectTransportAndService(parms) {
-      let params = CombineParameters(undefined, parms, {
-          'transport': 'WS',            // the type of transport to connect (WW, WS, test)
-          'transportURL': undefined,    // URL to connect transport to
-          'service': undefined          // service to add on top of that transport
-      });
-      return new Promise(function(resolve, reject) {
-          if (params.transport && params.transportURL) {
-              GP.DebugLog('Comm.ConnectTransportService: transport: ' + params.transport
-                          + '=>' + params.transportURL);
-              this.ConnectTransport(params)
-              .then (xport => {
-                  GP.DebugLog('Comm.ConnectTransportService: transport connected');
-                  if (params.service) {
-                      // Connect to the service
-                      return this.ConnectService(xport, params);
-                  }
-                  else {
-                      // No service to connect to
-                      reject('Comm.ConnectTransportAndService: No service specified to connect');
-                  }
-              })
-              .then (svc => {
-                  resolve(svc);
-              })
-              .catch ( e => {
-                  GP.ErrorLog('Comm.ConnectTransportService: failed initialization: ' + e);
-                  reject(e);
-              })
-          }
-      }.bind(this))
-  };
+    // Initialize a transport and a service and resolve the promise when connected
+    // The 'parms' are passed to the transport and service creation routimes.
+    // Returns a promise that is resolved when both transport and service are running.
+    ConnectTransportAndService(parms) {
+        let params = CombineParameters(undefined, parms, {
+            'transport': 'WS',            // the type of transport to connect (WW, WS, test)
+            'transportURL': undefined,    // URL to connect transport to
+            'service': undefined          // service to add on top of that transport
+        });
+        return new Promise(function(resolve, reject) {
+            if (params.transport && params.transportURL) {
+                GP.DebugLog('Comm.ConnectTransportService: transport: ' + params.transport
+                            + '=>' + params.transportURL);
+                this.ConnectTransport(params)
+                .then (xport => {
+                    GP.DebugLog('Comm.ConnectTransportService: transport connected');
+                    if (params.service) {
+                        // Connect to the service
+                        return this.ConnectService(xport, params);
+                    }
+                    else {
+                        // No service to connect to
+                        reject('Comm.ConnectTransportAndService: No service specified to connect');
+                    }
+                })
+                .then (svc => {
+                    resolve(svc);
+                })
+                .catch ( e => {
+                    GP.ErrorLog('Comm.ConnectTransportService: failed initialization: ' + e);
+                    reject(e);
+                })
+            }
+        }.bind(this))
+    };
 
-  // Make a connection to a service.
-  // 'parms' is passed to the created transport/service
-  ConnectTransport(parms) {
-      let params = CombineParameters(undefined, parms, {
-          'transportId': undefined,     // identifier for the created transport
-          'transport': 'WS',            // the type of transport to connect (WW, WS, test)
-          'transportURL': undefined     // URL to connect transport to
-      });
-      return new Promise(function(resolve, reject) {
-          let xport = undefined;
-          try {
-              if (params.transport) {
-                  switch (params.transport) {
-                      case 'WW':
-                          xport = new BTransportWW(params);
-                          break;
-                      case 'WS':
-                          xport = new BTransportWS(params);
-                          break;
-                      case 'Test':
-                          xport = new BTransportTest(params);
-                          break;
-                      default:
-                          let errorMsg = 'Comm.Connect: transport type unknown: '
+    // Make a connection to a service.
+    // 'parms' is passed to the created transport/service
+    ConnectTransport(parms) {
+        let params = CombineParameters(undefined, parms, {
+            'transportId': undefined,     // identifier for the created transport
+            'transport': 'WS',            // the type of transport to connect (WW, WS, test)
+            'transportURL': undefined,    // URL to connect transport to
+            'waitTilTransportReadyMS': 5000  // MS before timeout waiting for transport ready
+        });
+        return new Promise(function(resolve, reject) {
+            let xport = undefined;
+            try {
+                switch (params.transport) {
+                    case 'WW':
+                        xport = new BTransportWW(params);
+                        break;
+                    case 'WS':
+                        xport = new BTransportWS(params);
+                        break;
+                    case 'Test':
+                        xport = new BTransportTest(params);
+                        break;
+                    default:
+                        let errorMsg = 'Comm.ConnectTransport: transport type unknown: '
                                         + JSON.stringify(params);
-                          GP.ErrorLog(errorMsg);
-                          reject(errorMsg);
-                  }
-              }
-              else {
-                  GP.DebugLog('Comm.Connect: defaulting to WS transport');
-                  xport = new BTransportWS(params);
-              }
-          }
-          catch(e) {
-              reject('Comm.Connect: exception opening transport: ' + e.message);
-          }
-          GP.DebugLog('Comm.Connect: created transport ' + xport.id)
-          xport.WhenReady(5000)
-          .then( xxport => {
-            resolve(xxport);
-          })
-      }.bind(this));
-  };
+                        GP.ErrorLog(errorMsg);
+                        reject(errorMsg);
+                }
+            }
+            catch(e) {
+                reject('Comm.ConnectTransport: exception opening transport: ' + e.message);
+            }
+            if (xport) {
+                GP.DebugLog('Comm.ConnectTransport: created transport ' + xport.id)
+                xport.WhenReady(params.waitTilTransportReadyMS)
+                .then( xxport => {
+                    resolve(xxport);
+                })
+                .catch( e => {
+                    reject(new BException('Conn.ConnectTransport: timeout waiting for ready'));
+                });
+            }
+            else {
+                let errorMsg = 'Comm.ConnectTransport: Did not create transport: '
+                                + JSON.stringify(params);
+                GP.ErrorLog(errorMsg);
+                reject(errorMsg);
+            }
+        }.bind(this));
+    };
 
-  // A misnomer as this will connect a transport to either a Pseto service or a
-  //     Basil client (Creating the BasilService for this end))
-  // Expects parms.service = either 'BasilServer" or 'Pesto'
-  // Returns a Promise that has a handle to the created processor or undefined.
-  ConnectService(pTransport, pParams) {
-      let params = CombineParameters(undefined, pParams, {
-          'service': 'SpaceServerClient',     // or 'Pesto'
-          'serviceId': undefined,       // if not passed, unique one created
-          'pestoId': undefined          // if not passed, unique one created
-      });
-      return new Promise(function(resolve, reject) {
-          let svc = undefined;
-          let serviceType = params.service;
-          switch (serviceType) {
-              case 'SpaceServer':
+    // A misnomer as this will connect a transport to either a Pseto service or a
+    //     Basil client (Creating the BasilService for this end))
+    // Expects parms.service = either 'BasilServer" or 'Pesto'
+    // Returns a Promise that has a handle to the created processor or undefined.
+    ConnectService(pTransport, pParams) {
+        let params = CombineParameters(undefined, pParams, {
+            'service': 'SpaceServerClient',     // or 'Pesto'
+            'serviceId': undefined,       // if not passed, unique one created
+            'pestoId': undefined          // if not passed, unique one created
+        });
+        return new Promise(function(resolve, reject) {
+            let svc = undefined;
+            let serviceType = params.service;
+            switch (serviceType) {
+                case 'SpaceServer':
                     svc = new SpaceServerConnection(pTransport, params);
                     let basilSpace = new BasilClientConnection(pTransport, params);
                     let aliveSpace = new AliveCheckClientConnection(pTransport, params);
@@ -144,7 +152,7 @@ export class Comm extends BItem {
                     GP.DebugLog('Comm.Connect: created SpaceServerConnection. Id=' + svc.id);
                     resolve(svc);
                     break;
-              case 'SpaceServerClient':
+                case 'SpaceServerClient':
                     svc = new SpaceServerClientConnection(pTransport, params);
                     let basilSpaceClient = new BasilServerConnection(pTransport, params);
                     let aliveSpaceClient = new AliveCheckBasilConnection(pTransport, params);
@@ -168,7 +176,7 @@ export class Comm extends BItem {
                     let errorMsg = 'Comm.Connect: service type unknown: ' + JSON.stringify(params.service);
                     GP.ErrorLog(errorMsg)
                     reject(errorMsg)
-          }
-      });
-  };
+            }
+        });
+    };
 }

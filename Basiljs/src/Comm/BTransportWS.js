@@ -27,28 +27,27 @@ export class BTransportWS extends BTransport {
         super(params);
         this.params = params;
         this.SetLoading();
-        GP.DebugLog('BTransportWS constructor');
         this.itemTYpe = 'BTransport.TransportWS';
         try {
             let tempSocket = new WebSocket(this.params.transportURL);
-            GP.DebugLog('BTransportWS: websocket opened');
             if (tempSocket) {
                 // Socket is opened so put it in a place where everyone can use it
                 this.socket = tempSocket;
-                this.socket.addEventListener('open', event => {
+                this.socket.binaryType = 'arraybuffer';
+                this.socket.addEventListener('message', function(event) {
+                    this.messages.push(new Uint8Array(event.data));
+                    this.stats.messagesReceived++;
+                    this.PushReception();
+                }.bind(this));
+                this.socket.addEventListener('open', function(event) {
                     this.SetReady();
-                    this.socket.addEventListener('message', event => {
-                        this.messages.push(d.data);
-                        this.stats.messagesReceived++;
-                        this.PushReception();
-                    });
-                });
+                }.bind(this));
             }
             else {
                 let errMsg = 'BTransportWS: could not open websocket: ' + parms.transportURL;
                 this.SetFailed();
                 console.log(errMsg);
-                GP.DebugLog(errMsg);
+                GP.ErrorLog(errMsg);
                 throw new BException(errMsg);
             }
         }
@@ -56,7 +55,7 @@ export class BTransportWS extends BTransport {
             let errMsg = 'BTransportWS: exception opening websocket: ' + e.message;
             this.SetFailed();
             console.log(errMsg);
-            GP.DebugLog(errMsg);
+            GP.ErrorLog(errMsg);
             throw new BException(errMsg);
         }
     }
