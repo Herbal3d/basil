@@ -91,6 +91,7 @@ class TransportReceiver {
 export class MsgProcessor extends BItem {
     constructor(pId, pAuth) {
         super(pId, pAuth, BItemType.SERVICE);
+        this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
         this.RPCsession = 900222;
         this.RPCSessionCallback = new Map();
         if (typeof MsgProcessor.processors === 'undefined') {

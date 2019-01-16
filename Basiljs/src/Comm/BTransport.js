@@ -32,6 +32,7 @@ export class BTransport extends BItem {
             params.transportId = CreateUniqueId('transport', 'default');
         }
         super(params.transportId, params.transportAuth, BItemType.TRANSPORT);
+        this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
         this.params = params;
         this.messages = [];
         this.stats = {};

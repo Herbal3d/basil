@@ -72,6 +72,12 @@ export default {
           'shadows': false
         },
     },
+    // Names for predefined/service BItem layers
+    'layers': {
+        'default': 'org.basil.b.layers.default',
+        'comm': 'org.basil.b.layers.comm',
+        'service': 'org.basil.b.layers.service'
+    },
     'assets': {
         'gltfURLBase': '/basil/',
         'assetFetchTimeoutMS': 5000,
@@ -86,9 +92,23 @@ export default {
         'AliveCheckPollMS': 10000,  // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
         'TestAsset': {
-          // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-          'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
-          'loaderType': 'GLTF'
+            // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+            'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
+            'loaderType': 'GLTF'
+        }
+    },
+    'WSTester': {
+        'comm': {
+            'testmode': true,
+            'transport': 'WS',
+            'transportURL': 'ws://192.168.86.41:11440/',
+            'service': 'SpaceServerClient',
+            'TestAsset': {
+                // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                // 'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
+                'url': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
+                'loaderType': 'GLTF'
+            }
         }
     },
     'Debug': {

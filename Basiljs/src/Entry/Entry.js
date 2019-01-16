@@ -20,3 +20,25 @@ GP.Config = Config;
 
 // Force the processing of the css format file
 import './Entry.less';
+
+let testConfigParams = {};
+if (Config.WSTester) {
+    Object.assign(testConfigParams, Config.WSTester);
+}
+/*
+let testConfigParams = {
+    'comm': {
+        'testmode': true,
+        'transport': 'WS',
+        'transportURL': 'ws://192.168.86.41:11440/',
+        'service': 'SpaceServerClient',
+        'testURL': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+        'testLoaderType': 'GLTF'
+    }
+};
+*/
+let configParams = Base64.encode(JSON.stringify(testConfigParams));
+
+window.location = 'Basil.html?c=' + configParams;
+
+

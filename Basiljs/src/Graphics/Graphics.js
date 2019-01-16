@@ -37,6 +37,7 @@ export class Graphics extends BItem {
     let id = (Config.webgl && Config.webgl.graphicsId) ? Config.webgl.graphicsId : 'org.basil.b.renderer';
     let auth = undefined;
     super(id, auth, BItemType.RENDERER);
+    this.layer = Config.layers ? Config.layers.service : 'org.basil.b.layer.graphics';
     this.container = container;
     this.canvas = canvas;
 

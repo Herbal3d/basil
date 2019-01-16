@@ -35,6 +35,7 @@ export class Comm extends BItem {
     constructor() {
         GP.DebugLog('Comm: constructor');
         super('org.basil.b.comm', undefined, BItemType.COMM);
+        this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
     }
 
     Start() {

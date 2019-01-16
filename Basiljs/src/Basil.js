@@ -119,21 +119,11 @@ GP.Ready = false;
 let configParams = GP.ConfigGetQueryVariable('c');
 if (typeof(configParams) == 'undefined') {
     // If no communication parameters are given, use testing parameters
-    /*
     let testConfigParams = {
         'comm': {
             'testmode': true,
             'transportURL': './wwtester.js',
             'transport': 'WW',
-            'service': 'SpaceServerClient'
-        }
-    };
-    */
-    let testConfigParams = {
-        'comm': {
-            'testmode': true,
-            'transportURL': 'ws://192.168.86.41:11440/',
-            'transport': 'WS',
             'service': 'SpaceServerClient'
         }
     };
@@ -181,7 +171,16 @@ if (Config.comm && Config.comm.transportURL) {
     .then( srv => {
         GP.DebugLog('Basiljs: initial connection transport and service successful');
         try {
-            srv.OpenSession(undefined, {})
+            let srvParams = {};
+            if (Config.comm.testmode) {
+                // If a test session, pass the test parameters to the service
+                Object.assign(srvParams, {
+                    'TestConnection': 'true',
+                    'TestURL': Config.comm.TestAsset.url,
+                    'TestLoaderType': Config.comm.TestAsset.loaderType
+                });
+            }
+            srv.OpenSession(undefined, srvParams)
             .then( resp => {
                 GP.DebugLog('Basiljs: Session opened to SpaceServer');
             })

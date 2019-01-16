@@ -53,13 +53,15 @@ export class BItem {
       this.id = pId;             // index this item is stored under
       this.auth = pAuth;         // authorization information
       this.ownerId = undefined; // this item is not yet associated with  some service/connection
+      this.layer = Config.layers ? Config.layers.default : 'layer.default';
       this.itemType = pItemType ? pItemType : BItemType.UNKNOWN;  // the type of the item
       this.state = BItemState.UNINITIALIZED;
       this.DefineProperties( {
           'Type': { 'get': () => { return this.itemType; } },
           'Id': { 'get': () => { return this.id; } },
           'OwnerId': { 'get': () => { return this.ownerId; } },
-          'State': { 'get': () => { return this.state; } }
+          'State': { 'get': () => { return this.state; } },
+          'Layer': { 'get': () => { return this.layer; } }
       });
       BItem.AddItem(this.id, this);
     }

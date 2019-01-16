@@ -21,11 +21,13 @@ import * as Eventing from '../Eventing/Eventing.js';
 
 // Classes that implement different types of UI controls
 import { UI_Text, UI_Coord } from './UIControls.js';
+import config from '../config.js';
 
 export class Controls extends BItem {
   constructor() {
     GP.DebugLog('Controls: constructor');
     super('org.basil.b.controls', undefined, BItemType.CONTROLS);
+    this.layer = Config.layers ? Config.layers.service : 'org.basil.b.service';
 
     // Make all 'class=clickable' page items create events
     Array.from(document.getElementsByClassName('clickable')).forEach( nn => {
