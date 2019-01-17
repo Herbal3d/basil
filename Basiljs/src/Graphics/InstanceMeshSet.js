@@ -78,7 +78,7 @@ export class InstanceMeshSet extends Instance {
                 }
             }
         } );
-        this.displayable.WhenReady()
+        this.displayable.WhenReady(10000)
         .then(function(disp) {
           this.SetReady();
         }.bind(this));

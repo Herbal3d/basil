@@ -13,6 +13,9 @@
 
 import GP from 'GP';
 import Config from '../config.js';
+
+import { Controls } from '../Controls/Controls.js';
+
 import { Base64 } from 'js-base64';
 
 GGP = GP;   // easy linkage to global context for debugging
@@ -21,24 +24,58 @@ GP.Config = Config;
 // Force the processing of the css format file
 import './Entry.less';
 
+// Global debug information printout.
+// Adds a text line to a div and scroll the area
+GP.LogMessage = function LogMessage(msg, classs) {
+    if (GP.EnableDebugLog) {
+        var debugg = document.querySelector('#DEBUGG');
+        if (debugg) {
+            var newLine = document.createElement('div');
+            newLine.appendChild(document.createTextNode(msg));
+            if (classs) {
+            newLine.setAttribute('class', classs);
+            }
+            debugg.appendChild(newLine);
+            if (debugg.childElementCount > Config.page.debugLogLines) {
+                debugg.removeChild(debugg.firstChild);
+            }
+        }
+    }
+};
+GP.DebugLog = function DebugLog(msg) {
+    GP.LogMessage(msg, undefined);
+};
+
+GP.ErrorLog = function ErrorLog(msg) {
+    GP.LogMessage(msg, 'errorMsg');
+};
+
 let testConfigParams = {};
+/*
 if (Config.WSTester) {
     Object.assign(testConfigParams, Config.WSTester);
 }
-/*
-let testConfigParams = {
-    'comm': {
-        'testmode': true,
-        'transport': 'WS',
-        'transportURL': 'ws://192.168.86.41:11440/',
-        'service': 'SpaceServerClient',
-        'testURL': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-        'testLoaderType': 'GLTF'
-    }
-};
 */
-let configParams = Base64.encode(JSON.stringify(testConfigParams));
 
-window.location = 'Basil.html?c=' + configParams;
+GP.CO = new Controls();
+GP.CO.ClickableOps['launchBasil'] = function() {
+    let selectedScene = document.getElementById('sceneURL').innerText;
+    testConfigParams = {
+        'comm': {
+            'testmode': true,
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            // 'transport': 'WS',
+            // 'transportURL': 'ws://192.168.86.41:11440/',
+            'service': 'SpaceServerClient',
+            'TestAsset': {
+                'url': selectedScene,
+                'loaderType': 'GLTF'
+            }
+        }
+    };
 
+    let configParams = Base64.encode(JSON.stringify(testConfigParams));
 
+    window.location = 'Basil.html?c=' + configParams;
+};

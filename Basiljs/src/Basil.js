@@ -124,9 +124,16 @@ if (typeof(configParams) == 'undefined') {
             'testmode': true,
             'transportURL': './wwtester.js',
             'transport': 'WW',
-            'service': 'SpaceServerClient'
+            'service': 'SpaceServerClient',
+            'TestAsset': {
+                'url': '',
+                'loaderType': 'GLTF'
+            }
         }
     };
+    if (Config.WWTester && Config.WWTester.comm) {
+        testConfigParams.comm = Config.WWTester.comm;
+    }
     configParams = Base64.encode(JSON.stringify(testConfigParams));
 }
 if (configParams) {

@@ -50,39 +50,39 @@ export class BTransport extends BItem {
         } );
     }
 
-  Close() {
-  }
+    Close() {
+    }
 
-  // Send the data. Places message in output queue
-  Send(data, tcontext) {
-      GP.ErrorLog('BTransport: call of undefined Send()');
-      throw new BException('BTransport: call of undefined Send()');
-  }
+    // Send the data. Places message in output queue
+    Send(data, tcontext) {
+        GP.ErrorLog('BTransport: call of undefined Send()');
+        throw new BException('BTransport: call of undefined Send()');
+    }
 
-  // Set a callback object for recevieving messages.
-  // The passed object must have a 'procMessage' method
-  SetReceiveCallback(callback) {
+    // Set a callback object for recevieving messages.
+    // The passed object must have a 'procMessage' method
+    SetReceiveCallback(callback) {
     GP.ErrorLog('BTransport: call of undefined SetReceiveCallback()');
     throw new BException('BTransport: call of undefined SetReceiveCallback()');
-  }
+    }
 
-  // Check the input queue for messages and, if present, process one.
-  // If 'tthis' is passed, it is used as the BTransport to push reception for.
-  PushReception() {
-      let msg = this.messages.shift();
-      if (msg) {
-          this.stats.messagesReceived++;
+    // Check the input queue for messages and, if present, process one.
+    // If 'tthis' is passed, it is used as the BTransport to push reception for.
+    PushReception() {
+        let msg = this.messages.shift();
+        if (msg) {
+            this.stats.messagesReceived++;
 
-          if (this.receiveCallback
-                  && (typeof this.receiveCallback == 'function')) {
-              // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
-              this.receiveCallback(msg);
-          }
-          else {
-              GP.ErrorLog('BTransport.PushReception: msg received but no message processor');
-          }
-      }
-  }
+            if (this.receiveCallback
+                    && (typeof this.receiveCallback == 'function')) {
+                // GP.DebugLog('BTransportTest: dequeue msg: seq=' + dmsg.sequenceNum);
+                this.receiveCallback(msg);
+            }
+            else {
+                GP.ErrorLog('BTransport.PushReception: msg received but no message processor');
+            }
+        }
+    }
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {
         return false;

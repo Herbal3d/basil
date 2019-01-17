@@ -103,6 +103,7 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
 
 // Wait for the SpaceServer to come ready (OpenSession from client)
 //    then send test data to the viewer.
+GP.DebugLog('Starting SpaceSErver');
 GP.spaceServer.WhenReady(10000)
 .then( sServer => {
     let auth = undefined; // no authentication at the moment
@@ -116,8 +117,10 @@ GP.spaceServer.WhenReady(10000)
             }
         }
     };
-    if (Config.WWTester && Config.WWTester.TestAsset) {
-        anAsset.displayInfo.asset = Config.WWTester.TestAsset;
+    GP.DebugLog('Checking for test asset in config file');
+    if (Config.WWTester && Config.WWTester.comm.TestAsset) {
+        GP.DebugLog('Adding config test asset:' + JSON.stringify(Config.WWTester.comm.TestAsset));
+        anAsset.displayInfo.asset = Config.WWTester.comm.TestAsset;
     }
     GP.client.IdentifyDisplayableObject(auth, anAsset)
     .then( resp => {

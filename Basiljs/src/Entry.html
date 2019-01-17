@@ -8,8 +8,30 @@
     var GGP = GGP || {};
 </script>
 </head>
-<body id="EntryBody">
-  <div id="pageLayout">
-  </div>
+<body id="EntryBody" class="pageLayout">
+    <div id="controls">
+        <div class="dialog-group">
+            <span id="sceneSelection">
+                <select id="sceneURL">
+                    <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf">
+                        Epic Castle (unoptimized)
+                    </option>
+                    <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf">
+                        Epic Castle (smallassets)
+                    </option>
+                    <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf">
+                        Epic Castle (mergedmaterials)
+                    </option>
+                    <option value="http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf">
+                        Testtest88 (unoptimized)
+                    </option>
+                    <option value="http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf">
+                        PalmyraTemple (unoptimized)
+                    </option>
+                </select>
+            </span>
+            <button type="button" class="button clickable" op="launchBasil">Launch</button>
+        </div>
+    </div>
 </body>
 </html>

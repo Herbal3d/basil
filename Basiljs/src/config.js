@@ -87,14 +87,23 @@ export default {
         'eventPollIntervalMS': 500
     },
     'WWTester': {
-        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
+        'LogToConsole': true,       // Log to console. Otherwise, use msg to debug BItem
         'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,  // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
-        'TestAsset': {
-            // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-            'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
-            'loaderType': 'GLTF'
+        'comm': {
+            'testmode': true,
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            'service': 'SpaceServerClient',
+            'TestAsset': {
+                // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                // 'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
+                // 'url': 'http://files.misterblue.com/BasilTest/convoar/Atropia_11/smallassets/Atropia_11.gltf',
+                // 'url': 'http://files.misterblue.com/BasilTest/convoar/Atropia_11/unoptimized/Atropia_11.gltf',
+                'url': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                'loaderType': 'GLTF'
+            }
         }
     },
     'WSTester': {
@@ -118,15 +127,23 @@ export default {
     },
     // Information for loading multiple Atropia regions with filename and displacement
     'Atropia': [
-            [ "convoar/Atropia_00.gltf", [0,0,512] ],
-            [ "convoar/Atropia_01.gltf", [0,0,256] ],
-            [ "convoar/Atropia_02.gltf", [0,0,0] ],
-            [ "convoar/Atropia_10.gltf", [256,0,512] ],
-            [ "convoar/Atropia_11.gltf", [256,0,256] ],
-            [ "convoar/Atropia_12.gltf", [256,0,0] ],
-            [ "convoar/Atropia_20.gltf", [512,0,512] ],
-            [ "convoar/Atropia_21.gltf", [512,0,256] ],
-            [ "convoar/Atropia_22.gltf", [512,0,0] ]
+        [ "convoar/Atropia_00.gltf", [0,0,512] ],
+        [ "convoar/Atropia_01.gltf", [0,0,256] ],
+        [ "convoar/Atropia_02.gltf", [0,0,0] ],
+        [ "convoar/Atropia_10.gltf", [256,0,512] ],
+        [ "convoar/Atropia_11.gltf", [256,0,256] ],
+        [ "convoar/Atropia_12.gltf", [256,0,0] ],
+        [ "convoar/Atropia_20.gltf", [512,0,512] ],
+        [ "convoar/Atropia_21.gltf", [512,0,256] ],
+        [ "convoar/Atropia_22.gltf", [512,0,0] ]
+    ],
+    'EntrySelections': [
+        'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+        'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
+        'http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
+        'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+        'http://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
+
     ]
 }
 ;
