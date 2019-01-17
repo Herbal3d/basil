@@ -137,13 +137,15 @@ export default {
         [ "convoar/Atropia_21.gltf", [512,0,256] ],
         [ "convoar/Atropia_22.gltf", [512,0,0] ]
     ],
-    'EntrySelections': [
-        'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-        'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
-        'http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
-        'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-        'http://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
-
-    ]
+    'EntrySelections': {
+        'URLBase': 'https://files.misterblue.com/BasilTest/convoar/',
+        'formats': [ 'unoptimized', 'smallassets', 'mergedmaterials' ],
+        'extension': '.gltf',
+        'scenes': [
+            'testtest88',
+            'epiccastle',
+            'PalmyraTemple'
+        ]
+    }
 }
 ;
