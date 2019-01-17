@@ -15,14 +15,14 @@
 
 import GP from 'GP';
 import Config from '../config.js';
-import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+
 import { Displayable } from '../Items/Displayable.js';
 
 export class DisplayableCamera extends Displayable {
-  constructor(id, auth, displayInfo) {
-    GP.DebugLog('DisplayableCamera: constructor');
-    super(id, auth, displayInfo);
-    this.SetReady();
-  }
+    constructor(id, auth, displayInfo) {
+        GP.DebugLog('DisplayableCamera: constructor');
+        super(id, auth, displayInfo);
+        this.SetReady();
+    }
 }
 DisplayableCamera.DisplayableType = "camera";

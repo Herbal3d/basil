@@ -20,31 +20,31 @@ import { InstanceMeshSet } from '../Graphics/InstanceMeshSet.js'
 // Factory function to create Displayable since we may want
 //    to use Proxy's someday.
 export function DisplayableFactory(id, auth, displayInfo) {
-  let ret = undefined;
-  if (displayInfo.displayableType) {
-    let displayType = displayInfo.displayableType;
-    switch (displayType) {
-      case DisplayableCamera.DisplayableType:
-          ret = new DisplayableCamera(id, auth, displayInfo);
-        break;
-      case DisplayableMeshSet.DisplayableType:
-          ret = new DisplayableMeshSet(id, auth, displayInfo);
-        break;
-      default:
-          GP.ReportError('DisplayableFactory: Unknown asset type: ' + displayType);
-        break;
+    let ret = undefined;
+    if (displayInfo.displayableType) {
+        let displayType = displayInfo.displayableType;
+        switch (displayType) {
+            case DisplayableCamera.DisplayableType:
+                ret = new DisplayableCamera(id, auth, displayInfo);
+                break;
+            case DisplayableMeshSet.DisplayableType:
+                ret = new DisplayableMeshSet(id, auth, displayInfo);
+                break;
+            default:
+                GP.ReportError('DisplayableFactory: Unknown asset type: ' + displayType);
+                break;
+        }
     }
-  }
-  else {
-    GP.ReportError('DisplayableFactory: displayableType not specified: '
-                + JSON.stringify(displayInfo));
-    ret = undefined;
-  }
-  return ret;
+    else {
+        GP.ReportError('DisplayableFactory: displayableType not specified: '
+                  + JSON.stringify(displayInfo));
+        ret = undefined;
+    }
+    return ret;
 }
 
 // Factory function to create DisplayableInstances since we may want
 //    to use Proxy's someday.
 export function InstanceFactory(id, auth, baseDisplayable) {
-  return new InstanceMeshSet(id, auth, baseDisplayable);
+    return new InstanceMeshSet(id, auth, baseDisplayable);
 }

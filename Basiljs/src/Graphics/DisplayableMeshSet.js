@@ -15,31 +15,31 @@
 
 import GP from 'GP';
 import Config from '../config.js';
-import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+
 import { Displayable } from '../Items/Displayable.js';
 
 export class DisplayableMeshSet extends Displayable {
-  constructor(id, auth, displayInfo) {
-    GP.DebugLog('DisplayableCamers: constructor');
-    super(id, auth, displayInfo);
-    if (displayInfo && displayInfo.asset) {
-      this.SetState(BItemState.LOADING);
-      GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
-      this.graphics.LoadSimpleAsset(auth, displayInfo.asset)
-      .then(theAsset => {
-        GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
-        GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
-        this.representation = theAsset;
-        this.SetReady();
-      })
-      .catch(err => {
-        this.SetState(BItemState.FAILED);
-        GP.DebugLog('DisplayableMeshSet: unable to load asset' + JSON.stringify(displayInfo));
-      })
+    constructor(id, auth, displayInfo) {
+        GP.DebugLog('DisplayableCamers: constructor');
+        super(id, auth, displayInfo);
+        if (displayInfo && displayInfo.asset) {
+            this.SetLoading();
+            GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
+            this.graphics.LoadSimpleAsset(auth, displayInfo.asset)
+            .then(theAsset => {
+                GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
+                GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
+                this.representation = theAsset;
+                this.SetReady();
+            })
+            .catch(err => {
+                this.SetFailed();
+                GP.DebugLog('DisplayableMeshSet: unable to load asset' + JSON.stringify(displayInfo));
+            })
+        }
+        else {
+            this.SetReady();
+        }
     }
-    else {
-      this.SetReady();
-    }
-  }
 }
 DisplayableMeshSet.DisplayableType = "meshset";

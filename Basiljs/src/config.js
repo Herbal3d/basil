@@ -87,7 +87,7 @@ export default {
         'eventPollIntervalMS': 500
     },
     'WWTester': {
-        'LogToConsole': true,       // Log to console. Otherwise, use msg to debug BItem
+        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
         'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,  // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
@@ -139,12 +139,15 @@ export default {
     ],
     'EntrySelections': {
         'URLBase': 'https://files.misterblue.com/BasilTest/convoar/',
-        'formats': [ 'unoptimized', 'smallassets', 'mergedmaterials' ],
         'extension': '.gltf',
+        'formats': [ 'unoptimized', 'smallassets', 'mergedmaterials' ],
         'scenes': [
             'testtest88',
             'epiccastle',
             'PalmyraTemple'
+        ],
+        'justURLS': [
+            // [ 'title', 'url' ]
         ]
     }
 }

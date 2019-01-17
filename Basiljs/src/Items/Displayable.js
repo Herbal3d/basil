@@ -15,11 +15,11 @@ import GP from 'GP';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
 export class Displayable extends BItem {
-  constructor(id, auth, displayInfo) {
-    super(id, auth, BItemType.DISPLAYABLE);
-    // A kludge that give all Displayables a handle to the Graphics instance.
-    // In the future, there might be multiple graphics engines.
-    this.graphics = GP.GR;
-  }
+    constructor(id, auth, displayInfo) {
+        super(id, auth, BItemType.DISPLAYABLE);
+        // A kludge that give all Displayables a handle to the Graphics instance.
+        // In the future, there might be multiple graphics engines.
+        this.graphics = GP.GR;
+    }
 }
 Displayable.DisplayableKey = "UNKNOWN";
