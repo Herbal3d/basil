@@ -21,7 +21,7 @@ import { BTransportWW } from './Comm/BTransportWW.js';
 
 import { BasilType } from './jslibs/BasilServerMessages.js'
 import { SpaceServerConnection } from './Comm/SpaceServer.js';
-import { AliveCheckClientConnection } from './Comm/AliveCheckClient.js';
+import { AliveCheckConnection } from './Comm/AliveCheckMsgs.js';
 
 GP.Config = Config;
 
@@ -38,7 +38,7 @@ GP.Ready = true;
 
 GP.client = new BasilClientConnection(GP.wwTransport, {} );
 GP.spaceServer = new SpaceServerConnection(GP.wwTransport, {});
-GP.aliveCheck = new AliveCheckClientConnection(GP.wwTransport, {});
+GP.aliveCheck = new AliveCheckConnection(GP.wwTransport, {});
 GP.aliveCheck.Start();
 GP.spaceServer.Start();
 GP.client.Start();

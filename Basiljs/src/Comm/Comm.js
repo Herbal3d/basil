@@ -20,8 +20,7 @@ import { SpaceServerConnection } from './SpaceServer.js';
 import { SpaceServerClientConnection } from './SpaceServerClient.js';
 import { BasilServerConnection } from './BasilServer.js';
 import { BasilClientConnection } from './BasilClient.js';
-import { AliveCheckBasilConnection } from './AliveCheckBasil.js';
-import { AliveCheckClientConnection } from './AliveCheckClient.js';
+import { AliveCheckConnection } from './AliveCheckMsgs.js';
 import { PestoClientConnection } from './PestoClient.js';
 
 import { BTransportWW } from './BTransportWW.js';
@@ -146,7 +145,7 @@ export class Comm extends BItem {
                 case 'SpaceServer':
                     svc = new SpaceServerConnection(pTransport, params);
                     let basilSpace = new BasilClientConnection(pTransport, params);
-                    let aliveSpace = new AliveCheckClientConnection(pTransport, params);
+                    let aliveSpace = new AliveCheckConnection(pTransport, params);
                     aliveSpace.Start();
                     basilSpace.Start();
                     svc.Start();
@@ -156,7 +155,7 @@ export class Comm extends BItem {
                 case 'SpaceServerClient':
                     svc = new SpaceServerClientConnection(pTransport, params);
                     let basilSpaceClient = new BasilServerConnection(pTransport, params);
-                    let aliveSpaceClient = new AliveCheckBasilConnection(pTransport, params);
+                    let aliveSpaceClient = new AliveCheckConnection(pTransport, params);
                     aliveSpaceClient.Start();
                     basilSpaceClient.Start();
                     svc.Start();
@@ -166,7 +165,7 @@ export class Comm extends BItem {
               case 'Pesto':
                     svc = new PestoClientConnection(pTransport, params);
                     let basilPesto = new BasilServerConnection(pTransport, params);
-                    let alivePesto = new AliveCheckBasilConnection(pTransport, params);
+                    let alivePesto = new AliveCheckConnection(pTransport, params);
                     alivePesto.Start();
                     basilPesto.Start();
                     svc.Start();

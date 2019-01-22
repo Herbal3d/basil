@@ -15,7 +15,7 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { MsgProcessor } from './MsgProcessor.js';
-import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
+import { BasilMessageOps  } from './BasilMessageOps.js';
 
 import { CombineParameters, CreateUniqueId } from '../Utilities.js';
 import { BException } from '../BException.js';
@@ -34,12 +34,11 @@ export class SpaceServerConnection extends MsgProcessor {
 
         // templates = entry_name: [ message_processor, BasilServerMessage_reply_name ]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
-        this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.BasilStreamMessage,
-                                                 /* receives */ BasilSpaceStream.SpaceStreamMessage, {
-            'OpenSessionReqMsg': [ this._ProcOpenSession.bind(this), 'OpenSessionRespMsg' ],
-            'CloseSessionReqMsg': [ this._ProcCloseSession.bind(this), 'CloseSessionRespMsg' ],
-            'CameraViewReqMsg': [ this._ProcCameraView.bind(this), 'CameraViewRespMsg' ],
-        });
+        let processors = {};
+        processors[BasilMessageOps['OpenSessionReq']] = this._ProcOpenSession.bind(this);
+        processors[BasilMessageOps['CloseSessionReq']] = this._ProcCloseSession.bind(this);
+        processors[BasilMessageOps['CameraViewReq']] = this._ProcCameraView.bind(this);
+        this.RegisterMsgProcess(this.transport, processors);
     }
 
     Start() {
@@ -49,16 +48,19 @@ export class SpaceServerConnection extends MsgProcessor {
     }
 
     _ProcOpenSession(req) {
+        let ret = { 'op': BasilMessageOps['OpenSessionResp'] };
         this.SetReady();
-        return {};
+        return ret;
     }
 
     _ProcCloseSession(req) {
-        return {};
+        let ret = { 'op': BasilMessageOps['CloseSessionResp'] };
+        return ret;
     }
 
     _ProcCameraView(req) {
-        return {};
+        let ret = { 'op': BasilMessageOps['CameraViewResp'] };
+        return ret;
     }
 
 }

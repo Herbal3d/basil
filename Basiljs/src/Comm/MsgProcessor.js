@@ -16,49 +16,48 @@ import Config from '../config.js';
 
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
+import { BasilMessage } from "../jslibs/BasilServerMessages.js"
+import { BasilMessageOps } from "./BasilMessageOps.js";
+
 // A class which is instanced for each transport system and
 //   maps received messsages to the message processors.
 // The static dictionary 'MsgProcessor.processors' contains the map of
 //   received message name to the processing routine for each transport Id.
 class TransportReceiver {
-    constructor(pTransport, pContext, pEncoder, pDecoder) {
+    constructor(pTransport, pContext) {
         this.transport = pTransport;
         this.context = pContext;
-        this.decoder = pDecoder;
-        this.encoder = pEncoder;
     }
 
     Process(pRawMsg) {
-        let msg = this.decoder.decode(pRawMsg);
+        let msg = BasilMessage.BasilMessage.decode(pRawMsg);
+        if (Config.Debug && Config.Debug.MsgProcessorProcessPrintMsg) {
+            GP.DebugLog('MsgProcessor.Process: received: ' + JSON.stringify(msg));
+        }
         let replyContents = undefined;
-        let reqName = Object.keys(msg).filter(k => { return k.endsWith('Msg'); } ).shift();
-        let processor = MsgProcessor.processors.get(this.transport.id)[reqName];
+        let processor = MsgProcessor.processors.get(this.transport.id)[msg.op];
         if (processor) {
             // The 'processor' specification is either an array consisting of:
-            //       [ processorFunction, replyMsgName, otherParameters ]
+            //       [ processorFunction, otherParameters ]
             //   where 'procesorFunction' takes the parameters:
-            //       processorFunction(specificMsgBody, nameOfRequest, enclosingMsg, processorArray)
+            //       processorFunction(messageBody)
             //   The return of 'processorFunction' is the reply contents or 'undefined'.
             // If 'processor' is not an array, it is expected to be a function
             //   that returns what should be returned as a reply or 'undefined'.
             if (Array.isArray(processor)) {
-                let innerReply = undefined;
+                let replyContents = undefined;
                 try {
-                    innerReply = processor[0](msg[reqName], reqName, msg, processor);
+                    replyContents = processor[0](msg);
                 }
                 catch (e) {
-                    innerReply = this.MakeException('Exception processing ' + reqName + ': ' + e);
-                }
-                finally {
-                    if (innerReply) {
-                        let replyMsgName = processor[1];
-                        replyContents = {};
-                        replyContents[replyMsgName] = innerReply;
-                    }
+                    replyContents = {};
+                    replyName = String(BasilMessageOps[msg.op]).replace('Req$', 'Resp$');
+                    replyContents['op'] = BasilMessageOps[replyName];
+                    replyContents['exception'] = this.MakeException('Exception processing ' + BasilMessageOps[op] + ': ' + e);
                 }
             }
             else {
-                replyContents = processor(msg[reqName], reqName, msg);
+                replyContents = processor(msg);
             }
         }
         else {
@@ -66,17 +65,17 @@ class TransportReceiver {
         }
         if (replyContents) {
             // There is a response to the message
-            if (msg.ResponseReq) {
+            if (msg.response) {
                 // Return the binding that allows the other side to match the response
-                replyContents['ResponseReq'] = msg.ResponseReq;
+                replyContents['response'] = msg.response;
             }
             if (Config.Debug && Config.Debug.VerifyProtocol) {
-                if (! this.encoder.verify(replyContents)) {
+                if (! BasilMessage.verify(replyContents)) {
                     GP.ErrorLog('MsgProcessor.Process: Verification fail: '
                                     + JSON.stringify(replyContents));
                 }
             }
-            this.transport.Send(this.encoder.encode(replyContents).finish());
+            this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
         }
     }
 
@@ -92,7 +91,6 @@ export class MsgProcessor extends BItem {
     constructor(pId, pAuth) {
         super(pId, pAuth, BItemType.SERVICE);
         this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
-        this.RPCsession = 900222;
         this.RPCSessionCallback = new Map();
         if (typeof MsgProcessor.processors === 'undefined') {
             // static variable that indexes transport.id => msgProcessingFunctions
@@ -103,63 +101,63 @@ export class MsgProcessor extends BItem {
 
     // Given a transport system and a set of message type processors,
     //    add the type processors for this transport.
-    RegisterMsgProcess(pTransport, pEncoder, pDecoder, pProcessors) {
+    RegisterMsgProcess(pTransport, pProcessors) {
         if (! MsgProcessor.processors.has(pTransport.id)) {
             MsgProcessor.processors.set(pTransport.id, {});
-            let xportReceiver = new TransportReceiver(pTransport, this, pEncoder, pDecoder);
+            let xportReceiver = new TransportReceiver(pTransport, this);
             MsgProcessor.transportReceivers.set(pTransport.id, xportReceiver);
             pTransport.SetReceiveCallback(xportReceiver.Process.bind(xportReceiver));
         }
-        this.encoder = pEncoder;  // Remember outbound encoder for sending messages
         // Merge new message processors into the set of message processors
         Object.assign(MsgProcessor.processors.get(pTransport.id), pProcessors);
     }
 
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
-    SendAndPromiseResponse(pMsg, pReqName) {
+    SendAndPromiseResponse(pMsg) {
         // crypto.GetRandomValues could be slow. Maybe replace with Math.random.
         //   let randomness = new Uint32Array(1);
         //   crypto.getRandomValues(randomness);
         //   let responseSession = randomness[0];
         // let responseSession = (new Uint32Array((new Float32Array( [ Math.random() ] )).buffer))[0];
         let responseSession = Math.floor( Math.random() * 536870912 );   // 2^30
-        let smsg = {};
-        smsg[ pReqName + 'ReqMsg'] = pMsg;
-        smsg['ResponseReq'] = {
+        pMsg['response'] = {
             'responseSession': responseSession
         };
         if (Config.Debug && Config.Debug.VerifyProtocol) {
-            if (! this.encoder.verify(smsg)) {
+            if (! BasilMessage.verify(pMsg)) {
                 GP.ErrorLog('MsgProcessor.SendAndPromiseResponse: verification fail: '
-                            + JSON.stringify(smsg));
+                            + JSON.stringify(pMsg));
             }
         }
-        // GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSON.stringify(smsg));
-        let emsg = this.encoder.encode(smsg).finish();
+        if (Config.Debug && Config.Debug.SendAndPromisePrintMsg) {
+            GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSON.stringify(pMsg));
+        }
+        let emsg = BasilMessage.BasilMessage.encode(pMsg).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( function(resolve,reject) {
             this.RPCSessionCallback[responseSession] = {
                 'timeRPCCreated': Date.now(),
                 'resolve': resolve,
                 'reject': reject,
-                'requestName': pReqName,
-                'rawMessage': smsg
+                'rawMessage': pMsg
             };
             this.transport.Send(emsg);
         }.bind(this));
     };
 
     // Function that handles the response type message
-    HandleResponse(responseMsg, responseMsgName, containingMsg) {
-        // GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSON.stringify(containingMsg));
-        if (containingMsg.ResponseReq && containingMsg.ResponseReq.responseSession) {
-            let sessionIndex = containingMsg.ResponseReq.responseSession;
+    HandleResponse(responseMsg) {
+        if (Config.Debug && Config.Debug.HandleResponsePrintMsg) {
+            GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSON.stringify(responseMsg));
+        }
+        if (responseMsg.response && responseMsg.response.responseSession) {
+            let sessionIndex = responseMsg.response.responseSession;
             let session = this.RPCSessionCallback[sessionIndex];
             if (session) {
                 this.RPCSessionCallback.delete(sessionIndex);
                 try {
-                    (session.resolve)(responseMsg, responseMsgName);
+                    (session.resolve)(responseMsg);
                 }
                 catch (e) {
                     let errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + e;
@@ -170,14 +168,14 @@ export class MsgProcessor extends BItem {
             }
             else {
                 let errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
-                                    + JSON.stringify(pMsg);
+                                    + JSON.stringify(responseMsg);
                 console.log(errMsg);
                 GP.ErrorLog(errMsg);
             }
         }
         else {
             let errMsg = 'MsgProcessor.HandleResponse: received misformed msg: '
-                                + JSON.stringify(pMsg);
+                                + JSON.stringify(responseMsg);
             console.log(errMsg);
             GP.ErrorLog(errMsg);
         }

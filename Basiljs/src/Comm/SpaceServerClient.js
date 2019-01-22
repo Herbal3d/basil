@@ -15,7 +15,7 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { MsgProcessor } from './MsgProcessor.js';
-import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
+import { BasilMessageOps } from './BasilMessageOps.js';
 
 import { CreateUniqueId, CombineParameters } from '../Utilities.js';
 
@@ -30,12 +30,11 @@ export class SpaceServerClientConnection extends MsgProcessor {
         super(params.id, undefined);
         this.params = params;
         this.transport = pTransport;
-        this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.SpaceStreamMessage,
-                                                /* receives */ BasilSpaceStream.BasilStreamMessage, {
-            'OpenSessionRespMsg': this.HandleResponse.bind(this),
-            'CloseSessionRespMsg': this.HandleResponse.bind(this),
-            'CameraViewRespMsg': this.HandleResponse.bind(this),
-        });
+        let processors = {};
+        processors[BasilMessageOps['OpenSessionResp']] = this.HandleResponse.bind(this);
+        processors[BasilMessageOps['CloseSessionResp']] = this.HandleResponse.bind(this);
+        processors[BasilMessageOps['CameraViewResp']] = this.HandleResponse.bind(this);
+        this.RegisterMsgProcess(this.transport, processors);
     };
 
     Start() {
@@ -46,16 +45,16 @@ export class SpaceServerClientConnection extends MsgProcessor {
     };
 
     OpenSession(auth, propertyList) {
-        let msg = {};
+        let msg = { 'op': BasilMessageOps['OpenSessionReq']};
         if (auth) msg['auth'] = auth;
-        if (propertyList) msg['features'] = this.CreatePropertyList(propertyList);
-        return this.SendAndPromiseResponse(msg, 'OpenSession');
+        if (propertyList) msg['properties'] = this.CreatePropertyList(propertyList);
+        return this.SendAndPromiseResponse(msg);
     };
     CloseSession(auth, reason) {
-        let msg = {};
+        let msg = { 'op': BasilMessageOps['CloseSessionReq']};
         if (auth) msg['auth'] = auth;
         if (reason) msg['reason'] = reason;
-        return this.SendAndPromiseResponse(msg, 'CloseSession');
+        return this.SendAndPromiseResponse(msg);
     };
     CameraView() {
 

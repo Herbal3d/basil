@@ -88,8 +88,8 @@ export default {
     },
     'WWTester': {
         'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
-        'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
-        'AliveCheckPollMS': 10000,  // ms interval to generate AliveCheck's
+        'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
+        'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
         'comm': {
             'testmode': true,
@@ -121,8 +121,10 @@ export default {
         }
     },
     'Debug': {
-      'VerifyProtocol': false,                  // call 'verify' on created protocol messages
-      'SpaceServerProcMessageDetail': true,    // DebugLog received messages and responses
+      'VerifyProtocol': false,              // call 'verify' on created protocol messages
+      'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
+      'SendAndPromisePrintMsg': false,      // DebugLog each message sent with expected response
+      'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
       'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
     },
     // Information for loading multiple Atropia regions with filename and displacement

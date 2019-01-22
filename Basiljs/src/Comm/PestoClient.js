@@ -32,8 +32,7 @@ export class PestoClientConnection extends MsgProcessor {
 
         // templates = entry_name: [ message_processor, BasilServerMessage_reply_name ]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
-        this.RegisterMsgsProcessed(this.transport, /*    sends */ BasilSpaceStream.SpaceStreamMessage,
-                                                   /* receives */ BasilSpaceStream.BasilStreamMessage, {
+        this.RegisterMsgsProcessed(this.transport, {
         });
     }
 

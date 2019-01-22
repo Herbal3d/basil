@@ -15,12 +15,12 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { MsgProcessor } from './MsgProcessor.js';
-import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
+import { BasilMessageOps } from './BasilMessageOps.js';
 
 import { CombineParameters, CreateUniqueId } from '../Utilities.js';
 
 // Alive check processing that happens in the Basil Server.
-export class AliveCheckBasilConnection extends MsgProcessor {
+export class AliveCheckConnection extends MsgProcessor {
     constructor(pTransport, pParams) {
         // Merge the passed parameters with required parameter defaults
         let params = CombineParameters(Config.comm.AliveCheckBasil, pParams, {
@@ -32,11 +32,11 @@ export class AliveCheckBasilConnection extends MsgProcessor {
         this.params = params;
         this.transport = pTransport;
         this.aliveSequenceNum = this.params.beginningAliveSequenceNumber;
-        this.RegisterMsgProcess(this.transport, /*    sends */ BasilSpaceStream.SpaceStreamMessage,
-                                                /* receives */ BasilSpaceStream.BasilStreamMessage, {
-            'AliveCheckReqMsg': [ this._ProcAliveCheckReq.bind(this), 'AliveCheckRespMsg' ],
-            'AliveCheckRespMsg': this.HandleResponse.bind(this)
-        });
+
+        let processors = {};
+        processors[BasilMessageOps['AliveCheckReq']] =  this._ProcAliveCheckReq.bind(this);
+        processors[BasilMessageOps['AliveCheckResp']] = this.HandleResponse.bind(this);
+        this.RegisterMsgProcess(this.transport, processors);
         this.SetReady();
     };
 
@@ -46,20 +46,24 @@ export class AliveCheckBasilConnection extends MsgProcessor {
     }
 
     AliveCheck(auth) {
-        let msg = {};
+        let msg = { 'op': BasilMessageOps['AliveCheckReq'] };
         if (auth) msg['auth'] = auth;
-        msg['time'] = Date.now(),
-        msg['sequenceNum']  = this.aliveSequenceNum++
+        msg['opProperties'] = {
+            'time': String(Date.now()),
+            'sequenceNum': String(this.aliveSequenceNum++)
+        };
         // GP.DebugLog('AliveCheckBasil.AliveCheck: sending: ' + JSON.stringify(msg));
-        return this.SendAndPromiseResponse(msg, 'AliveCheck');
+        return this.SendAndPromiseResponse(msg);
     };
 
     _ProcAliveCheckReq(req) {
-        return {
-            'time': Date.now(),
-            'sequenceNum': this.aliveSequenceNum++,
-            'timeReceived': req.time,
-            'sequenceNumberReceived': req.sequenceNum
+        let msg = { 'op': BasilMessageOps['AliveCheckResp'] };
+        msg['opProperties'] = {
+            'time': String(Date.now()),
+            'sequenceNum': String(this.aliveSequenceNum++),
+            'timeReceived': req.opParameters['time'],
+            'sequenceNumberReceived': req.opParameters['sequenceNum']
         };
+        return msg;
     };
 }
