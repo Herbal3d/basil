@@ -15,7 +15,6 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { MsgProcessor } from './MsgProcessor.js';
-import { BasilSpaceStream  } from "../jslibs/BasilServerMessages.js"
 
 import { CreateUniqueId, CombineParameters } from '../Utilities.js';
 
@@ -32,8 +31,8 @@ export class PestoClientConnection extends MsgProcessor {
 
         // templates = entry_name: [ message_processor, BasilServerMessage_reply_name ]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
-        this.RegisterMsgsProcessed(this.transport, {
-        });
+        let processors = new Map();
+        this.RegisterMsgsProcessed(this.transport, processors);
     }
 
     Start() {

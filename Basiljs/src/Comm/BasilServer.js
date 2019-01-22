@@ -39,18 +39,18 @@ export class BasilServerConnection  extends MsgProcessor {
 
         // templates = [message_processor, reply_name]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
-        let processors = {};
-        processors[BasilMessageOps['IdentifyDisplayableObjectReq']] = this._ProcIdentifyDisplayableObject.bind(this);
-        processors[BasilMessageOps['ForgetDisplayableObjectReq']] = this._ProcForgetDisplayableObject.bind(this);
-        processors[BasilMessageOps['CreateObjectInstanceReq']] = this._ProcCreateObjectInstance.bind(this);
-        processors[BasilMessageOps['DeleteObjectInstanceReq']] = this._ProcDeleteObjectInstance.bind(this);
-        processors[BasilMessageOps['UpdateObjectPropertyReq']] = this._ProcUpdateObjectProperty.bind(this);
-        processors[BasilMessageOps['UpdateInstancePropertyReq']] = this._ProcUpdateInstanceProperty.bind(this);
-        processors[BasilMessageOps['UpdateInstancePositionReq']] = this._ProcUpdateInstancePosition.bind(this);
-        processors[BasilMessageOps['RequestObjectPropertiesReq']] = this._ProcRequestObjectProperties.bind(this);
-        processors[BasilMessageOps['RequestInstancePropertiesReq']] = this._ProcRequestInstanceProperties.bind(this);
-        processors[BasilMessageOps['CloseSessionReq']] = this._ProcCloseSession.bind(this);
-        processors[BasilMessageOps['MakeConnectionReq']] = this._ProcMakeConnection.bind(this);
+        let processors = new Map();
+        processors.set(BasilMessageOps.get('IdentifyDisplayableObjectReq'), this._ProcIdentifyDisplayableObject.bind(this));
+        processors.set(BasilMessageOps.get('ForgetDisplayableObjectReq'), this._ProcForgetDisplayableObject.bind(this));
+        processors.set(BasilMessageOps.get('CreateObjectInstanceReq'), this._ProcCreateObjectInstance.bind(this));
+        processors.set(BasilMessageOps.get('DeleteObjectInstanceReq'), this._ProcDeleteObjectInstance.bind(this));
+        processors.set(BasilMessageOps.get('UpdateObjectPropertyReq'), this._ProcUpdateObjectProperty.bind(this));
+        processors.set(BasilMessageOps.get('UpdateInstancePropertyReq'), this._ProcUpdateInstanceProperty.bind(this));
+        processors.set(BasilMessageOps.get('UpdateInstancePositionReq'), this._ProcUpdateInstancePosition.bind(this));
+        processors.set(BasilMessageOps.get('RequestObjectPropertiesReq'), this._ProcRequestObjectProperties.bind(this));
+        processors.set(BasilMessageOps.get('RequestInstancePropertiesReq'), this._ProcRequestInstanceProperties.bind(this));
+        processors.set(BasilMessageOps.get('CloseSessionReq'), this._ProcCloseSession.bind(this));
+        processors.set(BasilMessageOps.get('MakeConnectionReq'), this._ProcMakeConnection.bind(this));
         this.RegisterMsgProcess(this.transport, processors);
     }
     Start() {
@@ -64,7 +64,7 @@ export class BasilServerConnection  extends MsgProcessor {
     }
 
     _ProcIdentifyDisplayableObject(req) {
-        let ret = { 'op': BasilMessageOps['IdentifyDisplayableObjectResp'] };
+        let ret = { 'op': BasilMessageOps.get('IdentifyDisplayableObjectResp') };
         if (req.assetInfo) {
           let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
           let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
@@ -82,7 +82,7 @@ export class BasilServerConnection  extends MsgProcessor {
         return ret;
     }
     _ProcForgetDisplayableObject(req) {
-        let ret = { 'op': BasilMessageOps['ForgetDisplayableObjectResp'] };
+        let ret = { 'op': BasilMessageOps.get('ForgetDisplayableObjectResp') };
         if (req.objectId && req.objectId.id) {
           BItem.ForgetItem(req.objectId.id);
         }
@@ -90,7 +90,7 @@ export class BasilServerConnection  extends MsgProcessor {
     }
     // Given an object with recieved parameters, do operation and return response object
     _ProcCreateObjectInstance(req) {
-        let ret = { 'op': BasilMessageOps['CreateObjectInstanceResp'] };
+        let ret = { 'op': BasilMessageOps.get('CreateObjectInstanceResp') };
         if (req.objectId) {
           let baseDisplayable = BItem.GetItem(req.objectId.id);
           if (baseDisplayable) {
@@ -116,14 +116,14 @@ export class BasilServerConnection  extends MsgProcessor {
         return ret;
     }
     _ProcDeleteObjectInstance(req) {
-        let ret = { 'op': BasilMessageOps['DeleteObjectInstanceResp'] };
+        let ret = { 'op': BasilMessageOps.get('DeleteObjectInstanceResp') };
         if (req.objectId) {
           BItem.ForgetItem(req.objectId.id);
         }
         return ret;
     }
     _ProcUpdateObjectProperty(req) {
-        let ret = { 'op': BasilMessageOps['UpdateObjectPropertyResp'] };
+        let ret = { 'op': BasilMessageOps.get('UpdateObjectPropertyResp') };
         if (req.objectId && req.properties) {
           let obj = BItem.GetItem(req.objectId.id);
           if (obj) {
@@ -136,7 +136,7 @@ export class BasilServerConnection  extends MsgProcessor {
         return ret;
     }
     _ProcUpdateInstanceProperty(req) {
-        let ret = { 'op': BasilMessageOps['UpdateInstancePropertyResp'] };
+        let ret = { 'op': BasilMessageOps.get('UpdateInstancePropertyResp') };
         if (req.instanceId && req.properties) {
           let obj = BItem.GetItem(req.instanceId.id);
           if (obj) {
@@ -149,7 +149,7 @@ export class BasilServerConnection  extends MsgProcessor {
         return ret;
     }
     _ProcUpdateInstancePosition(req) {
-      let ret = { 'op': BasilMessageOps['UpdateInstancePositionResp'] };
+      let ret = { 'op': BasilMessageOps.get('UpdateInstancePositionResp') };
       if (req.instanceId && req.pos) {
         let instance = BItem.GetItem(req.instanceId.id);
         if (instance) {
@@ -159,7 +159,7 @@ export class BasilServerConnection  extends MsgProcessor {
       return ret;
     }
     _ProcRequestObjectProperties(req) {
-      let ret = { 'op': BasilMessageOps['RequestObjectPropertiesResp'] };
+      let ret = { 'op': BasilMessageOps.get('RequestObjectPropertiesResp') };
       if (req.objectId) {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
         let obj = BItem.GetItem(req.objectId.id);
@@ -173,7 +173,7 @@ export class BasilServerConnection  extends MsgProcessor {
       };
     }
     _ProcRequestInstanceProperties(req) {
-      let ret = { 'op': BasilMessageOps['RequestInstancePropertiesResp'] };
+      let ret = { 'op': BasilMessageOps.get('RequestInstancePropertiesResp') };
       if (req.instanceId) {
         let filter = req.propertyMatch ? String(req.propertyMatch) : undefined;
         let instance = BItem.GetItem(req.instanceId.id);
@@ -187,11 +187,11 @@ export class BasilServerConnection  extends MsgProcessor {
       };
     }
     _ProcCloseSession(req) {
-        let ret = { 'op': BasilMessageOps['CloseSessionResp'] };
+        let ret = { 'op': BasilMessageOps.get('CloseSessionResp') };
         return ret;
     }
     _ProcMakeConnection(req) {
-        let ret = { 'op': BasilMessageOps['MakeConnectionResp'] };
+        let ret = { 'op': BasilMessageOps.get('MakeConnectionResp') };
         return ret;
     }
 

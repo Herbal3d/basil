@@ -23,6 +23,8 @@ import { BasilClientConnection } from './BasilClient.js';
 import { AliveCheckConnection } from './AliveCheckMsgs.js';
 import { PestoClientConnection } from './PestoClient.js';
 
+import { BuildBasilMessageOps } from './BasilMessageOps.js';
+
 import { BTransportWW } from './BTransportWW.js';
 import { BTransportWS } from './BTransportWS.js';
 import { BTransportTest } from './BTransportTest.js';
@@ -35,6 +37,9 @@ export class Comm extends BItem {
         GP.DebugLog('Comm: constructor');
         super('org.basil.b.comm', undefined, BItemType.COMM);
         this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
+
+        // Build the table of ops to names and via versa
+        BuildBasilMessageOps();
     }
 
     Start() {

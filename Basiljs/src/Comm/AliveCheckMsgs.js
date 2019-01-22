@@ -33,9 +33,9 @@ export class AliveCheckConnection extends MsgProcessor {
         this.transport = pTransport;
         this.aliveSequenceNum = this.params.beginningAliveSequenceNumber;
 
-        let processors = {};
-        processors[BasilMessageOps['AliveCheckReq']] =  this._ProcAliveCheckReq.bind(this);
-        processors[BasilMessageOps['AliveCheckResp']] = this.HandleResponse.bind(this);
+        let processors = new Map();
+        processors.set(BasilMessageOps.get('AliveCheckReq'), this._ProcAliveCheckReq.bind(this));
+        processors.set(BasilMessageOps.get('AliveCheckResp'), this.HandleResponse.bind(this));
         this.RegisterMsgProcess(this.transport, processors);
         this.SetReady();
     };
@@ -46,7 +46,7 @@ export class AliveCheckConnection extends MsgProcessor {
     }
 
     AliveCheck(auth) {
-        let msg = { 'op': BasilMessageOps['AliveCheckReq'] };
+        let msg = { 'op': BasilMessageOps.get('AliveCheckReq') };
         if (auth) msg['auth'] = auth;
         msg['opProperties'] = {
             'time': String(Date.now()),
@@ -57,7 +57,7 @@ export class AliveCheckConnection extends MsgProcessor {
     };
 
     _ProcAliveCheckReq(req) {
-        let msg = { 'op': BasilMessageOps['AliveCheckResp'] };
+        let msg = { 'op': BasilMessageOps.get('AliveCheckResp') };
         msg['opProperties'] = {
             'time': String(Date.now()),
             'sequenceNum': String(this.aliveSequenceNum++),

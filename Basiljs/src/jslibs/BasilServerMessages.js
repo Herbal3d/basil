@@ -348,6 +348,40 @@ export const BasilMessage = $root.BasilMessage = (() => {
         return BasilMessage;
     })();
 
+    BasilMessage.BasilMessageOps = (function() {
+        const valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "UnknownReq"] = 0;
+        values[valuesById[4097] = "IdentifyDisplayableObjectReq"] = 4097;
+        values[valuesById[4098] = "IdentifyDisplayableObjectResp"] = 4098;
+        values[valuesById[4099] = "ForgetDisplayableObjectReq"] = 4099;
+        values[valuesById[4100] = "ForgetDisplayableObjectResp"] = 4100;
+        values[valuesById[4101] = "CreateObjectInstanceReq"] = 4101;
+        values[valuesById[4102] = "CreateObjectInstanceResp"] = 4102;
+        values[valuesById[4103] = "DeleteObjectInstanceReq"] = 4103;
+        values[valuesById[4104] = "DeleteObjectInstanceResp"] = 4104;
+        values[valuesById[4105] = "UpdateObjectPropertyReq"] = 4105;
+        values[valuesById[4106] = "UpdateObjectPropertyResp"] = 4106;
+        values[valuesById[4107] = "UpdateInstancePropertyReq"] = 4107;
+        values[valuesById[4108] = "UpdateInstancePropertyResp"] = 4108;
+        values[valuesById[4109] = "UpdateInstancePositionReq"] = 4109;
+        values[valuesById[4110] = "UpdateInstancePositionResp"] = 4110;
+        values[valuesById[4111] = "RequestObjectPropertiesReq"] = 4111;
+        values[valuesById[4112] = "RequestObjectPropertiesResp"] = 4112;
+        values[valuesById[4113] = "RequestInstancePropertiesReq"] = 4113;
+        values[valuesById[4114] = "RequestInstancePropertiesResp"] = 4114;
+        values[valuesById[4115] = "CloseSessionReq"] = 4115;
+        values[valuesById[4116] = "CloseSessionResp"] = 4116;
+        values[valuesById[4117] = "MakeConnectionReq"] = 4117;
+        values[valuesById[4118] = "MakeConnectionRest"] = 4118;
+        values[valuesById[8193] = "AliveCheckReq"] = 8193;
+        values[valuesById[8194] = "AliveCheckResp"] = 8194;
+        values[valuesById[12289] = "OpenSessionReq"] = 12289;
+        values[valuesById[12290] = "OpenSessionResp"] = 12290;
+        values[valuesById[12291] = "CameraViewReq"] = 12291;
+        values[valuesById[12292] = "CameraViewResp"] = 12292;
+        return values;
+    })();
+
     return BasilMessage;
 })();
 

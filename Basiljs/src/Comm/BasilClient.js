@@ -30,17 +30,17 @@ export class BasilClientConnection extends MsgProcessor {
         super(params.id, undefined);
         this.params = params;
         this.transport = pTransport;
-        let processors = {};
-        processors[BasilMessageOps['IdentifyDisplayableObjectResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['ForgetDisplayableObjectResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['CreateObjectInstanceResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['DeleteObjectInstanceResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['UpdateObjectPropertyResp']] = this.HandleResponse.bind(this),
-        processors[BasilMessageOps['UpdateInstancePropertyResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['UpdateInstancePositionResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['RequestObjectPropertiesResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['RequestInstancePropertiesResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['CloseSessionResp']] = this.HandleResponse.bind(this);
+        let processors = new Map();
+        processors.set(BasilMessageOps.get('IdentifyDisplayableObjectResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('ForgetDisplayableObjectResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('CreateObjectInstanceResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('DeleteObjectInstanceResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('UpdateObjectPropertyResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('UpdateInstancePropertyResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('UpdateInstancePositionResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('RequestObjectPropertiesResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('RequestInstancePropertiesResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('CloseSessionResp'), this.HandleResponse.bind(this));
         this.RegisterMsgProcess(this.transport, processors);
     };
 
@@ -52,7 +52,7 @@ export class BasilClientConnection extends MsgProcessor {
     };
 
     IdentifyDisplayableObject(auth, asset, id, aabb) {
-        let msg = { 'op': BasilMessageOps.IdentifyDisplayableObjectReq };
+        let msg = { 'op': BasilMessageOps.get('IdentifyDisplayableObjectReq') };
         msg['assetInfo'] = asset;
         if (auth) msg['auth'] = auth;
         if (id) msg['objectId'] = { 'id': id };
@@ -60,13 +60,13 @@ export class BasilClientConnection extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     ForgetDisplayableObject(auth, id) {
-        let msg = { 'op': BasilMessageOps.ForgetDisplayableObjectReq };
+        let msg = { 'op': BasilMessageOps.get('ForgetDisplayableObjectReq') };
         msg['objectId'] = { 'id': id };
         if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg);
     };
     CreateObjectInstance(auth, objectId, instancePositionInfo, propertyList, instanceId) {
-        let msg = { 'op': BasilMessageOps.CreateObjectInstanceReq };
+        let msg = { 'op': BasilMessageOps.get('CreateObjectInstanceReq') };
         msg['objectId'] = { 'id': objectId };
         if (auth) msg['auth'] = auth;
         if (instancePositionInfo) msg['pos'] = instancePositionInfo;
@@ -75,48 +75,48 @@ export class BasilClientConnection extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     DeleteObjectInstance(auth, instanceId) {
-        let msg = { 'op': BasilMessageOps.DeleteObjectInstanceReq };
+        let msg = { 'op': BasilMessageOps.get('DeleteObjectInstanceReq') };
         msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
         return this.SendAndPromiseResponse(msg);
     };
     UpdateObjectProperty(auth, objectId, propertyList) {
-        let msg = { 'op': BasilMessageOps.UpdateObjectPropertyReq };
+        let msg = { 'op': BasilMessageOps.get('UpdateObjectPropertyReq') };
         msg['objectId'] = { 'id': objectId };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['properties'] = propertyList;
         return this.SendAndPromiseResponse(msg);
     };
     UpdateInstanceProperty(auth, instanceId, propertyList) {
-        let msg = { 'op': BasilMessageOps.UpdateInstancePropertyReq };
+        let msg = { 'op': BasilMessageOps.get('UpdateInstancePropertyReq') };
         msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['properties'] = propertyList;
         return this.SendAndPromiseResponse(msg);
     };
     UpdateInstancePosition(auth, instanceId,  pos) {
-        let msg = { 'op': BasilMessageOps.UpdateInstancePositionReq };
+        let msg = { 'op': BasilMessageOps.get('UpdateInstancePositionReq') };
         msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
         if (pos) msg['pos'] = pos;
         return this.SendAndPromiseResponse(msg);
     };
     RequestObjectProperties(auth, objectId, filter) {
-        let msg = { 'op': BasilMessageOps.RequestObjectPropertiesReq };
+        let msg = { 'op': BasilMessageOps.get('RequestObjectPropertiesReq') };
         msg['objectId'] = { 'id': objectId };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg);
     };
     RequestInstanceProperties(auth, instanceId, filter) {
-        let msg = { 'op': BasilMessageOps.RequestInstancePropertiesReq };
+        let msg = { 'op': BasilMessageOps.get('RequestInstancePropertiesReq') };
         msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg);
     };
     CloseSession(auth, reason) {
-        let msg = {'op': BasilMessageOps.CloseSessionReq};
+        let msg = {'op': BasilMessageOps.get('CloseSessionReq') };
         if (auth) msg['auth'] = auth;
         if (reason) msg['reason'] = reason;
         return this.SendAndPromiseResponse(msg);

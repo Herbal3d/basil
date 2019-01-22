@@ -11,8 +11,30 @@
 
 'use strict';
 
+import { BasilMessage } from '../jslibs/BasilServerMessages.js';
+
 // List of BasilMessage 'op' codes and what the expected parameters are.
 // Indexable by either the operation code or the name of the operation.
+export let BasilMessageOps = new Map();
+
+// Build 'BasilMessageOps' from the operation enum in the Protobuf definition.
+// The way ProtobufJS builds this array, it includes both the name to value
+//    and value to name mappings which is just what we want.
+// Note that the index is always a string even if it is a number
+export function BuildBasilMessageOps() {
+    for (let element in BasilMessage.BasilMessageOps) {
+        // If the element is the op number, index by number rather than string
+        let elementAsNum = Number(element);
+        if (Number.isNaN(elementAsNum)) {
+            BasilMessageOps.set(element, BasilMessage.BasilMessageOps[element]);
+        }
+        else {
+            BasilMessageOps.set(elementAsNum, BasilMessage.BasilMessageOps[element]);
+        }
+    };
+}
+
+/*
 export const BasilMessageOps = {
     0x01001: 'IdentifyDisplayableObjectReq',
     'IdentifyDisplayableObjectReq': 0x01001,
@@ -102,3 +124,4 @@ export const BasilMessageOps = {
     0x03004: 'CameraViewResp',
     'CameraViewResp': 0x03004,
 }
+*/

@@ -30,10 +30,10 @@ export class SpaceServerClientConnection extends MsgProcessor {
         super(params.id, undefined);
         this.params = params;
         this.transport = pTransport;
-        let processors = {};
-        processors[BasilMessageOps['OpenSessionResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['CloseSessionResp']] = this.HandleResponse.bind(this);
-        processors[BasilMessageOps['CameraViewResp']] = this.HandleResponse.bind(this);
+        let processors = new Map();
+        processors.set(BasilMessageOps.get('OpenSessionResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('CloseSessionResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.get('CameraViewResp'), this.HandleResponse.bind(this));
         this.RegisterMsgProcess(this.transport, processors);
     };
 
@@ -45,13 +45,13 @@ export class SpaceServerClientConnection extends MsgProcessor {
     };
 
     OpenSession(auth, propertyList) {
-        let msg = { 'op': BasilMessageOps['OpenSessionReq']};
+        let msg = { 'op': BasilMessageOps.get('OpenSessionReq') };
         if (auth) msg['auth'] = auth;
         if (propertyList) msg['properties'] = this.CreatePropertyList(propertyList);
         return this.SendAndPromiseResponse(msg);
     };
     CloseSession(auth, reason) {
-        let msg = { 'op': BasilMessageOps['CloseSessionReq']};
+        let msg = { 'op': BasilMessageOps.get('CloseSessionReq') };
         if (auth) msg['auth'] = auth;
         if (reason) msg['reason'] = reason;
         return this.SendAndPromiseResponse(msg);

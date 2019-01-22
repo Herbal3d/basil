@@ -19,6 +19,8 @@ import Config from './config.js';
 import { BasilClientConnection } from './Comm/BasilClient.js';
 import { BTransportWW } from './Comm/BTransportWW.js';
 
+import { BuildBasilMessageOps } from './Comm/BasilMessageOps.js';
+
 import { BasilType } from './jslibs/BasilServerMessages.js'
 import { SpaceServerConnection } from './Comm/SpaceServer.js';
 import { AliveCheckConnection } from './Comm/AliveCheckMsgs.js';
@@ -30,6 +32,9 @@ GP.DebugLog = function(msg) {};
 GP.ErrorLog = function(msg) {};
 
 GP.Ready = false;
+
+// Since we don't invoke Comm(), we must build the linkage array
+BuildBasilMessageOps();
 
 let parms  = {};
 GP.wwTransport = new BTransportWW(parms);

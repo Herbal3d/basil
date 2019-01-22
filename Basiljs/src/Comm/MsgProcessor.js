@@ -35,7 +35,7 @@ class TransportReceiver {
             GP.DebugLog('MsgProcessor.Process: received: ' + JSON.stringify(msg));
         }
         let replyContents = undefined;
-        let processor = MsgProcessor.processors.get(this.transport.id)[msg.op];
+        let processor = MsgProcessor.processors.get(this.transport.id).get(msg.op);
         if (processor) {
             // The 'processor' specification is either an array consisting of:
             //       [ processorFunction, otherParameters ]
@@ -51,9 +51,10 @@ class TransportReceiver {
                 }
                 catch (e) {
                     replyContents = {};
-                    replyName = String(BasilMessageOps[msg.op]).replace('Req$', 'Resp$');
-                    replyContents['op'] = BasilMessageOps[replyName];
-                    replyContents['exception'] = this.MakeException('Exception processing ' + BasilMessageOps[op] + ': ' + e);
+                    replyName = String(BasilMessageOps.get(msg.op)).replace('Req$', 'Resp$');
+                    replyContents['op'] = BasilMessageOps.get(replyName);
+                    replyContents['exception'] = this.MakeException('Exception processing '
+                                    + BasilMessageOps.get(op) + ': ' + e);
                 }
             }
             else {
@@ -103,13 +104,14 @@ export class MsgProcessor extends BItem {
     //    add the type processors for this transport.
     RegisterMsgProcess(pTransport, pProcessors) {
         if (! MsgProcessor.processors.has(pTransport.id)) {
-            MsgProcessor.processors.set(pTransport.id, {});
+            MsgProcessor.processors.set(pTransport.id, new Map());
             let xportReceiver = new TransportReceiver(pTransport, this);
             MsgProcessor.transportReceivers.set(pTransport.id, xportReceiver);
             pTransport.SetReceiveCallback(xportReceiver.Process.bind(xportReceiver));
         }
         // Merge new message processors into the set of message processors
-        Object.assign(MsgProcessor.processors.get(pTransport.id), pProcessors);
+        let addTo = MsgProcessor.processors.get(pTransport.id);
+        pProcessors.forEach( (v, k) => { addTo.set(k, v); });
     }
 
     // Function that sends the request and returns a Promise for the response.
