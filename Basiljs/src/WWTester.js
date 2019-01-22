@@ -16,6 +16,7 @@
 import GP from 'GP';
 
 import Config from './config.js';
+import { Comm } from './Comm/Comm.js';
 import { BasilClientConnection } from './Comm/BasilClient.js';
 import { BTransportWW } from './Comm/BTransportWW.js';
 
@@ -33,8 +34,8 @@ GP.ErrorLog = function(msg) {};
 
 GP.Ready = false;
 
-// Since we don't invoke Comm(), we must build the linkage array
-BuildBasilMessageOps();
+GP.CM = new Comm();
+GP.CM.Start();
 
 let parms  = {};
 GP.wwTransport = new BTransportWW(parms);
