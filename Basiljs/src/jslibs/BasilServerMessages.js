@@ -372,7 +372,7 @@ export const BasilMessage = $root.BasilMessage = (() => {
         values[valuesById[4115] = "CloseSessionReq"] = 4115;
         values[valuesById[4116] = "CloseSessionResp"] = 4116;
         values[valuesById[4117] = "MakeConnectionReq"] = 4117;
-        values[valuesById[4118] = "MakeConnectionRest"] = 4118;
+        values[valuesById[4118] = "MakeConnectionResp"] = 4118;
         values[valuesById[8193] = "AliveCheckReq"] = 8193;
         values[valuesById[8194] = "AliveCheckResp"] = 8194;
         values[valuesById[12289] = "OpenSessionReq"] = 12289;

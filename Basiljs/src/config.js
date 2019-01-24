@@ -88,7 +88,7 @@ export default {
     },
     'WWTester': {
         'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
-        'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
+        'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
         'comm': {

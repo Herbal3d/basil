@@ -48,7 +48,9 @@ export class Controls extends BItem {
 
         // Whether debug output window is initially displayed can be set in the configuration file
         this.ShowDebug(Config.page.showDebug);
+    };
 
+    Start() {
         // Update the camera position for debugging
         this.infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
         if (this.infoCameraCoord) {
@@ -82,9 +84,6 @@ export class Controls extends BItem {
                 }
             }.bind(this));
         }
-    };
-
-    ControlsStart() {
     };
 
     // Call to set debug window to specified state. Pass state that is should be in

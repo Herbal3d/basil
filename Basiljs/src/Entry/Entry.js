@@ -59,14 +59,15 @@ if (Config.WSTester) {
 
 GP.CO = new Controls();
 GP.CO.ClickableOps['launchBasil'] = function() {
-    let selectedScene = document.getElementById('sceneURL').innerText;
+    let selection = document.getElementById('sceneURL');
+    let selectedScene = selection.options[selection.selectedIndex].value;
     testConfigParams = {
         'comm': {
             'testmode': true,
-            'transport': 'WW',
-            'transportURL': './wwtester.js',
-            // 'transport': 'WS',
-            // 'transportURL': 'ws://192.168.86.41:11440/',
+            // 'transport': 'WW',
+            // 'transportURL': './wwtester.js',
+            'transport': 'WS',
+            'transportURL': 'ws://192.168.86.41:11440/',
             'service': 'SpaceServerClient',
             'TestAsset': {
                 'url': selectedScene,
@@ -74,6 +75,7 @@ GP.CO.ClickableOps['launchBasil'] = function() {
             }
         }
     };
+    console.log('testConfigParams=' + JSON.stringify(testConfigParams));
 
     let configParams = Base64.encode(JSON.stringify(testConfigParams));
 

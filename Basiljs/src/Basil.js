@@ -167,6 +167,7 @@ GP.CO = new Controls();
 GP.CM = new Comm();
 
 // Push the 'Start' button
+GP.CO.Start();
 GP.GR.Start();
 GP.CM.Start();
 GP.Ready = true;
