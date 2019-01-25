@@ -31,7 +31,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
         BasilMessage.prototype.properties = $util.emptyObject;
         BasilMessage.prototype.opParameters = $util.emptyObject;
         BasilMessage.prototype.exception = null;
-        BasilMessage.prototype.exceptionReason = "";
         BasilMessage.prototype.response = null;
 
         BasilMessage.create = function create(properties) {
@@ -65,8 +64,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
                     writer.uint32(82).fork().uint32(10).string(keys[i]).uint32(18).string(message.opParameters[keys[i]]).ldelim();
             if (message.exception != null && message.hasOwnProperty("exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(90).fork()).ldelim();
-            if (message.exceptionReason != null && message.hasOwnProperty("exceptionReason"))
-                writer.uint32(98).string(message.exceptionReason);
             if (message.response != null && message.hasOwnProperty("response"))
                 $root.BasilType.BResponseRequest.encode(message.response, writer.uint32(106).fork()).ldelim();
             return writer;
@@ -125,9 +122,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
                     break;
                 case 11:
                     message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
-                    break;
-                case 12:
-                    message.exceptionReason = reader.string();
                     break;
                 case 13:
                     message.response = $root.BasilType.BResponseRequest.decode(reader, reader.uint32());
@@ -206,9 +200,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 if (error)
                     return "exception." + error;
             }
-            if (message.exceptionReason != null && message.hasOwnProperty("exceptionReason"))
-                if (!$util.isString(message.exceptionReason))
-                    return "exceptionReason: string expected";
             if (message.response != null && message.hasOwnProperty("response")) {
                 let error = $root.BasilType.BResponseRequest.verify(message.response);
                 if (error)
@@ -274,8 +265,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
                     throw TypeError(".BasilMessage.BasilMessage.exception: object expected");
                 message.exception = $root.BasilType.BasilException.fromObject(object.exception);
             }
-            if (object.exceptionReason != null)
-                message.exceptionReason = String(object.exceptionReason);
             if (object.response != null) {
                 if (typeof object.response !== "object")
                     throw TypeError(".BasilMessage.BasilMessage.response: object expected");
@@ -302,7 +291,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 object.aabb = null;
                 object.filter = "";
                 object.exception = null;
-                object.exceptionReason = "";
                 object.response = null;
             }
             if (message.op != null && message.hasOwnProperty("op"))
@@ -334,8 +322,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
             }
             if (message.exception != null && message.hasOwnProperty("exception"))
                 object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
-            if (message.exceptionReason != null && message.hasOwnProperty("exceptionReason"))
-                object.exceptionReason = message.exceptionReason;
             if (message.response != null && message.hasOwnProperty("response"))
                 object.response = $root.BasilType.BResponseRequest.toObject(message.response, options);
             return object;

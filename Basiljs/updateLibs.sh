@@ -11,9 +11,9 @@ JSLIBS=${PLACE}/src/jslibs
 UPDATEDATE=$(date +%Y%m%d)
 echo "${UPDATEDATE}" > "${JSLIBS}/update.date"
 
-DOUPDATETHREEJS="no"
-DOUPDATEBASILPROTO="no"
-DOUPDATEPROTOBUF="no"
+DOUPDATETHREEJS="yes"
+DOUPDATEBASILPROTO="yes"
+DOUPDATEPROTOBUF="yes"
 DOBUILDBASILPROTO="yes"
 
 THREEDIR=$PLACE/../../../three.js
@@ -60,7 +60,7 @@ if [[ "$DOUPDATEPROTOBUF" == "yes" ]] ; then
     cp -r dist/protobuf*.js "$JSLIBS/protobufjs"
     cp -r dist/minimal/protobuf*.js "$JSLIBS/protobufjs/minimal"
 else
-    echo "=== Not updating ProtoBuf"
+    echo "=== Not updating ProtoBufJS"
 fi
 
 if [[ "$DOBUILDBASILPROTO" == "yes" ]] ; then
