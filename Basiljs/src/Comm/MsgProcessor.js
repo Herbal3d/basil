@@ -184,9 +184,9 @@ export class MsgProcessor extends BItem {
     }
     // Create an exception object
     MakeException(reason, hints) {
-        let except = { 'exception': {} };
-        if (reason) { except.exception.reason = reason; }
-        if (hints) { except.exception.hints = hints; }
+        let except = {};
+        if (reason) { except.reason = reason; }
+        if (hints) { except.hints = hints; }
         return except;
     };
 

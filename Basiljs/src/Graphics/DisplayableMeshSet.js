@@ -29,6 +29,7 @@ export class DisplayableMeshSet extends Displayable {
             .then(theAsset => {
                 GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
                 GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
+                // 'theAsset' is a list of ThreeJS nodes
                 this.representation = theAsset;
                 this.SetReady();
             })
@@ -40,6 +41,10 @@ export class DisplayableMeshSet extends Displayable {
         else {
             this.SetReady();
         }
+    }
+
+    ReleaseResources() {
+        super.ReleaseResources();
     }
 }
 DisplayableMeshSet.DisplayableType = "meshset";

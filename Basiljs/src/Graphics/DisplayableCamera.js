@@ -24,5 +24,9 @@ export class DisplayableCamera extends Displayable {
         super(id, auth, displayInfo);
         this.SetReady();
     }
+
+    ReleaseResources() {
+        super.ReleaseResources();
+    }
 }
 DisplayableCamera.DisplayableType = "camera";

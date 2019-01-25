@@ -78,9 +78,16 @@ export class InstanceMeshSet extends Instance {
                 }
             }
         } );
+        // Wait for our displayable to be ready before claiming we're ready.
         this.displayable.WhenReady(10000)
         .then(function(disp) {
           this.SetReady();
         }.bind(this));
+    }
+
+    // Release any resources I might be holding.
+    ReleaseResources() {
+      this.RemoveFromWorld();
+      super.ReleaseResources();
     }
 }

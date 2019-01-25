@@ -21,5 +21,9 @@ export class Displayable extends BItem {
         // In the future, there might be multiple graphics engines.
         this.graphics = GP.GR;
     }
+
+    ReleaseResources() {
+        super.ReleaseResources();
+    }
 }
 Displayable.DisplayableKey = "UNKNOWN";

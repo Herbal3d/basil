@@ -188,39 +188,39 @@ export class Graphics extends BItem {
   // The main funciton used to place an Instance into the world.
   // The instance is decorated with 'worldNode' which is the underlying
   //    graphical representation object.
-  PlaceInWorld(inst) {
-    if (inst.worldNode) {
+  PlaceInWorld(pInst) {
+    if (pInst.worldNode) {
       return; // already in world
     }
-    inst.WhenReady()
-    .then( item => {
-      if (typeof(item.worldNode) == 'undefined') {
-        GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + item.id);
+    pInst.WhenReady()
+    .then( inst => {
+      if (typeof(inst.worldNode) == 'undefined') {
+        GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
         let worldNode = new THREE.Group();
-        worldNode.position.fromArray(item.gPos);
-        worldNode.rotation.fromArray(item.gRot);
-        worldNode.name = item.id;
-        if (Array.isArray(item.displayable.representation)) {
-          item.displayable.representation.forEach( piece => {
+        worldNode.position.fromArray(inst.gPos);
+        worldNode.rotation.fromArray(inst.gRot);
+        worldNode.name = inst.id;
+        if (Array.isArray(inst.displayable.representation)) {
+          inst.displayable.representation.forEach( piece => {
             worldNode.add(piece);
           });
         }
         else {
-          worldNode.add(item.displayable.representation);
+          worldNode.add(inst.displayable.representation);
         }
-        item.worldNode = worldNode;
+        inst.worldNode = worldNode;
       }
-      if (item.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
+      if (inst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
         // item is camera relative
-        this._addNodeToCamera(item.worldNode);
+        this._addNodeToCamera(inst.worldNode);
       }
       else {
         // item is world coordinate relative
-        this._addNodeToWorld(item.worldNode);
+        this._addNodeToWorld(inst.worldNode);
       }
     })
-    .catch( (item, reason) => {
-      GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + item);
+    .catch( (inst, reason) => {
+      GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + inst.id);
     });
   };
 
@@ -292,6 +292,19 @@ export class Graphics extends BItem {
           reject('No loader for type ' + parms.loaderType);
       }
     });
+  }
+
+  // LoadSimpleAsset returns an array of nodes. Here we free them.
+  ReleaseSimpleAsset(asset) {
+    if (Array.isArray(asset)) {
+      asset.forEach( node => {
+        _disposeHierarchy(node);
+      });
+    }
+    else {
+      _disposeHierarchy(asset);
+    }
+
   }
 
   // Function to move the camera from where it is to a new place.

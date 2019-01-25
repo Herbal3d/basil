@@ -66,10 +66,6 @@ export class BItem {
       BItem.AddItem(this.id, this);
     }
 
-    ReleaseItem() {
-        BItem.ForgetItem(this.id);
-    };
-
     // Returns the value of the property or 'undefined' if either
     //    no such property or there isn't a value for it.
     GetProperty(pProp) {
@@ -227,6 +223,11 @@ export class BItem {
       }.bind(this));
     }
 
+    // Release any resources this item might be holding.
+    // Overloaded by routines to release graphic/communication/etc resources.
+    ReleaseResources() {
+    };
+
     // Add an item to the database of items.
     // One caller should not be able to see other caller's items so, someday,
     //     add some security based on the creator of the BItem
@@ -243,4 +244,8 @@ export class BItem {
     static ForgetItem(id) {
         IM.Items.delete(id);
     };
+
+    static ForEachItem(op) {
+        IM.Items.forEach( (v, k) => { op(v); });
+    }
 }

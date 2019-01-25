@@ -18,7 +18,7 @@ import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
 export class Instance extends BItem {
     constructor(id, auth, baseDisplayable) {
         super(id, auth, BItemType.INSTANCE);
-        this.displayable = baseDisplayable;
+        this.displayable = baseDisplayable; // pointer to Object this is an instance of
         this.worldNode = undefined;
 
         this.gPos = [ 0, 0, 0 ];
@@ -85,5 +85,24 @@ export class Instance extends BItem {
         .then(function(disp) {
           this.SetReady();
         }.bind(this));
+    }
+
+    // Release any resources this instance has.
+    ReleaseResources() {
+        super.ReleaseResources();
+    }
+
+    // Do whatever is needed to place this instance into the graphics scene.
+    PlaceInWorld() {
+        if (this.displayable) {
+            this.displayable.graphics.PlaceInWorld();
+        }
+    }
+
+    // Do whatever is needed to remove this instance from the graphics scene.
+    RemoveFromWorld() {
+        if (this.displayable) {
+            this.displayable.graphics.PlaceInWorld();
+        }
     }
 }

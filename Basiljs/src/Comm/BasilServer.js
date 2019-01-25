@@ -84,7 +84,23 @@ export class BasilServerConnection  extends MsgProcessor {
     _ProcForgetDisplayableObject(req) {
         let ret = { 'op': BasilMessageOps.get('ForgetDisplayableObjectResp') };
         if (req.objectId && req.objectId.id) {
-          BItem.ForgetItem(req.objectId.id);
+          let obj = BItem.GetItem(req.objectId.id);
+          if (obj) {
+            // Remove all instances that point to this object.
+            BItem.ForEachItem( bItem => {
+              if (bItem.itemType == BItemType.INSTANCE) {
+                if (bItem.displayable) {
+                  if (bItem.displayable.id == obj.id) {
+                    _DeleteInstance(bItem);
+                  }
+                }
+              }
+            })
+            // Cleanup and remove this object.
+            obj.SetShutdown();
+            obj.ReleaseResources();
+            BItem.ForgetItem(req.objectId.id);
+          }
         }
         return ret;
     }
@@ -103,7 +119,7 @@ export class BasilServerConnection  extends MsgProcessor {
             if (req.propertiesToSet) {
               newInstance.SetProperties(req.propertiesToSet);
             }
-            baseDisplayable.graphics.PlaceInWorld(newInstance);
+            newInstance.PlaceInWorld();
             ret['instanceId'] = { 'id': newInstance.id };
           }
           else {
@@ -111,16 +127,25 @@ export class BasilServerConnection  extends MsgProcessor {
           }
         }
         else {
-          ret['exception'] = BasilSErver.MakeException('Displayable or position not specified');
+          ret['exception'] = BasilServer.MakeException('Displayable or position not specified');
         }
         return ret;
     }
     _ProcDeleteObjectInstance(req) {
         let ret = { 'op': BasilMessageOps.get('DeleteObjectInstanceResp') };
-        if (req.objectId) {
-          BItem.ForgetItem(req.objectId.id);
+        if (req.instanceId) {
+          let inst = BItem.GetItem(req.instanceId);
+          if (inst) {
+            _DeleteInstance(inst);
+          }
         }
         return ret;
+    }
+    _DeleteInstance(inst) {
+        inst.SetShutdown();
+        inst.RemoveFromWorld();
+        inst.ReleaseResources();
+        BItem.ForgetItem(req.objectId.id);
     }
     _ProcUpdateObjectProperty(req) {
         let ret = { 'op': BasilMessageOps.get('UpdateObjectPropertyResp') };
