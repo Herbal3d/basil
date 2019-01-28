@@ -80,8 +80,9 @@ export default {
     },
     'assets': {
         'gltfURLBase': '/basil/',
-        'assetFetchTimeoutMS': 5000,
-        'assetFetchCheckIntervalMS': 200
+        'assetFetchTimeoutMS': 5000,        // MS timeout for an asset to load
+        'assetFetchCheckIntervalMS': 200,   // MS between checks for asset loaded
+        'instanceAssetWaitTimeoutMS': 10000 // MS for instance to wait for its displayable to load
     },
     'eventing': {
         'eventPollIntervalMS': 500
@@ -123,6 +124,7 @@ export default {
     'Debug': {
       'VerifyProtocol': false,              // call 'verify' on created protocol messages
       'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
+      'MsgProcessorResponsePrintMsg': false, // DebugLog each message sent as a response by MsgProcessor
       'SendAndPromisePrintMsg': false,      // DebugLog each message sent with expected response
       'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
       'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance

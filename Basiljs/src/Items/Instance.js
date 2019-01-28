@@ -12,6 +12,8 @@
 'use strict';
 
 import GP from 'GP';
+import Config from '../config.js';
+
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
 
@@ -80,11 +82,7 @@ export class Instance extends BItem {
                     this.gRotCoordSystem = Integer(val);
                 }
             }
-        } );
-        this.displayable.WhenReady()
-        .then(function(disp) {
-          this.SetReady();
-        }.bind(this));
+        });
     }
 
     // Release any resources this instance has.
@@ -95,14 +93,24 @@ export class Instance extends BItem {
     // Do whatever is needed to place this instance into the graphics scene.
     PlaceInWorld() {
         if (this.displayable) {
-            this.displayable.graphics.PlaceInWorld();
+            // TODO: if displayable is not ready, should display the bounding box
+            let timeout = Config.assets && Config.assets.instanceAssetWaitTimeoutMS ? 
+                        Config.assets.instanceAssetWaitTimeoutMS : 10000;
+            this.displayable.WhenReady(timeout)
+            .then( function(disp) {
+                disp.graphics.PlaceInWorld(this);
+            }.bind(this))
+            .catch( function(e) {
+                // Something wrong with the displayable
+                this.SetFailed();
+            }.bind(this));
         }
     }
 
     // Do whatever is needed to remove this instance from the graphics scene.
     RemoveFromWorld() {
         if (this.displayable) {
-            this.displayable.graphics.PlaceInWorld();
+            this.displayable.graphics.RemoveFromWorld(this);
         }
     }
 }

@@ -25,45 +25,45 @@ export class InstanceMeshSet extends Instance {
         //    If these are changed, check PredefinedCameraInstance.j
         this.DefineProperties( {
             'Position': {
-              'get': () => {
-                if (typeof this.procgPosPreGet == 'function') {
-                  procgPosPreGet(this);
+                'get': () => {
+                    if (typeof this.procgPosPreGet == 'function') {
+                        procgPosPreGet(this);
+                    }
+                    if (typeof this.worldNode != 'undefined') {
+                        this.gPos = this.worldNode.position.toArray();
+                    }
+                    return this.gPos; },
+                'set': (val) => {
+                    this.gPos = ParseThreeTuple(val);
+                    GP.DebugLog('InstanceMeshSet.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
+                    if (typeof this.worldNode != 'undefined') {
+                        this.worldNode.position = new THREE.Vector3().fromArray(this.gPos);
+                    }
+                    this.gRotgPosModified = true;
+                    if (typeof this.procgPosModified == 'function') {
+                        procgPosModified(this);
+                    }
                 }
-                if (typeof this.worldNode != 'undefined') {
-                  this.gPos = this.worldNode.Position.toArray();
-                }
-                return this.gPos; },
-              'set': (val) => {
-                this.gPos = ParseThreeTuple(val);
-                GP.DebugLog('InstanceMeshSet.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
-                if (typeof this.worldNode != 'undefined') {
-                  this.worldNode.position = new THREE.Vector3().fromArray(this.gPos);
-                }
-                this.gRotgPosModified = true;
-                if (typeof this.procgPosModified == 'function') {
-                    procgPosModified(this);
-                }
-              }
             },
             'Rotation': {
-              'get': () => {
-                if (typeof this.procgRotPreGet == 'function') {
-                  procgRotPreGet(this);
+                'get': () => {
+                    if (typeof this.procgRotPreGet == 'function') {
+                        procgRotPreGet(this);
+                    }
+                    if (typeof this.worldNode != 'undefined') {
+                        this.gRot = this.worldNode.rotation.toArray();
+                    }
+                    return this.gRot; },
+                'set': (val) => {
+                    this.gRot = ParseFourTuple(val);
+                    if (typeof this.worldNode != 'undefined') {
+                        this.worldNode.rotation = new THREE.Quaternion().fromArray(this.gRot);
+                    }
+                    this.gRotgPosModified = true;
+                    if (typeof this.procgRotModified == 'function') {
+                          procgRotModified(this);
+                    }
                 }
-                if (typeof this.worldNode != 'undefined') {
-                  this.gRot = this.worldNode.Rotation.toArray();
-                }
-                return this.gRot; },
-              'set': (val) => {
-                this.gRot = ParseFourTuple(val);
-                if (typeof this.worldNode != 'undefined') {
-                  this.worldNode.rotation = new THREE.Quaternion().fromArray(this.gRot);
-                }
-                this.gRotgPosModified = true;
-                if (typeof this.procgRotModified == 'function') {
-                    procgRotModified(this);
-                }
-              }
             },
             'PosCoordSystem': {
                 'get': () => { return this.gPosCoordSystem; },
@@ -77,17 +77,14 @@ export class InstanceMeshSet extends Instance {
                     this.gRotCoordSystem = Integer(val);
                 }
             }
-        } );
-        // Wait for our displayable to be ready before claiming we're ready.
-        this.displayable.WhenReady(10000)
-        .then(function(disp) {
-          this.SetReady();
-        }.bind(this));
+        });
+        // Instance is ready even if the underlying displayable is not there yet.
+        this.SetReady();
     }
 
     // Release any resources I might be holding.
     ReleaseResources() {
-      this.RemoveFromWorld();
-      super.ReleaseResources();
+        this.RemoveFromWorld();
+        super.ReleaseResources();
     }
 }

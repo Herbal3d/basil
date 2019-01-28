@@ -76,6 +76,9 @@ class TransportReceiver {
                                     + JSON.stringify(replyContents));
                 }
             }
+            if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
+                GP.DebugLog('MsgProcessor.Process: sending response: ' + JSON.stringify(replyContents));
+            }
             this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
         }
     }

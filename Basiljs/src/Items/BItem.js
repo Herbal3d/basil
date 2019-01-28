@@ -19,24 +19,27 @@ var IM = IM || {};
 GP.IM = IM;
 
 IM.Items = new Map();
+// BItems are deleted by moving into this list which is
+//    scanned periodically and cleared out.
+IM.ItemsDeleted = new Map();
 
 export const BItemState = {
-  UNINITIALIZED: 'UNINITIALIZED',
-  LOADING: 'LOADING',
-  FAILED: 'FAILED',
-  READY: 'READY',
-  SHUTDOWN: 'SHUTDOWN'
+    UNINITIALIZED: 'UNINITIALIZED',
+    LOADING: 'LOADING',
+    FAILED: 'FAILED',
+    READY: 'READY',
+    SHUTDOWN: 'SHUTDOWN'
 };
 
 export const BItemType = {
-  UNKNOWN: 'UNKNOWN',
-  DISPLAYABLE: 'Displayable',
-  INSTANCE: 'Instance',
-  RENDERER: 'Renderer',
-  CONTROLS: 'Controls',
-  COMM: 'Comm',
-  SERVICE: 'Service',
-  TRANSPORT: 'Transport'
+    UNKNOWN: 'UNKNOWN',
+    DISPLAYABLE: 'Displayable',
+    INSTANCE: 'Instance',
+    RENDERER: 'Renderer',
+    CONTROLS: 'Controls',
+    COMM: 'Comm',
+    SERVICE: 'Service',
+    TRANSPORT: 'Transport'
 }
 
 // All things referenced by the Basil interface are "items' and thus they
@@ -49,65 +52,66 @@ export const BItemType = {
 //  An 'itemType' which identifies the type of the item.
 export class BItem {
     constructor(pId, pAuth, pItemType) {
-      this.props = new Map();
-      this.id = pId;             // index this item is stored under
-      this.auth = pAuth;         // authorization information
-      this.ownerId = undefined; // this item is not yet associated with  some service/connection
-      this.layer = Config.layers ? Config.layers.default : 'layer.default';
-      this.itemType = pItemType ? pItemType : BItemType.UNKNOWN;  // the type of the item
-      this.state = BItemState.UNINITIALIZED;
-      this.DefineProperties( {
-          'Type': { 'get': () => { return this.itemType; } },
-          'Id': { 'get': () => { return this.id; } },
-          'OwnerId': { 'get': () => { return this.ownerId; } },
-          'State': { 'get': () => { return this.state; } },
-          'Layer': { 'get': () => { return this.layer; } }
-      });
-      BItem.AddItem(this.id, this);
+        this.props = new Map();
+        this.id = pId;             // index this item is stored under
+        this.auth = pAuth;         // authorization information
+        this.ownerId = undefined; // this item is not yet associated with  some service/connection
+        this.layer = Config.layers ? Config.layers.default : 'layer.default';
+        this.itemType = pItemType ? pItemType : BItemType.UNKNOWN;  // the type of the item
+        this.state = BItemState.UNINITIALIZED;
+        this.deleteInProcess = false; // set to true when item is being destroyed
+        this.DefineProperties( {
+            'Type': { 'get': () => { return this.itemType; } },
+            'Id': { 'get': () => { return this.id; } },
+            'OwnerId': { 'get': () => { return this.ownerId; } },
+            'State': { 'get': () => { return this.state; } },
+            'Layer': { 'get': () => { return this.layer; } }
+        });
+        BItem.AddItem(this.id, this);
     }
 
     // Returns the value of the property or 'undefined' if either
     //    no such property or there isn't a value for it.
     GetProperty(pProp) {
-      let ret = undefined;
-      let propDesc = this.props.get(pProp);
-      if (propDesc && propDesc.get) {
-        ret = propDesc.get();
-        // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);
-      }
-      return ret;
+        let ret = undefined;
+        let propDesc = this.props.get(pProp);
+        if (propDesc && propDesc.get) {
+            ret = propDesc.get();
+            // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);
+        }
+        return ret;
     }
 
     // Returns an Object of properties and values
     // The optional second parameter is a function to operation on the value
     //     before putting it in the returned structure. Usually used to stringify.
     FetchProperties(filter) {
-      let ret = {};
-      if (filter) {
-          this.props.forEach((propDesc, prop) => {
-              // Some wildcard testing
-              let propVal = propDesc.get ? propDesc.get() : undefined;
-              ret[prop] = value;
-          });
-      }
-      else {
-          this.props.forEach((propDesc, prop) => {
-              let propVal = propDesc.get ? propDesc.get() : undefined;
-              ret[prop] = propVal;
-          });
-      }
-      return ret;
+        let ret = {};
+        if (filter) {
+            this.props.forEach((propDesc, prop) => {
+                // Some wildcard testing
+                let propVal = propDesc.get ? propDesc.get() : undefined;
+                ret[prop] = value;
+            });
+        }
+        else {
+            this.props.forEach((propDesc, prop) => {
+                let propVal = propDesc.get ? propDesc.get() : undefined;
+                ret[prop] = propVal;
+            });
+        }
+        return ret;
     };
 
     SetProperty(propertyName, value) {
-      let propDesc = this.props.get(propertyName);
-      if (propDesc && propDesc.set) {
-        // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
-        propDesc.set(value);
-      }
-      else {
-        GP.ErrorLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
-      }
+        let propDesc = this.props.get(propertyName);
+        if (propDesc && propDesc.set) {
+            // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
+            propDesc.set(value);
+        }
+        else {
+            GP.ErrorLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
+        }
     }
 
     // Set several properties. Values can be an object or a Map().
@@ -133,24 +137,24 @@ export class BItem {
     //     'local': if defined and 'true', only local access is allowed
     // }
     DefineProperty(propertyName, propertyDefinition) {
-      if (propertyName && propertyDefinition) {
-        this.props.set(propertyName, propertyDefinition);
+        if (propertyName && propertyDefinition) {
+            this.props.set(propertyName, propertyDefinition);
 
-        /*  This adds the property to this Object as a property.
-            Had some problems with this so use GetProperty and SetProperty.
-        // Add this property definition to this instance for easy access
-        // Need to remove old property as this might be a re-definition
-        let defn = {};
-        if (propertyDefinition && propertyDefinition['set']) {
-          defn.set = propertyDefinition['set'];
+            /*  This adds the property to this Object as a property.
+              Had some problems with this so use GetProperty and SetProperty.
+            // Add this property definition to this instance for easy access
+            // Need to remove old property as this might be a re-definition
+            let defn = {};
+            if (propertyDefinition && propertyDefinition['set']) {
+                defn.set = propertyDefinition['set'];
+            }
+            if (propertyDefinition && propertyDefinition['get']) {
+                defn.get = propertyDefinition['get'];
+            }
+            defn.enumerable = true;
+            Object.defineProperty(this, propertyName, defn);
+            */
         }
-        if (propertyDefinition && propertyDefinition['get']) {
-          defn.get = propertyDefinition['get'];
-        }
-        defn.enumerable = true;
-        Object.defineProperty(this, propertyName, defn);
-        */
-      }
     }
 
     // Pass a Map or Objectof propertyNames with definitions
@@ -180,47 +184,63 @@ export class BItem {
 
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.
+    // If the item is deleted while waiting, this Promise is rejected.
     // TODO: this is a kludge routine using polling. Use state change
     //    events when they existw
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
     WhenReady(timeoutMS) {
-      return new Promise( function(resolve, reject) {
-        if (this.state == BItemState.READY) {
-          resolve(this);
-        }
-        else {
-          let checkInterval = 200;
-          if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
-            checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
-          }
-          let timeout = 5000;
-          if (Config.assets && Config.assets.assetFetchTimeoutMS) {
-            timeout = Number(Config.assets.assetFetchTimeoutMS);
-          }
-          if (timeoutMS) {  // use the passed timeout if specified
-            timeout = timeoutMS;
-          }
-          // Wait for 'checkInterval' and test again for 'READY'.
-          setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
-            let levelTimeout = calledTimeout - checkInterval;
+        return new Promise( function(resolve, reject) {
+            if (this.NeverGonnaBeReady()) {
+                reject(this);
+            }
             if (this.state == BItemState.READY) {
-              resolver(this);
+                resolve(this);
             }
-            if (levelTimeout <= 0) {
-              rejecter(this);
+            else {
+                let checkInterval = 200;
+                if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
+                    checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
+                }
+                let timeout = 5000;
+                if (Config.assets && Config.assets.assetFetchTimeoutMS) {
+                    timeout = Number(Config.assets.assetFetchTimeoutMS);
+                }
+                if (timeoutMS) {  // use the passed timeout if specified
+                    timeout = timeoutMS;
+                }
+                // Wait for 'checkInterval' and test again for 'READY'.
+                setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
+                    if (this.NeverGonnaBeReady()) {
+                        rejecter(this);
+                    }
+                    let levelTimeout = calledTimeout - checkInterval;
+                    if (this.state == BItemState.READY) {
+                        resolver(this);
+                    }
+                    if (levelTimeout <= 0) {
+                        rejecter(this);
+                    }
+                    // If still not ready, tail recursion to more waiting
+                    this.WhenReady(levelTimeout)
+                    .then(xitem => {
+                        if (this.NeverGonnaBeReady()) {
+                            rejector(this);
+                        }
+                        resolver(xitem);
+                    })
+                    .catch(xitem => {
+                        rejecter(xitem);
+                    });
+                }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
             }
-            // If still not ready, tail recursion to more waiting
-            this.WhenReady(levelTimeout)
-              .then(xitem => {
-                resolver(xitem);
-              })
-              .catch(xitem => {
-                rejecter(xitem);
-              });
-          }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
-        }
-      }.bind(this));
+        }.bind(this));
+    }
+    // Return 'true' if something is wrong with this BItem and it will never go READY.
+    NeverGonnaBeReady() {
+        return this.deleteInProcess
+                || this.state == BItemState.FAILED
+                || this.state == BItemState.SHUTDOWN;
     }
 
     // Release any resources this item might be holding.
@@ -240,11 +260,35 @@ export class BItem {
         return IM.Items.get(id);
     };
 
-    // Remove an BItem from the database of BItems
-    static ForgetItem(id) {
-        IM.Items.delete(id);
+    // Remove an BItem from the database of BItems.
+    // Can be passed an 'id' (string) or a whole item.
+    static ForgetItem(item) {
+        if (typeof(item) == 'string') {
+            var theItem = this.GetItem(item);
+            theItem.deleteInProcess = true;
+            IM.Items.delete(item);
+            IM.ItemsDeleted.set(item, theItem);
+        }
+        else {
+            item.deleteInProcess = true;
+            IM.Items.delete(item.id);
+            IM.ItemsDeleted.set(item.id, item);
+        }
     };
 
+    // A BItem moves from 'Items' to 'ItemsDeleted'. This is called when
+    //    a BItem is completely cleaned up and can be removed from all lists.
+    // Can be passed an 'id' (string) or a whole item.
+    static FinalDelete(item) {
+        if (typeof(item) == 'string') {
+            IM.ItemsDeleted.delete(item);
+        }
+        else {
+            IM.ItemsDeleted.delete(item.id);
+        }
+    }
+
+    // Iterate over all the known items.
     static ForEachItem(op) {
         IM.Items.forEach( (v, k) => { op(v); });
     }
