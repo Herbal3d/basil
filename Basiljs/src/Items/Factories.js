@@ -31,12 +31,12 @@ export function DisplayableFactory(id, auth, displayInfo) {
                 ret = new DisplayableMeshSet(id, auth, displayInfo);
                 break;
             default:
-                GP.ReportError('DisplayableFactory: Unknown asset type: ' + displayType);
+                GP.ErrorLog('DisplayableFactory: Unknown asset type: ' + displayType);
                 break;
         }
     }
     else {
-        GP.ReportError('DisplayableFactory: displayableType not specified: '
+        GP.ErrorLog('DisplayableFactory: displayableType not specified: '
                   + JSON.stringify(displayInfo));
         ret = undefined;
     }

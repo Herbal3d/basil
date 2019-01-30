@@ -17,21 +17,28 @@ import Config from './config.js';
 // Create a globally unique Id based on the service and type passed.
 // If 'type' is undefined, it is not included in the name.
 export function CreateUniqueId(service, type) {
-  if (GP.UniqueIdCount === undefined) {
-    GP.UniqueIdCount = 1;
-    GP.UniqueIdBasename = 'org.basil.b.';
-    // Note that basename ends with a dot
-  }
-  return GP.UniqueIdBasename
+    if (GP.UniqueIdCount === undefined) {
+        GP.UniqueIdCount = 1;
+        GP.UniqueIdBasename = 'org.basil.b.';
+        // Note that basename ends with a dot
+    }
+    return String(GP.UniqueIdCount++)
+        + '.'
+        + GP.UniqueIdBasename
+        + service
+        + (type ? ( '.' + type ) : '')
+  /* Original form that put number at the end
+    return GP.UniqueIdBasename
                 + service
                 + (type ? ( '.' + type ) : '')
                 + '.'
                 + String(GP.UniqueIdCount++);
+  */
 };
 
 // Create a locally unique instance identifier.
 export function CreateUniqueInstanceId() {
-  return CreateUniqueId('instance');
+    return CreateUniqueId('instance');
 };
 
 // Configuration comes from the configuration file (Config), parameters at
@@ -57,40 +64,40 @@ export function CombineParameters(configParams, passedParams, requiredParams) {
     return parms;
 }
 
-// Parse and return or set a possible three-tuple.
+// Parse and return three-tuple.
 // Used for 3 term vector.
 // Accepts a JSON string array: "[ xValue, yValue, zValue ]"
 //         a JSON value map: "{ "x": xValue, "y": yValue, "z": zValue }"
 //         a three value JavaScript array: [ xValue, yValue, zValue ]
 //         a three value JavaScript map: [ x: xValue, y: yValue, z: zValue ]
 // Returns a three valued JavaScript array.
-export function ParseThreeTuple(tuple, dst) {
-  let val = tuple
-  if (typeof tuple == 'String') {
-    val = JSON.Parse(tuple);
-  }
-  if (val.x && val.y && val.z) {
-    val = [ val.x, val.y, val.z ]
-  }
-  // consider doing some validity checking (length, type, ...)
-  return val
+export function ParseThreeTuple(tuple) {
+    let val = tuple
+    if (typeof tuple == 'String') {
+        val = JSON.Parse(tuple);
+    }
+    if (val.x && val.y && val.z) {
+        val = [ val.x, val.y, val.z ]
+    }
+    // consider doing some validity checking (length, type, ...)
+    return val
 }
 
-// Parse and return or set a possible four-tuple.
+// Parse and return four-tuple.
 // Used for 4 term vector (like rotation).
 // Accepts a JSON string array: "[ wValue, xValue, yValue, zValue ]"
 //         a JSON value map: "{ "w": wValue, "x": xValue, "y": yValue, "z": zValue }"
 //         a three value JavaScript array: [ wValue, xValue, yValue, zValue ]
 //         a three value JavaScript map: [ w: wValue, x: xValue, y: yValue, z: zValue ]
 // Returns a three valued JavaScript array.
-export function ParseFourTuple(tuple, dst) {
-  let val = tuple
-  if (typeof tuple == 'String') {
-    val = JSON.Parse(tuple);
-  }
-  if (val.x && val.y && val.z && val.w) {
-    val = [ val.x, val.y, val.z, val.w ]
-  }
-  // consider doing some validity checking (length, type, ...)
-  return val
+export function ParseFourTuple(tuple) {
+    let val = tuple
+    if (typeof tuple == 'String') {
+        val = JSON.Parse(tuple);
+    }
+    if (val.x && val.y && val.z && val.w) {
+        val = [ val.x, val.y, val.z, val.w ]
+    }
+    // consider doing some validity checking (length, type, ...)
+    return val
 }

@@ -17,25 +17,33 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { Displayable } from '../Items/Displayable.js';
+import { BItemState } from '../Items/BItem.js';
 
 export class DisplayableMeshSet extends Displayable {
     constructor(id, auth, displayInfo) {
-        GP.DebugLog('DisplayableCamers: constructor');
+        // GP.DebugLog('DisplayableMeshSet: constructor');
         super(id, auth, displayInfo);
         if (displayInfo && displayInfo.asset) {
             this.SetLoading();
-            GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
+            // GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
             this.graphics.LoadSimpleAsset(auth, displayInfo.asset)
             .then(theAsset => {
-                GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
-                GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
-                // 'theAsset' is a list of ThreeJS nodes
-                this.representation = theAsset;
-                this.SetReady();
+                if (this.state == BItemState.LOADING) {
+                    // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
+                    // GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
+                    // 'theAsset' is a list of ThreeJS nodes
+                    this.representation = theAsset;
+                    this.SetReady();
+                }
+                else {
+                    // The object went out of 'LOADING' while off in graphics.
+                    // Leave the new state.
+                    this.representation = theAsset; // so it can be freed.
+                }
             })
             .catch(err => {
                 this.SetFailed();
-                GP.DebugLog('DisplayableMeshSet: unable to load asset' + JSON.stringify(displayInfo));
+                GP.ErrorLog('DisplayableMeshSet: unable to load asset' + JSON.stringify(displayInfo));
             })
         }
         else {
@@ -44,6 +52,13 @@ export class DisplayableMeshSet extends Displayable {
     }
 
     ReleaseResources() {
+        if (this.representation) {
+            // release the resources from the graphics engine
+            if (this.graphics) {
+                this.graphics.ReleaseSimpleAsset(this.representation);
+            }
+            this.representation = undefined;
+        }
         super.ReleaseResources();
     }
 }

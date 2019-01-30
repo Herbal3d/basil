@@ -35,7 +35,7 @@ export class InstanceMeshSet extends Instance {
                     return this.gPos; },
                 'set': (val) => {
                     this.gPos = ParseThreeTuple(val);
-                    GP.DebugLog('InstanceMeshSet.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
+                    // GP.DebugLog('InstanceMeshSet.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
                     if (typeof this.worldNode != 'undefined') {
                         this.worldNode.position = new THREE.Vector3().fromArray(this.gPos);
                     }
@@ -88,3 +88,4 @@ export class InstanceMeshSet extends Instance {
         super.ReleaseResources();
     }
 }
+InstanceMeshSet.InstanceType = "meshset";

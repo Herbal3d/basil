@@ -18,10 +18,10 @@ import Config from '../config.js';
 var IM = IM || {};
 GP.IM = IM;
 
-IM.Items = new Map();
+IM.Items = IM.Items || new Map();
 // BItems are deleted by moving into this list which is
 //    scanned periodically and cleared out.
-IM.ItemsDeleted = new Map();
+IM.ItemsDeleted = IM.ItemsDeleted || new Map();
 
 export const BItemState = {
     UNINITIALIZED: 'UNINITIALIZED',
@@ -68,6 +68,25 @@ export class BItem {
             'Layer': { 'get': () => { return this.layer; } }
         });
         BItem.AddItem(this.id, this);
+
+        // When BItems are deleted, they are placed in the 'ItemsDeleted'
+        //    list. This list is scanned and items are removed when they
+        //    are old and/or their underlying assets have settled.
+        if (typeof(IM.ItemsDeletedProcessor) == 'undefined') {
+            IM.ItemsDeletedProcessor = setInterval( () => {
+                IM.ItemsDeleted.forEach( bItem => {
+                    // If BItem is still 'READY', it cannot be released yet
+                    if (bItem.state != BItemState.READY) {
+                        // Wait for a while before releasing
+                        if ((Date.now() - bItem.whenDeleted) > 5000) {
+                            bItem.ReleaseResources();
+                            IM.ItemsDeleted.delete(bItem.id);
+                        }
+                    }
+                });
+            }, 1000);
+        };
+
     }
 
     // Returns the value of the property or 'undefined' if either
@@ -265,28 +284,21 @@ export class BItem {
     static ForgetItem(item) {
         if (typeof(item) == 'string') {
             var theItem = this.GetItem(item);
-            theItem.deleteInProcess = true;
-            IM.Items.delete(item);
-            IM.ItemsDeleted.set(item, theItem);
+            if (theItem) {
+                theItem.deleteInProcess = true;
+                theItem.SetShutdown();
+                IM.Items.delete(item);
+                IM.ItemsDeleted.set(item, theItem);
+                theItem.whenDeleted = Date.now();
+            }
         }
         else {
             item.deleteInProcess = true;
             IM.Items.delete(item.id);
             IM.ItemsDeleted.set(item.id, item);
+            item.whenDeleted = Date.now();
         }
     };
-
-    // A BItem moves from 'Items' to 'ItemsDeleted'. This is called when
-    //    a BItem is completely cleaned up and can be removed from all lists.
-    // Can be passed an 'id' (string) or a whole item.
-    static FinalDelete(item) {
-        if (typeof(item) == 'string') {
-            IM.ItemsDeleted.delete(item);
-        }
-        else {
-            IM.ItemsDeleted.delete(item.id);
-        }
-    }
 
     // Iterate over all the known items.
     static ForEachItem(op) {

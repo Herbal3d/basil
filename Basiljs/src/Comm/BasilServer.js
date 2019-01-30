@@ -83,23 +83,28 @@ export class BasilServerConnection  extends MsgProcessor {
     }
     _ProcForgetDisplayableObject(req) {
         let ret = { 'op': BasilMessageOps.get('ForgetDisplayableObjectResp') };
-        if (req.objectId && req.objectId.id) {
+        if (req.objectId) {
             let obj = BItem.GetItem(req.objectId.id);
             if (obj) {
+                BItem.ForgetItem(req.objectId.id);
                 // Remove all instances that point to this object.
-                BItem.ForEachItem( bItem => {
-                    if (bItem.itemType == BItemType.INSTANCE) {
-                        if (bItem.displayable) {
-                            if (bItem.displayable.id == obj.id) {
-                                this._DeleteInstance(bItem);
+                try {
+                    BItem.ForEachItem( bItem => {
+                        if (bItem.itemType == BItemType.INSTANCE) {
+                            if (bItem.displayable) {
+                                if (bItem.displayable.id == obj.id) {
+                                    this._DeleteInstance(bItem);
+                                }
                             }
                         }
-                    }
-                })
+                    })
+                }
+                catch (e) {
+                    GP.ErrorLog('BasilServer._ProcForgetDisplayableObject:'
+                            + ' exception deleting instance of displayable: ' + e);
+                }
                 // Cleanup and remove this object.
-                obj.SetShutdown();
                 obj.ReleaseResources();
-                BItem.ForgetItem(req.objectId.id);
             }
         }
         return ret;
@@ -137,7 +142,7 @@ export class BasilServerConnection  extends MsgProcessor {
             let inst = BItem.GetItem(req.instanceId.id);
             if (inst) {
                 // Forget the reference to the item.
-                BItem.ForgetItem(inst);
+                this._DeleteInstance(inst);
             }
             else {
                 ret['exception'] = this.MakeException('Instance not found');
@@ -149,7 +154,7 @@ export class BasilServerConnection  extends MsgProcessor {
         inst.SetShutdown();
         inst.RemoveFromWorld();
         inst.ReleaseResources();
-        BItem.ForgetItem(inst.id);
+        BItem.ForgetItem(inst);
     }
     _ProcUpdateObjectProperty(req) {
         let ret = { 'op': BasilMessageOps.get('UpdateObjectPropertyResp') };

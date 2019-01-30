@@ -195,18 +195,18 @@ export class Graphics extends BItem {
     pInst.WhenReady()
     .then( inst => {
       if (typeof(inst.worldNode) == 'undefined') {
-        GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
+        // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
         let worldNode = new THREE.Group();
         worldNode.position.fromArray(inst.gPos);
         worldNode.rotation.fromArray(inst.gRot);
         worldNode.name = inst.id;
         if (Array.isArray(inst.displayable.representation)) {
           inst.displayable.representation.forEach( piece => {
-            worldNode.add(piece);
+            worldNode.add(piece.clone());
           });
         }
         else {
-          worldNode.add(inst.displayable.representation);
+          worldNode.add(inst.displayable.representation.clone());
         }
         inst.worldNode = worldNode;
       }
@@ -298,11 +298,11 @@ export class Graphics extends BItem {
   ReleaseSimpleAsset(asset) {
     if (Array.isArray(asset)) {
       asset.forEach( node => {
-        _disposeHierarchy(node);
+        this._disposeHierarchy(node);
       });
     }
     else {
-      _disposeHierarchy(asset);
+      this._disposeHierarchy(asset);
     }
 
   }

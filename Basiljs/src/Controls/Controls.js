@@ -140,7 +140,7 @@ export class Controls extends BItem {
         }
         break;
         default:
-        GP.ReportError('Controls: Unknown button op: ' + buttonOp);
+        GP.ErrorLog('Controls: Unknown button op: ' + buttonOp);
         break;
     }
 

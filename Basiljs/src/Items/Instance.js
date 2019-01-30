@@ -37,8 +37,10 @@ export class Instance extends BItem {
         // Note: some of these are over-ridden by other modules.
         //    If these are changed, check PredefinedCameraInstance.j
         super.DefineProperties( {
-            // over-write the 'State' property and return the underlying asset's state
-            'State': {
+            'InstanceType': {
+                'get': () => { return this.InstanceType; }
+            },
+            'DisplayableState': {
                 'get': () => { return this.displayable.state; }
             },
             'Position': {
@@ -94,9 +96,7 @@ export class Instance extends BItem {
     PlaceInWorld() {
         if (this.displayable) {
             // TODO: if displayable is not ready, should display the bounding box
-            let timeout = Config.assets && Config.assets.instanceAssetWaitTimeoutMS ? 
-                        Config.assets.instanceAssetWaitTimeoutMS : 10000;
-            this.displayable.WhenReady(timeout)
+            this.displayable.WhenReady()
             .then( function(disp) {
                 disp.graphics.PlaceInWorld(this);
             }.bind(this))
@@ -114,3 +114,4 @@ export class Instance extends BItem {
         }
     }
 }
+Instance.InstanceType = "UNKNOWN";

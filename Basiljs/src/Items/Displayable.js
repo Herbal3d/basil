@@ -20,10 +20,16 @@ export class Displayable extends BItem {
         // A kludge that give all Displayables a handle to the Graphics instance.
         // In the future, there might be multiple graphics engines.
         this.graphics = GP.GR;
+
+        super.DefineProperties( {
+            'DisplayableType': {
+                'get': () => { return this.DisplayableType; }
+            }
+        });
     }
 
     ReleaseResources() {
         super.ReleaseResources();
     }
 }
-Displayable.DisplayableKey = "UNKNOWN";
+Displayable.DisplayableType = "UNKNOWN";
