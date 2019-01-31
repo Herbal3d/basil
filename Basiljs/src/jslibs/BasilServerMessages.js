@@ -22,6 +22,7 @@ export const BasilMessage = $root.BasilMessage = (() => {
 
         BasilMessage.prototype.op = 0;
         BasilMessage.prototype.auth = null;
+        BasilMessage.prototype["class"] = 0;
         BasilMessage.prototype.objectId = null;
         BasilMessage.prototype.instanceId = null;
         BasilMessage.prototype.pos = null;
@@ -66,6 +67,8 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(90).fork()).ldelim();
             if (message.response != null && message.hasOwnProperty("response"))
                 $root.BasilType.BResponseRequest.encode(message.response, writer.uint32(106).fork()).ldelim();
+            if (message["class"] != null && message.hasOwnProperty("class"))
+                writer.uint32(112).int32(message["class"]);
             return writer;
         };
 
@@ -85,6 +88,9 @@ export const BasilMessage = $root.BasilMessage = (() => {
                     break;
                 case 2:
                     message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 14:
+                    message["class"] = reader.int32();
                     break;
                 case 3:
                     message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
@@ -151,6 +157,17 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 if (error)
                     return "auth." + error;
             }
+            if (message["class"] != null && message.hasOwnProperty("class"))
+                switch (message["class"]) {
+                default:
+                    return "class: enum value expected";
+                case 0:
+                case 10:
+                case 20:
+                case 30:
+                case 40:
+                    break;
+                }
             if (message.objectId != null && message.hasOwnProperty("objectId")) {
                 let error = $root.BasilType.ObjectIdentifier.verify(message.objectId);
                 if (error)
@@ -218,6 +235,28 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 if (typeof object.auth !== "object")
                     throw TypeError(".BasilMessage.BasilMessage.auth: object expected");
                 message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            switch (object["class"]) {
+            case "Default":
+            case 0:
+                message["class"] = 0;
+                break;
+            case "HighPriority":
+            case 10:
+                message["class"] = 10;
+                break;
+            case "MedPriority":
+            case 20:
+                message["class"] = 20;
+                break;
+            case "LowPriority":
+            case 30:
+                message["class"] = 30;
+                break;
+            case "BestCase":
+            case 40:
+                message["class"] = 40;
+                break;
             }
             if (object.objectId != null) {
                 if (typeof object.objectId !== "object")
@@ -292,6 +331,7 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 object.filter = "";
                 object.exception = null;
                 object.response = null;
+                object["class"] = options.enums === String ? "Default" : 0;
             }
             if (message.op != null && message.hasOwnProperty("op"))
                 object.op = message.op;
@@ -324,6 +364,8 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
             if (message.response != null && message.hasOwnProperty("response"))
                 object.response = $root.BasilType.BResponseRequest.toObject(message.response, options);
+            if (message["class"] != null && message.hasOwnProperty("class"))
+                object["class"] = options.enums === String ? $root.BasilMessage.TransportClass[message["class"]] : message["class"];
             return object;
         };
 
@@ -332,6 +374,16 @@ export const BasilMessage = $root.BasilMessage = (() => {
         };
 
         return BasilMessage;
+    })();
+
+    BasilMessage.TransportClass = (function() {
+        const valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "Default"] = 0;
+        values[valuesById[10] = "HighPriority"] = 10;
+        values[valuesById[20] = "MedPriority"] = 20;
+        values[valuesById[30] = "LowPriority"] = 30;
+        values[valuesById[40] = "BestCase"] = 40;
+        return values;
     })();
 
     BasilMessage.BasilMessageOps = (function() {
