@@ -73,6 +73,9 @@ export class Graphics extends BItem {
 
     // Clock used to keep track of frame time and FPS
     this.clock = new THREE.Clock();
+    this.frameNum = 0;    // counted once each frame time
+    this.fps = 10;        // an initial value to start computation
+    this.throttleFPS = 0; // if zero, no throttling
 
     // There are several top level groups for objects in different coordinate systems
     this.GroupWorldRel = new THREE.Group();
@@ -130,9 +133,10 @@ export class Graphics extends BItem {
   // Do per-frame updates and then render the frame
   _doRendering() {
       if (GP.Ready && this.scene && this.camera) {
-          // compute fps
+          this.frameNum++;
           this.lastFrameDelta = this.clock.getDelta();
-          this.fps = 1 / this.lastFrameDelta;
+          // compute a running average of FPS
+          this.fps = (0.25 * 1 / this.lastFrameDelta) + (0.75 * this.fps);
 
           if (this.cameraControl) {
               this.cameraControl.update();
@@ -140,12 +144,15 @@ export class Graphics extends BItem {
           if (this.eventEachFrame) {
               Eventing.fire(this.eventEachFrame, {});
           }
-          this._doAnimation();
+          this._doAnimation(lastFrameDelta);
+          if (this.throttleFPS != 0) {
+            // Do some computation to skip frames to approx the throttle frame rate
+          }
           this.renderer.render(this.scene, this.camera);
       }
   };
 
-  _doAnimation() {
+  _doAnimation(delta) {
     // look into https://github.com/tweenjs/tween.js
   };
 
