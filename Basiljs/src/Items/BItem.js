@@ -61,11 +61,11 @@ export class BItem {
         this.state = BItemState.UNINITIALIZED;
         this.deleteInProcess = false; // set to true when item is being destroyed
         this.DefineProperties( {
-            'Type': { 'get': () => { return this.itemType; } },
-            'Id': { 'get': () => { return this.id; } },
-            'OwnerId': { 'get': () => { return this.ownerId; } },
-            'State': { 'get': () => { return this.state; } },
-            'Layer': { 'get': () => { return this.layer; } }
+            '_Type': { 'get': () => { return this.itemType; } },
+            '_Id': { 'get': () => { return this.id; } },
+            '_OwnerId': { 'get': () => { return this.ownerId; } },
+            '_State': { 'get': () => { return this.state; } },
+            '_Layer': { 'get': () => { return this.layer; } }
         });
         BItem.AddItem(this.id, this);
 

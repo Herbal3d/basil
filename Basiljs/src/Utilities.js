@@ -19,14 +19,14 @@ import Config from './config.js';
 export function CreateUniqueId(service, type) {
     if (GP.UniqueIdCount === undefined) {
         GP.UniqueIdCount = 1;
-        GP.UniqueIdBasename = 'org.basil.b.';
-        // Note that basename ends with a dot
+        GP.UniqueIdBasename = '.b.basil.org';
+        // Note that basename begins with a dot
     }
     return String(GP.UniqueIdCount++)
         + '.'
-        + GP.UniqueIdBasename
-        + service
         + (type ? ( '.' + type ) : '')
+        + service
+        + GP.UniqueIdBasename
   /* Original form that put number at the end
     return GP.UniqueIdBasename
                 + service

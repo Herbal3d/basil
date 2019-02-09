@@ -24,7 +24,7 @@ export class InstanceMeshSet extends Instance {
         // Note: some of these are over-ridden by other modules.
         //    If these are changed, check PredefinedCameraInstance.j
         this.DefineProperties( {
-            'Position': {
+            '_Position': {
                 'get': () => {
                     if (typeof this.procgPosPreGet == 'function') {
                         procgPosPreGet(this);
@@ -45,7 +45,7 @@ export class InstanceMeshSet extends Instance {
                     }
                 }
             },
-            'Rotation': {
+            '_Rotation': {
                 'get': () => {
                     if (typeof this.procgRotPreGet == 'function') {
                         procgRotPreGet(this);
@@ -65,13 +65,13 @@ export class InstanceMeshSet extends Instance {
                     }
                 }
             },
-            'PosCoordSystem': {
+            '_PosCoordSystem': {
                 'get': () => { return this.gPosCoordSystem; },
                 'set': (val) => {
                     this.gPosCoordSystem = Integer(val);
                 }
             },
-            'RotCoordSystem': {
+            '_RotCoordSystem': {
                 'get': () => { return this.gRotCoordSystem; },
                 'set': (val) => {
                     this.gRotCoordSystem = Integer(val);

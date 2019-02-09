@@ -22,7 +22,7 @@ export class Displayable extends BItem {
         this.graphics = GP.GR;
 
         super.DefineProperties( {
-            'DisplayableType': {
+            '_DisplayableType': {
                 'get': () => { return this.DisplayableType; }
             }
         });
