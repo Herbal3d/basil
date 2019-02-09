@@ -144,7 +144,7 @@ export class Graphics extends BItem {
           if (this.eventEachFrame) {
               Eventing.fire(this.eventEachFrame, {});
           }
-          this._doAnimation(lastFrameDelta);
+          this._doAnimation(this.lastFrameDelta);
           if (this.throttleFPS != 0) {
             // Do some computation to skip frames to approx the throttle frame rate
           }

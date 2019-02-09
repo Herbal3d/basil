@@ -70,7 +70,7 @@ export class BasilServerConnection  extends MsgProcessor {
             let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
             if (newItem) {
                 newItem.ownerId = this.id;    // So we know who created what
-                ret['objectId'] = { 'id': newItem.GetProperty('Id') };
+                ret['objectId'] = { 'id': newItem.id };
             }
             else {
                 ret['exception'] = this.MakeException('Could not create object');
@@ -232,9 +232,9 @@ export class BasilServerConnection  extends MsgProcessor {
     // Update an instance's position info based on a passed BasilType.InstancePostionInfo
     UpdatePositionInfo(instance, posInfo) {
         let coordPosition = posInfo.pos;  // get BasilType.CoordPosition
-        if (coordPosition.pos) { instance.SetProperty('Position', coordPosition.pos) }
-        if (coordPosition.rot) { instance.SetProperty('Rotation', coordPosition.rot) }
-        if (coordPosition.posRef) { instance.SetProperty('PosCoordSystem', coordPosition.posRef) }
-        if (coordPosition.rotRef) { instance.SetProperty('RotCoordSystem', coordPosition.rotRef) }
+        if (coordPosition.pos) { instance.SetProperty('_Position', coordPosition.pos) }
+        if (coordPosition.rot) { instance.SetProperty('_Rotation', coordPosition.rot) }
+        if (coordPosition.posRef) { instance.SetProperty('_PosCoordSystem', coordPosition.posRef) }
+        if (coordPosition.rotRef) { instance.SetProperty('_RotCoordSystem', coordPosition.rotRef) }
     };
 }
