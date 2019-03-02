@@ -58,6 +58,12 @@ export class Graphics extends BItem {
     if (renderParms.clearColor) {
         this.renderer.setClearColor(this._colorFromValue(renderParms.clearColor));
     }
+    if (renderParms.gammaOutput) {
+      this.renderer.gammaOutput = renderParms.gammaOutput;
+    }
+    if (renderParms.gammaFactor) {
+      this.renderer.gammaFactor = Number(renderParms.gammaFactor);
+    }
 
     if (renderParms.shadows) {
         this.renderer.shadowMap.enabled = true;

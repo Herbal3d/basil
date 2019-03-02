@@ -69,7 +69,10 @@ export default {
             'logarithmicDepthBuffer': false
           },
           'clearColor': [ 0.1, 0.1, 0.1 ],
-          'shadows': false
+          'shadows': false,
+          // As suggested in the ThreeJS documentation for GLTFLoader:
+          'gammaOutput': true,
+          'gammaFactor': 2.20
         },
     },
     // Names for predefined/service BItem layers
