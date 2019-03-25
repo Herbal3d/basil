@@ -417,6 +417,22 @@ export const BasilMessage = $root.BasilMessage = (() => {
         values[valuesById[12290] = "OpenSessionResp"] = 12290;
         values[valuesById[12291] = "CameraViewReq"] = 12291;
         values[valuesById[12292] = "CameraViewResp"] = 12292;
+        values[valuesById[16385] = "RegisterTopicReq"] = 16385;
+        values[valuesById[16386] = "RegisterTopicResp"] = 16386;
+        values[valuesById[16387] = "DeregisterTopicReq"] = 16387;
+        values[valuesById[16388] = "DeregisterTopicResp"] = 16388;
+        values[valuesById[16389] = "SubscribeReq"] = 16389;
+        values[valuesById[16390] = "SubscribeResp"] = 16390;
+        values[valuesById[16391] = "UnsubscribeReq"] = 16391;
+        values[valuesById[16392] = "UnsubscribeResp"] = 16392;
+        values[valuesById[16393] = "SendEventReq"] = 16393;
+        values[valuesById[16400] = "SendEventResp"] = 16400;
+        values[valuesById[16401] = "EventReq"] = 16401;
+        values[valuesById[16402] = "EventResp"] = 16402;
+        values[valuesById[16403] = "SubscriptionMadeReq"] = 16403;
+        values[valuesById[16404] = "SubscriptionMadeResp"] = 16404;
+        values[valuesById[16405] = "SubscriptionClearReq"] = 16405;
+        values[valuesById[16406] = "SubscriptionClearResp"] = 16406;
         return values;
     })();
 
