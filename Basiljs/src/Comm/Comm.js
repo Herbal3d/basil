@@ -38,6 +38,8 @@ export class Comm extends BItem {
         super('org.basil.b.comm', undefined, BItemType.COMM);
         this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
 
+        this.transports = new Map();
+
         // Build the table of ops to names and via versa
         BuildBasilMessageOps();
     }
@@ -57,29 +59,38 @@ export class Comm extends BItem {
         });
         return new Promise(function(resolve, reject) {
             let xport = undefined;
-            try {
-                switch (params.transport) {
-                    case 'WW':
-                        xport = new BTransportWW(params);
-                        break;
-                    case 'WS':
-                        xport = new BTransportWS(params);
-                        break;
-                    case 'Test':
-                        xport = new BTransportTest(params);
-                        break;
-                    default:
-                        let errorMsg = 'Comm.ConnectTransport: transport type unknown: '
-                                        + JSON.stringify(params);
-                        GP.ErrorLog(errorMsg);
-                        reject(errorMsg);
+            // If there is already a transport for this destination URL, return that
+            if (this.transports.has(params.transportURL) {
+                xport = this.transports.get(params.transportURL);
+                GP.DebugLog('Comm.ConnectTransport: reusing transport ' + xport.id)
+            }
+            else {
+                // Create a new transport to the URL
+                try {
+                    switch (params.transport) {
+                        case 'WW':
+                            xport = new BTransportWW(params);
+                            break;
+                        case 'WS':
+                            xport = new BTransportWS(params);
+                            break;
+                        case 'Test':
+                            xport = new BTransportTest(params);
+                            break;
+                        default:
+                            let errorMsg = 'Comm.ConnectTransport: transport type unknown: '
+                                            + JSON.stringify(params);
+                            GP.ErrorLog(errorMsg);
+                            reject(errorMsg);
+                    }
+                    this.transports.set(params.transportURL, xport);
+                    GP.DebugLog('Comm.ConnectTransport: created transport ' + xport.id)
+                }
+                catch(e) {
+                    reject('Comm.ConnectTransport: exception opening transport: ' + e.message);
                 }
             }
-            catch(e) {
-                reject('Comm.ConnectTransport: exception opening transport: ' + e.message);
-            }
             if (xport) {
-                GP.DebugLog('Comm.ConnectTransport: created transport ' + xport.id)
                 xport.WhenReady(params.waitTilTransportReadyMS)
                 .then( xxport => {
                     resolve(xxport);
