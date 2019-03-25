@@ -41,6 +41,17 @@ export function CreateUniqueInstanceId() {
     return CreateUniqueId('instance');
 };
 
+// Create a random string for use as identifier or whatever.
+// For the moment, 30 bits of randomeness are enough. Add more if needed.
+export function RandomIdentifier() {
+    // crypto.GetRandomValues could be slow. Maybe replace with Math.random.
+    //   let randomness = new Uint32Array(1);
+    //   crypto.getRandomValues(randomness);
+    //   let randomIdentifier = randomness[0];
+    // let randomIdentifier = (new Uint32Array((new Float32Array( [ Math.random() ] )).buffer))[0];
+    return (String)(Math.floor( Math.random() * 536870912 ));   // 2^30
+}
+
 // Configuration comes from the configuration file (Config), parameters at
 //    may be set in the context, and parameters that may be required.
 //    This takes those three inputs and creates one parameter block with

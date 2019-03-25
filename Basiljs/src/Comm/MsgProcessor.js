@@ -18,6 +18,7 @@ import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
 import { BasilMessage } from "../jslibs/BasilServerMessages.js"
 import { BasilMessageOps } from "./BasilMessageOps.js";
+import { RandomIdentifier } from '../Utilities.js';
 
 // A class which is instanced for each transport system and
 //   maps received messsages to the message processors.
@@ -120,12 +121,7 @@ export class MsgProcessor extends BItem {
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
     SendAndPromiseResponse(pMsg) {
-        // crypto.GetRandomValues could be slow. Maybe replace with Math.random.
-        //   let randomness = new Uint32Array(1);
-        //   crypto.getRandomValues(randomness);
-        //   let responseSession = randomness[0];
-        // let responseSession = (new Uint32Array((new Float32Array( [ Math.random() ] )).buffer))[0];
-        let responseSession = Math.floor( Math.random() * 536870912 );   // 2^30
+        let responseSession = RandomIdentifier();
         pMsg['response'] = {
             'responseSession': responseSession
         };
@@ -150,6 +146,12 @@ export class MsgProcessor extends BItem {
             this.transport.Send(emsg);
         }.bind(this));
     };
+
+    // Easy, just send the message and don't expect any response
+    SendMessage(pMsg) {
+        let emsg = BasilMessage.BasilMessage.encode(pMsg).finish();
+        this.transport.Send(emsg);
+    }
 
     // Function that handles the response type message
     HandleResponse(responseMsg) {

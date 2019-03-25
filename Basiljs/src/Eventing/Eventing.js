@@ -12,13 +12,12 @@
 
 'use strict';
 
-// Global holding event subscription state
-var EV = EV || {};
-
-// @ts-ignore
 import GP from 'GP';
-// @ts-ignore
 import Config from '../config.js';
+
+import { BItem, BItemType } from '../Items/BItem.js';
+
+import { RandomIdentifier } from '../Utilities.js';
 
 // A simple pub/sub system. An event producer registers a topic
 //    and later 'fire's event on the topic. A envent consumer subscribers
@@ -44,160 +43,172 @@ import Config from '../config.js';
 // Subscriptions are created with a unique ID so individual subscriptions can be
 //     found for removal (because there can be multiple subescitions for the same processor).
 // Note: currently 'limits' is unused but someday will be used for timing and frequency limiting
-let SubEntry = function(topic, processor, id, limits) {
-    this.topic = topic;
-    this.processor = processor;
-    this.id = id;
-    this.limits = limits;
-};
-SubEntry.prototype.fire = function(params) {
-    this.processor(params, this.topic);
-};
+export class SubEntry {
+    constructor(topic, processor, id, limits) {
+        this.topic = topic;
+        this.processor = processor;
+        this.id = id;
+        this.limits = limits;
+    }
+    fire(params) {
+        this.processor(params, this.topic);
+    }
+}
 
 // ===========================================
 // One topic that can be subscribed to.
 // This is the datastructure for a topic, its subscriptions, and actions.
 // This data structure is passed around to the subscribers so 'fire' can be called.
-let TopicEntry = function(topicName) {
-    this.topic = topicName;
-    this.subs = [];
-};
-// @ts-ignore
-TopicEntry.prototype.hasSubscriptions = function(sub) {
-    return this.subs.length > 0;
-};
-TopicEntry.prototype.addSubscription = function(sub) {
-    this.subs.push(sub);
-};
-TopicEntry.prototype.removeSubscription = function(sub) {
-    for (let ii=0; ii<this.subs.length; ii++) {
-        if (this.subs[ii].id == sub.id) {
-            this.subs.splice(ii, 1);
-        }
+export class TopicEntry {
+    constructor(topicName) {
+        this.topic = topicName;
+        this.subs = [];
     }
-};
-TopicEntry.prototype.fire = function(params) {
-    this.subs.forEach( sub => {
-        sub.fire(params);
-    });
-};
-
-
-// ===========================================
-// Call the event processors that get called twice a second.
-let processTimedEvents = function() {
-    if (EV.timedEventProcessors) {
-        EV.timedEventProcessors.forEach(function(proc, topic) {
-            // GP.DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
-            proc(topic);
+    hasSubscriptions() {
+        return this.subs.length > 0;
+    };
+    addSubscription(sub) {
+        this.subs.push(sub);
+    };
+    removeSubscription(sub) {
+        for (let ii=0; ii<this.subs.length; ii++) {
+            if (this.subs[ii].id == sub.id) {
+                this.subs.splice(ii, 1);
+            }
+        }
+    };
+    fire(params) {
+        this.subs.forEach( sub => {
+            sub.fire(params);
         });
-    }
-    let interval = 500;
-    if (Config.eventing && Config.eventing.eventPollIntervalMS) {
-      interval = Number(Config.eventing.eventPollIntervalMS);
-    }
-    setTimeout(processTimedEvents, interval);
-};
+    };
+}
 
-// ===========================================
-// Register to receive events for a topic.
-// Returns a handle to control the subscription.
-export function subscribe(topic, processor, limits) {
-    EV.numSubscriptions++;
-    let sub = new SubEntry(topic, processor, Math.random(), limits);
-    let topicEnt = FindTopic(topic);
-    if (topicEnt == undefined) {
-        // 'creator' is 'subscribe' so we can tell the topic was initially
-        //    created because someone subscribed to it. Hopefully someone
-        //    will register the topic.
-        topicEnt = register(topic, 'subscribe');
-    }
-    topicEnt.addSubscription(sub);
-    GP.DebugLog("Eventing.subscribe: adding subscription to event " + topic);
-    return sub;
-};
+export class Eventing extends BItem {
+    constructor()  {
+        GP.DebugLog('Eventing: constructor');
+        super('org.basil.b.eventing', undefined, BItemType.SERVICE);
+        this.layer = Config.layers ? Config.layers.eventing : 'org.basil.b.layer.eventing';
+        this.topics = new Map();
+        this.timedEventProcessors = new Map();
+        this.numSubscriptions = 0;
+        this.numEventsFired = 0;
 
-// Release a topic subscription.
-export function unsubscribe(subEntry) {
-    if (subEntry && subEntry.topic) {
-        let topicEnt = FindTopic(subEntry.topic);
-        if (topicEnt) {
-            topicEnt.removeSubscription(subEntry);
+        // Start the timed event clock
+        this._processTimedEvents();
+    }
+
+    // ===========================================
+    // Call the event processors that get called twice a second.
+    _processTimedEvents() {
+        if (this.timedEventProcessors) {
+            this.timedEventProcessors.forEach(function(proc, topic) {
+                // GP.DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
+                proc(topic);
+            });
         }
-        GP.DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
-    }
-};
+        let interval = 500;
+        if (Config.eventing && Config.eventing.eventPollIntervalMS) {
+        interval = Number(Config.eventing.eventPollIntervalMS);
+        }
+        setTimeout(this._processTimedEvents.bind(this), interval);
+    };
 
-// Register a topic that can be generated.
-// This returns a handle for the topic for later 'event' calls.
-// The returned object just happens to be the TopicEntry object.
-export function register(topic, registar) {
-    let topicEnt = FindTopic(topic);
-    if (topicEnt == undefined) {
-        topicEnt = new TopicEntry(topic);
-        topicEnt.registar = registar;
-        EV.topics.set(topic, topicEnt);
-        GP.DebugLog("Eventing.register: registering event " + topic);
-    }
-    return topicEnt;
-};
+    // ===========================================
+    // Register to receive events for a topic.
+    // Returns a handle to control the subscription.
+    Subscribe(topic, processor, limits) {
+        this.numSubscriptions++;
+        let sub = new SubEntry(topic, processor, RandomIdentifier(), limits);
+        let topicEnt = this.FindTopic(topic);
+        if (topicEnt == undefined) {
+            // 'creator' is 'subscribe' so we can tell the topic was initially
+            //    created because someone subscribed to it. Hopefully someone
+            //    will register the topic.
+            topicEnt = this.Register(topic, 'subscribe');
+        }
+        topicEnt.addSubscription(sub);
+        GP.DebugLog("Eventing.subscribe: adding subscription to event " + topic);
+        return sub;
+    };
 
-// Unregister a topic.
-// @ts-ignore
-export function unregister(topicEntry, topic) {
-    // cannot unregister a topic yet
-        GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
-};
+    // Release a topic subscription.
+    Unsubscribe(subEntry) {
+        if (subEntry && subEntry.topic) {
+            let topicEnt = this.FindTopic(subEntry.topic);
+            if (topicEnt) {
+                topicEnt.removeSubscription(subEntry);
+            }
+            GP.DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
+        }
+    };
 
-// An event happened for a topic.
-// Fire the event processors and pass 'params' to all subscribers.
-export function fire(topicEntry, params) {
-    EV.numEventsFired++;
-    if (topicEntry && topicEntry.topic) {
-        topicEntry.fire(params);
-    }
-};
+    // Register a topic that can be generated.
+    // This returns a handle for the topic for later 'event' calls.
+    // The returned object just happens to be the TopicEntry object.
+    Register(topic, registar) {
+        let topicEnt = this.FindTopic(topic);
+        if (topicEnt == undefined) {
+            topicEnt = new TopicEntry(topic);
+            topicEnt.registar = registar;
+            this.topics.set(topic, topicEnt);
+            GP.DebugLog("Eventing.register: registering event " + topic);
+        }
+        return topicEnt;
+    };
 
-// Return a TopicEntry for the given topic name.
-// Return undefined if not found.
-export function FindTopic(topic) {
-    return EV.topics.get(topic);
-};
+    // Unregister a topic.
+    // @ts-ignore
+    Unregister(topicEntry, topic) {
+        // cannot unregister a topic yet
+            GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
+    };
 
-// Calls a processor every 0.5 seconds for polled type events.
-// First parameter can be either a TopicEntry or a topic name
-// Returns handle  that can be used to remove timer.
-export function createTimedEventProcessor (topicEntryOrTopic, processor) {
-    let topic = topicEntryOrTopic;
-    if ('topic' in topicEntryOrTopic) {
-        GP.DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
-        topic = topicEntryOrTopic.topic;
-    }
-    EV.timedEventProcessors.set(topic, processor);
-    GP.DebugLog("Eventing.createTimedEventProcessor: creating for event " + topic);
-    return topic;
-};
+    // An event happened for a topic.
+    // Fire the event processors and pass 'params' to all subscribers.
+    Fire(topicEntryOrTopic, params) {
+        let topicEntry = topicEntryOrTopic;
+        if (typeof(topicEntryOrTopic) == 'string') {
+            topicEntry = this.FindTopic(topicEntryOrTopic);
+        }
+        this.numEventsFired++;
+        if (topicEntry && topicEntry.topic) {
+            topicEntry.fire(params);
+        }
+    };
 
-// Return 'true' if a processor entry was actually removed
-export function removeTimedEventProcessor(topicEntryOrTopic) {
-    let ret = false;
-    if (EV.timedEventProcessors) {
+    // Return a TopicEntry for the given topic name.
+    // Return undefined if not found.
+    FindTopic(topic) {
+        return this.topics.get(topic);
+    };
+
+    // Calls a processor every 0.5 seconds for polled type events.
+    // First parameter can be either a TopicEntry or a topic name
+    // Returns handle  that can be used to remove timer.
+    CreateTimedEventProcessor (topicEntryOrTopic, processor) {
         let topic = topicEntryOrTopic;
         if ('topic' in topicEntryOrTopic) {
+            GP.DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
             topic = topicEntryOrTopic.topic;
         }
-        ret = EV.timedEventProcessors.delete(topic);
-        GP.DebugLog("Eventing.removeTimedEventProcessor: removing for event " + topic);
-    }
-    return ret;
-};
+        this.timedEventProcessors.set(topic, processor);
+        GP.DebugLog("Eventing.createTimedEventProcessor: creating for event " + topic);
+        return topic;
+    };
 
-GP.EV = EV; // For debugging. Don't use for cross package access.
+    // Return 'true' if a processor entry was actually removed
+    RemoveTimedEventProcessor(topicEntryOrTopic) {
+        let ret = false;
+        if (this.timedEventProcessors) {
+            let topic = topicEntryOrTopic;
+            if ('topic' in topicEntryOrTopic) {
+                topic = topicEntryOrTopic.topic;
+            }
+            ret = this.timedEventProcessors.delete(topic);
+            GP.DebugLog("Eventing.removeTimedEventProcessor: removing for event " + topic);
+        }
+        return ret;
+    };
 
-EV.topics = EV.topics || new Map();
-EV.timedEventProcessors = EV.timedEventProcessors || new Map();
-EV.numSubscriptions = 0;
-EV.numEventsFired = 0;
-
-// Start the timed event clock
-processTimedEvents();
+}

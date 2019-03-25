@@ -17,6 +17,8 @@ import Config from '../config.js';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
 
+// An 'Instance' is a placement of a displayable object in the viewable world.
+// It is a location in space and a Displayable to appear there.
 export class Instance extends BItem {
     constructor(id, auth, baseDisplayable) {
         super(id, auth, BItemType.INSTANCE);

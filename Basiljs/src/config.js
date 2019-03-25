@@ -6,7 +6,15 @@
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 export default {
     'comm': {
-      // Filled by parameters passed in initial invocation
+        // Filled by parameters passed in initial invocation
+        'transportURL': 'connectionURLForTransport',
+        'transport': 'one of WS, WW',
+        'service': 'one of SpaceServerClient, Broth, Pesto',
+        'testmode': false,
+        'TestAsset': {
+            'url': 'URL to asset',
+            'loaderType': 'GLTF'
+        }
     },
     // Parameters for the main display page
     'page': {
@@ -79,7 +87,8 @@ export default {
     'layers': {
         'default': 'org.basil.b.layers.default',
         'comm': 'org.basil.b.layers.comm',
-        'service': 'org.basil.b.layers.service'
+        'service': 'org.basil.b.layers.service',
+        'eventing': 'org.basil.b.layers.eventing'
     },
     'assets': {
         'gltfURLBase': '/basil/',

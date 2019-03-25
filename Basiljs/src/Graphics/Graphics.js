@@ -15,7 +15,6 @@ import GP from 'GP';
 import Config from '../config.js';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import * as Eventing from '../Eventing/Eventing.js';
 import { CombineParameters, ParseThreeTuple } from '../Utilities.js';
 
 import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
@@ -32,264 +31,265 @@ import { BVHLoader } from '../jslibs/BVHLoader.js';
 
 // Class that wraps the renderer implementation.
 export class Graphics extends BItem {
-  constructor(container, canvas) {
-    GP.DebugLog('Graphics: constructor');
-    let id = (Config.webgl && Config.webgl.graphicsId) ? Config.webgl.graphicsId : 'org.basil.b.renderer';
-    let auth = undefined;
-    super(id, auth, BItemType.RENDERER);
-    this.layer = Config.layers ? Config.layers.service : 'org.basil.b.layer.graphics';
-    this.container = container;
-    this.canvas = canvas;
+    constructor(container, canvas, eventing) {
+        GP.DebugLog('Graphics: constructor');
+        let id = (Config.webgl && Config.webgl.graphicsId) ? Config.webgl.graphicsId : 'org.basil.b.renderer';
+        let auth = undefined;
+        super(id, auth, BItemType.RENDERER);
+        this.layer = Config.layers ? Config.layers.service : 'org.basil.b.layer.graphics';
+        this.container = container;
+        this.canvas = canvas;
+        this.events = eventing;
 
-    this.scene = new THREE.Scene();
+        this.scene = new THREE.Scene();
 
-    this._initializeCamera();
-    this._initializeLights();
-    this._initializeEnvironment();
+        this._initializeCamera();
+        this._initializeLights();
+        this._initializeEnvironment();
 
-    // parameters specific to setting up WebGL in the renderer
-    let renderParms =(Config.webgl && Config.webgl.renderer) ? Config.webgl.renderer : {};
+        // parameters specific to setting up WebGL in the renderer
+        let renderParms =(Config.webgl && Config.webgl.renderer) ? Config.webgl.renderer : {};
 
-    // parameters to pass to the THREE.renderer creation
-    let rendererParams = renderParms.ThreeJS ? renderParms.ThreeJS : {};
-    rendererParams.canvas = canvas;
-    this.renderer = new THREE.WebGLRenderer(rendererParams);
+        // parameters to pass to the THREE.renderer creation
+        let rendererParams = renderParms.ThreeJS ? renderParms.ThreeJS : {};
+        rendererParams.canvas = canvas;
+        this.renderer = new THREE.WebGLRenderer(rendererParams);
 
-    if (renderParms.clearColor) {
-        this.renderer.setClearColor(this._colorFromValue(renderParms.clearColor));
-    }
-    if (renderParms.gammaOutput) {
-      this.renderer.gammaOutput = renderParms.gammaOutput;
-    }
-    if (renderParms.gammaFactor) {
-      this.renderer.gammaFactor = Number(renderParms.gammaFactor);
-    }
-
-    if (renderParms.shadows) {
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
-    }
-
-    // keep the camera and environment adjusted for the display size
-    this._onContainerResize();  // initial aspect ration computation
-    this.container.addEventListener('resize', this._onContainerResize, false);
-
-    // For the moment, camera control comes from the user
-    this._initializeCameraControl();
-
-    // Clock used to keep track of frame time and FPS
-    this.clock = new THREE.Clock();
-    this.frameNum = 0;    // counted once each frame time
-    this.fps = 10;        // an initial value to start computation
-    this.throttleFPS = 0; // if zero, no throttling
-
-    // There are several top level groups for objects in different coordinate systems
-    this.GroupWorldRel = new THREE.Group();
-    this.GroupWorldRel.name = 'org.basil.b.GroupWorldRel';
-    this.GroupCameraRel = new THREE.Group();
-    this.GroupCameraRel.name = 'org.basil.b.GroupCameraRel';
-    this.scene.add(this.GroupWorldRel);
-    this.scene.add(this.GroupCameraRel);
-
-    // Graphics generate a bunch of events so people can display stuff
-    this._generateCameraEvents();
-    this._generateRendererStatEvents();
-
-    // Set up the BItem environment.
-    // The Renderer is just a BItem.
-    super.DefineProperties( {
-      'Capabilities': {
-        'get': function() {
-            return JSON.stringify(this.renderer.capabilities);
-          }.bind(this),
-      },
-      'Extensions': {
-        'get': function() {
-          return JSON.stringify(this.renderer.extensions);
-        }.bind(this),
-      },
-      'Info': {
-        'get': function() {
-          return JSON.stringify(this.renderer.info);
-        }.bind(this),
-      }
-    } );
-
-    // Graphics creates an Instance to represent the camera.
-    this._initializeCameraInstance();
-  };
-
-  Start() {
-    this._startRendering();
-    this.SetReady();
-  };
-
-  _startRendering() {
-    if (this.renderer) {
-      this.renderer.setAnimationLoop(this._doRendering.bind(this));
-    }
-  };
-
-  _stopRendering() {
-    if (this.renderer) {
-      this.renderer.stopAnimation();
-    }
-  };
-
-  // Do per-frame updates and then render the frame
-  _doRendering() {
-      if (GP.Ready && this.scene && this.camera) {
-          this.frameNum++;
-          this.lastFrameDelta = this.clock.getDelta();
-          // compute a running average of FPS
-          this.fps = (0.25 * 1 / this.lastFrameDelta) + (0.75 * this.fps);
-
-          if (this.cameraControl) {
-              this.cameraControl.update();
-          }
-          if (this.eventEachFrame) {
-              Eventing.fire(this.eventEachFrame, {});
-          }
-          this._doAnimation(this.lastFrameDelta);
-          if (this.throttleFPS != 0) {
-            // Do some computation to skip frames to approx the throttle frame rate
-          }
-          this.renderer.render(this.scene, this.camera);
-      }
-  };
-
-  _doAnimation(delta) {
-    // look into https://github.com/tweenjs/tween.js
-  };
-
-  // Adjust the camera and environment when display size changes
-  _onContainerResize() {
-    this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
-    this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-  };
-
-  // Remove everything from the scene
-  ClearScene() {
-    this.StopRendering();
-
-    this._disposeScene();
-    GP.DebugLog('Graphics: cleared scene');
-
-    this.StartRendering();
-  }
-
-  // Add this new node to the world coordinate system
-  _addNodeToWorld(node) {
-    this.GroupWorldRel.add(node);
-  }
-
-  _removeNodeFromWorld(node) {
-    this.GroupWorldRel.remove(node);
-  }
-
-  // Add this node to the camera relative coordinate system
-  _addNodeToCamera(node) {
-    this.GroupCameraRel.add(node);
-  }
-
-  _removeNodeFromCamera(node) {
-    this.GroupCameraRel.remove(node);
-  }
-
-  // The main funciton used to place an Instance into the world.
-  // The instance is decorated with 'worldNode' which is the underlying
-  //    graphical representation object.
-  PlaceInWorld(pInst) {
-    if (pInst.worldNode) {
-      return; // already in world
-    }
-    pInst.WhenReady()
-    .then( inst => {
-      if (typeof(inst.worldNode) == 'undefined') {
-        // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
-        let worldNode = new THREE.Group();
-        worldNode.position.fromArray(inst.gPos);
-        worldNode.rotation.fromArray(inst.gRot);
-        worldNode.name = inst.id;
-        if (Array.isArray(inst.displayable.representation)) {
-          inst.displayable.representation.forEach( piece => {
-            worldNode.add(piece.clone());
-          });
+        if (renderParms.clearColor) {
+            this.renderer.setClearColor(this._colorFromValue(renderParms.clearColor));
         }
-        else {
-          worldNode.add(inst.displayable.representation.clone());
+        if (renderParms.gammaOutput) {
+            this.renderer.gammaOutput = renderParms.gammaOutput;
         }
-        inst.worldNode = worldNode;
-      }
-      if (inst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
-        // item is camera relative
-        this._addNodeToCamera(inst.worldNode);
-      }
-      else {
-        // item is world coordinate relative
-        this._addNodeToWorld(inst.worldNode);
-      }
-    })
-    .catch( (inst, reason) => {
-      GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + inst.id);
-    });
-  };
+        if (renderParms.gammaFactor) {
+            this.renderer.gammaFactor = Number(renderParms.gammaFactor);
+        }
 
-  // Remove this instance from the displayed world data structure
-  RemoveFromWorld(inst) {
-    if (inst.worldNode) {
-      this._removeNodeFromWorld(inst.worldNode);
-      this._removeNodeFromCamera(inst.worldNode);
-      inst.worldNode = undefined;
+        if (renderParms.shadows) {
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFShoftShadowMap;
+        }
+
+        // keep the camera and environment adjusted for the display size
+        this._onContainerResize();  // initial aspect ration computation
+        this.container.addEventListener('resize', this._onContainerResize, false);
+
+        // For the moment, camera control comes from the user
+        this._initializeCameraControl();
+
+        // Clock used to keep track of frame time and FPS
+        this.clock = new THREE.Clock();
+        this.frameNum = 0;    // counted once each frame time
+        this.fps = 10;        // an initial value to start computation
+        this.throttleFPS = 0; // if zero, no throttling
+
+        // There are several top level groups for objects in different coordinate systems
+        this.GroupWorldRel = new THREE.Group();
+        this.GroupWorldRel.name = 'org.basil.b.GroupWorldRel';
+        this.GroupCameraRel = new THREE.Group();
+        this.GroupCameraRel.name = 'org.basil.b.GroupCameraRel';
+        this.scene.add(this.GroupWorldRel);
+        this.scene.add(this.GroupCameraRel);
+
+        // Graphics generate a bunch of events so people can display stuff
+        this._generateCameraEvents();
+        this._generateRendererStatEvents();
+
+        // Set up the BItem environment.
+        // The Renderer is just a BItem.
+        super.DefineProperties( {
+            'Capabilities': {
+                'get': function() {
+                    return JSON.stringify(this.renderer.capabilities);
+                }.bind(this),
+            },
+            'Extensions': {
+                'get': function() {
+                    return JSON.stringify(this.renderer.extensions);
+                }.bind(this),
+            },
+            'Info': {
+                'get': function() {
+                    return JSON.stringify(this.renderer.info);
+                }.bind(this),
+            }
+          } );
+
+        // Graphics creates an Instance to represent the camera.
+        this._initializeCameraInstance();
+    };
+
+    Start() {
+        this._startRendering();
+        this.SetReady();
+    };
+
+    _startRendering() {
+        if (this.renderer) {
+            this.renderer.setAnimationLoop(this._doRendering.bind(this));
+        }
+    };
+
+    _stopRendering() {
+        if (this.renderer) {
+            this.renderer.stopAnimation();
+        }
+    };
+
+    // Do per-frame updates and then render the frame
+    _doRendering() {
+        if (GP.Ready && this.scene && this.camera) {
+            this.frameNum++;
+            this.lastFrameDelta = this.clock.getDelta();
+            // compute a running average of FPS
+            this.fps = (0.25 * 1 / this.lastFrameDelta) + (0.75 * this.fps);
+
+            if (this.cameraControl) {
+                this.cameraControl.update();
+            }
+            if (this.eventEachFrame) {
+                this.events.Fire(this.eventEachFrame, {});
+            }
+            this._doAnimation(this.lastFrameDelta);
+            if (this.throttleFPS != 0) {
+                // Do some computation to skip frames to approx the throttle frame rate
+            }
+            this.renderer.render(this.scene, this.camera);
+        }
+    };
+
+    _doAnimation(delta) {
+        // look into https://github.com/tweenjs/tween.js
+    };
+
+    // Adjust the camera and environment when display size changes
+    _onContainerResize() {
+        this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+        this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+    };
+
+    // Remove everything from the scene
+    ClearScene() {
+        this.StopRendering();
+
+        this._disposeScene();
+        GP.DebugLog('Graphics: cleared scene');
+
+        this.StartRendering();
     }
-  };
 
-  // Load an asset.
-  // TODO: some formats have animations, cameras, ... What to do with those?
-  // Passed parameters:
-  // parms.auth authorization info
-  // parms.url: URL to asset
-  // parms.type = GLTF, Collada, OBJ, FBX
-  // Returns a promise of a handle to ThreeJS node(s) read and created.
-  // Note: only returns the nodes. For animations, etc, need a different routine.
-  LoadSimpleAsset(userAuth, parms, progressCallback) {
-    GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
-    return new Promise(function(resolve, reject) {
-      let loader = undefined;
-      switch (parms.loaderType.toLowerCase()) {
-        case 'gltf':    loader = new THREE.GLTFLoader; break;
-        case 'collada': loader = new THREE.ColladaLoader; break;
-        case 'draco':   loader = new THREE.DRACOLoader; break;
-        case 'fbx':     loader = new THREE.FBXLoader; break;
-        case 'obj':     loader = new THREE.OBJLoader; break;
-        case 'bvh':     loader = new THREE.BVHLoader; break;
-      }
-      if (loader) {
-          GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + parms.url);
-          // To complicate things, ThreeJS loaders return different things
-          loader.load(parms.url, function(loaded) {
-            // Successful load
-            let scene = undefined;
-            if (loaded.scene) scene = loaded.scene;
-            if (loaded.scenes) scene = loaded.scenes[0];
-            let nodes = [];
-            if (scene) {
-              while (scene.children.length > 0) {
-                let first = scene.children[0];
-                scene.remove(first);
-                nodes.push(first);
-              }
-              resolve(nodes);
+    // Add this new node to the world coordinate system
+    _addNodeToWorld(node) {
+        this.GroupWorldRel.add(node);
+    }
+
+    _removeNodeFromWorld(node) {
+        this.GroupWorldRel.remove(node);
+    }
+
+    // Add this node to the camera relative coordinate system
+    _addNodeToCamera(node) {
+        this.GroupCameraRel.add(node);
+    }
+
+    _removeNodeFromCamera(node) {
+        this.GroupCameraRel.remove(node);
+    }
+
+    // The main funciton used to place an Instance into the world.
+    // The instance is decorated with 'worldNode' which is the underlying
+    //    graphical representation object.
+    PlaceInWorld(pInst) {
+        if (pInst.worldNode) {
+            return; // already in world
+        }
+        pInst.WhenReady()
+        .then( inst => {
+            if (typeof(inst.worldNode) == 'undefined') {
+                // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
+                let worldNode = new THREE.Group();
+                worldNode.position.fromArray(inst.gPos);
+                worldNode.rotation.fromArray(inst.gRot);
+                worldNode.name = inst.id;
+                if (Array.isArray(inst.displayable.representation)) {
+                    inst.displayable.representation.forEach( piece => {
+                        worldNode.add(piece.clone());
+                    });
+                }
+                else {
+                    worldNode.add(inst.displayable.representation.clone());
+                }
+                inst.worldNode = worldNode;
+            }
+            if (inst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
+                // item is camera relative
+                this._addNodeToCamera(inst.worldNode);
             }
             else {
-              let err = 'Graphics.LoadSimpleAsset: Could not understand loaded contents.'
-                  + ' type=' + parms.loaderType
-                  + ', url=' + parms.url;
-              reject(err);
+                // item is world coordinate relative
+                this._addNodeToWorld(inst.worldNode);
             }
-          },
+        })
+        .catch( (inst, reason) => {
+            GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + inst.id);
+        });
+    };
+
+    // Remove this instance from the displayed world data structure
+    RemoveFromWorld(inst) {
+        if (inst.worldNode) {
+            this._removeNodeFromWorld(inst.worldNode);
+            this._removeNodeFromCamera(inst.worldNode);
+            inst.worldNode = undefined;
+        }
+    };
+
+    // Load an asset.
+    // TODO: some formats have animations, cameras, ... What to do with those?
+    // Passed parameters:
+    // parms.auth authorization info
+    // parms.url: URL to asset
+    // parms.type = GLTF, Collada, OBJ, FBX
+    // Returns a promise of a handle to ThreeJS node(s) read and created.
+    // Note: only returns the nodes. For animations, etc, need a different routine.
+    LoadSimpleAsset(userAuth, parms, progressCallback) {
+        GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
+        return new Promise(function(resolve, reject) {
+            let loader = undefined;
+            switch (parms.loaderType.toLowerCase()) {
+                case 'gltf':    loader = new THREE.GLTFLoader; break;
+                case 'collada': loader = new THREE.ColladaLoader; break;
+                case 'draco':   loader = new THREE.DRACOLoader; break;
+                case 'fbx':     loader = new THREE.FBXLoader; break;
+                case 'obj':     loader = new THREE.OBJLoader; break;
+                case 'bvh':     loader = new THREE.BVHLoader; break;
+            }
+            if (loader) {
+                GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + parms.url);
+                // To complicate things, ThreeJS loaders return different things
+                loader.load(parms.url, function(loaded) {
+                    // Successful load
+                    let scene = undefined;
+                    if (loaded.scene) scene = loaded.scene;
+                    if (loaded.scenes) scene = loaded.scenes[0];
+                    let nodes = [];
+                    if (scene) {
+                        while (scene.children.length > 0) {
+                            let first = scene.children[0];
+                            scene.remove(first);
+                            nodes.push(first);
+                        }
+                        resolve(nodes);
+                    }
+                    else {
+                        let err = 'Graphics.LoadSimpleAsset: Could not understand loaded contents.'
+                            + ' type=' + parms.loaderType
+                            + ', url=' + parms.url;
+                        reject(err);
+                    }
+                  },
           function(xhr) {
             // loading progress
             if (typeof(progressCallback) !== 'undefined') {
@@ -447,30 +447,30 @@ export class Graphics extends BItem {
   }
 
   _initializeCameraInstance(passedParams) {
-    // Set up a camera Instance.
-    // Cameras can be displayed so there is a type.
-    let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
-    let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
-    let cauth = undefined;
-    let cdisplayInfo = {
-      'displayableType': 'camera'
-    };
-    let cameraBItem = DisplayableFactory(cid, cauth, cdisplayInfo);
-    let cInstanceId = cparam.cameraInstanceId ? cparam.cameraInstanceId : 'org.basil.b.instance.camera';
-    let cameraInstance = InstanceFactory(cInstanceId, cauth, cameraBItem);
-    this.cameraInstance = cameraInstance;
-    cameraInstance.procgPosPreGet = function(inst) {
-      inst.gPos = this.camera.position.toArray();
-    }.bind(this);
-    cameraInstance.procgPosModified = function(inst) {
-      this.camera.position = (new THREE.Vector3()).fromArray(inst.gPos);
-    }.bind(this);
-    cameraInstance.procgRotPreGet = function(inst) {
-      inst.gRot = this.camera.rotation.toArray();
-    }.bind(this);
-    cameraInstance.procgRotModified = function(inst) {
-      this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
-    }.bind(this);
+      // Set up a camera Instance.
+      // Cameras can be displayed so there is a type.
+      let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
+      let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
+      let cauth = undefined;
+      let cdisplayInfo = {
+          'displayableType': 'camera'
+      };
+      let cameraBItem = DisplayableFactory(cid, cauth, cdisplayInfo);
+      let cInstanceId = cparam.cameraInstanceId ? cparam.cameraInstanceId : 'org.basil.b.instance.camera';
+      let cameraInstance = InstanceFactory(cInstanceId, cauth, cameraBItem);
+      this.cameraInstance = cameraInstance;
+      cameraInstance.procgPosPreGet = function(inst) {
+          inst.gPos = this.camera.position.toArray();
+      }.bind(this);
+      cameraInstance.procgPosModified = function(inst) {
+          this.camera.position = (new THREE.Vector3()).fromArray(inst.gPos);
+      }.bind(this);
+      cameraInstance.procgRotPreGet = function(inst) {
+          inst.gRot = this.camera.rotation.toArray();
+      }.bind(this);
+      cameraInstance.procgRotModified = function(inst) {
+          this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
+      }.bind(this);
   };
 
   // Add a test object to the scene
@@ -496,8 +496,8 @@ export class Graphics extends BItem {
 
   // Generate subscribable periodic when camera info (position) changes
   _generateCameraEvents() {
-    this.eventCameraInfo = Eventing.register('display.cameraInfo', 'Graphics');
-    this.eventCameraInfo.timer = Eventing.createTimedEventProcessor(
+    this.eventCameraInfo = this.events.Register('display.cameraInfo', 'Graphics');
+    this.eventCameraInfo.timer = this.events.CreateTimedEventProcessor(
                           this.eventCameraInfo, function(topic) {
         if (this.eventCameraInfo.hasSubscriptions) {
             if (this.eventCameraInfo.prevCamPosition == undefined) {
@@ -511,7 +511,7 @@ export class Graphics extends BItem {
                     'position': this.camera.position.clone(),
                     'rotation': this.camera.rotation.clone()
                 };
-                Eventing.fire(this.eventCameraInfo, camInfo);
+                this.events.Fire(this.eventCameraInfo, camInfo);
                 this.eventCameraInfo.prevCamPosition = newPos;
             }
         }
@@ -521,14 +521,14 @@ export class Graphics extends BItem {
   // Start the generation of renderer statistic events
   _generateRendererStatEvents() {
       // Generate subscribable periodic events when display info changes
-      this.eventDisplayInfo = Eventing.register('display.info', 'Graphics');
-      this.eventDisplayInfo.timer = Eventing.createTimedEventProcessor(this.eventDisplayInfo,
+      this.eventDisplayInfo = this.events.Register('display.info', 'Graphics');
+      this.eventDisplayInfo.timer = this.events.CreateTimedEventProcessor(this.eventDisplayInfo,
         function(topic) {
           if (this.eventDisplayInfo.hasSubscriptions) {
               // not general, but, for the moment, just return the WebGL info
               var dispInfo = this.renderer.info;
               dispInfo.render.fps = this.fps;
-              Eventing.fire(this.eventDisplayInfo, dispInfo);
+              this.events.Fire(this.eventDisplayInfo, dispInfo);
           }
       }.bind(this) );
   }
@@ -541,7 +541,7 @@ export class Graphics extends BItem {
       return new THREE.Color(colorValue);
   }
 
-  // For unknow reasons, ThreeJS doesn't have a canned way of disposing a scene
+  // For unknown reasons, ThreeJS doesn't have a canned way of disposing a scene
   // From https://stackoverflow.com/questions/33152132/three-js-collada-whats-the-proper-way-to-dispose-and-release-memory-garbag/33199591#33199591
   _disposeNode(node) {
       if (node instanceof THREE.Mesh) {

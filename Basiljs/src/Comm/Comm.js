@@ -46,42 +46,6 @@ export class Comm extends BItem {
         this.SetReady();
     };
 
-    // Initialize a transport and a service and resolve the promise when connected
-    // The 'parms' are passed to the transport and service creation routimes.
-    // Returns a promise that is resolved when both transport and service are running.
-    ConnectTransportAndService(parms) {
-        let params = CombineParameters(undefined, parms, {
-            'transport': 'WS',            // the type of transport to connect (WW, WS, test)
-            'transportURL': undefined,    // URL to connect transport to
-            'service': undefined          // service to add on top of that transport
-        });
-        return new Promise(function(resolve, reject) {
-            if (params.transport && params.transportURL) {
-                GP.DebugLog('Comm.ConnectTransportService: transport: ' + params.transport
-                            + '=>' + params.transportURL);
-                this.ConnectTransport(params)
-                .then (xport => {
-                    GP.DebugLog('Comm.ConnectTransportService: transport connected');
-                    if (params.service) {
-                        // Connect to the service
-                        return this.ConnectService(xport, params);
-                    }
-                    else {
-                        // No service to connect to
-                        reject('Comm.ConnectTransportAndService: No service specified to connect');
-                    }
-                })
-                .then (svc => {
-                    resolve(svc);
-                })
-                .catch ( e => {
-                    GP.ErrorLog('Comm.ConnectTransportService: failed initialization: ' + e);
-                    reject(e);
-                })
-            }
-        }.bind(this))
-    };
-
     // Make a connection to a service.
     // 'parms' is passed to the created transport/service
     ConnectTransport(parms) {
@@ -148,6 +112,7 @@ export class Comm extends BItem {
             let serviceType = params.service;
             switch (serviceType) {
                 case 'SpaceServer':
+                    // This service is not used and is here for development and debugging
                     svc = new SpaceServerConnection(pTransport, params);
                     let basilSpace = new BasilClientConnection(pTransport, params);
                     let aliveSpace = new AliveCheckConnection(pTransport, params);
@@ -159,6 +124,7 @@ export class Comm extends BItem {
                     break;
                 case 'SpaceServerClient':
                     svc = new SpaceServerClientConnection(pTransport, params);
+                    // A connection to the space server also lets the server talk to Basil
                     let basilSpaceClient = new BasilServerConnection(pTransport, params);
                     let aliveSpaceClient = new AliveCheckConnection(pTransport, params);
                     aliveSpaceClient.Start();
@@ -175,6 +141,12 @@ export class Comm extends BItem {
                     basilPesto.Start();
                     svc.Start();
                     GP.DebugLog('Comm.Connect: created PestoClientConnection. Id=' + svc.id);
+                    resolve(svc);
+                    break;
+              case 'Broth':
+                    svc = new BrothClientConnection(pTransport, params);
+                    svc.Start();
+                    GP.DebugLog('Comm.Connect: created BrothClientConnection. Id=' + svc.id);
                     resolve(svc);
                     break;
               default:
