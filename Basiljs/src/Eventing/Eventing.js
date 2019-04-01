@@ -96,6 +96,13 @@ export class Eventing extends BItem {
 
         // Start the timed event clock
         this._processTimedEvents();
+
+        // There should be only one and we keep a pointer in GP
+        GP.EventingInstance = this;
+    }
+
+    static Instance() {
+        return GP.EventingInstance;
     }
 
     // ===========================================
@@ -109,7 +116,7 @@ export class Eventing extends BItem {
         }
         let interval = 500;
         if (Config.eventing && Config.eventing.eventPollIntervalMS) {
-        interval = Number(Config.eventing.eventPollIntervalMS);
+            interval = Number(Config.eventing.eventPollIntervalMS);
         }
         setTimeout(this._processTimedEvents.bind(this), interval);
     };
@@ -129,8 +136,12 @@ export class Eventing extends BItem {
         }
         topicEnt.addSubscription(sub);
         GP.DebugLog("Eventing.subscribe: adding subscription to event " + topic);
+        if (this.SubscribeEventProcessor) this.SubscribeEventProcessor(topic);
         return sub;
     };
+    SubscribeEvent(eventHandler) {
+        this.SubscribeEventProcessor = eventHandler;
+    }
 
     // Release a topic subscription.
     Unsubscribe(subEntry) {
@@ -138,10 +149,14 @@ export class Eventing extends BItem {
             let topicEnt = this.FindTopic(subEntry.topic);
             if (topicEnt) {
                 topicEnt.removeSubscription(subEntry);
+                if (this.UnsubscribeEventProcessor) this.UnsubscribeEventProcessor(subEntry.topic);
             }
             GP.DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
         }
     };
+    UnsubscribeEvent(eventProcessor) {
+        this.UnsubscribeEventProcessor = eventProcessor;
+    }
 
     // Register a topic that can be generated.
     // This returns a handle for the topic for later 'event' calls.
@@ -153,16 +168,24 @@ export class Eventing extends BItem {
             topicEnt.registar = registar;
             this.topics.set(topic, topicEnt);
             GP.DebugLog("Eventing.register: registering event " + topic);
+            if (this.RegisterEventProcessor) this.RegisterEventProcessor(topic);
         }
         return topicEnt;
     };
+    RegisterEvent(eventProcessor) {
+        this.RegisterEventProcessor = eventProcessor;
+    }
 
     // Unregister a topic.
     // @ts-ignore
     Unregister(topicEntry, topic) {
         // cannot unregister a topic yet
-            GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
+        GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
+        if (this.UnregisterEventProcessor) this.UnregisterEventProcessor(topic);
     };
+    UnregisterEvent(eventProcessor) {
+        this.UnregisterEventProcessor = eventProcessor;
+    }
 
     // An event happened for a topic.
     // Fire the event processors and pass 'params' to all subscribers.
@@ -174,14 +197,26 @@ export class Eventing extends BItem {
         this.numEventsFired++;
         if (topicEntry && topicEntry.topic) {
             topicEntry.fire(params);
+            if (this.FireEventProcessor) this.FireEventProcessor(topicEntry.topic, params);
         }
     };
+    FireEvent(eventProcessor) {
+        this.FireEventProcessor = eventProcessor;
+    }
 
     // Return a TopicEntry for the given topic name.
     // Return undefined if not found.
     FindTopic(topic) {
         return this.topics.get(topic);
     };
+
+    // Return the list of topics that are defined
+    RegisteredTopics() {
+        return this.topics.keys();
+    }
+    RegisteredTopicEntries() {
+        return this.topics.values();
+    }
 
     // Calls a processor every 0.5 seconds for polled type events.
     // First parameter can be either a TopicEntry or a topic name
