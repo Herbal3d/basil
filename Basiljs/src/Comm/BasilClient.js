@@ -61,8 +61,8 @@ export class BasilClientConnection extends MsgProcessor {
     };
     ForgetDisplayableObject(auth, id) {
         let msg = { 'op': BasilMessageOps.get('ForgetDisplayableObjectReq') };
-        msg['objectId'] = { 'id': id };
         if (auth) msg['auth'] = auth;
+        msg['objectId'] = { 'id': id };
         return this.SendAndPromiseResponse(msg);
     };
     CreateObjectInstance(auth, objectId, instancePositionInfo, propertyList, instanceId) {
@@ -70,48 +70,48 @@ export class BasilClientConnection extends MsgProcessor {
         msg['objectId'] = { 'id': objectId };
         if (auth) msg['auth'] = auth;
         if (instancePositionInfo) msg['pos'] = instancePositionInfo;
-        if (propertyList) msg['props'] = propertyList;
+        if (propertyList) msg['properties'] = this.CreatePropertyList(propertyList);
         if (instanceId) msg['instanceId'] = { 'id': instanceId };
         return this.SendAndPromiseResponse(msg);
     };
     DeleteObjectInstance(auth, instanceId) {
         let msg = { 'op': BasilMessageOps.get('DeleteObjectInstanceReq') };
-        msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
+        msg['instanceId'] = { 'id': instanceId };
         return this.SendAndPromiseResponse(msg);
     };
     UpdateObjectProperty(auth, objectId, propertyList) {
         let msg = { 'op': BasilMessageOps.get('UpdateObjectPropertyReq') };
         msg['objectId'] = { 'id': objectId };
         if (auth) msg['auth'] = auth;
-        if (propertyList) msg['properties'] = propertyList;
+        if (propertyList) msg['properties'] = this.CreatePropertyList(propertyList);
         return this.SendAndPromiseResponse(msg);
     };
     UpdateInstanceProperty(auth, instanceId, propertyList) {
         let msg = { 'op': BasilMessageOps.get('UpdateInstancePropertyReq') };
-        msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
-        if (propertyList) msg['properties'] = propertyList;
+        msg['instanceId'] = { 'id': instanceId };
+        if (propertyList) msg['properties'] = this.CreatePropertyList(propertyList);
         return this.SendAndPromiseResponse(msg);
     };
     UpdateInstancePosition(auth, instanceId,  pos) {
         let msg = { 'op': BasilMessageOps.get('UpdateInstancePositionReq') };
-        msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
+        msg['instanceId'] = { 'id': instanceId };
         if (pos) msg['pos'] = pos;
         return this.SendAndPromiseResponse(msg);
     };
     RequestObjectProperties(auth, objectId, filter) {
         let msg = { 'op': BasilMessageOps.get('RequestObjectPropertiesReq') };
-        msg['objectId'] = { 'id': objectId };
         if (auth) msg['auth'] = auth;
+        msg['objectId'] = { 'id': objectId };
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg);
     };
     RequestInstanceProperties(auth, instanceId, filter) {
         let msg = { 'op': BasilMessageOps.get('RequestInstancePropertiesReq') };
-        msg['instanceId'] = { 'id': instanceId };
         if (auth) msg['auth'] = auth;
+        msg['instanceId'] = { 'id': instanceId };
         if (filter) msg['filter'] = filter;
         return this.SendAndPromiseResponse(msg);
     };
