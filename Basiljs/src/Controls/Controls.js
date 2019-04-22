@@ -53,7 +53,7 @@ export class Controls extends BItem {
         // Update the camera position for debugging
         this.infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
         if (this.infoCameraCoord) {
-            this.eventCameraInfo = new this.events.Subscribe('display.cameraInfo', function(camInfo) {
+            this.eventCameraInfo = this.events.Subscribe('display.cameraInfo', function(camInfo) {
             if (camInfo && camInfo.position && this.infoCameraCoord) {
                 this.infoCameraCoord.Update(camInfo.position);
             }
@@ -69,7 +69,7 @@ export class Controls extends BItem {
         this.infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
         this.infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
         if (this.infoDrawCalls) {
-            this.eventDisplayInfo = new this.events.Subscribe('display.info', function(info) {
+            this.eventDisplayInfo = this.events.Subscribe('display.info', function(info) {
                 if (info && info.render && this.infoDrawCalls) {
                     this.infoFPS.Update(Math.round(info.render.fps));
                     this.infoDrawCalls.Update(info.render.calls);

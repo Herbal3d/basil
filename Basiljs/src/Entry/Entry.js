@@ -56,11 +56,15 @@ if (Config.WSTester) {
     Object.assign(testConfigParams, Config.WSTester);
 }
 */
+let GetSelectedValue = function(optionID) {
+    let selection = document.getElementById(optionID);
+    let selectionValue = selection.options[selection.selectedIndex].value;
+    return selectionValue;
+}
 
 GP.CO = new Controls();
-GP.CO.ClickableOps['launchBasil'] = function() {
-    let selection = document.getElementById('sceneURL');
-    let selectedScene = selection.options[selection.selectedIndex].value;
+GP.CO.ClickableOps['testBasil'] = function() {
+    let selectionScene = GetSelectedValue('test-sceneURL');
     testConfigParams = {
         'comm': {
             'testmode': true,
@@ -78,6 +82,23 @@ GP.CO.ClickableOps['launchBasil'] = function() {
     console.log('testConfigParams=' + JSON.stringify(testConfigParams));
 
     let configParams = Base64.encode(JSON.stringify(testConfigParams));
+
+    window.location = 'Basil.html?c=' + configParams;
+};
+GP.CO.ClickableOps['regionConnect'] = function() {
+    let transportURL = GetSelectedValue('region-transportURL');
+    let transport = GetSelectedValue('region-transport');
+    let service = GetSelectedValue('region-service');
+    let regionConfigParams = {
+        'comm': {
+            'transport': transport,
+            'transportURL': transportURL,
+            'service': service,
+        }
+    };
+    console.log('gridConfigParams=' + JSON.stringify(regionConfigParams));
+
+    let configParams = Base64.encode(JSON.stringify(regionConfigParams));
 
     window.location = 'Basil.html?c=' + configParams;
 };

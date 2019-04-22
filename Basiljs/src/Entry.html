@@ -11,26 +11,60 @@
 <body id="EntryBody" class="pageLayout">
     <div id="controls">
         <div class="dialog-group">
-            <span id="sceneSelection">
-                <select id="sceneURL">
-                    <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf">
-                        Epic Castle (unoptimized)
+            <fieldset>
+                <legend>Test operation</legend>
+                <span id="sceneSelection">
+                    <select id="test-sceneURL">
+                        <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf"
+                            selected >
+                            Epic Castle (unoptimized)
+                        </option>
+                        <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf">
+                            Epic Castle (smallassets)
+                        </option>
+                        <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf">
+                            Epic Castle (mergedmaterials)
+                        </option>
+                        <option value="http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf">
+                            Testtest88 (unoptimized)
+                        </option>
+                        <option value="http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf">
+                            PalmyraTemple (unoptimized)
+                        </option>
+                    </select>
+                </span>
+                <button type="button" class="button clickable" op="testBasil">Launch</button>
+            </fieldset>
+        </div>
+        <div class="dialog-group">
+            <fieldset>
+                <legend>Connect to region</legend>
+                <select id="region-transportURL">
+                    <option value="ws://192.168.86.41:11440" selected>
+                        ws://192.168.86.41:11440
                     </option>
-                    <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf">
-                        Epic Castle (smallassets)
-                    </option>
-                    <option value="http://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf">
-                        Epic Castle (mergedmaterials)
-                    </option>
-                    <option value="http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf">
-                        Testtest88 (unoptimized)
-                    </option>
-                    <option value="http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf">
-                        PalmyraTemple (unoptimized)
+                    <option value="wss://192.168.86.41:11440">
+                        wss://192.168.86.41:11440
                     </option>
                 </select>
-            </span>
-            <button type="button" class="button clickable" op="launchBasil">Launch</button>
+                <select id="region-transport">
+                    <option value="WS" selected>
+                        WebSocket
+                    </option>
+                    <option value="WW">
+                        WebWorker
+                    </option>
+                </select>
+                <select id="region-service">
+                    <option value="SpaceServerClient" selected>
+                        SpaceServer
+                    </option>
+                    <option value="Pesto">
+                        PestoServer
+                    </option>
+                </select>
+                <button type="button" class="button clickable" op="regionConnect">Launch</button>
+            </fieldset>
         </div>
     </div>
 </body>

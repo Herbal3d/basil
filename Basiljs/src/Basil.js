@@ -197,7 +197,8 @@ if (Config.comm && Config.comm.transportURL) {
                     let auth = Config.comm.auth;
                     srv.OpenSession(auth, srvParams)
                     .then( resp => {
-                        GP.DebugLog('Basiljs: Session opened to SpaceServer');
+                        GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
+                                        + JSON.stringify(resp.properties));
                     })
                     .catch( e => {
                         GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);
