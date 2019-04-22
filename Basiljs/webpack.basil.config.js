@@ -25,7 +25,7 @@ module.exports = {
     // Aliases so individual files don't reference the filenames
     alias: {
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
-        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
+        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js')
     },
     extensions: [ '.js', '.jsx', '.json' ]
   },
