@@ -60,7 +60,7 @@ export class Comm extends BItem {
         return new Promise(function(resolve, reject) {
             let xport = undefined;
             // If there is already a transport for this destination URL, return that
-            if (this.transports.has(params.transportURL) {
+            if (this.transports.has(params.transportURL)) {
                 xport = this.transports.get(params.transportURL);
                 GP.DebugLog('Comm.ConnectTransport: reusing transport ' + xport.id)
             }
