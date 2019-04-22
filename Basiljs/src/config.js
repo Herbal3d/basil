@@ -6,6 +6,7 @@
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 export default {
     'comm': {
+        /*
         // Filled by parameters passed in initial invocation
         'transportURL': 'connectionURLForTransport',
         'transport': 'one of WS, WW',
@@ -15,6 +16,7 @@ export default {
             'url': 'URL to asset',
             'loaderType': 'GLTF'
         }
+        */
     },
     // Parameters for the main display page
     'page': {
