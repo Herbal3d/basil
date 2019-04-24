@@ -176,45 +176,34 @@ GP.Ready = true;
 // If there are connection parameters, start the first connection
 if (Config.comm && Config.comm.transportURL) {
     GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
-    GP.CM.ConnectTransport(Config.comm)
-    .then( xport => {
-        GP.DebugLog('Basiljs: initial transport connection successful. Id=' + xport.id);
-
-        if (Config.comm.service) {
-            GP.CM.ConnectService(xport, Config.comm)
-            .then( srv => {
-                GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
-                try {
-                    let srvParams = {};
-                    if (Config.comm.testmode) {
-                        // If a test session, pass the test parameters to the service
-                        Object.assign(srvParams, {
-                            'TestConnection': 'true',
-                            'TestURL': Config.comm.TestAsset.url,
-                            'TestLoaderType': Config.comm.TestAsset.loaderType
-                        });
-                    }
-                    let auth = Config.comm.auth;
-                    srv.OpenSession(auth, srvParams)
-                    .then( resp => {
-                        GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
-                                        + JSON.stringify(resp.properties));
-                    })
-                    .catch( e => {
-                        GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);
+    GP.CM.ConnectTransportAndService(Config.comm)
+        .then( srv => {
+            GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
+            try {
+                let srvParams = {};
+                if (Config.comm.testmode) {
+                    // If a test session, pass the test parameters to the service
+                    Object.assign(srvParams, {
+                        'TestConnection': 'true',
+                        'TestURL': Config.comm.TestAsset.url,
+                        'TestLoaderType': Config.comm.TestAsset.loaderType
                     });
                 }
-                catch (e) {
-                    GP.DebugLog('Basiljs: exception from OpenSession: ' + e);
-                }
-            })
-            .catch( e => {
-                GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + e.message);
-            });
-        }
-    })
-    .catch ( e => {
-        GP.DebugLog('Basiljs: failed connecting initial transport: ' + e.message);
-    
-    });
+                let auth = Config.comm.auth;
+                srv.OpenSession(auth, srvParams)
+                .then( resp => {
+                    GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
+                                    + JSON.stringify(resp.properties));
+                })
+                .catch( e => {
+                    GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);
+                });
+            }
+            catch (e) {
+                GP.DebugLog('Basiljs: exception from OpenSession: ' + e);
+            }
+        })
+        .catch( e => {
+            GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + e.message);
+        });
 };

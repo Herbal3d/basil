@@ -64,14 +64,14 @@ let GetSelectedValue = function(optionID) {
 
 GP.CO = new Controls();
 GP.CO.ClickableOps['testBasil'] = function() {
-    let selectionScene = GetSelectedValue('test-sceneURL');
+    let selectedScene = GetSelectedValue('test-sceneURL');
     testConfigParams = {
         'comm': {
             'testmode': true,
-            // 'transport': 'WW',
-            // 'transportURL': './wwtester.js',
-            'transport': 'WS',
-            'transportURL': 'ws://192.168.86.41:11440/',
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            // 'transport': 'WS',
+            // 'transportURL': 'ws://192.168.86.41:11440/',
             'service': 'SpaceServerClient',
             'TestAsset': {
                 'url': selectedScene,
@@ -86,14 +86,11 @@ GP.CO.ClickableOps['testBasil'] = function() {
     window.location = 'Basil.html?c=' + configParams;
 };
 GP.CO.ClickableOps['regionConnect'] = function() {
-    let transportURL = GetSelectedValue('region-transportURL');
-    let transport = GetSelectedValue('region-transport');
-    let service = GetSelectedValue('region-service');
     let regionConfigParams = {
         'comm': {
-            'transport': transport,
-            'transportURL': transportURL,
-            'service': service,
+            'transport': GetSelectedValue('region-transport'),
+            'transportURL': GetSelectedValue('region-transportURL'),
+            'service': GetSelectedValue('region-service')
         }
     };
     console.log('gridConfigParams=' + JSON.stringify(regionConfigParams));

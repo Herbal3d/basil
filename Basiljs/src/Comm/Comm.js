@@ -60,8 +60,8 @@ export class Comm extends BItem {
         return new Promise(function(resolve, reject) {
             let xport = undefined;
             // If there is already a transport for this destination URL, return that
-            if (this.transports.has(params.transportURL)) {
-                xport = this.transports.get(params.transportURL);
+            if (this.transports.has(params.transporturl)) {
+                xport = this.transports.get(params.transporturl);
                 GP.DebugLog('Comm.ConnectTransport: reusing transport ' + xport.id)
             }
             else {
@@ -83,7 +83,7 @@ export class Comm extends BItem {
                             GP.ErrorLog(errorMsg);
                             reject(errorMsg);
                     }
-                    this.transports.set(params.transportURL, xport);
+                    this.transports.set(params.transporturl, xport);
                     GP.DebugLog('Comm.ConnectTransport: created transport ' + xport.id)
                 }
                 catch(e) {
@@ -91,7 +91,7 @@ export class Comm extends BItem {
                 }
             }
             if (xport) {
-                xport.WhenReady(params.waitTilTransportReadyMS)
+                xport.WhenReady(params.waittiltransportreadyms)
                 .then( xxport => {
                     resolve(xxport);
                 })
@@ -167,4 +167,33 @@ export class Comm extends BItem {
             }
         });
     };
+
+    ConnectTransportAndService(pParams) {
+        let params = CombineParameters(undefined, pParams, {
+            'transportId': undefined,     // identifier for the created transport
+            'transport': 'WS',            // the type of transport to connect (WW, WS, test)
+            'transportURL': undefined,    // URL to connect transport to
+            'waitTilTransportReadyMS': 5000,    // MS before timeout waiting for transport ready
+            'service': 'SpaceServerClient',     // or 'Pesto'
+            'serviceId': undefined,       // if not passed, unique one created
+            'pestoId': undefined          // if not passed, unique one created
+        });
+        return new Promise((resolve, reject) => {
+            this.ConnectTransport(params)
+            .then( xport => {
+                GP.DebugLog('BasilServer.ProcMakeConnection: transport connected. Id=' + xport.id);
+                this.ConnectService(xport, params)
+                .then( srv => {
+                    GP.DebugLog('BasilServer.ProcMakeConnection: service connected. Id=' + srv.id);
+                    resolve(srv);
+                })
+                .catch ( e => {
+                    reject(e);
+                });
+            })
+            .catch( e => {
+                reject(e);
+            });
+        });
+    }
 }

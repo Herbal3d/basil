@@ -32,11 +32,11 @@ export class BTransportWW extends BTransport {
         // @ts-ignore
         if (typeof WorkerGlobalScope === 'undefined') {
             // We're the master
-            // this.params.transportURL is WebWorker URL to connect to
+            // this.params.transporturl is WebWorker URL to connect to
             GP.DebugLog('BTransportWW: setting up server');
             this.itemType = 'BTransport.TransportWW.Server';
             try {
-                this.worker = new Worker(this.params.transportURL);
+                this.worker = new Worker(this.params.transporturl);
                 this.isWorker = false;
                 this.worker.onmessage = function(d) {
                     this.messages.push(d.data);

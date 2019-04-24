@@ -20,26 +20,26 @@ import { CombineParameters, CreateUniqueId } from '../Utilities.js';
 
 // Template for transport implmentations.
 export class BTransport extends BItem {
-    constructor(parms) {
-        let params = CombineParameters(Config.comm.Transport, parms, {
+    constructor(pParams) {
+        let params = CombineParameters(Config.comm.Transport, pParams, {
             'transportId': undefined,
             'transportAuth': undefined,
             'initialSequenceNumber': 111,
             'initialAliveSequenceNumber': 333
         });
-        if (typeof params.transportId === 'undefined') {
+        if (typeof params.transportid === 'undefined') {
             // Really need a unique Id for every instance of transport
-            params.transportId = CreateUniqueId('transport', 'default');
+            params.transportid = CreateUniqueId('transport', 'default');
         }
-        super(params.transportId, params.transportAuth, BItemType.TRANSPORT);
+        super(params.transportid, params.transportauth, BItemType.TRANSPORT);
         this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
         this.params = params;
         this.messages = [];
         this.stats = {};
         this.stats.messagesSent = 0;
         this.stats.messagesReceived = 0;
-        this.sequenceNum = this.params.initialSequenceNumber;
-        this.aliveSequenceNum = this.params.initialAliveSequenceNumber;
+        this.sequenceNum = this.params.initialsequencenumber;
+        this.aliveSequenceNum = this.params.initialalivesequencenumber;
     
         // The properties that can be read as a BItem
         super.DefineProperties( {

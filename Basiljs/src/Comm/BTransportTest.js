@@ -23,9 +23,11 @@ GP.TransportTestsAliveIntervalID = undefined;
 GP.TransportTestsPollIntervalID = undefined;
 
 export class BTransportTest extends BTransport {
-
-    constructor(parms) {
-        super(parms);
+    constructor(pParams) {
+        let params = CombineParameters(Config.comm.TransportTest, pParams, {
+            'transportURL': undefined   // name of Worker to connect to
+        });
+        super(params);
         GP.DebugLog('BTransportTest: constructor');
         this.itemTYpe = 'BTransport.TransportTest';
         if (GP.TransportTestsRunning === undefined) {
@@ -38,13 +40,13 @@ export class BTransportTest extends BTransport {
         if (GP.TransportTestsAliveIntervalID === undefined) {
             GP.TransportTestsAliveIntervalID = setInterval(function() {
                 BTransportTest.ProcessAliveInterval();
-            }, parms.testInterval ? parms.testInterval : 1000)
+            }, params.testinterval ? params.testinterval : 1000)
         }
         // Timer to poll message queue and process received messsages
         if (GP.TransportTestsPollIntervalID === undefined) {
             GP.TransportTestsPollIntervalID = setInterval(function() {
                 BTransportTest.ProcessPollInterval();
-            }, parms.testPollInterval ? parms.testPollInterval : 500)
+            }, params.testpollinterval ? params.testpollinterval : 500)
         }
         this.SetState(BItemState.READY);
     }

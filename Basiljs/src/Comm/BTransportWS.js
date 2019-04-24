@@ -29,7 +29,7 @@ export class BTransportWS extends BTransport {
         this.SetLoading();
         this.itemTYpe = 'BTransport.TransportWS';
         try {
-            let tempSocket = new WebSocket(this.params.transportURL);
+            let tempSocket = new WebSocket(this.params.transporturl);
             if (tempSocket) {
                 // Socket is opened so put it in a place where everyone can use it
                 this.socket = tempSocket;

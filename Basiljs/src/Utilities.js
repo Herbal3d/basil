@@ -72,6 +72,10 @@ export function CombineParameters(configParams, passedParams, requiredParams) {
             }
         })
     }
+    // make sure there are versions that are all lower case to eliminate case problems
+    Object.getOwnPropertyNames(parms).forEach( key => {
+        parms[key.toLowerCase()] = parms[key];
+    })
     return parms;
 }
 
