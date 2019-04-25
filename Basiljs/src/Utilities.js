@@ -23,8 +23,8 @@ export function CreateUniqueId(service, type) {
         // Note that basename begins with a dot
     }
     return String(GP.UniqueIdCount++)
-        + '.'
         + (type ? ( '.' + type ) : '')
+        + '.'
         + service
         + GP.UniqueIdBasename
   /* Original form that put number at the end
@@ -58,24 +58,27 @@ export function RandomIdentifier() {
 //    the proper merge of those three sources.
 // Passed context parameters take highest priority, then config file, then
 //    default/required values.
+// NOTE: everything is forced to all lowercase thus the resulting value
+//    lookup MUST be looking for a lowercase only value.
 export function CombineParameters(configParams, passedParams, requiredParams) {
     let parms = configParams ? configParams : {};
+    Object.getOwnPropertyNames(parms).forEach( key => {
+        parms[key.toLowerCase()] = parms[key];
+    })
     if (passedParams) {
         // passed parameters overwrite configuration file parameters
-        Object.assign(parms, passedParams);
+        Object.keys(passedParams).forEach( key => {
+            parms[key.toLowerCase()] = passedParams[key];
+        });
     }
     if (requiredParams) {
         Object.keys(requiredParams).forEach( key => {
             // If a required parameter has not been set, add the required param and default value
-            if (typeof(parms[key]) === 'undefined') {
-                parms[key] = requiredParams[key];
+            if (typeof(parms[key.toLowerCase()]) === 'undefined') {
+                parms[key.toLowerCase()] = requiredParams[key];
             }
         })
     }
-    // make sure there are versions that are all lower case to eliminate case problems
-    Object.getOwnPropertyNames(parms).forEach( key => {
-        parms[key.toLowerCase()] = parms[key];
-    })
     return parms;
 }
 

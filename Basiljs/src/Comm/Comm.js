@@ -62,7 +62,9 @@ export class Comm extends BItem {
             // If there is already a transport for this destination URL, return that
             if (this.transports.has(params.transporturl)) {
                 xport = this.transports.get(params.transporturl);
-                GP.DebugLog('Comm.ConnectTransport: reusing transport ' + xport.id)
+                GP.DebugLog('Comm.ConnectTransport: reusing transport '
+                            + xport.id
+                            + '(' + params.transporturl + ')' );
             }
             else {
                 // Create a new transport to the URL
@@ -181,10 +183,10 @@ export class Comm extends BItem {
         return new Promise((resolve, reject) => {
             this.ConnectTransport(params)
             .then( xport => {
-                GP.DebugLog('BasilServer.ProcMakeConnection: transport connected. Id=' + xport.id);
+                GP.DebugLog('Comm.ConnectTransportAndService: transport connected. Id=' + xport.id);
                 this.ConnectService(xport, params)
                 .then( srv => {
-                    GP.DebugLog('BasilServer.ProcMakeConnection: service connected. Id=' + srv.id);
+                    GP.DebugLog('Comm.ConnectTransportAndService: service connected. Id=' + srv.id);
                     resolve(srv);
                 })
                 .catch ( e => {

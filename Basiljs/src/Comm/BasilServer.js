@@ -19,8 +19,6 @@ import { BItem, BItemType } from '../Items/BItem.js';
 import { MsgProcessor } from './MsgProcessor.js';
 import { BasilMessageOps } from './BasilMessageOps.js';
 
-import { ConnectTransportAndService } from '../Comm/Comm.js';
-
 import { CreateUniqueId, CreateUniqueInstanceId, CombineParameters } from '../Utilities.js';
 import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
 
@@ -229,29 +227,34 @@ export class BasilServerConnection  extends MsgProcessor {
     // Someone is asking me to make a connection to another service
     _ProcMakeConnection(req) {
         let ret = { 'op': BasilMessageOps.get('MakeConnectionResp') };
-        if (req.properties) {
-            // if connecting to a SpaceServer, we are the client
-            if (req.properties['Service'] == 'SpaceServer') {
-                req.properties['Service'] = 'SpaceServerClient';
-            }
-            ConnectTransportAndService(req.properties)
-            .then( srv => {
-                let props = {};
-                srv.OpenSession(auth, props)
-                .then( resp => {
-                    GP.DebugLog('BasilServer.ProcMakeConnection: Session opened to SpaceServer. Params='
-                                + JSON.stringify(resp.properties));
-                })
-                .catch( e => {
-                    GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);
-                    // NOTE: an exception cannot be returned as the response has been sent
-                });
+        let params = CombineParameters(undefined, req.properties, {
+            'transportURL': undefined,
+            'transport': 'WS',
+            'service': undefined
+        });
+        GP.DebugLog('BasilServer.MakeConnection: props=' + JSON.stringify(params));
+        // if connecting to a SpaceServer, we are the client
+        if (params['service'] == 'SpaceServer') {
+            params['service'] = 'SpaceServerClient';
+        }
+        GP.CM.ConnectTransportAndService(params)
+        .then( srv => {
+            let auth = undefined;
+            let props = {};
+            srv.OpenSession(auth, props)
+            .then( resp => {
+                GP.DebugLog('BasilServer.ProcMakeConnection: Session opened to SpaceServer. Params='
+                            + JSON.stringify(resp.properties));
             })
-            .catch (e => {
-                GP.ErrorLog('BasilServer.ProcMakeConnection: failed connecting to transport/service' + e.message);
+            .catch( e => {
+                GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);
                 // NOTE: an exception cannot be returned as the response has been sent
             });
-        }
+        })
+        .catch (e => {
+            GP.ErrorLog('BasilServer.ProcMakeConnection: failed connecting to transport/service' + e.message);
+            // NOTE: an exception cannot be returned as the response has been sent
+        });
         return ret;
     }
 
