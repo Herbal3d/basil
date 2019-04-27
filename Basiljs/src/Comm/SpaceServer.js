@@ -35,7 +35,6 @@ export class SpaceServerConnection extends MsgProcessor {
         // templates = entry_name: [ message_processor, BasilServerMessage_reply_name ]
         //      If the _reply_name is 'undefined', then the message doesn't expect a response.
         let processors = new Map()
-        console.log('SpaceServer.constructor: get=' + BasilMessageOps.get('OpenSessionReq'));
         processors.set(BasilMessageOps.get('OpenSessionReq'), this._ProcOpenSession.bind(this));
         processors.set(BasilMessageOps.get('CloseSessionReq'), this._ProcCloseSession.bind(this));
         processors.set(BasilMessageOps.get('CameraViewReq'), this._ProcCameraView.bind(this));

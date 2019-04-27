@@ -64,7 +64,7 @@ export class Comm extends BItem {
                 xport = this.transports.get(params.transporturl);
                 GP.DebugLog('Comm.ConnectTransport: reusing transport '
                             + xport.id
-                            + '(' + params.transporturl + ')' );
+                            + ' (' + params.transporturl + ')' );
             }
             else {
                 // Create a new transport to the URL

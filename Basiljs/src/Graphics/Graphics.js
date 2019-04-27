@@ -142,7 +142,7 @@ export class Graphics extends BItem {
             this.frameNum++;
             this.lastFrameDelta = this.clock.getDelta();
             // compute a running average of FPS
-            this.fps = (0.25 * 1 / this.lastFrameDelta) + (0.75 * this.fps);
+            this.fps = Math.min((0.25 * (1 / this.lastFrameDelta)) + (0.75 * this.fps), 300);
 
             if (this.cameraControl) {
                 this.cameraControl.update();
