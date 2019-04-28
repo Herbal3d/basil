@@ -35,9 +35,9 @@ export class InstanceMeshSet extends Instance {
                     return this.gPos; },
                 'set': (val) => {
                     this.gPos = ParseThreeTuple(val);
-                    // GP.DebugLog('InstanceMeshSet.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
+                    GP.DebugLog('InstanceMeshSet.setPosition: id=' + this.id + ', pos=' + JSON.stringify(this.gPos));
                     if (typeof this.worldNode != 'undefined') {
-                        this.worldNode.position = new THREE.Vector3().fromArray(this.gPos);
+                        this.worldNode.position.fromArray(this.gPos);
                     }
                     this.gRotgPosModified = true;
                     if (typeof this.procgPosModified == 'function') {
@@ -51,13 +51,13 @@ export class InstanceMeshSet extends Instance {
                         procgRotPreGet(this);
                     }
                     if (typeof this.worldNode != 'undefined') {
-                        this.gRot = this.worldNode.rotation.toArray();
+                        this.gRot = this.worldNode.quaternion.toArray();
                     }
                     return this.gRot; },
                 'set': (val) => {
                     this.gRot = ParseFourTuple(val);
                     if (typeof this.worldNode != 'undefined') {
-                        this.worldNode.rotation = new THREE.Quaternion().fromArray(this.gRot);
+                        this.worldNode.quaternion.fromArray( this.gRot );
                     }
                     this.gRotgPosModified = true;
                     if (typeof this.procgRotModified == 'function') {

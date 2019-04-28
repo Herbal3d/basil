@@ -66,21 +66,25 @@ class TransportReceiver {
             GP.ErrorLog('MsgProcessor.Process: Unknown message: ' + JSON.stringify(msg));
         }
         if (replyContents) {
-            // There is a response to the message
+            // There is a response to the message.
+            // If the sender didn't supply response bindings, don't send the response.
             if (msg.response) {
                 // Return the binding that allows the other side to match the response
                 replyContents['response'] = msg.response;
-            }
-            if (Config.Debug && Config.Debug.VerifyProtocol) {
-                if (! BasilMessage.verify(replyContents)) {
-                    GP.ErrorLog('MsgProcessor.Process: Verification fail: '
-                                    + JSON.stringify(replyContents));
+
+                if (Config.Debug && Config.Debug.VerifyProtocol) {
+                    if (! BasilMessage.verify(replyContents)) {
+                        GP.ErrorLog('MsgProcessor.Process: Verification fail: '
+                                        + JSON.stringify(replyContents));
+                    }
                 }
+
+                if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
+                    GP.DebugLog('MsgProcessor.Process: sending response: ' + JSON.stringify(replyContents));
+                }
+
+                this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
             }
-            if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
-                GP.DebugLog('MsgProcessor.Process: sending response: ' + JSON.stringify(replyContents));
-            }
-            this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
         }
     }
 

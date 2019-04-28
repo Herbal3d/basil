@@ -89,13 +89,18 @@ export function CombineParameters(configParams, passedParams, requiredParams) {
 //         a three value JavaScript array: [ xValue, yValue, zValue ]
 //         a three value JavaScript map: [ x: xValue, y: yValue, z: zValue ]
 // Returns a three valued JavaScript array.
+// NOTE: since protobuf doesn't send zero values, it's possible to get "{ y: 10 }"
 export function ParseThreeTuple(tuple) {
     let val = tuple
     if (typeof tuple == 'String') {
         val = JSON.Parse(tuple);
     }
-    if (val.x && val.y && val.z) {
-        val = [ val.x, val.y, val.z ]
+    if (!Array.isArray(val)) {
+        let ret = [ 0, 0, 0 ];
+        if (val.x) ret[0] = val.x;
+        if (val.y) ret[1] = val.y;
+        if (val.z) ret[2] = val.z;
+        val = ret;
     }
     // consider doing some validity checking (length, type, ...)
     return val
@@ -105,16 +110,21 @@ export function ParseThreeTuple(tuple) {
 // Used for 4 term vector (like rotation).
 // Accepts a JSON string array: "[ wValue, xValue, yValue, zValue ]"
 //         a JSON value map: "{ "w": wValue, "x": xValue, "y": yValue, "z": zValue }"
-//         a three value JavaScript array: [ wValue, xValue, yValue, zValue ]
-//         a three value JavaScript map: [ w: wValue, x: xValue, y: yValue, z: zValue ]
-// Returns a three valued JavaScript array.
+//         a four value JavaScript array: [ wValue, xValue, yValue, zValue ]
+//         a four value JavaScript map: [ w: wValue, x: xValue, y: yValue, z: zValue ]
+// Returns a four valued JavaScript array.
 export function ParseFourTuple(tuple) {
     let val = tuple
     if (typeof tuple == 'String') {
         val = JSON.Parse(tuple);
     }
-    if (val.x && val.y && val.z && val.w) {
-        val = [ val.x, val.y, val.z, val.w ]
+    if (!Array.isArray(val)) {
+        let ret = [ 0, 0, 0, 0 ];
+        if (val.x) ret[0] = val.x;
+        if (val.y) ret[1] = val.y;
+        if (val.z) ret[2] = val.z;
+        if (val.w) ret[3] = val.w;
+        val = ret;
     }
     // consider doing some validity checking (length, type, ...)
     return val

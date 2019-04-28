@@ -64,6 +64,7 @@ export class BasilServerConnection  extends MsgProcessor {
     }
 
     _ProcIdentifyDisplayableObject(req) {
+        // console.log('IdentifyDisplayableObject');
         let ret = { 'op': BasilMessageOps.get('IdentifyDisplayableObjectResp') };
         if (req.assetInfo) {
             let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
@@ -111,6 +112,7 @@ export class BasilServerConnection  extends MsgProcessor {
     }
     // Given an object with recieved parameters, do operation and return response object
     _ProcCreateObjectInstance(req) {
+        // console.log('ProcCreateObjectInstance');
         let ret = { 'op': BasilMessageOps.get('CreateObjectInstanceResp') };
         if (req.objectId) {
             let baseDisplayable = BItem.GetItem(req.objectId.id);
@@ -157,6 +159,7 @@ export class BasilServerConnection  extends MsgProcessor {
         BItem.ForgetItem(inst);
     }
     _ProcUpdateObjectProperty(req) {
+        // console.log('ProcUpdateObjectProperty');
         let ret = { 'op': BasilMessageOps.get('UpdateObjectPropertyResp') };
         if (req.objectId && req.properties) {
             let obj = BItem.GetItem(req.objectId.id);
@@ -170,6 +173,7 @@ export class BasilServerConnection  extends MsgProcessor {
         return ret;
     }
     _ProcUpdateInstanceProperty(req) {
+        // console.log('ProcUpdateInstanceProperty');
         let ret = { 'op': BasilMessageOps.get('UpdateInstancePropertyResp') };
         if (req.instanceId && req.properties) {
             let obj = BItem.GetItem(req.instanceId.id);
@@ -183,6 +187,7 @@ export class BasilServerConnection  extends MsgProcessor {
         return ret;
     }
     _ProcUpdateInstancePosition(req) {
+        // console.log('ProcUpdateInstancePosition');
         let ret = { 'op': BasilMessageOps.get('UpdateInstancePositionResp') };
         if (req.instanceId && req.pos) {
             let instance = BItem.GetItem(req.instanceId.id);

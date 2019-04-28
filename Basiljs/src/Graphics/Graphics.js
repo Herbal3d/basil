@@ -211,7 +211,7 @@ export class Graphics extends BItem {
                 // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
                 let worldNode = new THREE.Group();
                 worldNode.position.fromArray(inst.gPos);
-                worldNode.rotation.fromArray(inst.gRot);
+                worldNode.quaternion.fromArray(inst.gRot);
                 worldNode.name = inst.id;
                 if (Array.isArray(inst.displayable.representation)) {
                     inst.displayable.representation.forEach( piece => {
@@ -259,12 +259,14 @@ export class Graphics extends BItem {
         return new Promise(function(resolve, reject) {
             let loader = undefined;
             switch (parms.loaderType.toLowerCase()) {
-                case 'gltf':    loader = new THREE.GLTFLoader; break;
-                case 'collada': loader = new THREE.ColladaLoader; break;
-                case 'draco':   loader = new THREE.DRACOLoader; break;
-                case 'fbx':     loader = new THREE.FBXLoader; break;
-                case 'obj':     loader = new THREE.OBJLoader; break;
-                case 'bvh':     loader = new THREE.BVHLoader; break;
+                case 'gltf':    loader = new THREE.GLTFLoader();
+                                loader.setDRACOLoader( new THREE.DRACOLoader() );
+                                // THREE.DRACOLoader.getDecoderModule();
+                                break;
+                case 'collada': loader = new THREE.ColladaLoader(); break;
+                case 'fbx':     loader = new THREE.FBXLoader(); break;
+                case 'obj':     loader = new THREE.OBJLoader(); break;
+                case 'bvh':     loader = new THREE.BVHLoader(); break;
             }
             if (loader) {
                 GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + parms.url);
@@ -289,302 +291,301 @@ export class Graphics extends BItem {
                             + ', url=' + parms.url;
                         reject(err);
                     }
-                  },
-          function(xhr) {
-            // loading progress
-            if (typeof(progressCallback) !== 'undefined') {
-              progressCallback(xhr);
+                },
+                // loading progress
+                function(xhr) {
+                    if (typeof(progressCallback) !== 'undefined') {
+                        progressCallback(xhr);
+                    }
+                },
+                // Failed load
+                function(e) {
+                    reject(e);
+                });
             }
-          },
-          function(e) {
-              // Failed load
-              reject(e);
-          });
-      }
-      else {
-          reject('No loader for type ' + parms.loaderType);
-      }
-    });
-  }
-
-  // LoadSimpleAsset returns an array of nodes. Here we free them.
-  ReleaseSimpleAsset(asset) {
-    if (Array.isArray(asset)) {
-      asset.forEach( node => {
-        this._disposeHierarchy(node);
-      });
-    }
-    else {
-      this._disposeHierarchy(asset);
+            else {
+                reject('No loader for type ' + parms.loaderType);
+            }
+        });
     }
 
-  }
-
-  // Function to move the camera from where it is to a new place.
-  // This is movement from external source which could conflict with AR
-  //     and VR camera control.
-  SetCameraPosition(gPos) {
-    // TODO: conversion of gPos to lPos
-    let pos = ParseThreeTuple(gPos);
-    this.camera.position.fromArray(gPos);
-    GP.DebugLog('Graphics: camera position: ['
-      + this.camera.position.x
-      + ', '
-      + this.camera.position.y
-      + ', '
-      + this.camera.position.z
-      + ']'
-    );
-  }
-
-  // Pass position as either THREE.Vector3 or array of three numbers
-  PointCameraAt(gPos) {
-    let look = ParseThreeTuple(gPos);
-    if (this.cameraControl) {
-        this.cameraControl.target = look;
-        this.cameraControl.update();
-    }
-    else {
-        this.camera.lookAt(look);
-    }
-    // Move axes helper to where the camera is looking
-    if (this.axesHelper) {
-        this.axesHelper.geometry.translate(look.x, look.y, look.z);
-    }
-
-    GP.DebugLog('Graphics: camera looking at: ['
-      + look.x
-      + ', '
-      + look.y
-      + ', '
-      + look.z
-      + ']'
-    );
-  }
-
-  _initializeCamera(passedParms) {
-    if (this.camera) {
-      return;
-    }
-
-    // Set the parameter default values if not specified in the config file
-    let parms = CombineParameters(Config.webgl.camera, passedParms, {
-          'name': 'cameraX',
-          'initialViewDistance': 1000,
-          'initialCameraPosition': [200, 50, 200],
-          'initialCameraLookAt': [ 0, 0, 0],
-          'addCameraHelper': false,
-          'addAxesHelper': false
-    });
-
-    this.camera = new THREE.PerspectiveCamera( 75,
-                      this.canvas.clientWidth / this.canvas.clientHeight,
-                      1, parms.initialViewDistance );
-    // this.camera.up = new THREE.Vector3(0, 1, 0);
-    this.scene.add(this.camera);
-
-    this.SetCameraPosition(parms.initialCameraPosition);
-    this.PointCameraAt(parms.initialCameraLookAt);
-
-    if (parms.addCameraHelper) {
-        this.cameraHelper = new THREE.CameraHelper(this.camera);
-        this.scene.add(this.cameraHelper);
-    }
-    if (parms.addAxesHelper) {
-        let helperSize = parms.axesHelperSize || 5;
-        this.axesHelper = new THREE.AxesHelper(Number(helperSize));
-        this.scene.add(this.axesHelper);
-    }
-  }
-
-  _initializeLights(passedParms) {
-    let parms = CombineParameters(Config.webgl.lights, passedParms, undefined);
-
-    if (parms.ambient) {
-        var ambient = new THREE.AmbientLight(this._colorFromValue(parms.ambient.color),
-                                            Number(parms.ambient.intensity));
-        this.ambientLight = ambient;
-        this.scene.add(ambient);
-    }
-    if (parms.directional) {
-        var directional = new THREE.DirectionalLight(this._colorFromValue(parms.directional.color),
-                                            Number(parms.directional.intensity));
-        directional.position.fromArray(parms.directional.direction).normalize();
-        this.directionalLight = directional;
-        if (parms.directional.shadows) {
-            directional.castShadow = true;
-            directional.shadow.bias = parms.directional.shadows.bias;
-            directional.shadow.mapSize.width = parms.directional.shadows.mapWidth;
-            directional.shadow.mapSize.height = parms.directional.shadows.mapHeight;
+    // LoadSimpleAsset returns an array of nodes. Here we free them.
+    ReleaseSimpleAsset(asset) {
+        if (Array.isArray(asset)) {
+            asset.forEach( node => {
+                this._disposeHierarchy(node);
+            });
         }
-        this.scene.add(directional);
+        else {
+            this._disposeHierarchy(asset);
+        }
     }
-  }
 
-  // Initialize environmental properties (fog, sky, ...)
-  _initializeEnvironment(passedParams) {
-      if (Config.webgl && Config.webgl.fog) {
-          let parms = CombineParameters(Config.webgl.fog, passedParams, {
-              'type': 'linear',
-              'color': 'lightblue',
-              'far': 1000,
-              'density': 0.00025
-          });
-          let fogColor = this._colorFromValue(parms.color);
+    // Function to move the camera from where it is to a new place.
+    // This is movement from external source which could conflict with AR
+    //     and VR camera control.
+    SetCameraPosition(gPos) {
+        // TODO: conversion of gPos to lPos
+        let pos = ParseThreeTuple(gPos);
+        this.camera.position.fromArray(gPos);
+        GP.DebugLog('Graphics: camera position: ['
+            + this.camera.position.x
+            + ', '
+            + this.camera.position.y
+            + ', '
+            + this.camera.position.z
+            + ']'
+        );
+    }
 
-          if (parms.type == 'linear') {
-              let fogger = new THREE.Fog(fogColor, parms.far);
-              if (parms.name) fogger.name = parms.name;
-              if (parms.near) fogger.near = parms.near;
-              this.scene.add(fogger);
-          }
-          if (parms.type == 'exponential') {
-              let fogger = new THREE.FogExp2(fogColor, parms.density);
-              if (parms.name) fogger.name = parms.name;
-              this.scene.add(fogger);
-          }
-      }
-  }
+    // Pass position as either THREE.Vector3 or array of three numbers
+    PointCameraAt(gPos) {
+        let look = ParseThreeTuple(gPos);
+        if (this.cameraControl) {
+            this.cameraControl.target = look;
+            this.cameraControl.update();
+        }
+        else {
+            this.camera.lookAt(look);
+        }
+        // Move axes helper to where the camera is looking
+        if (this.axesHelper) {
+            this.axesHelper.geometry.translate(look.x, look.y, look.z);
+        }
 
-  _initializeCameraInstance(passedParams) {
-      // Set up a camera Instance.
-      // Cameras can be displayed so there is a type.
-      let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
-      let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
-      let cauth = undefined;
-      let cdisplayInfo = {
-          'displayableType': 'camera'
-      };
-      let cameraBItem = DisplayableFactory(cid, cauth, cdisplayInfo);
-      let cInstanceId = cparam.cameraInstanceId ? cparam.cameraInstanceId : 'org.basil.b.instance.camera';
-      let cameraInstance = InstanceFactory(cInstanceId, cauth, cameraBItem);
-      this.cameraInstance = cameraInstance;
-      cameraInstance.procgPosPreGet = function(inst) {
-          inst.gPos = this.camera.position.toArray();
-      }.bind(this);
-      cameraInstance.procgPosModified = function(inst) {
-          this.camera.position = (new THREE.Vector3()).fromArray(inst.gPos);
-      }.bind(this);
-      cameraInstance.procgRotPreGet = function(inst) {
-          inst.gRot = this.camera.rotation.toArray();
-      }.bind(this);
-      cameraInstance.procgRotModified = function(inst) {
-          this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
-      }.bind(this);
-  };
+        GP.DebugLog('Graphics: camera looking at: ['
+            + look.x
+            + ', '
+            + look.y
+            + ', '
+            + look.z
+            + ']'
+        );
+    }
 
-  // Add a test object to the scene
-  AddTestObject() {
-      var geometry = new THREE.BoxGeometry( 1, 2, 3);
-      var material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
-      this.scene.add(cube);
-      GP.DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
-  };
+    _initializeCamera(passedParms) {
+        if (this.camera) {
+            return;
+        }
 
-  // For initial debugging, camera is controlled by the console
-  _initializeCameraControl() {
-    let control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-    control.enableDamping = true;
-    control.dampingFactor = 0.25;
-    control.screenSpacePanning = true;
-    control.minDistance = 50;
-    control.maxDistance = this.camera.far;
-    this.cameraControl = control;
-  }
+        // Set the parameter default values if not specified in the config file
+        let parms = CombineParameters(Config.webgl.camera, passedParms, {
+            'name': 'cameraX',
+            'initialViewDistance': 1000,
+            'initialCameraPosition': [200, 50, 200],
+            'initialCameraLookAt': [ 0, 0, 0],
+            'addCameraHelper': false,
+            'addAxesHelper': false
+        });
 
-  // Generate subscribable periodic when camera info (position) changes
-  _generateCameraEvents() {
-    this.eventCameraInfo = this.events.Register('display.cameraInfo', 'Graphics');
-    this.eventCameraInfo.timer = this.events.CreateTimedEventProcessor(
-                          this.eventCameraInfo, function(topic) {
-        if (this.eventCameraInfo.hasSubscriptions) {
-            if (this.eventCameraInfo.prevCamPosition == undefined) {
-                this.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
+        this.camera = new THREE.PerspectiveCamera( 75,
+                        this.canvas.clientWidth / this.canvas.clientHeight,
+                        1, parms.initialViewDistance );
+        // this.camera.up = new THREE.Vector3(0, 1, 0);
+        this.scene.add(this.camera);
+
+        this.SetCameraPosition(parms.initialCameraPosition);
+        this.PointCameraAt(parms.initialCameraLookAt);
+
+        if (parms.addCameraHelper) {
+            this.cameraHelper = new THREE.CameraHelper(this.camera);
+            this.scene.add(this.cameraHelper);
+        }
+        if (parms.addAxesHelper) {
+            let helperSize = parms.axesHelperSize || 5;
+            this.axesHelper = new THREE.AxesHelper(Number(helperSize));
+            this.scene.add(this.axesHelper);
+        }
+    }
+
+    _initializeLights(passedParms) {
+        let parms = CombineParameters(Config.webgl.lights, passedParms, undefined);
+
+        if (parms.ambient) {
+            var ambient = new THREE.AmbientLight(this._colorFromValue(parms.ambient.color),
+                                                Number(parms.ambient.intensity));
+            this.ambientLight = ambient;
+            this.scene.add(ambient);
+        }
+        if (parms.directional) {
+            var directional = new THREE.DirectionalLight(this._colorFromValue(parms.directional.color),
+                                                Number(parms.directional.intensity));
+            directional.position.fromArray(parms.directional.direction).normalize();
+            this.directionalLight = directional;
+            if (parms.directional.shadows) {
+                directional.castShadow = true;
+                directional.shadow.bias = parms.directional.shadows.bias;
+                directional.shadow.mapSize.width = parms.directional.shadows.mapWidth;
+                directional.shadow.mapSize.height = parms.directional.shadows.mapHeight;
             }
-            var oldPos = this.eventCameraInfo.prevCamPosition;
-            // must clone or 'newPos' will be just a reference to the old value.
-            var newPos = this.camera.position.clone();
-            if (!newPos.equals(oldPos)) {
-                var camInfo = {
-                    'position': this.camera.position.clone(),
-                    'rotation': this.camera.rotation.clone()
-                };
-                this.events.Fire(this.eventCameraInfo, camInfo);
-                this.eventCameraInfo.prevCamPosition = newPos;
+            this.scene.add(directional);
+        }
+    }
+
+    // Initialize environmental properties (fog, sky, ...)
+    _initializeEnvironment(passedParams) {
+        if (Config.webgl && Config.webgl.fog) {
+            let parms = CombineParameters(Config.webgl.fog, passedParams, {
+                'type': 'linear',
+                'color': 'lightblue',
+                'far': 1000,
+                'density': 0.00025
+            });
+            let fogColor = this._colorFromValue(parms.color);
+
+            if (parms.type == 'linear') {
+                let fogger = new THREE.Fog(fogColor, parms.far);
+                if (parms.name) fogger.name = parms.name;
+                if (parms.near) fogger.near = parms.near;
+                this.scene.add(fogger);
+            }
+            if (parms.type == 'exponential') {
+                let fogger = new THREE.FogExp2(fogColor, parms.density);
+                if (parms.name) fogger.name = parms.name;
+                this.scene.add(fogger);
             }
         }
-    }.bind(this));
-  }
-
-  // Start the generation of renderer statistic events
-  _generateRendererStatEvents() {
-      // Generate subscribable periodic events when display info changes
-      this.eventDisplayInfo = this.events.Register('display.info', 'Graphics');
-      this.eventDisplayInfo.timer = this.events.CreateTimedEventProcessor(this.eventDisplayInfo,
-        function(topic) {
-          if (this.eventDisplayInfo.hasSubscriptions) {
-              // not general, but, for the moment, just return the WebGL info
-              var dispInfo = this.renderer.info;
-              dispInfo.render.fps = this.fps;
-              this.events.Fire(this.eventDisplayInfo, dispInfo);
-          }
-      }.bind(this) );
-  }
-
-  // Return a ThreeJS color number from an array of color values
-  _colorFromValue(colorValue) {
-      if (Array.isArray(colorValue)) {
-          return new THREE.Color(colorValue[0], colorValue[1], colorValue[2]);
-      }
-      return new THREE.Color(colorValue);
-  }
-
-  // For unknown reasons, ThreeJS doesn't have a canned way of disposing a scene
-  // From https://stackoverflow.com/questions/33152132/three-js-collada-whats-the-proper-way-to-dispose-and-release-memory-garbag/33199591#33199591
-  _disposeNode(node) {
-      if (node instanceof THREE.Mesh) {
-          if (node.geometry) {
-              node.geometry.dispose ();
-          }
-          if (node.material) {
-              let matTypes = [ 'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap', 'envMap' ];
-              if (node.material.materials) {
-                node.material.materials.forEach( mtrl => {
-                  matTypes.forEach( matType => {
-                    if (mtrl[matType]) mtrl[matType].dispose();
-                  } );
-                  mtrl.dispose();
-                } );
-              }
-              else {
-                  matTypes.forEach( matType => {
-                    if (node.material[matType]) node.material[matType].dispose();
-                  });
-                  node.material.dispose();
-              }
-          }
-          if (node.texture) {
-            node.texture.dispose();
-          }
-      }
-  }   // disposeNode
-
-  // disposeHierarchy (YOUR_OBJECT3D, disposeNode);
-  _disposeHierarchy(node) {
-      for (var i = node.children.length - 1; i >= 0; i--) {
-          var child = node.children[i];
-          this._disposeHierarchy(child);
-          this._disposeNode(child);
-      }
-      this._disposeNode(node);
-  }
-
-  _disposeScene(scene) {
-    for (var ii = scene.children.length - 1; ii >= 0; ii--) {
-        this._disposeHierarchy(scene.children[ii], node => { scene.remove(node)});
     }
-  }
 
+    _initializeCameraInstance(passedParams) {
+        // Set up a camera Instance.
+        // Cameras can be displayed so there is a type.
+        let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
+        let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
+        let cauth = undefined;
+        let cdisplayInfo = {
+            'displayableType': 'camera'
+        };
+        let cameraBItem = DisplayableFactory(cid, cauth, cdisplayInfo);
+        let cInstanceId = cparam.cameraInstanceId ? cparam.cameraInstanceId : 'org.basil.b.instance.camera';
+        let cameraInstance = InstanceFactory(cInstanceId, cauth, cameraBItem);
+        this.cameraInstance = cameraInstance;
+        cameraInstance.procgPosPreGet = function(inst) {
+            inst.gPos = this.camera.position.toArray();
+        }.bind(this);
+        cameraInstance.procgPosModified = function(inst) {
+            this.camera.position = (new THREE.Vector3()).fromArray(inst.gPos);
+        }.bind(this);
+        cameraInstance.procgRotPreGet = function(inst) {
+            inst.gRot = this.camera.quaternion.toArray();
+        }.bind(this);
+        cameraInstance.procgRotModified = function(inst) {
+            this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
+        }.bind(this);
+    };
+
+    // Add a test object to the scene
+    AddTestObject() {
+        var geometry = new THREE.BoxGeometry( 1, 2, 3);
+        var material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
+        var cube = new THREE.Mesh(geometry, material);
+        cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
+        this.scene.add(cube);
+        GP.DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
+    };
+
+    // For initial debugging, camera is controlled by the console
+    _initializeCameraControl() {
+        let control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        control.enableDamping = true;
+        control.dampingFactor = 0.25;
+        control.screenSpacePanning = true;
+        control.minDistance = 50;
+        control.maxDistance = this.camera.far;
+        this.cameraControl = control;
+    }
+
+    // Generate subscribable periodic when camera info (position) changes
+    _generateCameraEvents() {
+        this.eventCameraInfo = this.events.Register('display.cameraInfo', 'Graphics');
+        this.eventCameraInfo.timer = this.events.CreateTimedEventProcessor(
+                            this.eventCameraInfo, function(topic) {
+            if (this.eventCameraInfo.hasSubscriptions) {
+                if (this.eventCameraInfo.prevCamPosition == undefined) {
+                    this.eventCameraInfo.prevCamPosition = new THREE.Vector3(0,0,0);
+                }
+                var oldPos = this.eventCameraInfo.prevCamPosition;
+                // must clone or 'newPos' will be just a reference to the old value.
+                var newPos = this.camera.position.clone();
+                if (!newPos.equals(oldPos)) {
+                    var camInfo = {
+                        'position': this.camera.position.clone(),
+                        'rotation': this.camera.rotation.clone()
+                    };
+                    this.events.Fire(this.eventCameraInfo, camInfo);
+                    this.eventCameraInfo.prevCamPosition = newPos;
+                }
+            }
+        }.bind(this));
+    }
+
+    // Start the generation of renderer statistic events
+    _generateRendererStatEvents() {
+        // Generate subscribable periodic events when display info changes
+        this.eventDisplayInfo = this.events.Register('display.info', 'Graphics');
+        this.eventDisplayInfo.timer = this.events.CreateTimedEventProcessor(this.eventDisplayInfo,
+            function(topic) {
+                if (this.eventDisplayInfo.hasSubscriptions) {
+                    // not general, but, for the moment, just return the WebGL info
+                    var dispInfo = this.renderer.info;
+                    dispInfo.render.fps = this.fps;
+                    this.events.Fire(this.eventDisplayInfo, dispInfo);
+                }
+            }.bind(this)
+        );
+    }
+
+    // Return a ThreeJS color number from an array of color values
+    _colorFromValue(colorValue) {
+        if (Array.isArray(colorValue)) {
+            return new THREE.Color(colorValue[0], colorValue[1], colorValue[2]);
+        }
+        return new THREE.Color(colorValue);
+    }
+
+    // For unknown reasons, ThreeJS doesn't have a canned way of disposing a scene
+    // From https://stackoverflow.com/questions/33152132/three-js-collada-whats-the-proper-way-to-dispose-and-release-memory-garbag/33199591#33199591
+    _disposeNode(node) {
+        if (node instanceof THREE.Mesh) {
+            if (node.geometry) {
+                node.geometry.dispose ();
+            }
+            if (node.material) {
+                let matTypes = [ 'map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap', 'envMap' ];
+                if (node.material.materials) {
+                    node.material.materials.forEach( mtrl => {
+                        matTypes.forEach( matType => {
+                            if (mtrl[matType]) mtrl[matType].dispose();
+                        } );
+                        mtrl.dispose();
+                    } );
+                }
+                else {
+                    matTypes.forEach( matType => {
+                        if (node.material[matType]) node.material[matType].dispose();
+                    });
+                    node.material.dispose();
+                }
+            }
+            if (node.texture) {
+                node.texture.dispose();
+            }
+        }
+    }   // disposeNode
+
+    // disposeHierarchy (YOUR_OBJECT3D, disposeNode);
+    _disposeHierarchy(node) {
+        for (var i = node.children.length - 1; i >= 0; i--) {
+            var child = node.children[i];
+            this._disposeHierarchy(child);
+            this._disposeNode(child);
+        }
+        this._disposeNode(node);
+    }
+
+    _disposeScene(scene) {
+        for (var ii = scene.children.length - 1; ii >= 0; ii--) {
+            this._disposeHierarchy(scene.children[ii], node => { scene.remove(node)});
+        }
+    }
 }
