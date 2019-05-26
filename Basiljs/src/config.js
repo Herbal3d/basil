@@ -71,18 +71,19 @@ export default {
             'far': 5000
         },
         'renderer': {
-          'ThreeJS': {
-            // Parameters passed to the renderer when created.
-            //   see https://threejs.org/docs/index.html#api/renderers/WebGLRenderer
-            'antialias': true,
-            'alpha': true,      // there are alpha textures in the scene
-            'logarithmicDepthBuffer': false
-          },
-          'clearColor': [ 0.1, 0.1, 0.1 ],
-          'shadows': false,
-          // As suggested in the ThreeJS documentation for GLTFLoader:
-          'gammaOutput': true,
-          'gammaFactor': 2.20
+            'ThreeJS': {
+                'useWebGL2': true,
+                // Parameters passed to the renderer when created.
+                //   see https://threejs.org/docs/index.html#api/renderers/WebGLRenderer
+                'antialias': true,
+                'alpha': true,      // there are alpha textures in the scene
+                'logarithmicDepthBuffer': false
+            },
+            'clearColor': [ 0.1, 0.1, 0.1 ],
+            'shadows': false,
+            // As suggested in the ThreeJS documentation for GLTFLoader:
+            'gammaOutput': true,
+            'gammaFactor': 2.20
         },
     },
     // Names for predefined/service BItem layers

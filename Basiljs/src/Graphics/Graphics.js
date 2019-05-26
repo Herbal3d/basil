@@ -52,8 +52,15 @@ export class Graphics extends BItem {
 
         // parameters to pass to the THREE.renderer creation
         let rendererParams = renderParms.ThreeJS ? renderParms.ThreeJS : {};
-        rendererParams.canvas = canvas;
-        this.renderer = new THREE.WebGLRenderer(rendererParams);
+        if (rendererParams.UseWebGL2) {
+            rendererParams.canvas = canvas;
+            rendererParams.context = canvas.GetContext('webgl2');
+            this.renderer = new THREE.WebGLRenderer(rendererParams);
+        }
+        else {
+            rendererParams.canvas = canvas;
+            this.renderer = new THREE.WebGLRenderer(rendererParams);
+        }
 
         if (renderParms.clearColor) {
             this.renderer.setClearColor(this._colorFromValue(renderParms.clearColor));
