@@ -5,9 +5,13 @@
 
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 export default {
+    'basil': {
+        // ms before removing deleted BItem
+        'BItemDeleteInterval': 60000
+     },
     'comm': {
-        /*
         // Filled by parameters passed in initial invocation
+        /*
         'transportURL': 'connectionURLForTransport',
         'transport': 'one of WS, WW',
         'service': 'one of SpaceServerClient, Broth, Pesto',

@@ -78,7 +78,9 @@ export class BItem {
                     // If BItem is still 'READY', it cannot be released yet
                     if (bItem.state != BItemState.READY) {
                         // Wait for a while before releasing
-                        if ((Date.now() - bItem.whenDeleted) > 5000) {
+                        let waitInterval = Config.basil.BItemDeleteInterval
+                                   ? Config.basil.BItemDeleteInterval : 50000;
+                        if ((Date.now() - bItem.whenDeleted) > waitInterval)
                             bItem.ReleaseResources();
                             IM.ItemsDeleted.delete(bItem.id);
                         }
