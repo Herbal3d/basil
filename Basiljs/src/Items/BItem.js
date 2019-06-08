@@ -80,7 +80,7 @@ export class BItem {
                         // Wait for a while before releasing
                         let waitInterval = Config.basil.BItemDeleteInterval
                                    ? Config.basil.BItemDeleteInterval : 50000;
-                        if ((Date.now() - bItem.whenDeleted) > waitInterval)
+                        if ((Date.now() - bItem.whenDeleted) > waitInterval) {
                             bItem.ReleaseResources();
                             IM.ItemsDeleted.delete(bItem.id);
                         }
