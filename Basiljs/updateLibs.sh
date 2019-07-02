@@ -32,7 +32,7 @@ if [[ "$DOUPDATETHREEJS" == "yes" ]] ; then
     cp "$THREEDIR/examples/js/loaders/OBJLoader.js" "${JSLIBS}"
     cp "$THREEDIR/examples/js/loaders/BVHLoader.js" "${JSLIBS}"
     cp "$THREEDIR/examples/js/controls/OrbitControls.js" "${JSLIBS}"
-    cp "$THREEDIR/examples/js/libs/stats.min.js" "${JSLIBS}"
+    # cp "$THREEDIR/examples/js/libs/stats.min.js" "${JSLIBS}"
 else
     echo "=== Not updating ThreeJS"
 fi

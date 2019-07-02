@@ -41,33 +41,33 @@ export const BasilMessage = $root.BasilMessage = (() => {
         BasilMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.op != null && message.hasOwnProperty("op"))
+            if (message.op != null && Object.hasOwnProperty.call(message, "op"))
                 writer.uint32(8).int32(message.op);
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(18).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(26).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(34).fork()).ldelim();
-            if (message.pos != null && message.hasOwnProperty("pos"))
+            if (message.pos != null && Object.hasOwnProperty.call(message, "pos"))
                 $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(42).fork()).ldelim();
-            if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
+            if (message.assetInfo != null && Object.hasOwnProperty.call(message, "assetInfo"))
                 $root.BasilType.AssetInformation.encode(message.assetInfo, writer.uint32(50).fork()).ldelim();
-            if (message.aabb != null && message.hasOwnProperty("aabb"))
+            if (message.aabb != null && Object.hasOwnProperty.call(message, "aabb"))
                 $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(58).fork()).ldelim();
-            if (message.filter != null && message.hasOwnProperty("filter"))
+            if (message.filter != null && Object.hasOwnProperty.call(message, "filter"))
                 writer.uint32(66).string(message.filter);
-            if (message.properties != null && message.hasOwnProperty("properties"))
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
                 for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
                     writer.uint32(74).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
-            if (message.opParameters != null && message.hasOwnProperty("opParameters"))
+            if (message.opParameters != null && Object.hasOwnProperty.call(message, "opParameters"))
                 for (let keys = Object.keys(message.opParameters), i = 0; i < keys.length; ++i)
                     writer.uint32(82).fork().uint32(10).string(keys[i]).uint32(18).string(message.opParameters[keys[i]]).ldelim();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(90).fork()).ldelim();
-            if (message.response != null && message.hasOwnProperty("response"))
+            if (message.response != null && Object.hasOwnProperty.call(message, "response"))
                 $root.BasilType.BResponseRequest.encode(message.response, writer.uint32(106).fork()).ldelim();
-            if (message["class"] != null && message.hasOwnProperty("class"))
+            if (message["class"] != null && Object.hasOwnProperty.call(message, "class"))
                 writer.uint32(112).int32(message["class"]);
             return writer;
         };
@@ -463,11 +463,11 @@ export const BasilType = $root.BasilType = (() => {
         Vector3.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.x != null && message.hasOwnProperty("x"))
+            if (message.x != null && Object.hasOwnProperty.call(message, "x"))
                 writer.uint32(9).double(message.x);
-            if (message.y != null && message.hasOwnProperty("y"))
+            if (message.y != null && Object.hasOwnProperty.call(message, "y"))
                 writer.uint32(17).double(message.y);
-            if (message.z != null && message.hasOwnProperty("z"))
+            if (message.z != null && Object.hasOwnProperty.call(message, "z"))
                 writer.uint32(25).double(message.z);
             return writer;
         };
@@ -580,13 +580,13 @@ export const BasilType = $root.BasilType = (() => {
         Quaternion.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.x != null && message.hasOwnProperty("x"))
+            if (message.x != null && Object.hasOwnProperty.call(message, "x"))
                 writer.uint32(9).double(message.x);
-            if (message.y != null && message.hasOwnProperty("y"))
+            if (message.y != null && Object.hasOwnProperty.call(message, "y"))
                 writer.uint32(17).double(message.y);
-            if (message.z != null && message.hasOwnProperty("z"))
+            if (message.z != null && Object.hasOwnProperty.call(message, "z"))
                 writer.uint32(25).double(message.z);
-            if (message.w != null && message.hasOwnProperty("w"))
+            if (message.w != null && Object.hasOwnProperty.call(message, "w"))
                 writer.uint32(33).double(message.w);
             return writer;
         };
@@ -715,7 +715,7 @@ export const BasilType = $root.BasilType = (() => {
                     writer.double(message.matrix[i]);
                 writer.ldelim();
             }
-            if (message.origin != null && message.hasOwnProperty("origin"))
+            if (message.origin != null && Object.hasOwnProperty.call(message, "origin"))
                 $root.BasilType.Vector3.encode(message.origin, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -840,9 +840,9 @@ export const BasilType = $root.BasilType = (() => {
         BasilException.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.reason != null && message.hasOwnProperty("reason"))
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
                 writer.uint32(10).string(message.reason);
-            if (message.hints != null && message.hasOwnProperty("hints"))
+            if (message.hints != null && Object.hasOwnProperty.call(message, "hints"))
                 for (let keys = Object.keys(message.hints), i = 0; i < keys.length; ++i)
                     writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.hints[keys[i]]).ldelim();
             return writer;
@@ -986,13 +986,13 @@ export const BasilType = $root.BasilType = (() => {
         CoordPosition.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.pos != null && message.hasOwnProperty("pos"))
+            if (message.pos != null && Object.hasOwnProperty.call(message, "pos"))
                 $root.BasilType.Vector3.encode(message.pos, writer.uint32(10).fork()).ldelim();
-            if (message.rot != null && message.hasOwnProperty("rot"))
+            if (message.rot != null && Object.hasOwnProperty.call(message, "rot"))
                 $root.BasilType.Quaternion.encode(message.rot, writer.uint32(18).fork()).ldelim();
-            if (message.posRef != null && message.hasOwnProperty("posRef"))
+            if (message.posRef != null && Object.hasOwnProperty.call(message, "posRef"))
                 writer.uint32(24).int32(message.posRef);
-            if (message.rotRef != null && message.hasOwnProperty("rotRef"))
+            if (message.rotRef != null && Object.hasOwnProperty.call(message, "rotRef"))
                 writer.uint32(32).int32(message.rotRef);
             return writer;
         };
@@ -1189,7 +1189,7 @@ export const BasilType = $root.BasilType = (() => {
         ObjectIdentifier.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
                 writer.uint32(10).string(message.id);
             return writer;
         };
@@ -1276,7 +1276,7 @@ export const BasilType = $root.BasilType = (() => {
         InstanceIdentifier.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
                 writer.uint32(10).string(message.id);
             return writer;
         };
@@ -1364,9 +1364,9 @@ export const BasilType = $root.BasilType = (() => {
         AaBoundingBox.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.upperFrontLeft != null && message.hasOwnProperty("upperFrontLeft"))
+            if (message.upperFrontLeft != null && Object.hasOwnProperty.call(message, "upperFrontLeft"))
                 $root.BasilType.Vector3.encode(message.upperFrontLeft, writer.uint32(10).fork()).ldelim();
-            if (message.lowerBackRight != null && message.hasOwnProperty("lowerBackRight"))
+            if (message.lowerBackRight != null && Object.hasOwnProperty.call(message, "lowerBackRight"))
                 $root.BasilType.Vector3.encode(message.lowerBackRight, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -1478,11 +1478,11 @@ export const BasilType = $root.BasilType = (() => {
         DisplayableInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.aabb != null && message.hasOwnProperty("aabb"))
+            if (message.aabb != null && Object.hasOwnProperty.call(message, "aabb"))
                 $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(10).fork()).ldelim();
-            if (message.displayableType != null && message.hasOwnProperty("displayableType"))
+            if (message.displayableType != null && Object.hasOwnProperty.call(message, "displayableType"))
                 writer.uint32(18).string(message.displayableType);
-            if (message.asset != null && message.hasOwnProperty("asset"))
+            if (message.asset != null && Object.hasOwnProperty.call(message, "asset"))
                 for (let keys = Object.keys(message.asset), i = 0; i < keys.length; ++i)
                     writer.uint32(26).fork().uint32(10).string(keys[i]).uint32(18).string(message.asset[keys[i]]).ldelim();
             return writer;
@@ -1619,9 +1619,9 @@ export const BasilType = $root.BasilType = (() => {
         AssetInformation.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
                 $root.BasilType.ObjectIdentifier.encode(message.id, writer.uint32(10).fork()).ldelim();
-            if (message.displayInfo != null && message.hasOwnProperty("displayInfo"))
+            if (message.displayInfo != null && Object.hasOwnProperty.call(message, "displayInfo"))
                 $root.BasilType.DisplayableInfo.encode(message.displayInfo, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -1730,7 +1730,7 @@ export const BasilType = $root.BasilType = (() => {
         PathDescription.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.pathType != null && message.hasOwnProperty("pathType"))
+            if (message.pathType != null && Object.hasOwnProperty.call(message, "pathType"))
                 writer.uint32(10).string(message.pathType);
             return writer;
         };
@@ -1820,13 +1820,13 @@ export const BasilType = $root.BasilType = (() => {
         InstancePositionInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.id != null && message.hasOwnProperty("id"))
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
                 $root.BasilType.InstanceIdentifier.encode(message.id, writer.uint32(10).fork()).ldelim();
-            if (message.pos != null && message.hasOwnProperty("pos"))
+            if (message.pos != null && Object.hasOwnProperty.call(message, "pos"))
                 $root.BasilType.CoordPosition.encode(message.pos, writer.uint32(18).fork()).ldelim();
-            if (message.vel != null && message.hasOwnProperty("vel"))
+            if (message.vel != null && Object.hasOwnProperty.call(message, "vel"))
                 $root.BasilType.Vector3.encode(message.vel, writer.uint32(26).fork()).ldelim();
-            if (message.path != null && message.hasOwnProperty("path"))
+            if (message.path != null && Object.hasOwnProperty.call(message, "path"))
                 $root.BasilType.PathDescription.encode(message.path, writer.uint32(34).fork()).ldelim();
             return writer;
         };
@@ -1968,7 +1968,7 @@ export const BasilType = $root.BasilType = (() => {
         AccessAuthorization.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.accessProperties != null && message.hasOwnProperty("accessProperties"))
+            if (message.accessProperties != null && Object.hasOwnProperty.call(message, "accessProperties"))
                 for (let keys = Object.keys(message.accessProperties), i = 0; i < keys.length; ++i)
                     writer.uint32(10).fork().uint32(10).string(keys[i]).uint32(18).string(message.accessProperties[keys[i]]).ldelim();
             return writer;
@@ -2075,7 +2075,7 @@ export const BasilType = $root.BasilType = (() => {
         TraceInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.info != null && message.hasOwnProperty("info"))
+            if (message.info != null && Object.hasOwnProperty.call(message, "info"))
                 writer.uint32(10).string(message.info);
             return writer;
         };
@@ -2163,9 +2163,9 @@ export const BasilType = $root.BasilType = (() => {
         BResponseRequest.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.responseSession != null && message.hasOwnProperty("responseSession"))
+            if (message.responseSession != null && Object.hasOwnProperty.call(message, "responseSession"))
                 writer.uint32(8).uint32(message.responseSession);
-            if (message.responseSessionKey != null && message.hasOwnProperty("responseSessionKey"))
+            if (message.responseSessionKey != null && Object.hasOwnProperty.call(message, "responseSessionKey"))
                 writer.uint32(18).string(message.responseSessionKey);
             return writer;
         };
@@ -2271,7 +2271,7 @@ export const SpaceServer = $root.SpaceServer = (() => {
         CameraViewReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -2363,7 +2363,7 @@ export const SpaceServer = $root.SpaceServer = (() => {
         CameraViewResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -2457,9 +2457,9 @@ export const SpaceServer = $root.SpaceServer = (() => {
         OpenSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.features != null && message.hasOwnProperty("features"))
+            if (message.features != null && Object.hasOwnProperty.call(message, "features"))
                 for (let keys = Object.keys(message.features), i = 0; i < keys.length; ++i)
                     writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.features[keys[i]]).ldelim();
             return writer;
@@ -2585,9 +2585,9 @@ export const SpaceServer = $root.SpaceServer = (() => {
         OpenSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            if (message.properties != null && message.hasOwnProperty("properties"))
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
                 for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
                     writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
             return writer;
@@ -2712,9 +2712,9 @@ export const SpaceServer = $root.SpaceServer = (() => {
         CloseSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.reason != null && message.hasOwnProperty("reason"))
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
                 writer.uint32(18).string(message.reason);
             return writer;
         };
@@ -2818,7 +2818,7 @@ export const SpaceServer = $root.SpaceServer = (() => {
         CloseSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -2945,13 +2945,13 @@ export const BasilServer = $root.BasilServer = (() => {
         IdentifyDisplayableObjectReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.assetInfo != null && message.hasOwnProperty("assetInfo"))
+            if (message.assetInfo != null && Object.hasOwnProperty.call(message, "assetInfo"))
                 $root.BasilType.AssetInformation.encode(message.assetInfo, writer.uint32(18).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(26).fork()).ldelim();
-            if (message.aabb != null && message.hasOwnProperty("aabb"))
+            if (message.aabb != null && Object.hasOwnProperty.call(message, "aabb"))
                 $root.BasilType.AaBoundingBox.encode(message.aabb, writer.uint32(34).fork()).ldelim();
             return writer;
         };
@@ -3093,9 +3093,9 @@ export const BasilServer = $root.BasilServer = (() => {
         IdentifyDisplayableObjectResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -3205,9 +3205,9 @@ export const BasilServer = $root.BasilServer = (() => {
         ForgetDisplayableObjectReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -3316,7 +3316,7 @@ export const BasilServer = $root.BasilServer = (() => {
         ForgetDisplayableObjectResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -3414,18 +3414,18 @@ export const BasilServer = $root.BasilServer = (() => {
         CreateObjectInstanceReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(26).fork()).ldelim();
-            if (message.pos != null && message.hasOwnProperty("pos"))
+            if (message.pos != null && Object.hasOwnProperty.call(message, "pos"))
                 $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(34).fork()).ldelim();
-            if (message.propertiesToSet != null && message.hasOwnProperty("propertiesToSet"))
+            if (message.propertiesToSet != null && Object.hasOwnProperty.call(message, "propertiesToSet"))
                 for (let keys = Object.keys(message.propertiesToSet), i = 0; i < keys.length; ++i)
                     writer.uint32(42).fork().uint32(10).string(keys[i]).uint32(18).string(message.propertiesToSet[keys[i]]).ldelim();
-            if (message.InstanceCountHint != null && message.hasOwnProperty("InstanceCountHint"))
+            if (message.InstanceCountHint != null && Object.hasOwnProperty.call(message, "InstanceCountHint"))
                 writer.uint32(48).int32(message.InstanceCountHint);
             return writer;
         };
@@ -3609,9 +3609,9 @@ export const BasilServer = $root.BasilServer = (() => {
         CreateObjectInstanceResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -3721,9 +3721,9 @@ export const BasilServer = $root.BasilServer = (() => {
         DeleteObjectInstanceReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
             return writer;
         };
@@ -3832,7 +3832,7 @@ export const BasilServer = $root.BasilServer = (() => {
         DeleteObjectInstanceResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -3927,11 +3927,11 @@ export const BasilServer = $root.BasilServer = (() => {
         UpdateObjectPropertyReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
-            if (message.props != null && message.hasOwnProperty("props"))
+            if (message.props != null && Object.hasOwnProperty.call(message, "props"))
                 for (let keys = Object.keys(message.props), i = 0; i < keys.length; ++i)
                     writer.uint32(26).fork().uint32(10).string(keys[i]).uint32(18).string(message.props[keys[i]]).ldelim();
             return writer;
@@ -4072,7 +4072,7 @@ export const BasilServer = $root.BasilServer = (() => {
         UpdateObjectPropertyResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -4167,11 +4167,11 @@ export const BasilServer = $root.BasilServer = (() => {
         UpdateInstancePropertyReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
-            if (message.props != null && message.hasOwnProperty("props"))
+            if (message.props != null && Object.hasOwnProperty.call(message, "props"))
                 for (let keys = Object.keys(message.props), i = 0; i < keys.length; ++i)
                     writer.uint32(26).fork().uint32(10).string(keys[i]).uint32(18).string(message.props[keys[i]]).ldelim();
             return writer;
@@ -4312,7 +4312,7 @@ export const BasilServer = $root.BasilServer = (() => {
         UpdateInstancePropertyResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -4406,11 +4406,11 @@ export const BasilServer = $root.BasilServer = (() => {
         UpdateInstancePositionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
-            if (message.pos != null && message.hasOwnProperty("pos"))
+            if (message.pos != null && Object.hasOwnProperty.call(message, "pos"))
                 $root.BasilType.InstancePositionInfo.encode(message.pos, writer.uint32(26).fork()).ldelim();
             return writer;
         };
@@ -4535,7 +4535,7 @@ export const BasilServer = $root.BasilServer = (() => {
         UpdateInstancePositionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -4629,11 +4629,11 @@ export const BasilServer = $root.BasilServer = (() => {
         RequestObjectPropertiesReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
                 $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
-            if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
+            if (message.propertyMatch != null && Object.hasOwnProperty.call(message, "propertyMatch"))
                 writer.uint32(26).string(message.propertyMatch);
             return writer;
         };
@@ -4755,9 +4755,9 @@ export const BasilServer = $root.BasilServer = (() => {
         RequestObjectPropertiesResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            if (message.properties != null && message.hasOwnProperty("properties"))
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
                 for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
                     writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
             return writer;
@@ -4883,11 +4883,11 @@ export const BasilServer = $root.BasilServer = (() => {
         RequestInstancePropertiesReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
                 $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
-            if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
+            if (message.propertyMatch != null && Object.hasOwnProperty.call(message, "propertyMatch"))
                 writer.uint32(26).string(message.propertyMatch);
             return writer;
         };
@@ -5009,9 +5009,9 @@ export const BasilServer = $root.BasilServer = (() => {
         RequestInstancePropertiesResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            if (message.properties != null && message.hasOwnProperty("properties"))
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
                 for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
                     writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
             return writer;
@@ -5136,9 +5136,9 @@ export const BasilServer = $root.BasilServer = (() => {
         CloseSessionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.reason != null && message.hasOwnProperty("reason"))
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
                 writer.uint32(18).string(message.reason);
             return writer;
         };
@@ -5242,7 +5242,7 @@ export const BasilServer = $root.BasilServer = (() => {
         CloseSessionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -5336,9 +5336,9 @@ export const BasilServer = $root.BasilServer = (() => {
         MakeConnectionReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.connectionParams != null && message.hasOwnProperty("connectionParams"))
+            if (message.connectionParams != null && Object.hasOwnProperty.call(message, "connectionParams"))
                 for (let keys = Object.keys(message.connectionParams), i = 0; i < keys.length; ++i)
                     writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.connectionParams[keys[i]]).ldelim();
             return writer;
@@ -5462,7 +5462,7 @@ export const BasilServer = $root.BasilServer = (() => {
         MakeConnectionResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.exception != null && message.hasOwnProperty("exception"))
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
                 $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
             return writer;
         };
@@ -5556,11 +5556,11 @@ export const BasilServer = $root.BasilServer = (() => {
         AliveCheckReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.auth != null && message.hasOwnProperty("auth"))
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
                 $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.time != null && message.hasOwnProperty("time"))
+            if (message.time != null && Object.hasOwnProperty.call(message, "time"))
                 writer.uint32(16).uint64(message.time);
-            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+            if (message.sequenceNum != null && Object.hasOwnProperty.call(message, "sequenceNum"))
                 writer.uint32(24).int32(message.sequenceNum);
             return writer;
         };
@@ -5692,13 +5692,13 @@ export const BasilServer = $root.BasilServer = (() => {
         AliveCheckResp.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.time != null && message.hasOwnProperty("time"))
+            if (message.time != null && Object.hasOwnProperty.call(message, "time"))
                 writer.uint32(8).uint64(message.time);
-            if (message.sequenceNum != null && message.hasOwnProperty("sequenceNum"))
+            if (message.sequenceNum != null && Object.hasOwnProperty.call(message, "sequenceNum"))
                 writer.uint32(16).int32(message.sequenceNum);
-            if (message.timeReceived != null && message.hasOwnProperty("timeReceived"))
+            if (message.timeReceived != null && Object.hasOwnProperty.call(message, "timeReceived"))
                 writer.uint32(24).uint64(message.timeReceived);
-            if (message.sequenceNumReceived != null && message.hasOwnProperty("sequenceNumReceived"))
+            if (message.sequenceNumReceived != null && Object.hasOwnProperty.call(message, "sequenceNumReceived"))
                 writer.uint32(32).int32(message.sequenceNumReceived);
             return writer;
         };
