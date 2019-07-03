@@ -285,6 +285,9 @@ export class Graphics extends BItem {
                     if (loaded.scenes) scene = loaded.scenes[0];
                     let nodes = [];
                     if (scene) {
+                        _checkSceneForInstances(scene);
+                        // Take the children out of the scene and return list of children nodes.
+                        // The remove/push thing is done to clean up any scene meta-data.
                         while (scene.children.length > 0) {
                             let first = scene.children[0];
                             scene.remove(first);
@@ -480,6 +483,56 @@ export class Graphics extends BItem {
             this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
         }.bind(this);
     };
+
+    _checkSceneForInstances(scene) {
+        var _geomById = new Map();
+        console.log("INSTANCES: num initial nodes: " + scene.children.length)
+        scene.children.forEach( ch => {
+            this._checkNodeForInstances(ch, _geomById);
+        });
+        console.log("INSTANCES: num geometries: " + _geomById.size);
+        console.log("INSTANCES: num THREE.Group: " + _geomById.bGroupType);
+        console.log("INSTANCES: num THREE.Mesh: " + _geomById.bMeshType);
+        console.log("INSTANCES: num unknown: " + _geomById.bUnknownType);
+        var multiUse = 0;
+        _geomById.values( geom => {
+            if (geom.bUseCount && geom.bUseCount > 1) {
+                multiUse++;
+            }
+        });
+        console.log("INSTANCES: num multiply used geometries: " + multiUse);
+    }
+    _checkChildrenForInstances(children, geomById) {
+        if (children) {
+            children.forEach( ch => {
+                this._checkNodeForInstances(ch, geomById);
+            });
+        }
+    }
+    _checkNodeForInstances(node, geomById) {
+        if (node instanceof THREE.Group) {
+            geomById.bGroupType = geomById.bGroupType ? geomById.bGroupType+1 : 1;
+            this._addGeomInstance(node, geomById);
+            _checkChildrenForInstances(ch.children, _geomById);
+        }
+        else if (node instanceof THREE.Mesh) {
+            geomById.bMeshType = geomById.bMeshType ? geomById.bMeshType+1 : 1;
+            _addGeomInstance(node.geometry, geomById);
+            _checkChildrenForInstances(ch.children, _geomById);
+        }
+        else {
+            geomById.bUnknownType = geomById.bUnknownType ? geomById.bUnknownType+1 : 1;
+        }
+    }
+    _addGeomInstance(geom, geomById) {
+        if (geom) {
+            var idd = geom.id;
+            if (!geomById.has(idd)) {
+                geomById.add(idd, geom);
+            }
+            geom.bUseCount = geom.bUseCount ? geom.bUseCount+1 : 1;
+        }
+    }
 
     // Add a test object to the scene
     AddTestObject() {
