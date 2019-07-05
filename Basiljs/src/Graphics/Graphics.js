@@ -280,12 +280,19 @@ export class Graphics extends BItem {
                 // To complicate things, ThreeJS loaders return different things
                 loader.load(parms.url, function(loaded) {
                     // Successful load
+                    console.log('INSTANCES: successful load');
                     let scene = undefined;
                     if (loaded.scene) scene = loaded.scene;
                     if (loaded.scenes) scene = loaded.scenes[0];
                     let nodes = [];
                     if (scene) {
-                        _checkSceneForInstances(scene);
+                        console.log('INSTANCES: have scene. Checking for instances');
+                        try {
+                            Graphics._checkSceneForInstances(scene);
+                        }
+                        catch (e) {
+                            console.log('INSTANCES: exception on check. e=' + e);
+                        }
                         // Take the children out of the scene and return list of children nodes.
                         // The remove/push thing is done to clean up any scene meta-data.
                         while (scene.children.length > 0) {
@@ -482,53 +489,52 @@ export class Graphics extends BItem {
         cameraInstance.procgRotModified = function(inst) {
             this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
         }.bind(this);
-    };
+    }
 
-    _checkSceneForInstances(scene) {
-        var _geomById = new Map();
-        console.log("INSTANCES: num initial nodes: " + scene.children.length)
+    static _checkSceneForInstances(scene) {
+        let _geomById = new Map();
+        console.log('INSTANCES: num initial nodes: ' + scene.children.length);
         scene.children.forEach( ch => {
-            this._checkNodeForInstances(ch, _geomById);
+            Graphics._checkNodeForInstances(ch, _geomById);
         });
-        console.log("INSTANCES: num geometries: " + _geomById.size);
-        console.log("INSTANCES: num THREE.Group: " + _geomById.bGroupType);
-        console.log("INSTANCES: num THREE.Mesh: " + _geomById.bMeshType);
-        console.log("INSTANCES: num unknown: " + _geomById.bUnknownType);
-        var multiUse = 0;
-        _geomById.values( geom => {
+        console.log('INSTANCES: num geometries: ' + _geomById.size);
+        console.log('INSTANCES: num THREE.Group: ' + _geomById.bGroupType);
+        console.log('INSTANCES: num THREE.Mesh: ' + _geomById.bMeshType);
+        console.log('INSTANCES: num unknown: ' + _geomById.bUnknownType);
+        let multiUse = 0;
+        _geomById.forEach( (geom, key) => {
             if (geom.bUseCount && geom.bUseCount > 1) {
                 multiUse++;
             }
         });
-        console.log("INSTANCES: num multiply used geometries: " + multiUse);
+        console.log('INSTANCES: num multiply used geometries: ' + multiUse);
     }
-    _checkChildrenForInstances(children, geomById) {
-        if (children) {
-            children.forEach( ch => {
-                this._checkNodeForInstances(ch, geomById);
-            });
-        }
-    }
-    _checkNodeForInstances(node, geomById) {
+    static _checkNodeForInstances(node, geomById) {
         if (node instanceof THREE.Group) {
             geomById.bGroupType = geomById.bGroupType ? geomById.bGroupType+1 : 1;
-            this._addGeomInstance(node, geomById);
-            _checkChildrenForInstances(ch.children, _geomById);
+            Graphics._checkChildrenForInstances(node.children, geomById);
         }
         else if (node instanceof THREE.Mesh) {
             geomById.bMeshType = geomById.bMeshType ? geomById.bMeshType+1 : 1;
-            _addGeomInstance(node.geometry, geomById);
-            _checkChildrenForInstances(ch.children, _geomById);
+            Graphics._addGeomInstance(node.geometry, geomById);
+            Graphics._checkChildrenForInstances(node.children, geomById);
         }
         else {
             geomById.bUnknownType = geomById.bUnknownType ? geomById.bUnknownType+1 : 1;
         }
     }
-    _addGeomInstance(geom, geomById) {
+    static _checkChildrenForInstances(children, geomById) {
+        if (children) {
+            children.forEach( ch => {
+                Graphics._checkNodeForInstances(ch, geomById);
+            });
+        }
+    }
+    static _addGeomInstance(geom, geomById) {
         if (geom) {
             var idd = geom.id;
             if (!geomById.has(idd)) {
-                geomById.add(idd, geom);
+                geomById.set(idd, geom);
             }
             geom.bUseCount = geom.bUseCount ? geom.bUseCount+1 : 1;
         }
@@ -542,7 +548,7 @@ export class Graphics extends BItem {
         cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
         this.scene.add(cube);
         GP.DebugLog('Graphics: added test cube at ' + Config.webgl.camera.initialCameraLookAt);
-    };
+    }
 
     // For initial debugging, camera is controlled by the console
     _initializeCameraControl() {
