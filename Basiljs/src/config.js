@@ -30,6 +30,11 @@ export default {
         'showDebug': true,
         'debugLogLines': 30
     },
+    // Loader for assets
+    'assetLoader': {
+        'useDRACO': true,           // unpack DRACO compression if used
+        'combineInstances': true    // whether to combine instances
+    },
     // Parameters for the webgl environment
     'webgl': {
         'graphicsId': 'org.basil.b.graphics',

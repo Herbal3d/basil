@@ -264,14 +264,22 @@ export class Graphics extends BItem {
     // parms.type = GLTF, Collada, OBJ, FBX
     // Returns a promise of a handle to ThreeJS node(s) read and created.
     // Note: only returns the nodes. For animations, etc, need a different routine.
-    LoadSimpleAsset(userAuth, parms, progressCallback) {
+    LoadSimpleAsset(userAuth, passedParams, progressCallback) {
+        let parms = CombineParameters(Config.assetLoader, passedParams, {
+            'url': undefined,       // URL to load from
+            'loaderType': 'gltf',   // type of loader to use
+            'useDRACO': true,
+            'combineInstances': true    // whether to combine instances
+        });
         GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
         return new Promise(function(resolve, reject) {
             let loader = undefined;
             switch (parms.loaderType.toLowerCase()) {
                 case 'gltf':    loader = new THREE.GLTFLoader();
-                                loader.setDRACOLoader( new THREE.DRACOLoader() );
-                                // THREE.DRACOLoader.getDecoderModule();
+                                if (parms.useDRACO) {
+                                    loader.setDRACOLoader( new THREE.DRACOLoader() );
+                                    // THREE.DRACOLoader.getDecoderModule();
+                                }
                                 break;
                 case 'collada': loader = new THREE.ColladaLoader(); break;
                 case 'fbx':     loader = new THREE.FBXLoader(); break;
@@ -283,19 +291,21 @@ export class Graphics extends BItem {
                 // To complicate things, ThreeJS loaders return different things
                 loader.load(parms.url, function(loaded) {
                     // Successful load
-                    console.log('INSTANCES: successful load');
                     let scene = undefined;
                     if (loaded.scene) scene = loaded.scene;
                     if (loaded.scenes) scene = loaded.scenes[0];
                     let nodes = [];
                     if (scene) {
-                        console.log('INSTANCES: have scene. Checking for instances');
-                        try {
-                            Graphics._checkSceneForInstances(scene);
-                            Graphics._rebuildSceneInstances(scene);
-                        }
-                        catch (e) {
-                            console.log('INSTANCES: exception on check. e=' + e);
+                        if (parms.combineInstances) {
+                            try {
+                                Graphics._rebuildSceneInstances(scene);
+                            }
+                            catch (e) {
+                                let err = 'Graphics.LoadSimpleAsset: Exception combining instances.'
+                                    + ' url=' + parms.url
+                                    + ', e=' + e;
+                                reject(err);
+                            }
                         }
                         // Take the children out of the scene and return list of children nodes.
                         // The remove/push thing is done to clean up any scene meta-data.
@@ -495,59 +505,10 @@ export class Graphics extends BItem {
         }.bind(this);
     }
 
-    static _checkSceneForInstances(scene) {
-        let _geomById = new Map();
-        console.log('INSTANCES: num initial nodes: ' + scene.children.length);
-        scene.children.forEach( ch => {
-            Graphics._checkNodeForInstances(ch, _geomById);
-        });
-        console.log('INSTANCES: num geometries: ' + _geomById.size);
-        console.log('INSTANCES: num THREE.Group: ' + _geomById.bGroupType);
-        console.log('INSTANCES: num THREE.Mesh: ' + _geomById.bMeshType);
-        console.log('INSTANCES: num unknown: ' + _geomById.bUnknownType);
-        let multiUse = 0;
-        _geomById.forEach( (geom, key) => {
-            if (geom.bUseCount && geom.bUseCount > 1) {
-                multiUse++;
-            }
-        });
-        console.log('INSTANCES: num multiply used geometries: ' + multiUse);
-    }
-    static _checkNodeForInstances(node, geomById) {
-        if (node instanceof THREE.Group) {
-            geomById.bGroupType = geomById.bGroupType ? geomById.bGroupType+1 : 1;
-            Graphics._checkChildrenForInstances(node.children, geomById);
-        }
-        else if (node instanceof THREE.Mesh) {
-            geomById.bMeshType = geomById.bMeshType ? geomById.bMeshType+1 : 1;
-            Graphics._addGeomInstance(node.geometry, geomById);
-            Graphics._checkChildrenForInstances(node.children, geomById);
-        }
-        else {
-            geomById.bUnknownType = geomById.bUnknownType ? geomById.bUnknownType+1 : 1;
-        }
-    }
-    static _checkChildrenForInstances(children, geomById) {
-        if (children) {
-            children.forEach( ch => {
-                Graphics._checkNodeForInstances(ch, geomById);
-            });
-        }
-    }
-    static _addGeomInstance(geom, geomById) {
-        if (geom) {
-            var idd = geom.id;
-            if (!geomById.has(idd)) {
-                geomById.set(idd, geom);
-            }
-            geom.bUseCount = geom.bUseCount ? geom.bUseCount+1 : 1;
-        }
-    }
     // Scan the scene and, if there are any duplicated geometries, replace the duplicated
     //    nodes with an InstancedMesh.
     // Note that the node replacements only happen if the duplicates are siblings.
     static _rebuildSceneInstances(scene) {
-        console.log('REBUILD: entry');
         Graphics._rebuildSiblingInstances(scene, scene.children);
     }
     // See if any of these siblings share geometries.
@@ -555,13 +516,14 @@ export class Graphics extends BItem {
     static _rebuildSiblingInstances(parent, siblings) {
         if (siblings && siblings.length > 0) {
             // Do the children of these siblings before doing this set of siblings
-            // console.log('REBUILD: number of siblings: ' + siblings.length);
+            parent.applyMatrix();
             parent.children.forEach( sib => {
                 Graphics._rebuildSiblingInstances(sib, sib.children);
             });
 
             let geomsById = new Map();
             siblings.forEach( sib => {
+                sib.applyMatrix();
                 if (sib.geometry) {
                     let idd = sib.geometry.id;
                     if (!geomsById.has(idd)) {
@@ -573,7 +535,6 @@ export class Graphics extends BItem {
 
             geomsById.forEach( (val, key) => {
                 if (val.length > 1) {
-                    console.log('REBUILD: siblings with shared. Num sharing: ' + val.length);
                     let oneInstance = val[0];
                     // Create the mesh that displays all the instances
                     let newSib = new THREE.InstancedMesh(
@@ -586,15 +547,15 @@ export class Graphics extends BItem {
                     );
                     // Put each instance at the location the original geometry was
                     let targetV = new THREE.Vector3();
+                    let targetV2 = new THREE.Vector3(1,1,1);
                     let targetQ = new THREE.Quaternion();
                     for (let ii = 0; ii < val.length; ii++) {
-                        val[ii].updateMatrix();
                         val[ii].getWorldPosition(targetV);
                         newSib.setPositionAt(ii, targetV);
                         val[ii].getWorldQuaternion(targetQ);
                         newSib.setQuaternionAt(ii, targetQ);
-                        val[ii].getWorldScale(targetV);
-                        newSib.setScaleAt(ii, targetV);
+                        // val[ii].getWorldScale(targetV2);
+                        newSib.setScaleAt(ii, targetV2);
                     }
 
                     // Gather up all the children of the nodes we are removing
