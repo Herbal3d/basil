@@ -29,6 +29,9 @@ import { FBXLoader } from '../jslibs/FBXLoader.js';
 import { OBJLoader } from '../jslibs/OBJLoader.js';
 import { BVHLoader } from '../jslibs/BVHLoader.js';
 
+// import { InstancedMesh } from 'three-instanced-mesh';
+require ( 'three-instanced-mesh')(THREE);
+
 // Class that wraps the renderer implementation.
 export class Graphics extends BItem {
     constructor(container, canvas, eventing) {
@@ -289,6 +292,7 @@ export class Graphics extends BItem {
                         console.log('INSTANCES: have scene. Checking for instances');
                         try {
                             Graphics._checkSceneForInstances(scene);
+                            Graphics._rebuildSceneInstances(scene);
                         }
                         catch (e) {
                             console.log('INSTANCES: exception on check. e=' + e);
@@ -538,6 +542,92 @@ export class Graphics extends BItem {
             }
             geom.bUseCount = geom.bUseCount ? geom.bUseCount+1 : 1;
         }
+    }
+    // Scan the scene and, if there are any duplicated geometries, replace the duplicated
+    //    nodes with an InstancedMesh.
+    // Note that the node replacements only happen if the duplicates are siblings.
+    static _rebuildSceneInstances(scene) {
+        console.log('REBUILD: entry');
+        Graphics._rebuildSiblingInstances(scene, scene.children);
+    }
+    // See if any of these siblings share geometries.
+    // If so, replace the nodes that share geometries with a single InstancedMesh.
+    static _rebuildSiblingInstances(parent, siblings) {
+        if (siblings && siblings.length > 0) {
+            // Do the children of these siblings before doing this set of siblings
+            // console.log('REBUILD: number of siblings: ' + siblings.length);
+            parent.children.forEach( sib => {
+                Graphics._rebuildSiblingInstances(sib, sib.children);
+            });
+
+            let geomsById = new Map();
+            siblings.forEach( sib => {
+                if (sib.geometry) {
+                    let idd = sib.geometry.id;
+                    if (!geomsById.has(idd)) {
+                        geomsById.set(idd, []);
+                    }
+                    geomsById.get(idd).push(sib);
+                }
+            });
+
+            geomsById.forEach( (val, key) => {
+                if (val.length > 1) {
+                    console.log('REBUILD: siblings with shared. Num sharing: ' + val.length);
+                    let oneInstance = val[0];
+                    // Create the mesh that displays all the instances
+                    let newSib = new THREE.InstancedMesh(
+                        oneInstance.geometry.clone(),
+                        oneInstance.material,   // material is cloned by the library
+                        val.length,         // number of instances
+                        false,              // is it dynamic
+                        false,              // does it have color
+                        true                // uniform scale (1,1,1)
+                    );
+                    // Put each instance at the location the original geometry was
+                    let targetV = new THREE.Vector3();
+                    let targetQ = new THREE.Quaternion();
+                    for (let ii = 0; ii < val.length; ii++) {
+                        val[ii].updateMatrix();
+                        val[ii].getWorldPosition(targetV);
+                        newSib.setPositionAt(ii, targetV);
+                        val[ii].getWorldQuaternion(targetQ);
+                        newSib.setQuaternionAt(ii, targetQ);
+                        val[ii].getWorldScale(targetV);
+                        newSib.setScaleAt(ii, targetV);
+                    }
+
+                    // Gather up all the children of the nodes we are removing
+                    //     and add them to the new instance node.
+                    let childrenOfSibs = new Map();
+                    val.forEach( sibWithDup => {
+                        while (sibWithDup.children && sibWithDup.children.length > 0) {
+                            let firstChild = sibWithDup.children[0];
+                            sibWithDup.remove(firstChild);
+                            if (!childrenOfSibs.has(firstChild.id)) {
+                                childrenOfSibs.set(firstChild.id, firstChild);
+                            }
+                        }
+                    });
+                    if (childrenOfSibs.size > 0) {
+                        for (let child of childrenOfSibs.values()) {
+                            newSib.add(child);
+                        }
+                    }
+
+                    // Remove the nodes that went to the duplicated geometry
+                    val.forEach( sibWithDup => {
+                        parent.remove(sibWithDup);
+                    });
+                    // Replace them with the multiple instances
+                    parent.add(newSib);
+                    newSib.needsUpdate();
+                    // parent.needsUpdate(true);
+                }
+            });
+        }
+
+
     }
 
     // Add a test object to the scene
