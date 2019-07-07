@@ -18,7 +18,7 @@ import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
 import { BasilMessage } from "../jslibs/BasilServerMessages.js"
 import { BasilMessageOps } from "./BasilMessageOps.js";
-import { RandomIdentifier } from '../Utilities.js';
+import { RandomIdentifier, JSONstringify } from '../Utilities.js';
 
 // A class which is instanced for each transport system and
 //   maps received messsages to the message processors.
@@ -33,7 +33,7 @@ class TransportReceiver {
     Process(pRawMsg) {
         let msg = BasilMessage.BasilMessage.decode(pRawMsg);
         if (Config.Debug && Config.Debug.MsgProcessorProcessPrintMsg) {
-            GP.DebugLog('MsgProcessor.Process: received: ' + JSON.stringify(msg));
+            GP.DebugLog('MsgProcessor.Process: received: ' + JSONstringify(msg));
         }
         let replyContents = undefined;
         let processor = MsgProcessor.processors.get(this.transport.id).get(msg.op);
@@ -63,7 +63,7 @@ class TransportReceiver {
             }
         }
         else {
-            GP.ErrorLog('MsgProcessor.Process: Unknown message: ' + JSON.stringify(msg));
+            GP.ErrorLog('MsgProcessor.Process: Unknown message: ' + JSONstringify(msg));
         }
         if (replyContents) {
             // There is a response to the message.
@@ -75,12 +75,12 @@ class TransportReceiver {
                 if (Config.Debug && Config.Debug.VerifyProtocol) {
                     if (! BasilMessage.verify(replyContents)) {
                         GP.ErrorLog('MsgProcessor.Process: Verification fail: '
-                                        + JSON.stringify(replyContents));
+                                        + JSONstringify(replyContents));
                     }
                 }
 
                 if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
-                    GP.DebugLog('MsgProcessor.Process: sending response: ' + JSON.stringify(replyContents));
+                    GP.DebugLog('MsgProcessor.Process: sending response: ' + JSONstringify(replyContents));
                 }
 
                 this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
@@ -132,11 +132,11 @@ export class MsgProcessor extends BItem {
         if (Config.Debug && Config.Debug.VerifyProtocol) {
             if (! BasilMessage.verify(pMsg)) {
                 GP.ErrorLog('MsgProcessor.SendAndPromiseResponse: verification fail: '
-                            + JSON.stringify(pMsg));
+                            + JSONstringify(pMsg));
             }
         }
         if (Config.Debug && Config.Debug.SendAndPromisePrintMsg) {
-            GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSON.stringify(pMsg));
+            GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
         }
         let emsg = BasilMessage.BasilMessage.encode(pMsg).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
@@ -160,7 +160,7 @@ export class MsgProcessor extends BItem {
     // Function that handles the response type message
     HandleResponse(responseMsg) {
         if (Config.Debug && Config.Debug.HandleResponsePrintMsg) {
-            GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSON.stringify(responseMsg));
+            GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSONstringify(responseMsg));
         }
         if (responseMsg.response && responseMsg.response.responseSession) {
             let sessionIndex = responseMsg.response.responseSession;
@@ -179,14 +179,14 @@ export class MsgProcessor extends BItem {
             }
             else {
                 let errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
-                                    + JSON.stringify(responseMsg);
+                                    + JSONstringify(responseMsg);
                 console.log(errMsg);
                 GP.ErrorLog(errMsg);
             }
         }
         else {
             let errMsg = 'MsgProcessor.HandleResponse: received misformed msg: '
-                                + JSON.stringify(responseMsg);
+                                + JSONstringify(responseMsg);
             console.log(errMsg);
             GP.ErrorLog(errMsg);
         }
@@ -207,7 +207,7 @@ export class MsgProcessor extends BItem {
             let val = obj[prop];
             if (typeof(val) != 'undefined') {
                 if (typeof(val) != 'string') {
-                    val = JSON.stringify(val);
+                    val = JSONstringify(val);
                 }
                 list[prop] = val;
             }

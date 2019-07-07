@@ -18,6 +18,7 @@ import Config from '../config.js';
 
 import { Displayable } from '../Items/Displayable.js';
 import { BItemState } from '../Items/BItem.js';
+import { JSONstringify } from '../Utilities.js';
 
 export class DisplayableMeshSet extends Displayable {
     constructor(id, auth, displayInfo) {
@@ -43,7 +44,8 @@ export class DisplayableMeshSet extends Displayable {
             })
             .catch(err => {
                 this.SetFailed();
-                GP.ErrorLog('DisplayableMeshSet: unable to load asset' + JSON.stringify(displayInfo));
+                GP.ErrorLog('DisplayableMeshSet: unable to load asset ' + JSONstringify(displayInfo)
+                    + ' ERROR=' + err);
             })
         }
         else {

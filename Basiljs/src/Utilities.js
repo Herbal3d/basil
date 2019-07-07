@@ -58,28 +58,55 @@ export function RandomIdentifier() {
 //    the proper merge of those three sources.
 // Passed context parameters take highest priority, then config file, then
 //    default/required values.
-// NOTE: everything is forced to all lowercase thus the resulting value
-//    lookup MUST be looking for a lowercase only value.
+// NOTE: a lower case version of the parameter is always created just
+//    for uniformity. Case usually matters so passing in a parameter with
+//    the wrong case will usually confuse things.
 export function CombineParameters(configParams, passedParams, requiredParams) {
     let parms = configParams ? configParams : {};
-    Object.getOwnPropertyNames(parms).forEach( key => {
+    // Make sure there is a canonical lower case version of configParams
+    Object.keys(parms).forEach( key => {
         parms[key.toLowerCase()] = parms[key];
-    })
+    });
     if (passedParams) {
         // passed parameters overwrite configuration file parameters
         Object.keys(passedParams).forEach( key => {
+            parms[key] = passedParams[key];
             parms[key.toLowerCase()] = passedParams[key];
         });
     }
     if (requiredParams) {
         Object.keys(requiredParams).forEach( key => {
-            // If a required parameter has not been set, add the required param and default value
+            // If a required parameter has not been set, add the required param and default value.
+            // Check to see if the lower case version is here.
             if (typeof(parms[key.toLowerCase()]) === 'undefined') {
+                parms[key] = requiredParams[key];
                 parms[key.toLowerCase()] = requiredParams[key];
             }
-        })
+        });
     }
+    // Sanity check. Make sure all keys have a lower case version with the same value.
+    Object.keys(parms).forEach( key => {
+        if (parms[key] != parms[key.toLowerCase()]) {
+            console.log('CombineParameters: sanity check bad match:'
+                + ' key=' + key
+                + ', val=' + parms[key]
+                + ', valLC=' + parms[key.toLowerCase()]
+            );
+        }
+    });
     return parms;
+}
+
+// A function that does a 'JSON.stringify' on the passed object but replaces
+//    any 'undefined' values with 'null'.
+// The JSON specification does not define the 'undefined' value so the
+//    JSON.stringify library operation drops them from the output. Since this
+//    operation is not being used to create a legal JSON string output
+//    but is usually used for debugging, we do the conversion.
+// So, note that this DOES NOT RETURN A LEGAL JSON STRING.
+//    USE THIS FUNCTION FOR DEBUG OUTPUT ONLY!
+export function JSONstringify(obj) {
+    return JSON.stringify(obj, (k,v) => { return v === undefined ? null : v; })
 }
 
 // Parse and return three-tuple.

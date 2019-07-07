@@ -29,7 +29,7 @@ import { BTransportWW } from './BTransportWW.js';
 import { BTransportWS } from './BTransportWS.js';
 import { BTransportTest } from './BTransportTest.js';
 
-import { CombineParameters } from '../Utilities.js';
+import { CombineParameters, JSONstringify } from '../Utilities.js';
 import { BException } from '../BException.js';
 
 export class Comm extends BItem {
@@ -81,7 +81,7 @@ export class Comm extends BItem {
                             break;
                         default:
                             let errorMsg = 'Comm.ConnectTransport: transport type unknown: '
-                                            + JSON.stringify(params);
+                                            + JSONstringify(params);
                             GP.ErrorLog(errorMsg);
                             reject(errorMsg);
                     }
@@ -103,7 +103,7 @@ export class Comm extends BItem {
             }
             else {
                 let errorMsg = 'Comm.ConnectTransport: Did not create transport: '
-                                + JSON.stringify(params);
+                                + JSONstringify(params);
                 GP.ErrorLog(errorMsg);
                 reject(errorMsg);
             }
@@ -163,7 +163,7 @@ export class Comm extends BItem {
                     resolve(svc);
                     break;
               default:
-                    let errorMsg = 'Comm.Connect: service type unknown: ' + JSON.stringify(params.service);
+                    let errorMsg = 'Comm.Connect: service type unknown: ' + JSONstringify(params.service);
                     GP.ErrorLog(errorMsg)
                     reject(errorMsg)
             }

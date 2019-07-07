@@ -15,6 +15,7 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { Controls } from '../Controls/Controls.js';
+import { JSONstringify } from '../Utilities.js';
 
 import { Base64 } from 'js-base64';
 
@@ -79,9 +80,9 @@ GP.CO.ClickableOps['testBasil'] = function() {
             }
         }
     };
-    console.log('testConfigParams=' + JSON.stringify(testConfigParams));
+    console.log('testConfigParams=' + JSONstringify(testConfigParams));
 
-    let configParams = Base64.encode(JSON.stringify(testConfigParams));
+    let configParams = Base64.encode(JSONstringify(testConfigParams));
 
     window.location = 'Basil.html?c=' + configParams;
 };
@@ -93,8 +94,9 @@ GP.CO.ClickableOps['regionConnect'] = function() {
             'service': GetSelectedValue('region-service')
         }
     };
-    console.log('gridConfigParams=' + JSON.stringify(regionConfigParams));
+    console.log('gridConfigParams=' + JSONstringify(regionConfigParams));
 
+    // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
     let configParams = Base64.encode(JSON.stringify(regionConfigParams));
 
     window.location = 'Basil.html?c=' + configParams;

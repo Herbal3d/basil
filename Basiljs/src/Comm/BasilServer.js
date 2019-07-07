@@ -19,7 +19,7 @@ import { BItem, BItemType } from '../Items/BItem.js';
 import { MsgProcessor } from './MsgProcessor.js';
 import { BasilMessageOps } from './BasilMessageOps.js';
 
-import { CreateUniqueId, CreateUniqueInstanceId, CombineParameters } from '../Utilities.js';
+import { CreateUniqueId, CreateUniqueInstanceId, CombineParameters, JSONstringify } from '../Utilities.js';
 import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
 
 // Interface of a Basil Server talking over a Basil/SpaceServer streaming connection.
@@ -237,7 +237,7 @@ export class BasilServerConnection  extends MsgProcessor {
             'transport': 'WS',
             'service': undefined
         });
-        GP.DebugLog('BasilServer.MakeConnection: props=' + JSON.stringify(params));
+        GP.DebugLog('BasilServer.MakeConnection: props=' + JSONstringify(params));
         // if connecting to a SpaceServer, we are the client
         if (params['service'] == 'SpaceServer') {
             params['service'] = 'SpaceServerClient';
@@ -249,7 +249,7 @@ export class BasilServerConnection  extends MsgProcessor {
             srv.OpenSession(auth, props)
             .then( resp => {
                 GP.DebugLog('BasilServer.ProcMakeConnection: Session opened to SpaceServer. Params='
-                            + JSON.stringify(resp.properties));
+                            + JSONstringify(resp.properties));
             })
             .catch( e => {
                 GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);
