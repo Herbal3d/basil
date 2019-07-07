@@ -274,9 +274,9 @@ export class Graphics extends BItem {
         GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
         return new Promise(function(resolve, reject) {
             let loader = undefined;
-            switch (parms.loaderType.toLowerCase()) {
+            switch (parms.loadertype.toLowerCase()) {
                 case 'gltf':    loader = new THREE.GLTFLoader();
-                                if (parms.useDRACO) {
+                                if (parms.usedraco) {
                                     loader.setDRACOLoader( new THREE.DRACOLoader() );
                                     // THREE.DRACOLoader.getDecoderModule();
                                 }
@@ -296,7 +296,7 @@ export class Graphics extends BItem {
                     if (loaded.scenes) scene = loaded.scenes[0];
                     let nodes = [];
                     if (scene) {
-                        if (parms.combineInstances) {
+                        if (parms.combineinstances) {
                             try {
                                 Graphics._rebuildSceneInstances(scene);
                             }
@@ -509,21 +509,25 @@ export class Graphics extends BItem {
     //    nodes with an InstancedMesh.
     // Note that the node replacements only happen if the duplicates are siblings.
     static _rebuildSceneInstances(scene) {
-        Graphics._rebuildSiblingInstances(scene, scene.children);
+        console.log('Graphics.rebuild: rebuild');
+        // Force the computation of the world matrix for the nodes in the scene
+        scene.updateMatrixWorld(true);
+
+        Graphics._rebuildSiblingInstances(scene, scene, scene.children);
     }
     // See if any of these siblings share geometries.
     // If so, replace the nodes that share geometries with a single InstancedMesh.
-    static _rebuildSiblingInstances(parent, siblings) {
+    static _rebuildSiblingInstances(scene, parent, siblings) {
+
         if (siblings && siblings.length > 0) {
             // Do the children of these siblings before doing this set of siblings
-            parent.applyMatrix();
-            parent.children.forEach( sib => {
+            siblings.forEach( sib => {
                 Graphics._rebuildSiblingInstances(sib, sib.children);
             });
 
+            // Collect the nodes that share a geometry
             let geomsById = new Map();
             siblings.forEach( sib => {
-                sib.applyMatrix();
                 if (sib.geometry) {
                     let idd = sib.geometry.id;
                     if (!geomsById.has(idd)) {
@@ -532,7 +536,10 @@ export class Graphics extends BItem {
                     geomsById.get(idd).push(sib);
                 }
             });
+            console.log('Graphics.rebuild: after collecting shared geom siblings. numGeoms=' + geomsById.size);
 
+            // For nodes that share a geometry, remove them from the sibling list
+            //     and replace with a single InstancedMesh.
             geomsById.forEach( (val, key) => {
                 if (val.length > 1) {
                     let oneInstance = val[0];
@@ -550,45 +557,45 @@ export class Graphics extends BItem {
                     let targetV2 = new THREE.Vector3(1,1,1);
                     let targetQ = new THREE.Quaternion();
                     for (let ii = 0; ii < val.length; ii++) {
+                        // Instance addresses are in world coordinates
                         val[ii].getWorldPosition(targetV);
                         newSib.setPositionAt(ii, targetV);
                         val[ii].getWorldQuaternion(targetQ);
                         newSib.setQuaternionAt(ii, targetQ);
+                        // For some reason scales end up like '0.999999876...'. Use a clean '1'.
                         // val[ii].getWorldScale(targetV2);
                         newSib.setScaleAt(ii, targetV2);
                     }
 
-                    // Gather up all the children of the nodes we are removing
-                    //     and add them to the new instance node.
-                    let childrenOfSibs = new Map();
-                    val.forEach( sibWithDup => {
-                        while (sibWithDup.children && sibWithDup.children.length > 0) {
-                            let firstChild = sibWithDup.children[0];
-                            sibWithDup.remove(firstChild);
-                            if (!childrenOfSibs.has(firstChild.id)) {
-                                childrenOfSibs.set(firstChild.id, firstChild);
-                            }
+                    // Since the nodes that share geometries are being combined, we must
+                    //     reparent any children.
+                    val.forEach( instancedParent => {
+                        if (instancedParent.children && instancedParent.children.length > 0) {
+                            let replacementParent = new THREE.Group();
+                            replacementParent.position.copy(instancedParent.position);
+                            replacementParent.rotation.copy(instancedParent.rotation);
+                            replacementParent.scale.copy(instancedParent.scale);
+                            replacementParent.updateMatrix();
+                            instancedParent.children.forEach( child => {
+                                instancedParent.remove(child);
+                                replacementParent.add(child);
+                                child.updateMatrixWorld(true);
+                            });
+                            parent.add(replacementParent);
                         }
                     });
-                    if (childrenOfSibs.size > 0) {
-                        for (let child of childrenOfSibs.values()) {
-                            newSib.add(child);
-                        }
-                    }
 
                     // Remove the nodes that went to the duplicated geometry
                     val.forEach( sibWithDup => {
                         parent.remove(sibWithDup);
                     });
-                    // Replace them with the multiple instances
-                    parent.add(newSib);
+
+                    // The new set of instances goes into the scene
+                    scene.add(newSib);
                     newSib.needsUpdate();
-                    // parent.needsUpdate(true);
                 }
             });
         }
-
-
     }
 
     // Add a test object to the scene
