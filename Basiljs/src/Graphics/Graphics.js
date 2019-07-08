@@ -509,7 +509,6 @@ export class Graphics extends BItem {
     //    nodes with an InstancedMesh.
     // Note that the node replacements only happen if the duplicates are siblings.
     static _rebuildSceneInstances(scene) {
-        console.log('Graphics.rebuild: rebuild');
         // Force the computation of the world matrix for the nodes in the scene
         scene.updateMatrixWorld(true);
 
@@ -536,7 +535,6 @@ export class Graphics extends BItem {
                     geomsById.get(idd).push(sib);
                 }
             });
-            console.log('Graphics.rebuild: after collecting shared geom siblings. numGeoms=' + geomsById.size);
 
             // For nodes that share a geometry, remove them from the sibling list
             //     and replace with a single InstancedMesh.
