@@ -521,7 +521,7 @@ export class Graphics extends BItem {
         if (siblings && siblings.length > 0) {
             // Do the children of these siblings before doing this set of siblings
             siblings.forEach( sib => {
-                Graphics._rebuildSiblingInstances(sib, sib.children);
+                Graphics._rebuildSiblingInstances(scene, sib, sib.children);
             });
 
             // Collect the nodes that share a geometry
