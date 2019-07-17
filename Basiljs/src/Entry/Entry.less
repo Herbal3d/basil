@@ -137,13 +137,13 @@ body {
     position: absolute;
     top: 10%;
     left: 10%;
-    width: 50%;
-    height: 30em;
+    width: 70%;
     .defn-dialog;
 }
 //  <div> group as a displayed group in a dialog
 .dialog-group {
     .defn-dialogBlock;
+    margin: 15px;
 }
 
 label {
@@ -153,6 +153,22 @@ label {
 .textDisplay {
     .defn-display;
     border: 0px;
+}
+.textDisplayAccent {
+    .defn-display;
+    display: block;
+    color: @color-dialog-accent;
+    border: 0px;
+}
+.textDisplayRight {
+    .defn-display;
+    display: block;
+    text-align: right;
+    border: 0px;
+}
+.gridLogin-table {
+    padding: 5px 0px 5px 0px;
+    margin: 0px;
 }
 .coordDisplay {
     .defn-display;
@@ -165,14 +181,12 @@ label {
 
 // Overlay area for debug and error messages
 #DEBUGG {
-    position: absolute;
     left: 0%;
     bottom: 0%;
     width: 60%;
     height: 45em;
     .defn-dialog;
     color: @color-debug-color;
-    background: @color-debug-bg;
     opacity: @debug-opacity;
 }
 

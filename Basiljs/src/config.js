@@ -5,6 +5,7 @@
 
 // Using the CommonJS format as ES6 'default' doesn't work right in webpack (20171205)
 export default {
+    // Various overall Basil viewer parameters
     'basil': {
         // ms before removing deleted BItem
         'BItemDeleteInterval': 60000
@@ -102,15 +103,18 @@ export default {
         'service': 'org.basil.b.layers.service',
         'eventing': 'org.basil.b.layers.eventing'
     },
+    // Flags for fetching assets.
     'assets': {
         'gltfURLBase': '/basil/',
         'assetFetchTimeoutMS': 5000,        // MS timeout for an asset to load
         'assetFetchCheckIntervalMS': 200,   // MS between checks for asset loaded
         'instanceAssetWaitTimeoutMS': 10000 // MS for instance to wait for its displayable to load
     },
+    // Parameters for the simple eventing system
     'eventing': {
         'eventPollIntervalMS': 500
     },
+    // Connection and debug information when running the WebWorker test
     'WWTester': {
         'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
         'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
@@ -131,6 +135,7 @@ export default {
             }
         }
     },
+    // Connection information when running WebSocket tester
     'WSTester': {
         'comm': {
             'testmode': true,
@@ -145,6 +150,7 @@ export default {
             }
         }
     },
+    // Various flags that turn on/off debug logging, etc
     'Debug': {
       'VerifyProtocol': false,              // call 'verify' on created protocol messages
       'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
@@ -153,7 +159,8 @@ export default {
       'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
       'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
     },
-    // Information for loading multiple Atropia regions with filename and displacement
+    // Information for loading multiple Atropia regions with filename and displacement.
+    // Left over from testing multiple region display. Not used any more.
     'Atropia': [
         [ "convoar/Atropia_00.gltf", [0,0,512] ],
         [ "convoar/Atropia_01.gltf", [0,0,256] ],
@@ -165,6 +172,7 @@ export default {
         [ "convoar/Atropia_21.gltf", [512,0,256] ],
         [ "convoar/Atropia_22.gltf", [512,0,0] ]
     ],
+    // Left over from testing. Not used any more.
     'EntrySelections': {
         'URLBase': 'https://files.misterblue.com/BasilTest/convoar/',
         'extension': '.gltf',
@@ -177,6 +185,26 @@ export default {
         'justURLS': [
             // [ 'title', 'url' ]
         ]
-    }
+    },
+    // Used by Entry.html to select grid.
+    // Specifies a grid name and the 'get_grid_info' URL for that grid.
+    'Grids': [
+        {
+            'Name': 'localhost',
+            'GridInfo': 'http://127.0.0.1:9000/get_grid_info',
+            'LoginURL': 'http://127.0.0.1:8002/'
+        },
+        {
+            'Name': 'OSGrid.org',
+            'GridInfo': 'http://login.osgrid.org/get_grid_info',
+            'LoginURL': 'http://login.osgrid.org/'
+        },
+        {
+            'Name': 'OurGrid.life',
+            'GridInfo': 'http://ourgrid.life/get_grid_info',
+            'LoginURL': 'http://ourgrid.life:80/'
+        }
+
+    ]
 }
 ;
