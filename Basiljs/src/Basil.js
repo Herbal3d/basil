@@ -28,6 +28,8 @@ import { Graphics } from './Graphics/Graphics.js';
 import { Controls } from './Controls/Controls.js';
 import { Comm } from './Comm/Comm.js';
 
+import { JSONstringify } from './Utilities.js';
+
 // Force the processing of the CSS format file
 import './Basiljs.less';
 
@@ -175,7 +177,7 @@ GP.Ready = true;
 
 // If there are connection parameters, start the first connection
 if (Config.comm && Config.comm.transportURL) {
-    GP.DebugLog('Basiljs: starting transport and service: ' + JSON.stringify(Config.comm));
+    GP.DebugLog('Basiljs: starting transport and service: ' + JSONstringify(Config.comm));
     GP.CM.ConnectTransportAndService(Config.comm)
         .then( srv => {
             GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
@@ -189,11 +191,16 @@ if (Config.comm && Config.comm.transportURL) {
                         'TestLoaderType': Config.comm.TestAsset.loaderType
                     });
                 }
-                let auth = Config.comm.auth;
-                srv.OpenSession(auth, srvParams)
+                srv.OpenSession( { 'accessProperties': Config.auth }, srvParams)
                 .then( resp => {
-                    GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
-                                    + JSON.stringify(resp.properties));
+                    if (resp.exception) {
+                        GP.DebugLog('Basiljs: OpenSession failed: '
+                                        + JSONstringify(resp.exception));
+                    }
+                    else {
+                        GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
+                                        + JSONstringify(resp.properties));
+                    }
                 })
                 .catch( e => {
                     GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);

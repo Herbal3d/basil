@@ -23,6 +23,13 @@ export default {
         }
         */
     },
+    'auth': {
+        // Filled by parameters passed in initial invocation
+        /*
+        'sessionKey': '',   // identifier for the session
+        'sessionAuth': ''   // authorization key
+        */
+    },
     // Parameters for the main display page
     'page': {
         'webGLcontainerId': 'webGLcontainer',

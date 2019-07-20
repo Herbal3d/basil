@@ -45,7 +45,7 @@ export class DisplayableMeshSet extends Displayable {
             .catch(err => {
                 this.SetFailed();
                 GP.ErrorLog('DisplayableMeshSet: unable to load asset ' + JSONstringify(displayInfo)
-                    + ' ERROR=' + err);
+                    + ', ERROR=' + JSONstringify(err));
             })
         }
         else {

@@ -16,6 +16,8 @@ import Config from '../config.js';
 
 import { Controls } from '../Controls/Controls.js';
 import { JSONstringify } from '../Utilities.js';
+
+import { createClient, createSecureClient } from 'xmlrpc';
 import { MD5 } from '../MD5.js';
 
 import { Base64 } from 'js-base64';
@@ -93,6 +95,11 @@ GP.CO.ClickableOps['spaceServerConnect'] = function() {
             'transport': GetSelectedValue('region-transport'),
             'transportURL': GetSelectedValue('region-transportURL'),
             'service': GetSelectedValue('region-service')
+        },
+        'auth': {
+            // Made up numbers for testing
+            'sessionKey': '12345678',               // identifier for the session
+            'sessionAuth': '01234567890123456789'   // authorization key
         }
     };
     console.log('gridConfigParams=' + JSONstringify(regionConfigParams));
@@ -139,14 +146,15 @@ GP.CO.ClickableOps['gridLogin'] = function() {
 
         let loginURL = document.getElementById('gridLogin-gridURL').innerHTML.trim();
 
-        LoginWS(firstname, lastname, password, startLocation, loginURL, function() {
+        LoginXML(firstname, lastname, password, startLocation, loginURL, resp => {
             LoginProgress('Login success');
+            console.log('Login response = ' + JSONstringify(resp));
             // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
             // let configParams = Base64.encode(JSON.stringify(regionConfigParams));
 
             // window.location = 'Basil.html?c=' + configParams;
         });
-        LoginProgress('Return from LoginWS. Socket state=' + GP.loginConnection.readyState);
+        LoginProgress('Return from LoginWS.');
     }
     catch (e) {
         LoginProgress('Login fail: exception: ' + e);
@@ -167,7 +175,69 @@ function LoginProgress(msg, classs) {
     }
 };
 
+// Log into grid using XMLRPC interface
+function LoginXML(firstname, lastname, password, startLocation, loginURL, successCallback) {
+    LoginProgress('LoginXML. URL=' + loginURL);
+    let theURL = new URL(loginURL);
+    // let client = createClient( { 'url': loginURL, 'rejectUnauthorized': 'false' });
+    // let client = createClient( { 'url': loginURL, 'rejectUnauthorized': 'false' });
+    let client = createClient( {
+         'host': theURL.hostname,
+         'port': theURL.port,
+         'path': theURL.path,
+         'rejectUnauthorized': 'false'
+    });
+    if (client) {
+        try {
+            let hashedPW = '$1$' + MD5(password);
+            LoginProgress('Hashed password=' + hashedPW);
+            let loginInfo = [ {
+                'firstname': firstname,
+                'lastname': lastname,
+                'passwd': hashedPW,
+                'startlocation': startLocation,
+                'channel': 'Herbal3d',
+                'version': 'Herbal3d 1.0.0.1',
+                'mac': '11:22:33:44:55:66',
+                'id0': '11:22:33:44:55:66',
+                'options': [
+                    "login-flags"
+                ]
+            } ];
+            LoginProgress('Before client.methodCall');
+            client.methodCall('login_to_simulator', loginInfo, (error, resp) => {
+                LoginProgress('methodCall callback');
+                if (resp) {
+                    if (resp['login'] == 'true') {
+                        if (typeof(successCallback) == 'function') {
+                            successCallback(resp);
+                        }
+                    }
+                    else {
+                        FailedLogin = true;
+                        LoginProgress('Login failed: ' + resp.reason);
+                    }
+                }
+                else {
+                    LoginProgress('No response body');
+                    LoginProgress('No response to login XMLRPC: ' + JSONstringify(error));
+                }
+            });
+            LoginProgress('After client.methodCall');
+        }
+        catch (e) {
+            LoginProgress('Exception logging in:' + e);
+            FailedLogin = true;
+        }
+    }
+    else {
+        FailedLogin = true;
+        LoginProgress('Login failed: could not make WebSocket connection to ' + wsURL);
+    }
+}
+
 // Log into grid using the WebSocket interface
+// This code should work but the OpenSimulator WebSocket implementation needs debugging
 function LoginWS(firstname, lastname, password, startLocation, loginURL, successCallback) {
     // Mangle LoginURL to make it a websocket url
     let wsURL = '';
@@ -183,10 +253,11 @@ function LoginWS(firstname, lastname, password, startLocation, loginURL, success
     wsURL += '/WebSocket/GridLogin';
 
     let hashedPW = '$1$' + MD5(password);
+    LoginProgress('Hashed password=' + hashedPW);
 
     GP.loginConnection = new WebSocket(wsURL);
     if (GP.loginConnection) {
-        GP.loginConnection.addEventListener('message', function(event) {
+        GP.loginConnection.addEventListener('message', (event) => {
             LoginProgress('Received login response');
             try {
                 console.log('Login response = ' + JSONstringify(event.data));
