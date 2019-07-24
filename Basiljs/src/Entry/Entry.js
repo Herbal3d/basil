@@ -15,7 +15,7 @@ import GP from 'GP';
 import Config from '../config.js';
 
 import { Controls } from '../Controls/Controls.js';
-import { JSONstringify } from '../Utilities.js';
+import { JSONstringify, RandomIdentifier } from '../Utilities.js';
 
 import { createClient, createSecureClient } from 'xmlrpc';
 import { MD5 } from '../MD5.js';
@@ -98,8 +98,8 @@ GP.CO.ClickableOps['spaceServerConnect'] = function() {
         },
         'auth': {
             // Made up numbers for testing
-            'sessionKey': '12345678',               // identifier for the session
-            'sessionAuth': '01234567890123456789'   // authorization key
+            'SessionKey': 'EntrySession-' + RandomIdentifier(),               // identifier for the session
+            'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
         }
     };
     console.log('gridConfigParams=' + JSONstringify(regionConfigParams));
