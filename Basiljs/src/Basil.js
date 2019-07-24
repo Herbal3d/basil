@@ -198,8 +198,13 @@ if (Config.comm && Config.comm.transportURL) {
                                         + JSONstringify(resp.exception));
                     }
                     else {
-                        GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
+                        if (resp.properties) {
+                            GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
                                         + JSONstringify(resp.properties));
+                            srv.sessionAuth = resp.properties.SessionAuth;
+                            srv.sessionAuthExpiration = resp.properties.SessionAuthExpiration;
+                            srv.sessionKey = resp.properties.SessionKey;
+                        }
                     }
                 })
                 .catch( e => {
