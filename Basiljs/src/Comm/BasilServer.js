@@ -66,47 +66,57 @@ export class BasilServerConnection  extends MsgProcessor {
     _ProcIdentifyDisplayableObject(req) {
         // console.log('IdentifyDisplayableObject');
         let ret = { 'op': BasilMessageOps.get('IdentifyDisplayableObjectResp') };
-        if (req.assetInfo) {
-            let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
-            let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
-            if (newItem) {
-                newItem.ownerId = this.id;    // So we know who created what
-                ret['objectId'] = { 'id': newItem.id };
+        if (this._CheckAuth(req.auth)) {
+            if (req.assetInfo) {
+                let id = req.assetInfo.id ? req.assetInfo.id : CreateUniqueId('remote');
+                let newItem = DisplayableFactory(id, req.auth, req.assetInfo.displayInfo);
+                if (newItem) {
+                    newItem.ownerId = this.id;    // So we know who created what
+                    ret['objectId'] = { 'id': newItem.id };
+                }
+                else {
+                    ret['exception'] = this.MakeException('Could not create object');
+                }
             }
             else {
-                ret['exception'] = this.MakeException('Could not create object');
+                ret['exception'] = this.MakeException('No assetInfo specified');
             }
         }
         else {
-            ret['exception'] = this.MakeException('No assetInfo specified');
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
     _ProcForgetDisplayableObject(req) {
         let ret = { 'op': BasilMessageOps.get('ForgetDisplayableObjectResp') };
-        if (req.objectId) {
-            let obj = BItem.GetItem(req.objectId.id);
-            if (obj) {
-                BItem.ForgetItem(req.objectId.id);
-                // Remove all instances that point to this object.
-                try {
-                    BItem.ForEachItem( bItem => {
-                        if (bItem.itemType == BItemType.INSTANCE) {
-                            if (bItem.displayable) {
-                                if (bItem.displayable.id == obj.id) {
-                                    this._DeleteInstance(bItem);
+        if (this._CheckAuth(req.auth)) {
+            if (req.objectId) {
+                let obj = BItem.GetItem(req.objectId.id);
+                if (obj) {
+                    BItem.ForgetItem(req.objectId.id);
+                    // Remove all instances that point to this object.
+                    try {
+                        BItem.ForEachItem( bItem => {
+                            if (bItem.itemType == BItemType.INSTANCE) {
+                                if (bItem.displayable) {
+                                    if (bItem.displayable.id == obj.id) {
+                                        this._DeleteInstance(bItem);
+                                    }
                                 }
                             }
-                        }
-                    })
+                        })
+                    }
+                    catch (e) {
+                        GP.ErrorLog('BasilServer._ProcForgetDisplayableObject:'
+                                + ' exception deleting instance of displayable: ' + e);
+                    }
+                    // Cleanup and remove this object.
+                    obj.ReleaseResources();
                 }
-                catch (e) {
-                    GP.ErrorLog('BasilServer._ProcForgetDisplayableObject:'
-                            + ' exception deleting instance of displayable: ' + e);
-                }
-                // Cleanup and remove this object.
-                obj.ReleaseResources();
             }
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
@@ -114,41 +124,51 @@ export class BasilServerConnection  extends MsgProcessor {
     _ProcCreateObjectInstance(req) {
         // console.log('ProcCreateObjectInstance');
         let ret = { 'op': BasilMessageOps.get('CreateObjectInstanceResp') };
-        if (req.objectId) {
-            let baseDisplayable = BItem.GetItem(req.objectId.id);
-            if (baseDisplayable) {
-                let instanceId = req.instanceId ? req.instanceId.id : CreateUniqueInstanceId();
-                let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
-                newInstance.ownerId = this.id;    // So we know who created what
-                if (req.pos) {
-                    this.UpdatePositionInfo(newInstance, req.pos);
+        if (this._CheckAuth(req.auth)) {
+            if (req.objectId) {
+                let baseDisplayable = BItem.GetItem(req.objectId.id);
+                if (baseDisplayable) {
+                    let instanceId = req.instanceId ? req.instanceId.id : CreateUniqueInstanceId();
+                    let newInstance = InstanceFactory(instanceId, req.auth, baseDisplayable);
+                    newInstance.ownerId = this.id;    // So we know who created what
+                    if (req.pos) {
+                        this.UpdatePositionInfo(newInstance, req.pos);
+                    }
+                    if (req.propertiesToSet) {
+                        newInstance.SetProperties(req.propertiesToSet);
+                    }
+                    newInstance.PlaceInWorld();
+                    ret['instanceId'] = { 'id': newInstance.id };
                 }
-                if (req.propertiesToSet) {
-                    newInstance.SetProperties(req.propertiesToSet);
+                else {
+                    ret['exception'] = this.MakeException('Displayable was not found: ' + req.objectId.id);
                 }
-                newInstance.PlaceInWorld();
-                ret['instanceId'] = { 'id': newInstance.id };
             }
             else {
-                ret['exception'] = this.MakeException('Displayable was not found: ' + req.objectId.id);
+                ret['exception'] = this.MakeException('Displayable or position not specified');
             }
         }
         else {
-            ret['exception'] = this.MakeException('Displayable or position not specified');
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
     _ProcDeleteObjectInstance(req) {
         let ret = { 'op': BasilMessageOps.get('DeleteObjectInstanceResp') };
-        if (req.instanceId) {
-            let inst = BItem.GetItem(req.instanceId.id);
-            if (inst) {
-                // Forget the reference to the item.
-                this._DeleteInstance(inst);
+        if (this._CheckAuth(req.auth)) {
+            if (req.instanceId) {
+                let inst = BItem.GetItem(req.instanceId.id);
+                if (inst) {
+                    // Forget the reference to the item.
+                    this._DeleteInstance(inst);
+                }
+                else {
+                    ret['exception'] = this.MakeException('Instance not found');
+                }
             }
-            else {
-                ret['exception'] = this.MakeException('Instance not found');
-            }
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
@@ -161,106 +181,152 @@ export class BasilServerConnection  extends MsgProcessor {
     _ProcUpdateObjectProperty(req) {
         // console.log('ProcUpdateObjectProperty');
         let ret = { 'op': BasilMessageOps.get('UpdateObjectPropertyResp') };
-        if (req.objectId && req.properties) {
-            let obj = BItem.GetItem(req.objectId.id);
-            if (obj) {
-                obj.SetProperties(req.properties);
+        if (this._CheckAuth(req.auth)) {
+            if (req.objectId && req.properties) {
+                let obj = BItem.GetItem(req.objectId.id);
+                if (obj) {
+                    obj.SetProperties(req.properties);
+                }
+                else {
+                    ret['exception'] = this.MakeException('Object not found');
+                }
             }
-            else {
-                ret['exception'] = this.MakeException('Object not found');
-            }
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
     _ProcUpdateInstanceProperty(req) {
         // console.log('ProcUpdateInstanceProperty');
         let ret = { 'op': BasilMessageOps.get('UpdateInstancePropertyResp') };
-        if (req.instanceId && req.properties) {
-            let obj = BItem.GetItem(req.instanceId.id);
-            if (obj) {
-                obj.SetProperties(req.properties);
+        if (this._CheckAuth(req.auth)) {
+            if (req.instanceId && req.properties) {
+                let obj = BItem.GetItem(req.instanceId.id);
+                if (obj) {
+                    obj.SetProperties(req.properties);
+                }
+                else {
+                    ret['exception'] = this.MakeException('Object not found');
+                }
             }
-            else {
-                ret['exception'] = this.MakeException('Object not found');
-            }
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
     _ProcUpdateInstancePosition(req) {
         // console.log('ProcUpdateInstancePosition');
         let ret = { 'op': BasilMessageOps.get('UpdateInstancePositionResp') };
-        if (req.instanceId && req.pos) {
-            let instance = BItem.GetItem(req.instanceId.id);
-            if (instance) {
-                this.UpdatePositionInfo(instance, req.pos);
+        if (this._CheckAuth(req.auth)) {
+            if (req.instanceId && req.pos) {
+                let instance = BItem.GetItem(req.instanceId.id);
+                if (instance) {
+                    this.UpdatePositionInfo(instance, req.pos);
+                }
             }
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
         }
         return ret;
     }
     _ProcRequestObjectProperties(req) {
         let ret = { 'op': BasilMessageOps.get('RequestObjectPropertiesResp') };
-        if (req.objectId) {
-            let filter = req.filter ? String(req.filter) : undefined;
-            let obj = BItem.GetItem(req.objectId.id);
-            if (obj) {
-                ret['properties'] =  this.CreatePropertyList(obj.FetchProperties(filter));
+        if (this._CheckAuth(req.auth)) {
+            if (req.objectId) {
+                let filter = req.filter ? String(req.filter) : undefined;
+                let obj = BItem.GetItem(req.objectId.id);
+                if (obj) {
+                    ret['properties'] =  this.CreatePropertyList(obj.FetchProperties(filter));
+                }
+                else {
+                    ret['exception'] = this.MakeException('Object not found: ' + req.objectId.id);
+                }
             }
-            else {
-                ret['exception'] = this.MakeException('Object not found: ' + req.objectId.id);
-            }
-            return ret;
-        };
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
+        }
+        return ret;
     }
     _ProcRequestInstanceProperties(req) {
         let ret = { 'op': BasilMessageOps.get('RequestInstancePropertiesResp') };
-        if (req.instanceId) {
-            let filter = req.filter ? String(req.filter) : undefined;
-            let instance = BItem.GetItem(req.instanceId.id);
-            if (instance) {
-                ret['properties'] = this.CreatePropertyList(instance.FetchProperties(filter));
+        if (this._CheckAuth(req.auth)) {
+            if (req.instanceId) {
+                let filter = req.filter ? String(req.filter) : undefined;
+                let instance = BItem.GetItem(req.instanceId.id);
+                if (instance) {
+                    ret['properties'] = this.CreatePropertyList(instance.FetchProperties(filter));
+                }
+                else {
+                    ret['exception'] = this.MakeException('Instance not found');
+                }
             }
-            else {
-                ret['exception'] = this.MakeException('Instance not found');
-            }
-            return ret;
-        };
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
+        }
+        return ret;
     }
     _ProcCloseSession(req) {
         let ret = { 'op': BasilMessageOps.get('CloseSessionResp') };
+        if (this._CheckAuth(req.auth)) {
+            // TODO: close session
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
+        }
         return ret;
     }
     // Someone is asking me to make a connection to another service
     _ProcMakeConnection(req) {
         let ret = { 'op': BasilMessageOps.get('MakeConnectionResp') };
-        let params = CombineParameters(undefined, req.properties, {
-            'transportURL': undefined,
-            'transport': 'WS',
-            'service': undefined
-        });
-        GP.DebugLog('BasilServer.MakeConnection: props=' + JSONstringify(params));
-        // if connecting to a SpaceServer, we are the client
-        if (params['service'] == 'SpaceServer') {
-            params['service'] = 'SpaceServerClient';
-        }
-        GP.CM.ConnectTransportAndService(params)
-        .then( srv => {
-            let auth = undefined;
-            let props = {};
-            srv.OpenSession(auth, props)
-            .then( resp => {
-                GP.DebugLog('BasilServer.ProcMakeConnection: Session opened to SpaceServer. Params='
-                            + JSONstringify(resp.properties));
+        if (this._CheckAuth(req.auth)) {
+            let params = CombineParameters(undefined, req.properties, {
+                'transportURL': undefined,
+                'transport': 'WS',
+                'service': undefined
+            });
+            GP.DebugLog('BasilServer.MakeConnection: props=' + JSONstringify(params));
+            // if connecting to a SpaceServer, we are the client
+            if (params['service'] == 'SpaceServer') {
+                params['service'] = 'SpaceServerClient';
+            }
+            GP.CM.ConnectTransportAndService(params)
+            .then( srv => {
+                let auth = undefined;
+                let props = {};
+                srv.OpenSession(auth, props)
+                .then( resp => {
+                    GP.DebugLog('BasilServer.ProcMakeConnection: Session opened to SpaceServer. Params='
+                                + JSONstringify(resp.properties));
+                    // Copy the authorizations onto the service for later checking
+                    if (resp.properties.ServiceAuth) {
+                        srv.sessionAuth = resp.properties.ServiceAuth.Auth;
+                        srv.sessionAuthExpiration = resp.properties.ServiceAuth.AuthExpiration;
+                        srv.sessionKey = resp.properties.ServiceAuth.Name;
+                    }
+                })
+                .catch( e => {
+                    GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);
+                    // NOTE: an exception cannot be returned as the response has been sent
+                });
             })
-            .catch( e => {
-                GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);
+            .catch (e => {
+                GP.ErrorLog('BasilServer.ProcMakeConnection: failed connecting to transport/service' + e.message);
                 // NOTE: an exception cannot be returned as the response has been sent
             });
-        })
-        .catch (e => {
-            GP.ErrorLog('BasilServer.ProcMakeConnection: failed connecting to transport/service' + e.message);
-            // NOTE: an exception cannot be returned as the response has been sent
-        });
+        }
+        else {
+            ret['exception'] = this.MakeException('Not authorized');
+        }
         return ret;
+    }
+
+    _CheckAuth(pAuth) {
+        return true;
     }
 
     // Update an instance's position info based on a passed BasilType.InstancePostionInfo

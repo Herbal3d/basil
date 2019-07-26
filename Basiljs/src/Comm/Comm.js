@@ -110,15 +110,16 @@ export class Comm extends BItem {
         }.bind(this));
     };
 
-    // A misnomer as this will connect a transport to either a Pseto service or a
+    // This will connect a transport to either a Pseto service or a
     //     Basil client (Creating the BasilService for this end))
-    // Expects parms.service = either 'BasilServer" or 'Pesto'
+    // Note: this just makes the transport connection and sets up the messsage
+    //     processors. Actual communication happens later.
     // Returns a Promise that has a handle to the created processor or undefined.
     ConnectService(pTransport, pParams) {
         let params = CombineParameters(undefined, pParams, {
             'service': 'SpaceServerClient',     // or 'Pesto'
-            'serviceId': undefined,       // if not passed, unique one created
-            'pestoId': undefined          // if not passed, unique one created
+            'serviceId': undefined,     // if not passed, unique one created
+            'pestoId': undefined,       // if not passed, unique one created
         });
         return new Promise(function(resolve, reject) {
             let svc = undefined;
