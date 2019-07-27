@@ -128,10 +128,10 @@ export class Comm extends BItem {
                 case 'SpaceServer':
                     // This service is not used and is here for development and debugging
                     svc = new SpaceServerConnection(pTransport, params);
-                    let basilSpace = new BasilClientConnection(pTransport, params);
-                    let aliveSpace = new AliveCheckConnection(pTransport, params);
-                    aliveSpace.Start();
-                    basilSpace.Start();
+                    svc.basilSpace = new BasilClientConnection(pTransport, params);
+                    svc.aliveCheck = new AliveCheckConnection(pTransport, params);
+                    svc.aliveCheck.Start();
+                    svc.basilSpace.Start();
                     svc.Start();
                     GP.DebugLog('Comm.Connect: created SpaceServerConnection. Id=' + svc.id);
                     resolve(svc);
@@ -139,20 +139,20 @@ export class Comm extends BItem {
                 case 'SpaceServerClient':
                     svc = new SpaceServerClientConnection(pTransport, params);
                     // A connection to the space server also lets the server talk to Basil
-                    let basilSpaceClient = new BasilServerConnection(pTransport, params);
-                    let aliveSpaceClient = new AliveCheckConnection(pTransport, params);
-                    aliveSpaceClient.Start();
-                    basilSpaceClient.Start();
+                    svc.basilClient = new BasilServerConnection(pTransport, params);
+                    svc.aliveCheck = new AliveCheckConnection(pTransport, params);
+                    svc.aliveCheck.Start();
+                    svc.basilClient.Start();
                     svc.Start();
                     GP.DebugLog('Comm.Connect: created SpaceServerClientConnection. Id=' + svc.id);
                     resolve(svc);
                     break;
               case 'Pesto':
                     svc = new PestoClientConnection(pTransport, params);
-                    let basilPesto = new BasilServerConnection(pTransport, params);
-                    let alivePesto = new AliveCheckConnection(pTransport, params);
-                    alivePesto.Start();
-                    basilPesto.Start();
+                    svc.basilClient = new BasilServerConnection(pTransport, params);
+                    svc.aliveCheck = new AliveCheckConnection(pTransport, params);
+                    svc.aliveCheck.Start();
+                    svc.basilClient.Start();
                     svc.Start();
                     GP.DebugLog('Comm.Connect: created PestoClientConnection. Id=' + svc.id);
                     resolve(svc);

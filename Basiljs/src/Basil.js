@@ -27,6 +27,7 @@ import { Eventing } from './Eventing/Eventing.js';
 import { Graphics } from './Graphics/Graphics.js';
 import { Controls } from './Controls/Controls.js';
 import { Comm } from './Comm/Comm.js';
+import { Auth, CreateToken } from './Auth/Auth.js';
 
 import { JSONstringify } from './Utilities.js';
 
@@ -144,7 +145,11 @@ if (configParams) {
         let unpacked = Base64.decode(configParams);
         let newParams = JSON.parse(unpacked);
         if (newParams) {
-            Object.assign(Config, newParams);    // property merge of unpacked into Config
+            // Could do this assign but then the caller could change any configuration param.
+            // Only the 'comm' and 'auth' parameters are passed in for more security.
+            // Object.assign(Config, newParams);    // property merge of unpacked into Config
+            Config.comm = newParams.comm;
+            Config.auth = newParams.auth;
         }
     }
     catch(e) {
@@ -165,11 +170,13 @@ let canvas = document.getElementById(Config.page.webGLcanvasId);
 
 // Create the major component instances (Singletons)
 GP.EV = new Eventing();
+GP.AU = new Auth();
 GP.GR = new Graphics(container, canvas, GP.EV);
 GP.CO = new Controls(GP.EV);
 GP.CM = new Comm();
 
 // Push the 'Start' button
+GP.AU.Start();
 GP.CO.Start();
 GP.GR.Start();
 GP.CM.Start();
@@ -191,7 +198,18 @@ if (Config.comm && Config.comm.transportURL) {
                         'TestLoaderType': Config.comm.TestAsset.loaderType
                     });
                 }
-                srv.OpenSession( { 'accessProperties': Config.auth }, srvParams)
+                srv.SetIncomingAuth(CreateToken('Basil'));
+                let authForOpen = null;
+                if (Config.auth) {
+                    authForOpen = {
+                        'accessProperties': {
+                            'SessionKey': Config.auth.SessionKey,
+                            'UserAuth': Config.auth.UserAuth,
+                            'ClientAuth': srv.IncomingAuth
+                        }
+                    }
+                }
+                srv.OpenSession(authForOpen, srvParams)
                 .then( resp => {
                     if (resp.exception) {
                         GP.DebugLog('Basiljs: OpenSession failed: '
@@ -201,9 +219,8 @@ if (Config.comm && Config.comm.transportURL) {
                         if (resp.properties) {
                             GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
                                         + JSONstringify(resp.properties));
-                            srv.sessionAuth = resp.properties.SessionAuth;
-                            srv.sessionAuthExpiration = resp.properties.SessionAuthExpiration;
-                            srv.sessionKey = resp.properties.SessionKey;
+                            srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
+                            srv.SessionKey = resp.SessionKey;
                         }
                     }
                 })

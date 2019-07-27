@@ -19,6 +19,7 @@ import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 import { BasilMessage } from "../jslibs/BasilServerMessages.js"
 import { BasilMessageOps } from "./BasilMessageOps.js";
 import { RandomIdentifier, JSONstringify } from '../Utilities.js';
+import { ExpirationNever } from '../Auth/Auth.js';
 
 // A class which is instanced for each transport system and
 //   maps received messsages to the message processors.
@@ -122,6 +123,26 @@ export class MsgProcessor extends BItem {
         pProcessors.forEach( (v, k) => { addTo.set(k, v); });
     }
 
+    SetIncomingAuth(authToken, authExp) {
+        this.IncomingAuth = authToken;
+        if (authExp) {
+            this.IncomingAuthExpiration = authExp;
+        }
+        else {
+            this.IncomingAuthExpiration = ExpirationNever;
+        }
+    }
+
+    SetOutgoingAuth(authToken, authExp) {
+        this.OutgoingAuth = authToken;
+        if (authExp) {
+            this.OutgoingAuthExpiration = authExp;
+        }
+        else {
+            this.OutgoingAuthExpiration = ExpirationNever;
+        }
+    }
+
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
     SendAndPromiseResponse(pMsg) {
@@ -214,4 +235,13 @@ export class MsgProcessor extends BItem {
         });
         return list;
     };
+
+    // Given a token string, build a Basil message auth structure
+    BuildAuth(token) {
+        return {
+            'accessProperties' : {
+                'auth': token
+            }
+        };
+    }
 }

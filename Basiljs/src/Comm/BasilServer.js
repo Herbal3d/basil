@@ -22,6 +22,8 @@ import { BasilMessageOps } from './BasilMessageOps.js';
 import { CreateUniqueId, CreateUniqueInstanceId, CombineParameters, JSONstringify } from '../Utilities.js';
 import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
 
+import { CreateToken } from '../Auth/Auth.js';
+
 // Interface of a Basil Server talking over a Basil/SpaceServer streaming connection.
 export class BasilServerConnection  extends MsgProcessor {
     // @param serverId a unique Id for accessing this server instance
@@ -287,27 +289,50 @@ export class BasilServerConnection  extends MsgProcessor {
             let params = CombineParameters(undefined, req.properties, {
                 'transportURL': undefined,
                 'transport': 'WS',
-                'service': undefined
+                'service': undefined,
+                'serviceauth': undefined
             });
             GP.DebugLog('BasilServer.MakeConnection: props=' + JSONstringify(params));
             // if connecting to a SpaceServer, we are the client
             if (params['service'] == 'SpaceServer') {
                 params['service'] = 'SpaceServerClient';
+                params['Service'] = 'SpaceServerClient';
             }
+
             GP.CM.ConnectTransportAndService(params)
             .then( srv => {
                 let auth = undefined;
+                // A new service so new tokens to talk to me with
+                srv.SetIncomingAuth(CreateToken('makeconn'));
+                // This is the authorization info for making the initial call to the service
+                if (params.serviceauth) {
+                    try {
+                        let serviceAuth = JSON.parse(params.serviceauth);
+                        if (serviceAuth) {
+                            auth = {
+                                'accessProperties' : {
+                                    'SessionKey': CreateToken('session'),
+                                    'UserAuth': serviceAuth.Auth,
+                                    'ClientAuth': srv.IncomingAuth,
+                                    'ClientAuthExpiration': srv.IncomingAuthExpiration
+                                }
+                            }
+                        }
+                    }
+                    catch (e) {
+                        GP.ErrorLog('BasilServer.MakeConnection: exception parsing auth:' + e);
+                        auth = undefined;
+                    }
+                }
                 let props = {};
                 srv.OpenSession(auth, props)
                 .then( resp => {
                     GP.DebugLog('BasilServer.ProcMakeConnection: Session opened to SpaceServer. Params='
                                 + JSONstringify(resp.properties));
                     // Copy the authorizations onto the service for later checking
-                    if (resp.properties.ServiceAuth) {
-                        srv.sessionAuth = resp.properties.ServiceAuth.Auth;
-                        srv.sessionAuthExpiration = resp.properties.ServiceAuth.AuthExpiration;
-                        srv.sessionKey = resp.properties.ServiceAuth.Name;
-                    }
+                    srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
+                    srv.SessionKey = resp.SessionKey;
+                    srv.ConnectionKey = resp.ConnectionKey;
                 })
                 .catch( e => {
                     GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);

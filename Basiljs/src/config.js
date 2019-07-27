@@ -26,8 +26,8 @@ export default {
     'auth': {
         // Filled by parameters passed in initial invocation
         /*
-        'sessionKey': '',   // identifier for the session
-        'sessionAuth': ''   // authorization key
+        'SessionKey': '',   // identifier for the session
+        'SessionAuth': ''   // authorization key
         */
     },
     // Parameters for the main display page
@@ -36,7 +36,7 @@ export default {
         'webGLcanvasId': 'webGLcanvas',
         'collectDebug': true,
         'showDebug': true,
-        'debugLogLines': 25
+        'debugLogLines': 20
     },
     // Loader for assets
     'assetLoader': {
@@ -120,6 +120,9 @@ export default {
     // Parameters for the simple eventing system
     'eventing': {
         'eventPollIntervalMS': 500
+    },
+    'security': {
+        'ShouldCheckBasilServerRequestAuth': true,
     },
     // Connection and debug information when running the WebWorker test
     'WWTester': {

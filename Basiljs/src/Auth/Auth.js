@@ -15,8 +15,30 @@ import GP from 'GP';
 import Config from '../config.js';
 import { RandomIdentifier } from '../Utilities.js';
 
+import { BItem, BItemType } from '../Items/BItem.js';
+
+// Create an identifying token. Just randomly generated.
+export function CreateToken(connection) {
+    let token = RandomIdentifier() + RandomIdentifier() + RandomIdentifier();
+    if (connection) {
+        token = connection + '-' + token;
+    }
+    return token;
+}
+
+// As good as 'never'. This will be a problem in 2300.
+export function ExpirationNever() {
+    return '2299-12-31T23:59:59Z';
+}
+
 export class Auth extends BItem {
     constructor() {
-        this.BasilId = 'Basil' + RandomIdentifier();
+        let anId = 'Basil-' + RandomIdentifier();
+        super(anId, null, BItemType.SERVICE);
     }
+
+    Start() {
+        // Not much to do yet
+    }
+
 }
