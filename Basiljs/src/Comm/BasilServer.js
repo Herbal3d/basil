@@ -312,7 +312,7 @@ export class BasilServerConnection  extends MsgProcessor {
                             auth = {
                                 'accessProperties' : {
                                     'SessionKey': CreateToken('session'),
-                                    'UserAuth': serviceAuth.Auth,
+                                    'Auth': serviceAuth.Auth,
                                     'ClientAuth': srv.IncomingAuth,
                                     'ClientAuthExpiration': srv.IncomingAuthExpiration
                                 }

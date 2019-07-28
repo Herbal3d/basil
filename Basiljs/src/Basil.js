@@ -204,7 +204,7 @@ if (Config.comm && Config.comm.transportURL) {
                     authForOpen = {
                         'accessProperties': {
                             'SessionKey': Config.auth.SessionKey,
-                            'UserAuth': Config.auth.UserAuth,
+                            'Auth': Config.auth.UserAuth,
                             'ClientAuth': srv.IncomingAuth
                         }
                     }
@@ -221,6 +221,7 @@ if (Config.comm && Config.comm.transportURL) {
                                         + JSONstringify(resp.properties));
                             srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
                             srv.SessionKey = resp.SessionKey;
+                            srv.ConnectionKey = resp.ConnectionKey;
                         }
                     }
                 })
