@@ -130,7 +130,7 @@ GP.CO.ClickableOps['gridLogin'] = function() {
         }
         else if (namePieces.length == 1) {
             firstname = namePieces[0];
-            lastname = 'resident';
+            lastname = 'Resident';
         }
         else {
             LoginProgress('Login failed: name requires one or two pieces');
@@ -145,8 +145,12 @@ GP.CO.ClickableOps['gridLogin'] = function() {
         }
 
         let loginURL = document.getElementById('gridLogin-gridURL').innerHTML.trim();
+        let loginName = document.getElementById('gridLogin-gridName').value.trim();
+        if (loginName.length > 0 && loginName.startsWith('http')) {
+            loginURL = loginName;
+        }
 
-        LoginXML(firstname, lastname, password, startLocation, loginURL, resp => {
+        LoginWS(firstname, lastname, password, startLocation, loginURL, resp => {
             LoginProgress('Login success');
             console.log('Login response = ' + JSONstringify(resp));
             // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
@@ -154,7 +158,7 @@ GP.CO.ClickableOps['gridLogin'] = function() {
 
             // window.location = 'Basil.html?c=' + configParams;
         });
-        LoginProgress('Return from LoginWS.');
+        LoginProgress('Return from Login func.');
     }
     catch (e) {
         LoginProgress('Login fail: exception: ' + e);
@@ -192,12 +196,13 @@ function LoginXML(firstname, lastname, password, startLocation, loginURL, succes
             let hashedPW = '$1$' + MD5(password);
             LoginProgress('Hashed password=' + hashedPW);
             let loginInfo = [ {
-                'firstname': firstname,
-                'lastname': lastname,
+                'first': firstname,
+                'last': lastname,
                 'passwd': hashedPW,
                 'startlocation': startLocation,
                 'channel': 'Herbal3d',
                 'version': 'Herbal3d 1.0.0.1',
+                'platform': 'Linux',
                 'mac': '11:22:33:44:55:66',
                 'id0': '11:22:33:44:55:66',
                 'options': [
@@ -236,6 +241,45 @@ function LoginXML(firstname, lastname, password, startLocation, loginURL, succes
     }
 }
 
+function LoginXML2(firstname, lastname, password, startLocation, loginURL, successCallback) {
+    let hashedPW = '$1$' + MD5(password);
+    LoginProgress('Hashed password=' + hashedPW);
+    let xmlreq = '<?xml version="1.0"?>';
+    xmlreq = xmlreq + '<methodCall><methodName>login_to_simulator</methodName>';
+    xmlreq = xmlreq + '<params>';
+    xmlreq = xmlreq + '<param><value><struct>';
+    xmlreq = xmlreq + '<member><name>first</name><value><string>' + firstname + '</string></value></member>';
+    xmlreq = xmlreq + '<member><name>last</name><value><string>' + lastname + '</string></value></member>';
+    xmlreq = xmlreq + '<member><name>passwd</name><value><string>' + hashedPW + '</string></value></member>';
+    xmlreq = xmlreq + '<member><name>startlocation</name><value><string>' + startLocation + '</string></value></member>';
+    xmlreq = xmlreq + '<member><name>channel</name><value><string>Herbal3d</string></value></member>';
+    xmlreq = xmlreq + '<member><name>version</name><value><string>Herbal3d 1.0.0.1</string></value></member>';
+    xmlreq = xmlreq + '<member><name>platform</name><value><string>Linux</string></value></member>';
+    xmlreq = xmlreq + '<member><name>mac</name><value><string>11:22:33:44:55:66</string></value></member>';
+    xmlreq = xmlreq + '<member><name>id0</name><value><string>11:22:33:44:55:66</string></value></member>';
+    xmlreq = xmlreq + '<member><name>options</name><value>';
+    xmlreq = xmlreq + '<array><data><value><string>login-flags</string></value></data></array></value></member>';
+    xmlreq = xmlreq + '</struct></value></param>';
+    xmlreq = xmlreq + '</params>';
+    xmlreq = xmlreq + '</methodCall>';
+    LoginProgress('LoginXML2: doing fetch from ' + loginURL);
+    fetch(loginURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: {
+            'Content-Type': 'text/xml'
+        },
+        body: xmlreq
+    }) 
+    .then( data => {
+        console.log('XMLRPC: resp=' + JSONstringify(data));
+    })
+    .catch (err => {
+    });
+}
+
+
 // Log into grid using the WebSocket interface
 // This code should work but the OpenSimulator WebSocket implementation needs debugging
 function LoginWS(firstname, lastname, password, startLocation, loginURL, successCallback) {
@@ -253,8 +297,9 @@ function LoginWS(firstname, lastname, password, startLocation, loginURL, success
     wsURL += '/WebSocket/GridLogin';
 
     let hashedPW = '$1$' + MD5(password);
-    LoginProgress('Hashed password=' + hashedPW);
+    LoginProgress('LoginWS: Hashed password=' + hashedPW);
 
+    LoginProgress('LoginWS: login url=' + wsURL);
     GP.loginConnection = new WebSocket(wsURL);
     if (GP.loginConnection) {
         GP.loginConnection.addEventListener('message', (event) => {
