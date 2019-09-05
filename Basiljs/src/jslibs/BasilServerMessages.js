@@ -2693,6 +2693,262 @@ export const SpaceServer = $root.SpaceServer = (() => {
         return OpenSessionResp;
     })();
 
+    SpaceServer.RenewSessionReq = (function() {
+
+        function RenewSessionReq(properties) {
+            this.properties = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        RenewSessionReq.prototype.auth = null;
+        RenewSessionReq.prototype.properties = $util.emptyObject;
+
+        RenewSessionReq.create = function create(properties) {
+            return new RenewSessionReq(properties);
+        };
+
+        RenewSessionReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
+                for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
+            return writer;
+        };
+
+        RenewSessionReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        RenewSessionReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.SpaceServer.RenewSessionReq(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    reader.skip().pos++;
+                    if (message.properties === $util.emptyObject)
+                        message.properties = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.properties[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        RenewSessionReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        RenewSessionReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth")) {
+                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
+                if (error)
+                    return "auth." + error;
+            }
+            if (message.properties != null && message.hasOwnProperty("properties")) {
+                if (!$util.isObject(message.properties))
+                    return "properties: object expected";
+                let key = Object.keys(message.properties);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.properties[key[i]]))
+                        return "properties: string{k:string} expected";
+            }
+            return null;
+        };
+
+        RenewSessionReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.SpaceServer.RenewSessionReq)
+                return object;
+            let message = new $root.SpaceServer.RenewSessionReq();
+            if (object.auth != null) {
+                if (typeof object.auth !== "object")
+                    throw TypeError(".SpaceServer.RenewSessionReq.auth: object expected");
+                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            if (object.properties) {
+                if (typeof object.properties !== "object")
+                    throw TypeError(".SpaceServer.RenewSessionReq.properties: object expected");
+                message.properties = {};
+                for (let keys = Object.keys(object.properties), i = 0; i < keys.length; ++i)
+                    message.properties[keys[i]] = String(object.properties[keys[i]]);
+            }
+            return message;
+        };
+
+        RenewSessionReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.properties = {};
+            if (options.defaults)
+                object.auth = null;
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
+            let keys2;
+            if (message.properties && (keys2 = Object.keys(message.properties)).length) {
+                object.properties = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.properties[keys2[j]] = message.properties[keys2[j]];
+            }
+            return object;
+        };
+
+        RenewSessionReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RenewSessionReq;
+    })();
+
+    SpaceServer.RenewSessionResp = (function() {
+
+        function RenewSessionResp(properties) {
+            this.properties = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        RenewSessionResp.prototype.exception = null;
+        RenewSessionResp.prototype.properties = $util.emptyObject;
+
+        RenewSessionResp.create = function create(properties) {
+            return new RenewSessionResp(properties);
+        };
+
+        RenewSessionResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
+                for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
+            return writer;
+        };
+
+        RenewSessionResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        RenewSessionResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.SpaceServer.RenewSessionResp(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    reader.skip().pos++;
+                    if (message.properties === $util.emptyObject)
+                        message.properties = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.properties[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        RenewSessionResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        RenewSessionResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception")) {
+                let error = $root.BasilType.BasilException.verify(message.exception);
+                if (error)
+                    return "exception." + error;
+            }
+            if (message.properties != null && message.hasOwnProperty("properties")) {
+                if (!$util.isObject(message.properties))
+                    return "properties: object expected";
+                let key = Object.keys(message.properties);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.properties[key[i]]))
+                        return "properties: string{k:string} expected";
+            }
+            return null;
+        };
+
+        RenewSessionResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.SpaceServer.RenewSessionResp)
+                return object;
+            let message = new $root.SpaceServer.RenewSessionResp();
+            if (object.exception != null) {
+                if (typeof object.exception !== "object")
+                    throw TypeError(".SpaceServer.RenewSessionResp.exception: object expected");
+                message.exception = $root.BasilType.BasilException.fromObject(object.exception);
+            }
+            if (object.properties) {
+                if (typeof object.properties !== "object")
+                    throw TypeError(".SpaceServer.RenewSessionResp.properties: object expected");
+                message.properties = {};
+                for (let keys = Object.keys(object.properties), i = 0; i < keys.length; ++i)
+                    message.properties[keys[i]] = String(object.properties[keys[i]]);
+            }
+            return message;
+        };
+
+        RenewSessionResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.properties = {};
+            if (options.defaults)
+                object.exception = null;
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
+            let keys2;
+            if (message.properties && (keys2 = Object.keys(message.properties)).length) {
+                object.properties = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.properties[keys2[j]] = message.properties[keys2[j]];
+            }
+            return object;
+        };
+
+        RenewSessionResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RenewSessionResp;
+    })();
+
     SpaceServer.CloseSessionReq = (function() {
 
         function CloseSessionReq(properties) {
