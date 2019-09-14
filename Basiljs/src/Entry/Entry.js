@@ -150,7 +150,7 @@ GP.CO.ClickableOps['gridLogin'] = function() {
             loginURL = loginName;
         }
 
-        LoginWS(firstname, lastname, password, startLocation, loginURL, resp => {
+        LoginXML(firstname, lastname, password, startLocation, loginURL, resp => {
             LoginProgress('Login success');
             console.log('Login response = ' + JSONstringify(resp));
             // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
