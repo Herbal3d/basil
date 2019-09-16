@@ -143,6 +143,7 @@ GP.CO.ClickableOps['gridLogin'] = function() {
         if (startLocation.length == 0) {
             startLocation = 'last';
         }
+        LoginProgress('Start location = ' + startLocation);
 
         let loginURL = document.getElementById('gridLogin-gridURL').innerHTML.trim();
         let loginName = document.getElementById('gridLogin-gridName').value.trim();
@@ -150,7 +151,7 @@ GP.CO.ClickableOps['gridLogin'] = function() {
             loginURL = loginName;
         }
 
-        LoginXML(firstname, lastname, password, startLocation, loginURL, resp => {
+        LoginXML2(firstname, lastname, password, startLocation, loginURL, resp => {
             LoginProgress('Login success');
             console.log('Login response = ' + JSONstringify(resp));
             // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
@@ -179,7 +180,7 @@ function LoginProgress(msg, classs) {
     }
 };
 
-// Log into grid using XMLRPC interface
+// Log into grid using XMLRPC npm library
 function LoginXML(firstname, lastname, password, startLocation, loginURL, successCallback) {
     LoginProgress('LoginXML. URL=' + loginURL);
     let theURL = new URL(loginURL);
@@ -241,27 +242,30 @@ function LoginXML(firstname, lastname, password, startLocation, loginURL, succes
     }
 }
 
+// Login using XMLRPC raw request (no library or frameworks)
 function LoginXML2(firstname, lastname, password, startLocation, loginURL, successCallback) {
     let hashedPW = '$1$' + MD5(password);
-    LoginProgress('Hashed password=' + hashedPW);
-    let xmlreq = '<?xml version="1.0"?>';
-    xmlreq = xmlreq + '<methodCall><methodName>login_to_simulator</methodName>';
-    xmlreq = xmlreq + '<params>';
-    xmlreq = xmlreq + '<param><value><struct>';
-    xmlreq = xmlreq + '<member><name>first</name><value><string>' + firstname + '</string></value></member>';
-    xmlreq = xmlreq + '<member><name>last</name><value><string>' + lastname + '</string></value></member>';
-    xmlreq = xmlreq + '<member><name>passwd</name><value><string>' + hashedPW + '</string></value></member>';
-    xmlreq = xmlreq + '<member><name>startlocation</name><value><string>' + startLocation + '</string></value></member>';
-    xmlreq = xmlreq + '<member><name>channel</name><value><string>Herbal3d</string></value></member>';
-    xmlreq = xmlreq + '<member><name>version</name><value><string>Herbal3d 1.0.0.1</string></value></member>';
-    xmlreq = xmlreq + '<member><name>platform</name><value><string>Linux</string></value></member>';
-    xmlreq = xmlreq + '<member><name>mac</name><value><string>11:22:33:44:55:66</string></value></member>';
-    xmlreq = xmlreq + '<member><name>id0</name><value><string>11:22:33:44:55:66</string></value></member>';
-    xmlreq = xmlreq + '<member><name>options</name><value>';
-    xmlreq = xmlreq + '<array><data><value><string>login-flags</string></value></data></array></value></member>';
-    xmlreq = xmlreq + '</struct></value></param>';
-    xmlreq = xmlreq + '</params>';
-    xmlreq = xmlreq + '</methodCall>';
+    LoginProgress('LoginXML2: Hashed password=' + hashedPW);
+    let xmlreq = [
+        '<?xml version="1.0"?>',
+        '<methodCall><methodName>login_to_simulator</methodName>',
+        '<params>',
+        '<param><value><struct>',
+        '<member><name>first</name><value><string>' + firstname + '</string></value></member>',
+        '<member><name>last</name><value><string>' + lastname + '</string></value></member>',
+        '<member><name>passwd</name><value><string>' + hashedPW + '</string></value></member>',
+        '<member><name>startlocation</name><value><string>' + startLocation + '</string></value></member>',
+        '<member><name>channel</name><value><string>Herbal3d</string></value></member>',
+        '<member><name>version</name><value><string>Herbal3d 1.0.0.1</string></value></member>',
+        '<member><name>platform</name><value><string>Linux</string></value></member>',
+        '<member><name>mac</name><value><string>11:22:33:44:55:66</string></value></member>',
+        '<member><name>id0</name><value><string>11:22:33:44:55:66</string></value></member>',
+        '<member><name>options</name><value>',
+        '<array><data><value><string>login-flags</string></value></data></array></value></member>',
+        '</struct></value></param>',
+        '</params>',
+        '</methodCall>'
+    ].join('');
     LoginProgress('LoginXML2: doing fetch from ' + loginURL);
     fetch(loginURL, {
         method: 'POST',
@@ -273,9 +277,10 @@ function LoginXML2(firstname, lastname, password, startLocation, loginURL, succe
         body: xmlreq
     }) 
     .then( data => {
-        console.log('XMLRPC: resp=' + JSONstringify(data));
+        console.log('XMLRPC2: resp=' + JSONstringify(data));
     })
     .catch (err => {
+        console.log('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
     });
 }
 
