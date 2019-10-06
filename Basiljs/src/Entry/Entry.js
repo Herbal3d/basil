@@ -16,14 +16,18 @@ import Config from '../config.js';
 
 import { Controls } from '../Controls/Controls.js';
 import { JSONstringify, RandomIdentifier } from '../Utilities.js';
+import { ParseOSDXML } from '../llsd.js';
+import { LoginResponse_XML } from '../llsdTest.js';
 
-import { createClient, createSecureClient } from 'xmlrpc';
+// import { createClient, createSecureClient } from 'xmlrpc';
 import { MD5 } from '../MD5.js';
 
 import { Base64 } from 'js-base64';
 
 GGP = GP;   // easy linkage to global context for debugging
 GP.Config = Config;
+
+GP.EnableDebugLog = true;
 
 // Force the processing of the css format file
 import './Entry.less';
@@ -109,6 +113,11 @@ GP.CO.ClickableOps['spaceServerConnect'] = function() {
 
     window.location = 'Basil.html?c=' + configParams;
 };
+// Temp thingy to test LLSD parser
+GP.CO.ClickableOps['testLLSDParser'] = function() {
+    var packed = ParseOSDXML(LoginResponse_XML);
+    GP.DebugLog('Converted: ' + JSONstringify(packed));
+};
 
 let SentLoginMessage = false;
 let SuccessfulLogin = false;
@@ -153,7 +162,7 @@ GP.CO.ClickableOps['gridLogin'] = function() {
 
         LoginXML2(firstname, lastname, password, startLocation, loginURL,
                                 LoginResponseSuccess, LoginResponseFailure);
-        LoginProgress('Return from Login func.');
+        LoginProgress('Waiting for login response');
     }
     catch (e) {
         LoginProgress('Login fail: exception: ' + e);
@@ -163,12 +172,72 @@ GP.CO.ClickableOps['gridLogin'] = function() {
 
 function LoginResponseSuccess(resp) {
     LoginProgress('Login success');
-    console.log('Login response = ' + JSONstringify(resp));
-    // Create JWT token to use for this session
-    // TODO: 
+    // console.log('Login response = ' + JSONstringify(resp));
+    return new Promise( function(resolve, reject) {
+        try {
+            let OSregion = {};
+            // resp.look_at = looking at location (as string of LLSD numbers ("[r-0.681,r-0.732,r0]"))
+            OSregion.firstName = resp.first_name;
+            OSregion.lastName = resp.last_name;
+            OSregion.agentId = resp.agent_id;                // agentID as a string UUID
+            OSregion.sessionID = resp.session_id;            // Session ID as a string UUID
+            OSregion.welcomeMessage = resp.message;          // Welcome message from grid
+            console.log('LoginResponseSuccess: first=' + resp.first_name + ' last=' + resp.last_name);
+            // resp.global-textures[0].sun_texture_id = UUID
+            // resp.global-textures[0].cloud_texture_id = UUID
+            // resp.global-textures[0].moon_texture_id = UUID
 
+            OSregion.regionX = resp.region_X;                // integer of region X (ie, 284416)
+            OSregion.regionY = resp.region_y;                // integer of region Y (ie, 284416)
+            OSregion.regionSizeX = resp.region_size_x;       // integer region size in meters (ie, 256)
+            OSregion.regionSizeY = resp.region_size_y;       // integer region size in meters (ie, 256)
+            
+            OSregion.simIP = resp.sim_ip;                    // IP address of simulator
+            // resp.sim_port = region port
+
+            OSregion.seedCapability = resp.seed_capability;  // URI of initial CAPS entry
+            OSregion.secureSessionId = resp.secure_session_id;   // UUID string
+            OSregion.seconds_since_epoch = resp.seconds_since_epoch; // integer region time
+            OSregion.mapServerUrl = resp['map-server-url'];     // URL to map server
+            console.log('LoginResponseSuccess: mapUrl=' + OSregion.mapServerUrl);
+
+            LoginProgress('regionResponse=' + JSONstringify(OSregion));
+
+            let regionConfigParams = {
+                'comm': {
+                    'transport': 'WS',
+                    'transportURL': 'ws://' + OSregion.simIP + ':11440',
+                    'service': 'SpaceServerClient'
+                },
+                'auth': {
+                    // Made up numbers for testing
+                    'SessionKey': 'EntrySession-' + RandomIdentifier(),               // identifier for the session
+                    'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
+                }
+            };
+            LoginProgress('gridLoginParams=' + JSONstringify(regionConfigParams));
+
+            // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
+            let configParams = Base64.encode(JSON.stringify(regionConfigParams));
+            SuccessfulLogin = true;
+
+            window.location = 'Basil.html?c=' + configParams;
+            resolve();
+        }
+        catch (e) {
+            LoginProgress('LoginResponseSuccess: exception doing login: ' + e);
+            FailedLogin = true;
+            reject();
+        }
+    });
 }
+
 function LoginResponseFailure(resp) {
+    return new Promise( function(resolve, reject) {
+        LoginProgress('Login failure: ' + resp.message);
+        FailedLogin = true;
+        resolve();
+    });
 }
 
 // Used to display login progress in the dialogs.
@@ -185,6 +254,7 @@ function LoginProgress(msg, classs) {
 };
 
 // Log into grid using XMLRPC npm library
+/*
 function LoginXML(firstname, lastname, password, startLocation, loginURL, successCallback, failureCallback) {
     LoginProgress('LoginXML. URL=' + loginURL);
     let theURL = new URL(loginURL);
@@ -244,6 +314,7 @@ function LoginXML(firstname, lastname, password, startLocation, loginURL, succes
         LoginProgress('Login failed: could not make WebSocket connection to ' + wsURL);
     }
 }
+*/
 
 // Login using XMLRPC raw request (no library or frameworks)
 function LoginXML2(firstname, lastname, password, startLocation, loginURL, successCallback, failureCallback) {
@@ -272,47 +343,60 @@ function LoginXML2(firstname, lastname, password, startLocation, loginURL, succe
     LoginProgress('LoginXML2: doing fetch from ' + loginURL);
     fetch(loginURL, {
         method: 'POST',
-        mode: 'no-cors',
         cache: 'no-cache',
         headers: {
             'Content-Type': 'text/xml'
         },
         body: xmlreq
     }) 
+    .then( responseObject => {
+        // LoginProgress('LoginXML2: responded. status=' + responseObject.status + ', ok=' + responseObject.ok);
+        return responseObject.ok ? responseObject.text() : undefined;
+    })
     .then( data => {
-        LoginProgress('LoginXML2: methodCall callback');
+        // LoginProgress('LoginXML2: data =' + data);
         if (data) {
             var resp = undefined;
             try {
-                var xParser = new DOMParser();
-                resp = xParser.parseFromString(data, 'text/xml');
+                resp = ParseOSDXML(data);
             }
             catch (e) {
                 LoginProgress('LoginXML2: parsing of response failed. Data=' + data);
                 resp = undefined;
             }
             if (resp) {
-                LoginProgress('LoginXML2: Login resp= ' + JSONstringify(resp));
-                if (resp['login'] == 'true') {
-                    if (typeof(successCallback) == 'function') {
-                        successCallback(resp);
+                // LoginProgress('LoginXML2: Login resp= ' + JSONstringify(resp));
+                if (resp['login'] === 'true') {
+                    if (typeof(successCallback) === 'function') {
+                        successCallback(resp)
+                        .then( () => { return; } )
+                        .catch (err => {
+                            LoginProgress('LoginXML2: successCallback catch: ' + JSONstringify(err));
+                        });
                     }
                 }
                 else {
-                    LoginProgress('LoginXML2: Login failed: ' + resp.reason);
-                    if (typeof(failureCallback) == 'function') {
-                        failureCallback(resp);
+                    LoginProgress('LoginXML2: Login failed: ' + resp.message);
+                    if (typeof(failureCallback) === 'function') {
+                        failureCallback(resp)
+                        .then( () => { return; } )
+                        .catch (err => {
+                            LoginProgress('LoginXML2: failureCallback catch: ' + JSONstringify(err));
+                        });
                     }
                 }
             }
         }
         else {
             LoginProgress('No response body');
+            LoginProgress('LoginXML2: calling failureCallback 2');
             failureCallback(undefined);
         }
     })
     .catch (err => {
+        LoginProgress('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
         console.log('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
+        LoginProgress('LoginXML2: calling failureCallback 3');
         failureCallback(err);
     });
 }
