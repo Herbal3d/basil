@@ -264,7 +264,7 @@ export class Graphics extends BItem {
     // parms.type = GLTF, Collada, OBJ, FBX
     // Returns a promise of a handle to ThreeJS node(s) read and created.
     // Note: only returns the nodes. For animations, etc, need a different routine.
-    LoadSimpleAsset(userAuth, passedParams, progressCallback) {
+    LoadSimpleAsset(passedParams, progressCallback) {
         let parms = CombineParameters(Config.assetLoader, passedParams, {
             'url': undefined,       // URL to load from
             'loaderType': 'gltf',   // type of loader to use
@@ -288,9 +288,9 @@ export class Graphics extends BItem {
                 case 'bvh':     loader = new THREE.BVHLoader(); break;
             }
             if (loader) {
-                // Authorization code is packed into the URL
                 let requestURL = parms.url;
                 if (parms.auth && parms.auth.length > 0) {
+                    // Authorization code is packed into the URL
                     let urlPieces = parms.url.split('/');
                     let lastIndex = urlPieces.length - 1;
                     urlPieces.push(urlPieces[lastIndex]);

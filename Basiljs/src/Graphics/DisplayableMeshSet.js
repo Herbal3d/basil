@@ -27,7 +27,7 @@ export class DisplayableMeshSet extends Displayable {
         if (displayInfo && displayInfo.asset) {
             this.SetLoading();
             // GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
-            this.graphics.LoadSimpleAsset(auth, displayInfo.asset)
+            this.graphics.LoadSimpleAsset(displayInfo.asset)
             .then(theAsset => {
                 if (this.state == BItemState.LOADING) {
                     // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
