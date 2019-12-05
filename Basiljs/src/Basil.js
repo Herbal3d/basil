@@ -33,6 +33,7 @@ import { JSONstringify } from './Utilities.js';
 
 // Force the processing of the CSS format file
 import './Basiljs.less';
+import { util } from 'protobufjs';
 
 // From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
 // Used to fetch invocation parameters. The request better be well formed as
@@ -53,16 +54,26 @@ GP.ConfigGetQueryVariable = function (variable) {
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
     if (GP.EnableDebugLog) {
-        var debugg = document.querySelector('#DEBUGG');
-        if (debugg) {
-            var newLine = document.createElement('div');
-            newLine.appendChild(document.createTextNode(msg));
+        if (GP.DebugLogToConsole) {
             if (classs) {
-            newLine.setAttribute('class', classs);
+              console.log(classs + ": " + msg);
             }
-            debugg.appendChild(newLine);
-            if (debugg.childElementCount > Config.page.debugLogLines) {
-                debugg.removeChild(debugg.firstChild);
+            else {
+              console.log(msg);
+            }
+        }
+        else {
+            var debugg = document.querySelector('#DEBUGG');
+            if (debugg) {
+                var newLine = document.createElement('div');
+                newLine.appendChild(document.createTextNode(msg));
+                if (classs) {
+                newLine.setAttribute('class', classs);
+                }
+                debugg.appendChild(newLine);
+                if (debugg.childElementCount > Config.page.debugLogLines) {
+                    debugg.removeChild(debugg.firstChild);
+                }
             }
         }
     }
@@ -144,6 +155,7 @@ if (configParams) {
     try {
         let unpacked = Base64.decode(configParams);
         let newParams = JSON.parse(unpacked);
+        GP.DebugLog("Basiljs: newParams: " + unpacked)
         if (newParams) {
             // Could do this assign but then the caller could change any configuration param.
             // Only the 'comm' and 'auth' parameters are passed in for more security.
@@ -158,8 +170,9 @@ if (configParams) {
 }
 
 // Whether to enable DebugLog writing somewhere
-if (Config && Config.page && Config.page.collectDebug) {
-    GP.EnableDebugLog = Config.page.collectDebug;
+if (Config && Config.Debug) {
+    GP.EnableDebugLog = Config.Debug.CollectDebug;
+    GP.DebugLogToConsole = Config.Debug.DebugLogToConsole;
     // This BItem receives remote messages and calls DebugLog
     GP.debugItem = new DebugBItem();
 }
@@ -186,54 +199,54 @@ GP.Ready = true;
 if (Config.comm && Config.comm.transportURL) {
     GP.DebugLog('Basiljs: starting transport and service: ' + JSONstringify(Config.comm));
     GP.CM.ConnectTransportAndService(Config.comm)
-        .then( srv => {
-            GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
-            try {
-                let srvParams = {};
-                if (Config.comm.testmode) {
-                    // If a test session, pass the test parameters to the service
-                    Object.assign(srvParams, {
-                        'TestConnection': 'true',
-                        'TestURL': Config.comm.TestAsset.url,
-                        'TestLoaderType': Config.comm.TestAsset.loaderType
-                    });
-                }
-                srv.SetIncomingAuth(CreateToken('Basil'));
-                let authForOpen = null;
-                if (Config.auth) {
-                    authForOpen = {
-                        'accessProperties': {
-                            'SessionKey': Config.auth.SessionKey,
-                            'Auth': Config.auth.UserAuth,
-                            'ClientAuth': srv.IncomingAuth
-                        }
-                    }
-                }
-                srv.OpenSession(authForOpen, srvParams)
-                .then( resp => {
-                    if (resp.exception) {
-                        GP.DebugLog('Basiljs: OpenSession failed: '
-                                        + JSONstringify(resp.exception));
-                    }
-                    else {
-                        if (resp.properties) {
-                            GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
-                                        + JSONstringify(resp.properties));
-                            srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
-                            srv.SessionKey = resp.SessionKey;
-                            srv.ConnectionKey = resp.ConnectionKey;
-                        }
-                    }
-                })
-                .catch( e => {
-                    GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);
+    .then( srv => {
+        GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
+        try {
+            let srvParams = {};
+            if (Config.comm.testmode) {
+                // If a test session, pass the test parameters to the service
+                Object.assign(srvParams, {
+                    'TestConnection': 'true',
+                    'TestURL': Config.comm.TestAsset.url,
+                    'TestLoaderType': Config.comm.TestAsset.loaderType
                 });
             }
-            catch (e) {
-                GP.DebugLog('Basiljs: exception from OpenSession: ' + e);
+            srv.SetIncomingAuth(CreateToken('Basil'));
+            let authForOpen = null;
+            if (Config.auth) {
+                authForOpen = {
+                    'accessProperties': {
+                        'SessionKey': Config.auth.SessionKey,
+                        'Auth': Config.auth.UserAuth,
+                        'ClientAuth': srv.IncomingAuth
+                    }
+                }
             }
-        })
-        .catch( e => {
-            GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + e.message);
-        });
+            srv.OpenSession(authForOpen, srvParams)
+            .then( resp => {
+                if (resp.exception) {
+                    GP.DebugLog('Basiljs: OpenSession failed: '
+                                    + JSONstringify(resp.exception));
+                }
+                else {
+                    if (resp.properties) {
+                        GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
+                                    + JSONstringify(resp.properties));
+                        srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
+                        srv.SessionKey = resp.SessionKey;
+                        srv.ConnectionKey = resp.ConnectionKey;
+                    }
+                }
+            })
+            .catch( e => {
+                GP.DebugLog('Basiljs: error from OpenSession: ' + e.message);
+            });
+        }
+        catch (e) {
+            GP.DebugLog('Basiljs: exception from OpenSession: ' + e);
+        }
+    })
+    .catch( e => {
+        GP.DebugLog('Basiljs: failed connecting initial SpaceServer: ' + e.message);
+    });
 };

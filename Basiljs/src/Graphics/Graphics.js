@@ -268,6 +268,7 @@ export class Graphics extends BItem {
         let parms = CombineParameters(Config.assetLoader, passedParams, {
             'url': undefined,       // URL to load from
             'loaderType': 'gltf',   // type of loader to use
+            'auth': undefined,      // authorization needed to access URL
             'useDRACO': true,
             'combineInstances': true    // whether to combine instances
         });
@@ -287,9 +288,18 @@ export class Graphics extends BItem {
                 case 'bvh':     loader = new THREE.BVHLoader(); break;
             }
             if (loader) {
-                GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + parms.url);
+                // Authorization code is packed into the URL
+                let requestURL = parms.url;
+                if (parms.auth && parms.auth.length > 0) {
+                    let urlPieces = parms.url.split('/');
+                    let lastIndex = urlPieces.length - 1;
+                    urlPieces.push(urlPieces[lastIndex]);
+                    urlPieces[lastIndex] = 'bearer-' + parms.auth;
+                    requestURL = urlPieces.join('/');
+                }
+                GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + requestURL);
                 // To complicate things, ThreeJS loaders return different things
-                loader.load(parms.url, function(loaded) {
+                loader.load(requestURL, function(loaded) {
                     // Successful load
                     let scene = undefined;
                     if (loaded.scene) scene = loaded.scene;

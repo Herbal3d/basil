@@ -306,22 +306,12 @@ export class BasilServerConnection  extends MsgProcessor {
                 srv.SetIncomingAuth(CreateToken('makeconn'));
                 // This is the authorization info for making the initial call to the service
                 if (params.serviceauth) {
-                    try {
-                        let serviceAuth = JSON.parse(params.serviceauth);
-                        if (serviceAuth) {
-                            auth = {
-                                'accessProperties' : {
-                                    'SessionKey': CreateToken('session'),
-                                    'Auth': serviceAuth.Auth,
-                                    'ClientAuth': srv.IncomingAuth,
-                                    'ClientAuthExpiration': srv.IncomingAuthExpiration
-                                }
-                            }
+                    auth = {
+                        'accessProperties' : {
+                            'SessionKey': CreateToken('session'),
+                            'Auth': params.ServiceAuth,
+                            'ClientAuth': srv.IncomingAuth
                         }
-                    }
-                    catch (e) {
-                        GP.ErrorLog('BasilServer.MakeConnection: exception parsing auth:' + e);
-                        auth = undefined;
                     }
                 }
                 let props = {};
@@ -333,6 +323,7 @@ export class BasilServerConnection  extends MsgProcessor {
                     srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
                     srv.SessionKey = resp.SessionKey;
                     srv.ConnectionKey = resp.ConnectionKey;
+                    // TODO: response includes 'Services' which give access info for asset server
                 })
                 .catch( e => {
                     GP.ErrorLog('BasilServer.ProcMakeConnection: failed to open session: ' + e.message);
