@@ -62,7 +62,7 @@ export function RandomIdentifier() {
 //    for uniformity. Case usually matters so passing in a parameter with
 //    the wrong case will usually confuse things.
 export function CombineParameters(configParams, passedParams, requiredParams) {
-    let parms = configParams ? configParams : {};
+    let parms = configParams ? Object.assign({}, configParams) : {};
     // Make sure there is a canonical lower case version of configParams
     Object.keys(parms).forEach( key => {
         parms[key.toLowerCase()] = parms[key];
