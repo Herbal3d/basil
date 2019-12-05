@@ -104,8 +104,6 @@ export class BItem {
     }
 
     // Returns an Object of properties and values
-    // The optional second parameter is a function to operation on the value
-    //     before putting it in the returned structure. Usually used to stringify.
     FetchProperties(filter) {
         let ret = {};
         if (filter) {

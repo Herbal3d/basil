@@ -123,6 +123,7 @@ export class MsgProcessor extends BItem {
         pProcessors.forEach( (v, k) => { addTo.set(k, v); });
     }
 
+    // 'IncomingAuth' is the token needed for someone to talk to this connection
     SetIncomingAuth(authToken, authExp) {
         this.IncomingAuth = authToken;
         if (authExp) {
@@ -133,6 +134,7 @@ export class MsgProcessor extends BItem {
         }
     }
 
+    // 'OutgoingAuth' is the auth sent with requests to the other side
     SetOutgoingAuth(authToken, authExp) {
         this.OutgoingAuth = authToken;
         if (authExp) {

@@ -19,7 +19,6 @@ import { JSONstringify, RandomIdentifier } from '../Utilities.js';
 import { ParseOSDXML } from '../llsd.js';
 import { LoginResponse_XML } from '../llsdTest.js';
 
-// import { createClient, createSecureClient } from 'xmlrpc';
 import { MD5 } from '../MD5.js';
 
 import { Base64 } from 'js-base64';
@@ -182,7 +181,6 @@ function LoginResponseSuccess(resp) {
             OSregion.agentId = resp.agent_id;                // agentID as a string UUID
             OSregion.sessionID = resp.session_id;            // Session ID as a string UUID
             OSregion.welcomeMessage = resp.message;          // Welcome message from grid
-            console.log('LoginResponseSuccess: first=' + resp.first_name + ' last=' + resp.last_name);
             // resp.global-textures[0].sun_texture_id = UUID
             // resp.global-textures[0].cloud_texture_id = UUID
             // resp.global-textures[0].moon_texture_id = UUID
@@ -199,8 +197,6 @@ function LoginResponseSuccess(resp) {
             OSregion.secureSessionId = resp.secure_session_id;   // UUID string
             OSregion.seconds_since_epoch = resp.seconds_since_epoch; // integer region time
             OSregion.mapServerUrl = resp['map-server-url'];     // URL to map server
-            console.log('LoginResponseSuccess: mapUrl=' + OSregion.mapServerUrl);
-
             LoginProgress('regionResponse=' + JSONstringify(OSregion));
 
             let regionConfigParams = {
@@ -215,7 +211,8 @@ function LoginResponseSuccess(resp) {
                     'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
                 }
             };
-            LoginProgress('gridLoginParams=' + JSONstringify(regionConfigParams));
+            // LoginProgress('gridLoginParams=' + JSONstringify(regionConfigParams));
+            LoginProgress('gridLogin. URL=' + regionConfigParams.comm.transportURL);
 
             // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
             let configParams = Base64.encode(JSON.stringify(regionConfigParams));
@@ -252,69 +249,6 @@ function LoginProgress(msg, classs) {
         logPlace.appendChild(newLine);
     }
 };
-
-// Log into grid using XMLRPC npm library
-/*
-function LoginXML(firstname, lastname, password, startLocation, loginURL, successCallback, failureCallback) {
-    LoginProgress('LoginXML. URL=' + loginURL);
-    let theURL = new URL(loginURL);
-    // let client = createClient( { 'url': loginURL, 'rejectUnauthorized': 'false' });
-    // let client = createClient( { 'url': loginURL, 'rejectUnauthorized': 'false' });
-    let client = createClient( {
-         'host': theURL.hostname,
-         'port': theURL.port,
-         'path': theURL.path,
-         'rejectUnauthorized': 'false'
-    });
-    if (client) {
-        try {
-            let hashedPW = '$1$' + MD5(password);
-            LoginProgress('Hashed password=' + hashedPW);
-            let loginInfo = [ {
-                'first': firstname,
-                'last': lastname,
-                'passwd': hashedPW,
-                'start': startLocation,
-                'channel': 'Herbal3d',
-                'version': 'Herbal3d 1.0.0.1',
-                'platform': 'Linux',
-                'mac': '11:22:33:44:55:66',
-                'id0': '11:22:33:44:55:66',
-                'options': [
-                    "login-flags"
-                ]
-            } ];
-            LoginProgress('Before client.methodCall');
-            client.methodCall('login_to_simulator', loginInfo, (error, resp) => {
-                LoginProgress('methodCall callback');
-                if (resp) {
-                    if (resp['login'] == 'true') {
-                        if (typeof(successCallback) == 'function') {
-                            successCallback(resp);
-                        }
-                    }
-                    else {
-                        FailedLogin = true;
-                        LoginProgress('Login failed: ' + resp.reason);
-                    }
-                }
-                else {
-                    LoginProgress('No response body');
-                }
-            });
-            LoginProgress('After client.methodCall');
-        }
-        catch (e) {
-            LoginProgress('Exception logging in:' + e);
-            FailedLogin = true;
-        }
-    }
-    else {
-        FailedLogin = true;
-        LoginProgress('Login failed: could not make WebSocket connection to ' + wsURL);
-    }
-}
-*/
 
 // Login using XMLRPC raw request (no library or frameworks)
 function LoginXML2(firstname, lastname, password, startLocation, loginURL, successCallback, failureCallback) {
@@ -376,7 +310,7 @@ function LoginXML2(firstname, lastname, password, startLocation, loginURL, succe
                     }
                 }
                 else {
-                    LoginProgress('LoginXML2: Login failed: ' + resp.message);
+                    // LoginProgress('LoginXML2: Login failed: ' + resp.message);
                     if (typeof(failureCallback) === 'function') {
                         failureCallback(resp)
                         .then( () => { return; } )
@@ -389,14 +323,12 @@ function LoginXML2(firstname, lastname, password, startLocation, loginURL, succe
         }
         else {
             LoginProgress('No response body');
-            LoginProgress('LoginXML2: calling failureCallback 2');
             failureCallback(undefined);
         }
     })
     .catch (err => {
         LoginProgress('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
         console.log('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
-        LoginProgress('LoginXML2: calling failureCallback 3');
         failureCallback(err);
     });
 }
@@ -404,6 +336,7 @@ function LoginXML2(firstname, lastname, password, startLocation, loginURL, succe
 
 // Log into grid using the WebSocket interface
 // This code should work but the OpenSimulator WebSocket implementation needs debugging
+// NOTE: this is not debugged!! This does not work!! Here for possible future reference.
 function LoginWS(firstname, lastname, password, startLocation, loginURL, successCallback, failureCallback) {
     // Mangle LoginURL to make it a websocket url
     let wsURL = '';
