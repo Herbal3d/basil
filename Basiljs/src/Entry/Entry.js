@@ -191,13 +191,27 @@ function LoginResponseSuccess(resp) {
             OSregion.regionSizeY = resp.region_size_y;       // integer region size in meters (ie, 256)
             
             OSregion.simIP = resp.sim_ip;                    // IP address of simulator
-            // resp.sim_port = region port
+            OSregion.simPort = resp.sim_port;
+            OSregion.httpPort = resp.http_port;
+            OSregion.circuitCode = resp.circuit_code;
 
             OSregion.seedCapability = resp.seed_capability;  // URI of initial CAPS entry
             OSregion.secureSessionId = resp.secure_session_id;   // UUID string
             OSregion.seconds_since_epoch = resp.seconds_since_epoch; // integer region time
             OSregion.mapServerUrl = resp['map-server-url'];     // URL to map server
             LoginProgress('regionResponse=' + JSONstringify(OSregion));
+
+            // Build the encoded auth string that is sent through Basil to the service.
+            // Someday this will be a JWT token that comes from the login server.
+            let userAuthInfo = {
+                'AgentId': OSregion.agentId,
+                'SessionID': OSregion.sessionID,
+                // Extra stuff added to accomodate OpenSim login
+                'SSID': OSregion.secureSessionId,
+                'CC': OSregion.circuitCode,
+                'FN': OSregion.firstName,
+                'LN': OSregion.lastName
+            };
 
             let regionConfigParams = {
                 'comm': {
@@ -207,8 +221,22 @@ function LoginResponseSuccess(resp) {
                 },
                 'auth': {
                     // Made up numbers for testing
-                    'SessionKey': 'EntrySession-' + RandomIdentifier(),               // identifier for the session
-                    'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
+                    // 'SessionKey': 'EntrySession-' + RandomIdentifier(),               // identifier for the session
+                    // 'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
+                    'SessionKey': OSregion.sessionID,           // identifier for the session
+                    'UserAuth': Base64.encode(JSON.stringify(userAuthInfo))
+                },
+                // Extra information added for OpenSimulator login.
+                // This passes information to Basil that it can use or not
+                'OpenSimulator': {
+                    'FN': OSregion.firstName,
+                    'LN': OSregion.lastname,
+                    'aID': OSregion.agentId,
+                    'WM': OSregion.welcomeMessage,
+                    'rX': OSregion.regionX,
+                    'rY': OSregion.regionY,
+                    'MSU': OSregion.mapServerUrl
+
                 }
             };
             // LoginProgress('gridLoginParams=' + JSONstringify(regionConfigParams));
