@@ -1,5 +1,3 @@
-// As copied from example at https://webpack.js.org/guides/getting-started/
-//    This is not ES6 'import' format so update this file someday
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');

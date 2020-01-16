@@ -9,18 +9,20 @@
     "url": "https://misterblue.com"
   },
   "license": "MPL-2.0",
-  "homepage": "https://github.com/Misterblue/basil",
+  "homepage": "https://github.com/Herbal3d/basil",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Misterblue/basil"
+    "url": "https://github.com/Herbal3d/basil"
   },
   "main": "Bundle.js",
   "scripts": {
-    "build": "npm-run-all -s \"clean:dist\" \"build:entry\" \"build:basil\" \"build:wwtester\"",
-    "production": "npm-run-all -s \"clean:dist\" \"production:entry\" \"production:basil\"",
+    "build": "npm-run-all -s \"clean:dist\" \"build:entry\" \"build:basil\" \"build:wwtester\" \"build:justview\"",
+    "production": "npm-run-all -s \"clean:dist\" \"production:entry\" \"production:basil\" \"production:justview\"",
     "clean:dist": "rm -rf dist",
     "build:entry": "webpack --config webpack.entry.config.js",
     "production:entry": "webpack --mode production --config webpack.entry.config.js",
+    "build:justview": "webpack --config webpack.justview.config.js",
+    "production:justview": "webpack --mode production --config webpack.justview.config.js",
     "build:basil": "webpack --config webpack.basil.config.js",
     "production:basil": "webpack --mode production --config webpack.basil.config.js",
     "build:wwtester": "webpack --config webpack.wwtester.config.js",
@@ -29,7 +31,7 @@
   "dependencies": {
     "js-base64": "^2.5.1",
     "long": "^4.0.0",
-    "npm": "^6.13.2",
+    "npm": "^6.13.6",
     "protobufjs": "^6.8.8",
     "three-instanced-mesh": "^0.96.2"
   },
@@ -42,7 +44,7 @@
     "mini-css-extract-plugin": "^0.4.5",
     "npm-run-all": "^4.1.5",
     "style-loader": "^0.19.1",
-    "webpack": "^4.41.2",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
   }
 }
