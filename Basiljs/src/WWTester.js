@@ -112,6 +112,7 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
 GP.DebugLog('Starting SpaceSErver');
 GP.spaceServer.WhenReady(10000)
 .then( sServer => {
+    let props = GP.spaceServer.openSessionProperties;
     let auth = undefined; // no authentication at the moment
     let anAsset = {
         // 'id': { 'id': someID }, // not needed for creation
@@ -123,11 +124,18 @@ GP.spaceServer.WhenReady(10000)
             }
         }
     };
-    GP.DebugLog('Checking for test asset in config file');
+    // Add the URL from the configuration file if specified
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
-        GP.DebugLog('Adding config test asset:' + JSON.stringify(Config.WWTester.comm.TestAsset));
         anAsset.displayInfo.asset = Config.WWTester.comm.TestAsset;
     }
+    if (props && props.TestURL) {
+        anAsset.displayInfo.asset.url = props.TestURL;
+        if (props.TestLoaderType) {
+            anAsset.displayInfo.asset.loaderType = props.TestLoaderType;
+        }
+    }
+    GP.DebugLog('Asset spec for IdentifyDisplayableObject' + JSON.stringify(anAsset));
+
     GP.client.IdentifyDisplayableObject(auth, anAsset)
     .then( resp => {
         if (resp.exception) {
@@ -139,7 +147,8 @@ GP.spaceServer.WhenReady(10000)
             let instancePositionInfo = {
                 // 'id': { 'id': someID },  // not needed for creation
                 'pos': {
-                    'pos': { x: 100, y: 101, z: 102 },
+                    // 'pos': { x: 100, y: 101, z: 102 },
+                    'pos': { x: 0, y: 0, z: 0 },
                     // 'rot': { x: 0, y: 0, z: 0, w: 1 },
                     'posRef': BasilType.CoordSystem.WGS86,
                     'rotRef': BasilType.RotationSystem.WORLDR

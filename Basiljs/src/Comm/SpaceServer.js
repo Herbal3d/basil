@@ -48,6 +48,7 @@ export class SpaceServerConnection extends MsgProcessor {
     }
 
     _ProcOpenSession(req) {
+        this.openSessionProperties = req.properties;
         let ret = { 'op': BasilMessageOps.get('OpenSessionResp') };
         this.SetReady();
         return ret;

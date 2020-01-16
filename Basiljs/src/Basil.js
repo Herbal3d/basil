@@ -126,31 +126,44 @@ export class DebugBItem extends BItem {
 
 GP.Ready = false;
 
+// Whether to enable DebugLog writing somewhere
+if (Config && Config.Debug) {
+    GP.EnableDebugLog = Config.Debug.CollectDebug;
+    GP.DebugLogToConsole = Config.Debug.DebugLogToConsole;
+    // This BItem receives remote messages and calls DebugLog
+    GP.debugItem = new DebugBItem();
+}
+
 // Called with communication configuration parameters in the URL.
 // The 'c' parameter is Base64 encoded JSON data which is merged into
 //    'Config' thus it can specify any configuration parameter but
 //    most commonly has a 'comm' section for setting up the
 //    initial connections from this viewer to space servers.
 let configParams = GP.ConfigGetQueryVariable('c');
-if (typeof(configParams) == 'undefined') {
+if (typeof(configParams) === 'undefined') {
     // If no communication parameters are given, use testing parameters
-    let testConfigParams = {
-        'comm': {
-            'testmode': true,
-            'transportURL': './wwtester.js',
-            'transport': 'WW',
-            'service': 'SpaceServerClient',
-            'TestAsset': {
-                'url': '',
-                'loaderType': 'GLTF'
-            }
-        }
-    };
+    let testConfigParams = {};
+    // If there are parameters for testing, use them
     if (Config.WWTester && Config.WWTester.comm) {
         testConfigParams.comm = Config.WWTester.comm;
     }
+    else {
+        testConfigParams = {
+            'comm': {
+                'testmode': true,
+                'transportURL': './wwtester.js',
+                'transport': 'WW',
+                'service': 'SpaceServerClient',
+                'TestAsset': {
+                    'url': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
+                    'loaderType': 'GLTF'
+                }
+            }
+        }
+    };
     configParams = Base64.encode(JSON.stringify(testConfigParams));
 }
+
 if (configParams) {
     try {
         let unpacked = Base64.decode(configParams);
@@ -167,14 +180,6 @@ if (configParams) {
     catch(e) {
         GP.DebugLog('Basiljs: failed parsing option config: ' + e);
     }
-}
-
-// Whether to enable DebugLog writing somewhere
-if (Config && Config.Debug) {
-    GP.EnableDebugLog = Config.Debug.CollectDebug;
-    GP.DebugLogToConsole = Config.Debug.DebugLogToConsole;
-    // This BItem receives remote messages and calls DebugLog
-    GP.debugItem = new DebugBItem();
 }
 
 // Names of display regions on web page.
@@ -211,14 +216,16 @@ if (Config.comm && Config.comm.transportURL) {
                     'TestLoaderType': Config.comm.TestAsset.loaderType
                 });
             }
+            // Create a token that authenticates incoming requests
             srv.SetIncomingAuth(CreateToken('Basil'));
             let authForOpen = null;
+            // If the invoker passed auth information, construct response with our auth info
             if (Config.auth) {
                 authForOpen = {
                     'accessProperties': {
-                        'SessionKey': Config.auth.SessionKey,
-                        'Auth': Config.auth.UserAuth,
-                        'ClientAuth': srv.IncomingAuth
+                        'SessionKey': Config.auth.SessionKey,   // key identifying this session
+                        'Auth': Config.auth.UserAuth,       // my auth for making requests to service
+                        'ClientAuth': srv.IncomingAuth      // auth for making requests to me
                     }
                 }
             }
@@ -229,9 +236,11 @@ if (Config.comm && Config.comm.transportURL) {
                                     + JSONstringify(resp.exception));
                 }
                 else {
+                    // Successful OpenSession. Collect properties passed back.
                     if (resp.properties) {
                         GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
                                     + JSONstringify(resp.properties));
+                        srv.OpenSessionProperties = resp.properties;
                         srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
                         srv.SessionKey = resp.SessionKey;
                         srv.ConnectionKey = resp.ConnectionKey;

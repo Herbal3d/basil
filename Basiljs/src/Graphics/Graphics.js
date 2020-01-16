@@ -15,7 +15,7 @@ import GP from 'GP';
 import Config from '../config.js';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import { CombineParameters, ParseThreeTuple } from '../Utilities.js';
+import { CombineParameters, ParseThreeTuple, JSONstringify } from '../Utilities.js';
 
 import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
 import * as Coord from './Coord.js';
@@ -56,8 +56,9 @@ export class Graphics extends BItem {
         // parameters to pass to the THREE.renderer creation
         let rendererParams = renderParms.ThreeJS ? renderParms.ThreeJS : {};
         if (rendererParams.UseWebGL2) {
+            // Instructions from https://threejs.org/docs/#manual/en/introduction/How-to-use-WebGL2
             rendererParams.canvas = canvas;
-            rendererParams.context = canvas.GetContext('webgl2');
+            rendererParams.context = canvas.GetContext('webgl2', { alpha: false } );
             this.renderer = new THREE.WebGLRenderer(rendererParams);
         }
         else {
@@ -82,7 +83,7 @@ export class Graphics extends BItem {
 
         // keep the camera and environment adjusted for the display size
         this._onContainerResize();  // initial aspect ration computation
-        this.container.addEventListener('resize', this._onContainerResize, false);
+        this.container.addEventListener('resize', this._onContainerResize.bind(this), false);
 
         // For the moment, camera control comes from the user
         this._initializeCameraControl();
@@ -174,6 +175,8 @@ export class Graphics extends BItem {
 
     // Adjust the camera and environment when display size changes
     _onContainerResize() {
+        GP.DebugLog("Graphics._onContainerResize: width=" + this.canvas.clientWidth
+                    + ", height=" + this.canvas.clientHeight);
         this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
         this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
         this.camera.updateProjectionMatrix();
@@ -341,6 +344,7 @@ export class Graphics extends BItem {
                 },
                 // Failed load
                 function(e) {
+                    GP.DebugLog('Graphics.LoadSimpleAsset: loading failed: ' + JSONstringify(e));
                     reject(e);
                 });
             }
@@ -391,17 +395,11 @@ export class Graphics extends BItem {
         }
         // Move axes helper to where the camera is looking
         if (this.axesHelper) {
-            this.axesHelper.geometry.translate(look.x, look.y, look.z);
+            this.axesHelper.geometry.translate(look[0], look[1], look[2]);
         }
 
-        GP.DebugLog('Graphics: camera looking at: ['
-            + look.x
-            + ', '
-            + look.y
-            + ', '
-            + look.z
-            + ']'
-        );
+        GP.DebugLog('Graphics: camera looking at:'
+            + ' [' + look[0] + ', ' + look[1] + ', ' + look[2] + ']' );
     }
 
     _initializeCamera(passedParms) {

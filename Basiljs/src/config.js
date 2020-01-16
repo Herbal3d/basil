@@ -162,7 +162,7 @@ export default {
     // Various flags that turn on/off debug logging, etc
     'Debug': {
       'CollectDebug': true,                 // output debugging info
-      'DebugLogToConsole': true,            // output debug message to console rather than debug window
+      'DebugLogToConsole': false,           // output debug message to console rather than debug window
       'VerifyProtocol': false,              // call 'verify' on created protocol messages
       'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
       'MsgProcessorResponsePrintMsg': false, // DebugLog each message sent as a response by MsgProcessor
