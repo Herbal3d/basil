@@ -3180,6 +3180,999 @@ export const BasilServer = $root.BasilServer = (() => {
 
     const BasilServer = {};
 
+    BasilServer.CreateItemReq = (function() {
+
+        function CreateItemReq(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        CreateItemReq.prototype.auth = null;
+        CreateItemReq.prototype.objectId = null;
+
+        CreateItemReq.create = function create(properties) {
+            return new CreateItemReq(properties);
+        };
+
+        CreateItemReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
+                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
+            return writer;
+        };
+
+        CreateItemReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        CreateItemReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CreateItemReq();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        CreateItemReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        CreateItemReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth")) {
+                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
+                if (error)
+                    return "auth." + error;
+            }
+            if (message.objectId != null && message.hasOwnProperty("objectId")) {
+                let error = $root.BasilType.ObjectIdentifier.verify(message.objectId);
+                if (error)
+                    return "objectId." + error;
+            }
+            return null;
+        };
+
+        CreateItemReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.CreateItemReq)
+                return object;
+            let message = new $root.BasilServer.CreateItemReq();
+            if (object.auth != null) {
+                if (typeof object.auth !== "object")
+                    throw TypeError(".BasilServer.CreateItemReq.auth: object expected");
+                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            if (object.objectId != null) {
+                if (typeof object.objectId !== "object")
+                    throw TypeError(".BasilServer.CreateItemReq.objectId: object expected");
+                message.objectId = $root.BasilType.ObjectIdentifier.fromObject(object.objectId);
+            }
+            return message;
+        };
+
+        CreateItemReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.auth = null;
+                object.objectId = null;
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
+            if (message.objectId != null && message.hasOwnProperty("objectId"))
+                object.objectId = $root.BasilType.ObjectIdentifier.toObject(message.objectId, options);
+            return object;
+        };
+
+        CreateItemReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateItemReq;
+    })();
+
+    BasilServer.CreateItemResp = (function() {
+
+        function CreateItemResp(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        CreateItemResp.prototype.exception = null;
+
+        CreateItemResp.create = function create(properties) {
+            return new CreateItemResp(properties);
+        };
+
+        CreateItemResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
+            return writer;
+        };
+
+        CreateItemResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        CreateItemResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CreateItemResp();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        CreateItemResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        CreateItemResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception")) {
+                let error = $root.BasilType.BasilException.verify(message.exception);
+                if (error)
+                    return "exception." + error;
+            }
+            return null;
+        };
+
+        CreateItemResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.CreateItemResp)
+                return object;
+            let message = new $root.BasilServer.CreateItemResp();
+            if (object.exception != null) {
+                if (typeof object.exception !== "object")
+                    throw TypeError(".BasilServer.CreateItemResp.exception: object expected");
+                message.exception = $root.BasilType.BasilException.fromObject(object.exception);
+            }
+            return message;
+        };
+
+        CreateItemResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.exception = null;
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
+            return object;
+        };
+
+        CreateItemResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateItemResp;
+    })();
+
+    BasilServer.CreateItemWithAbilityReq = (function() {
+
+        function CreateItemWithAbilityReq(properties) {
+            this.propertiesToSet = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        CreateItemWithAbilityReq.prototype.auth = "";
+        CreateItemWithAbilityReq.prototype.itemId = "";
+        CreateItemWithAbilityReq.prototype.AbilityName = "";
+        CreateItemWithAbilityReq.prototype.propertiesToSet = $util.emptyObject;
+
+        CreateItemWithAbilityReq.create = function create(properties) {
+            return new CreateItemWithAbilityReq(properties);
+        };
+
+        CreateItemWithAbilityReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                writer.uint32(10).string(message.auth);
+            if (message.itemId != null && Object.hasOwnProperty.call(message, "itemId"))
+                writer.uint32(18).string(message.itemId);
+            if (message.AbilityName != null && Object.hasOwnProperty.call(message, "AbilityName"))
+                writer.uint32(26).string(message.AbilityName);
+            if (message.propertiesToSet != null && Object.hasOwnProperty.call(message, "propertiesToSet"))
+                for (let keys = Object.keys(message.propertiesToSet), i = 0; i < keys.length; ++i)
+                    writer.uint32(34).fork().uint32(10).string(keys[i]).uint32(18).string(message.propertiesToSet[keys[i]]).ldelim();
+            return writer;
+        };
+
+        CreateItemWithAbilityReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        CreateItemWithAbilityReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CreateItemWithAbilityReq(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = reader.string();
+                    break;
+                case 2:
+                    message.itemId = reader.string();
+                    break;
+                case 3:
+                    message.AbilityName = reader.string();
+                    break;
+                case 4:
+                    reader.skip().pos++;
+                    if (message.propertiesToSet === $util.emptyObject)
+                        message.propertiesToSet = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.propertiesToSet[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        CreateItemWithAbilityReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        CreateItemWithAbilityReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                if (!$util.isString(message.auth))
+                    return "auth: string expected";
+            if (message.itemId != null && message.hasOwnProperty("itemId"))
+                if (!$util.isString(message.itemId))
+                    return "itemId: string expected";
+            if (message.AbilityName != null && message.hasOwnProperty("AbilityName"))
+                if (!$util.isString(message.AbilityName))
+                    return "AbilityName: string expected";
+            if (message.propertiesToSet != null && message.hasOwnProperty("propertiesToSet")) {
+                if (!$util.isObject(message.propertiesToSet))
+                    return "propertiesToSet: object expected";
+                let key = Object.keys(message.propertiesToSet);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.propertiesToSet[key[i]]))
+                        return "propertiesToSet: string{k:string} expected";
+            }
+            return null;
+        };
+
+        CreateItemWithAbilityReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.CreateItemWithAbilityReq)
+                return object;
+            let message = new $root.BasilServer.CreateItemWithAbilityReq();
+            if (object.auth != null)
+                message.auth = String(object.auth);
+            if (object.itemId != null)
+                message.itemId = String(object.itemId);
+            if (object.AbilityName != null)
+                message.AbilityName = String(object.AbilityName);
+            if (object.propertiesToSet) {
+                if (typeof object.propertiesToSet !== "object")
+                    throw TypeError(".BasilServer.CreateItemWithAbilityReq.propertiesToSet: object expected");
+                message.propertiesToSet = {};
+                for (let keys = Object.keys(object.propertiesToSet), i = 0; i < keys.length; ++i)
+                    message.propertiesToSet[keys[i]] = String(object.propertiesToSet[keys[i]]);
+            }
+            return message;
+        };
+
+        CreateItemWithAbilityReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.propertiesToSet = {};
+            if (options.defaults) {
+                object.auth = "";
+                object.itemId = "";
+                object.AbilityName = "";
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = message.auth;
+            if (message.itemId != null && message.hasOwnProperty("itemId"))
+                object.itemId = message.itemId;
+            if (message.AbilityName != null && message.hasOwnProperty("AbilityName"))
+                object.AbilityName = message.AbilityName;
+            let keys2;
+            if (message.propertiesToSet && (keys2 = Object.keys(message.propertiesToSet)).length) {
+                object.propertiesToSet = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.propertiesToSet[keys2[j]] = message.propertiesToSet[keys2[j]];
+            }
+            return object;
+        };
+
+        CreateItemWithAbilityReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateItemWithAbilityReq;
+    })();
+
+    BasilServer.CreateItemWithAbilityResp = (function() {
+
+        function CreateItemWithAbilityResp(properties) {
+            this.exceptionHints = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        CreateItemWithAbilityResp.prototype.exception = "";
+        CreateItemWithAbilityResp.prototype.exceptionHints = $util.emptyObject;
+
+        CreateItemWithAbilityResp.create = function create(properties) {
+            return new CreateItemWithAbilityResp(properties);
+        };
+
+        CreateItemWithAbilityResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                writer.uint32(10).string(message.exception);
+            if (message.exceptionHints != null && Object.hasOwnProperty.call(message, "exceptionHints"))
+                for (let keys = Object.keys(message.exceptionHints), i = 0; i < keys.length; ++i)
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.exceptionHints[keys[i]]).ldelim();
+            return writer;
+        };
+
+        CreateItemWithAbilityResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        CreateItemWithAbilityResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.CreateItemWithAbilityResp(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = reader.string();
+                    break;
+                case 2:
+                    reader.skip().pos++;
+                    if (message.exceptionHints === $util.emptyObject)
+                        message.exceptionHints = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.exceptionHints[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        CreateItemWithAbilityResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        CreateItemWithAbilityResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                if (!$util.isString(message.exception))
+                    return "exception: string expected";
+            if (message.exceptionHints != null && message.hasOwnProperty("exceptionHints")) {
+                if (!$util.isObject(message.exceptionHints))
+                    return "exceptionHints: object expected";
+                let key = Object.keys(message.exceptionHints);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.exceptionHints[key[i]]))
+                        return "exceptionHints: string{k:string} expected";
+            }
+            return null;
+        };
+
+        CreateItemWithAbilityResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.CreateItemWithAbilityResp)
+                return object;
+            let message = new $root.BasilServer.CreateItemWithAbilityResp();
+            if (object.exception != null)
+                message.exception = String(object.exception);
+            if (object.exceptionHints) {
+                if (typeof object.exceptionHints !== "object")
+                    throw TypeError(".BasilServer.CreateItemWithAbilityResp.exceptionHints: object expected");
+                message.exceptionHints = {};
+                for (let keys = Object.keys(object.exceptionHints), i = 0; i < keys.length; ++i)
+                    message.exceptionHints[keys[i]] = String(object.exceptionHints[keys[i]]);
+            }
+            return message;
+        };
+
+        CreateItemWithAbilityResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.exceptionHints = {};
+            if (options.defaults)
+                object.exception = "";
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = message.exception;
+            let keys2;
+            if (message.exceptionHints && (keys2 = Object.keys(message.exceptionHints)).length) {
+                object.exceptionHints = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.exceptionHints[keys2[j]] = message.exceptionHints[keys2[j]];
+            }
+            return object;
+        };
+
+        CreateItemWithAbilityResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateItemWithAbilityResp;
+    })();
+
+    BasilServer.AddAbilityReq = (function() {
+
+        function AddAbilityReq(properties) {
+            this.propertiesToSet = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        AddAbilityReq.prototype.auth = "";
+        AddAbilityReq.prototype.itemId = "";
+        AddAbilityReq.prototype.AbilityName = "";
+        AddAbilityReq.prototype.propertiesToSet = $util.emptyObject;
+
+        AddAbilityReq.create = function create(properties) {
+            return new AddAbilityReq(properties);
+        };
+
+        AddAbilityReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                writer.uint32(10).string(message.auth);
+            if (message.itemId != null && Object.hasOwnProperty.call(message, "itemId"))
+                writer.uint32(18).string(message.itemId);
+            if (message.AbilityName != null && Object.hasOwnProperty.call(message, "AbilityName"))
+                writer.uint32(26).string(message.AbilityName);
+            if (message.propertiesToSet != null && Object.hasOwnProperty.call(message, "propertiesToSet"))
+                for (let keys = Object.keys(message.propertiesToSet), i = 0; i < keys.length; ++i)
+                    writer.uint32(34).fork().uint32(10).string(keys[i]).uint32(18).string(message.propertiesToSet[keys[i]]).ldelim();
+            return writer;
+        };
+
+        AddAbilityReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        AddAbilityReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.AddAbilityReq(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = reader.string();
+                    break;
+                case 2:
+                    message.itemId = reader.string();
+                    break;
+                case 3:
+                    message.AbilityName = reader.string();
+                    break;
+                case 4:
+                    reader.skip().pos++;
+                    if (message.propertiesToSet === $util.emptyObject)
+                        message.propertiesToSet = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.propertiesToSet[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        AddAbilityReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        AddAbilityReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                if (!$util.isString(message.auth))
+                    return "auth: string expected";
+            if (message.itemId != null && message.hasOwnProperty("itemId"))
+                if (!$util.isString(message.itemId))
+                    return "itemId: string expected";
+            if (message.AbilityName != null && message.hasOwnProperty("AbilityName"))
+                if (!$util.isString(message.AbilityName))
+                    return "AbilityName: string expected";
+            if (message.propertiesToSet != null && message.hasOwnProperty("propertiesToSet")) {
+                if (!$util.isObject(message.propertiesToSet))
+                    return "propertiesToSet: object expected";
+                let key = Object.keys(message.propertiesToSet);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.propertiesToSet[key[i]]))
+                        return "propertiesToSet: string{k:string} expected";
+            }
+            return null;
+        };
+
+        AddAbilityReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.AddAbilityReq)
+                return object;
+            let message = new $root.BasilServer.AddAbilityReq();
+            if (object.auth != null)
+                message.auth = String(object.auth);
+            if (object.itemId != null)
+                message.itemId = String(object.itemId);
+            if (object.AbilityName != null)
+                message.AbilityName = String(object.AbilityName);
+            if (object.propertiesToSet) {
+                if (typeof object.propertiesToSet !== "object")
+                    throw TypeError(".BasilServer.AddAbilityReq.propertiesToSet: object expected");
+                message.propertiesToSet = {};
+                for (let keys = Object.keys(object.propertiesToSet), i = 0; i < keys.length; ++i)
+                    message.propertiesToSet[keys[i]] = String(object.propertiesToSet[keys[i]]);
+            }
+            return message;
+        };
+
+        AddAbilityReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.propertiesToSet = {};
+            if (options.defaults) {
+                object.auth = "";
+                object.itemId = "";
+                object.AbilityName = "";
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = message.auth;
+            if (message.itemId != null && message.hasOwnProperty("itemId"))
+                object.itemId = message.itemId;
+            if (message.AbilityName != null && message.hasOwnProperty("AbilityName"))
+                object.AbilityName = message.AbilityName;
+            let keys2;
+            if (message.propertiesToSet && (keys2 = Object.keys(message.propertiesToSet)).length) {
+                object.propertiesToSet = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.propertiesToSet[keys2[j]] = message.propertiesToSet[keys2[j]];
+            }
+            return object;
+        };
+
+        AddAbilityReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return AddAbilityReq;
+    })();
+
+    BasilServer.AddAbilityResp = (function() {
+
+        function AddAbilityResp(properties) {
+            this.exceptionHints = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        AddAbilityResp.prototype.exception = "";
+        AddAbilityResp.prototype.exceptionHints = $util.emptyObject;
+
+        AddAbilityResp.create = function create(properties) {
+            return new AddAbilityResp(properties);
+        };
+
+        AddAbilityResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                writer.uint32(10).string(message.exception);
+            if (message.exceptionHints != null && Object.hasOwnProperty.call(message, "exceptionHints"))
+                for (let keys = Object.keys(message.exceptionHints), i = 0; i < keys.length; ++i)
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.exceptionHints[keys[i]]).ldelim();
+            return writer;
+        };
+
+        AddAbilityResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        AddAbilityResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.AddAbilityResp(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = reader.string();
+                    break;
+                case 2:
+                    reader.skip().pos++;
+                    if (message.exceptionHints === $util.emptyObject)
+                        message.exceptionHints = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.exceptionHints[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        AddAbilityResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        AddAbilityResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                if (!$util.isString(message.exception))
+                    return "exception: string expected";
+            if (message.exceptionHints != null && message.hasOwnProperty("exceptionHints")) {
+                if (!$util.isObject(message.exceptionHints))
+                    return "exceptionHints: object expected";
+                let key = Object.keys(message.exceptionHints);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.exceptionHints[key[i]]))
+                        return "exceptionHints: string{k:string} expected";
+            }
+            return null;
+        };
+
+        AddAbilityResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.AddAbilityResp)
+                return object;
+            let message = new $root.BasilServer.AddAbilityResp();
+            if (object.exception != null)
+                message.exception = String(object.exception);
+            if (object.exceptionHints) {
+                if (typeof object.exceptionHints !== "object")
+                    throw TypeError(".BasilServer.AddAbilityResp.exceptionHints: object expected");
+                message.exceptionHints = {};
+                for (let keys = Object.keys(object.exceptionHints), i = 0; i < keys.length; ++i)
+                    message.exceptionHints[keys[i]] = String(object.exceptionHints[keys[i]]);
+            }
+            return message;
+        };
+
+        AddAbilityResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.exceptionHints = {};
+            if (options.defaults)
+                object.exception = "";
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = message.exception;
+            let keys2;
+            if (message.exceptionHints && (keys2 = Object.keys(message.exceptionHints)).length) {
+                object.exceptionHints = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.exceptionHints[keys2[j]] = message.exceptionHints[keys2[j]];
+            }
+            return object;
+        };
+
+        AddAbilityResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return AddAbilityResp;
+    })();
+
+    BasilServer.RemoveAbilityReq = (function() {
+
+        function RemoveAbilityReq(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        RemoveAbilityReq.prototype.auth = "";
+        RemoveAbilityReq.prototype.itemId = "";
+        RemoveAbilityReq.prototype.AbilityName = "";
+
+        RemoveAbilityReq.create = function create(properties) {
+            return new RemoveAbilityReq(properties);
+        };
+
+        RemoveAbilityReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                writer.uint32(10).string(message.auth);
+            if (message.itemId != null && Object.hasOwnProperty.call(message, "itemId"))
+                writer.uint32(18).string(message.itemId);
+            if (message.AbilityName != null && Object.hasOwnProperty.call(message, "AbilityName"))
+                writer.uint32(26).string(message.AbilityName);
+            return writer;
+        };
+
+        RemoveAbilityReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        RemoveAbilityReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RemoveAbilityReq();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = reader.string();
+                    break;
+                case 2:
+                    message.itemId = reader.string();
+                    break;
+                case 3:
+                    message.AbilityName = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        RemoveAbilityReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        RemoveAbilityReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                if (!$util.isString(message.auth))
+                    return "auth: string expected";
+            if (message.itemId != null && message.hasOwnProperty("itemId"))
+                if (!$util.isString(message.itemId))
+                    return "itemId: string expected";
+            if (message.AbilityName != null && message.hasOwnProperty("AbilityName"))
+                if (!$util.isString(message.AbilityName))
+                    return "AbilityName: string expected";
+            return null;
+        };
+
+        RemoveAbilityReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.RemoveAbilityReq)
+                return object;
+            let message = new $root.BasilServer.RemoveAbilityReq();
+            if (object.auth != null)
+                message.auth = String(object.auth);
+            if (object.itemId != null)
+                message.itemId = String(object.itemId);
+            if (object.AbilityName != null)
+                message.AbilityName = String(object.AbilityName);
+            return message;
+        };
+
+        RemoveAbilityReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.auth = "";
+                object.itemId = "";
+                object.AbilityName = "";
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = message.auth;
+            if (message.itemId != null && message.hasOwnProperty("itemId"))
+                object.itemId = message.itemId;
+            if (message.AbilityName != null && message.hasOwnProperty("AbilityName"))
+                object.AbilityName = message.AbilityName;
+            return object;
+        };
+
+        RemoveAbilityReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RemoveAbilityReq;
+    })();
+
+    BasilServer.RemoveAbilityResp = (function() {
+
+        function RemoveAbilityResp(properties) {
+            this.exceptionHints = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        RemoveAbilityResp.prototype.exception = "";
+        RemoveAbilityResp.prototype.exceptionHints = $util.emptyObject;
+
+        RemoveAbilityResp.create = function create(properties) {
+            return new RemoveAbilityResp(properties);
+        };
+
+        RemoveAbilityResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                writer.uint32(10).string(message.exception);
+            if (message.exceptionHints != null && Object.hasOwnProperty.call(message, "exceptionHints"))
+                for (let keys = Object.keys(message.exceptionHints), i = 0; i < keys.length; ++i)
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.exceptionHints[keys[i]]).ldelim();
+            return writer;
+        };
+
+        RemoveAbilityResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        RemoveAbilityResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RemoveAbilityResp(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = reader.string();
+                    break;
+                case 2:
+                    reader.skip().pos++;
+                    if (message.exceptionHints === $util.emptyObject)
+                        message.exceptionHints = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.exceptionHints[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        RemoveAbilityResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        RemoveAbilityResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                if (!$util.isString(message.exception))
+                    return "exception: string expected";
+            if (message.exceptionHints != null && message.hasOwnProperty("exceptionHints")) {
+                if (!$util.isObject(message.exceptionHints))
+                    return "exceptionHints: object expected";
+                let key = Object.keys(message.exceptionHints);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.exceptionHints[key[i]]))
+                        return "exceptionHints: string{k:string} expected";
+            }
+            return null;
+        };
+
+        RemoveAbilityResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.RemoveAbilityResp)
+                return object;
+            let message = new $root.BasilServer.RemoveAbilityResp();
+            if (object.exception != null)
+                message.exception = String(object.exception);
+            if (object.exceptionHints) {
+                if (typeof object.exceptionHints !== "object")
+                    throw TypeError(".BasilServer.RemoveAbilityResp.exceptionHints: object expected");
+                message.exceptionHints = {};
+                for (let keys = Object.keys(object.exceptionHints), i = 0; i < keys.length; ++i)
+                    message.exceptionHints[keys[i]] = String(object.exceptionHints[keys[i]]);
+            }
+            return message;
+        };
+
+        RemoveAbilityResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.exceptionHints = {};
+            if (options.defaults)
+                object.exception = "";
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = message.exception;
+            let keys2;
+            if (message.exceptionHints && (keys2 = Object.keys(message.exceptionHints)).length) {
+                object.exceptionHints = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.exceptionHints[keys2[j]] = message.exceptionHints[keys2[j]];
+            }
+            return object;
+        };
+
+        RemoveAbilityResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RemoveAbilityResp;
+    })();
+
     BasilServer.IdentifyDisplayableObjectReq = (function() {
 
         function IdentifyDisplayableObjectReq(properties) {
@@ -4162,246 +5155,6 @@ export const BasilServer = $root.BasilServer = (() => {
         return DeleteObjectInstanceResp;
     })();
 
-    BasilServer.UpdateObjectPropertyReq = (function() {
-
-        function UpdateObjectPropertyReq(properties) {
-            this.props = {};
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        UpdateObjectPropertyReq.prototype.auth = null;
-        UpdateObjectPropertyReq.prototype.objectId = null;
-        UpdateObjectPropertyReq.prototype.props = $util.emptyObject;
-
-        UpdateObjectPropertyReq.create = function create(properties) {
-            return new UpdateObjectPropertyReq(properties);
-        };
-
-        UpdateObjectPropertyReq.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
-                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
-            if (message.props != null && Object.hasOwnProperty.call(message, "props"))
-                for (let keys = Object.keys(message.props), i = 0; i < keys.length; ++i)
-                    writer.uint32(26).fork().uint32(10).string(keys[i]).uint32(18).string(message.props[keys[i]]).ldelim();
-            return writer;
-        };
-
-        UpdateObjectPropertyReq.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        UpdateObjectPropertyReq.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateObjectPropertyReq(), key;
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
-                    break;
-                case 3:
-                    reader.skip().pos++;
-                    if (message.props === $util.emptyObject)
-                        message.props = {};
-                    key = reader.string();
-                    reader.pos++;
-                    message.props[key] = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        UpdateObjectPropertyReq.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        UpdateObjectPropertyReq.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.auth != null && message.hasOwnProperty("auth")) {
-                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
-                if (error)
-                    return "auth." + error;
-            }
-            if (message.objectId != null && message.hasOwnProperty("objectId")) {
-                let error = $root.BasilType.ObjectIdentifier.verify(message.objectId);
-                if (error)
-                    return "objectId." + error;
-            }
-            if (message.props != null && message.hasOwnProperty("props")) {
-                if (!$util.isObject(message.props))
-                    return "props: object expected";
-                let key = Object.keys(message.props);
-                for (let i = 0; i < key.length; ++i)
-                    if (!$util.isString(message.props[key[i]]))
-                        return "props: string{k:string} expected";
-            }
-            return null;
-        };
-
-        UpdateObjectPropertyReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilServer.UpdateObjectPropertyReq)
-                return object;
-            let message = new $root.BasilServer.UpdateObjectPropertyReq();
-            if (object.auth != null) {
-                if (typeof object.auth !== "object")
-                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.auth: object expected");
-                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.objectId != null) {
-                if (typeof object.objectId !== "object")
-                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.objectId: object expected");
-                message.objectId = $root.BasilType.ObjectIdentifier.fromObject(object.objectId);
-            }
-            if (object.props) {
-                if (typeof object.props !== "object")
-                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.props: object expected");
-                message.props = {};
-                for (let keys = Object.keys(object.props), i = 0; i < keys.length; ++i)
-                    message.props[keys[i]] = String(object.props[keys[i]]);
-            }
-            return message;
-        };
-
-        UpdateObjectPropertyReq.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.objects || options.defaults)
-                object.props = {};
-            if (options.defaults) {
-                object.auth = null;
-                object.objectId = null;
-            }
-            if (message.auth != null && message.hasOwnProperty("auth"))
-                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.objectId != null && message.hasOwnProperty("objectId"))
-                object.objectId = $root.BasilType.ObjectIdentifier.toObject(message.objectId, options);
-            let keys2;
-            if (message.props && (keys2 = Object.keys(message.props)).length) {
-                object.props = {};
-                for (let j = 0; j < keys2.length; ++j)
-                    object.props[keys2[j]] = message.props[keys2[j]];
-            }
-            return object;
-        };
-
-        UpdateObjectPropertyReq.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return UpdateObjectPropertyReq;
-    })();
-
-    BasilServer.UpdateObjectPropertyResp = (function() {
-
-        function UpdateObjectPropertyResp(properties) {
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        UpdateObjectPropertyResp.prototype.exception = null;
-
-        UpdateObjectPropertyResp.create = function create(properties) {
-            return new UpdateObjectPropertyResp(properties);
-        };
-
-        UpdateObjectPropertyResp.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
-                $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            return writer;
-        };
-
-        UpdateObjectPropertyResp.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        UpdateObjectPropertyResp.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateObjectPropertyResp();
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        UpdateObjectPropertyResp.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        UpdateObjectPropertyResp.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.exception != null && message.hasOwnProperty("exception")) {
-                let error = $root.BasilType.BasilException.verify(message.exception);
-                if (error)
-                    return "exception." + error;
-            }
-            return null;
-        };
-
-        UpdateObjectPropertyResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilServer.UpdateObjectPropertyResp)
-                return object;
-            let message = new $root.BasilServer.UpdateObjectPropertyResp();
-            if (object.exception != null) {
-                if (typeof object.exception !== "object")
-                    throw TypeError(".BasilServer.UpdateObjectPropertyResp.exception: object expected");
-                message.exception = $root.BasilType.BasilException.fromObject(object.exception);
-            }
-            return message;
-        };
-
-        UpdateObjectPropertyResp.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.defaults)
-                object.exception = null;
-            if (message.exception != null && message.hasOwnProperty("exception"))
-                object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
-            return object;
-        };
-
-        UpdateObjectPropertyResp.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return UpdateObjectPropertyResp;
-    })();
-
     BasilServer.UpdateInstancePropertyReq = (function() {
 
         function UpdateInstancePropertyReq(properties) {
@@ -4640,6 +5393,500 @@ export const BasilServer = $root.BasilServer = (() => {
         };
 
         return UpdateInstancePropertyResp;
+    })();
+
+    BasilServer.RequestInstancePropertiesReq = (function() {
+
+        function RequestInstancePropertiesReq(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        RequestInstancePropertiesReq.prototype.auth = null;
+        RequestInstancePropertiesReq.prototype.instanceId = null;
+        RequestInstancePropertiesReq.prototype.propertyMatch = "";
+
+        RequestInstancePropertiesReq.create = function create(properties) {
+            return new RequestInstancePropertiesReq(properties);
+        };
+
+        RequestInstancePropertiesReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
+            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
+                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
+            if (message.propertyMatch != null && Object.hasOwnProperty.call(message, "propertyMatch"))
+                writer.uint32(26).string(message.propertyMatch);
+            return writer;
+        };
+
+        RequestInstancePropertiesReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        RequestInstancePropertiesReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestInstancePropertiesReq();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.propertyMatch = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        RequestInstancePropertiesReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        RequestInstancePropertiesReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth")) {
+                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
+                if (error)
+                    return "auth." + error;
+            }
+            if (message.instanceId != null && message.hasOwnProperty("instanceId")) {
+                let error = $root.BasilType.InstanceIdentifier.verify(message.instanceId);
+                if (error)
+                    return "instanceId." + error;
+            }
+            if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
+                if (!$util.isString(message.propertyMatch))
+                    return "propertyMatch: string expected";
+            return null;
+        };
+
+        RequestInstancePropertiesReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.RequestInstancePropertiesReq)
+                return object;
+            let message = new $root.BasilServer.RequestInstancePropertiesReq();
+            if (object.auth != null) {
+                if (typeof object.auth !== "object")
+                    throw TypeError(".BasilServer.RequestInstancePropertiesReq.auth: object expected");
+                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            if (object.instanceId != null) {
+                if (typeof object.instanceId !== "object")
+                    throw TypeError(".BasilServer.RequestInstancePropertiesReq.instanceId: object expected");
+                message.instanceId = $root.BasilType.InstanceIdentifier.fromObject(object.instanceId);
+            }
+            if (object.propertyMatch != null)
+                message.propertyMatch = String(object.propertyMatch);
+            return message;
+        };
+
+        RequestInstancePropertiesReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.auth = null;
+                object.instanceId = null;
+                object.propertyMatch = "";
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
+            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
+                object.instanceId = $root.BasilType.InstanceIdentifier.toObject(message.instanceId, options);
+            if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
+                object.propertyMatch = message.propertyMatch;
+            return object;
+        };
+
+        RequestInstancePropertiesReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RequestInstancePropertiesReq;
+    })();
+
+    BasilServer.RequestInstancePropertiesResp = (function() {
+
+        function RequestInstancePropertiesResp(properties) {
+            this.properties = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        RequestInstancePropertiesResp.prototype.exception = null;
+        RequestInstancePropertiesResp.prototype.properties = $util.emptyObject;
+
+        RequestInstancePropertiesResp.create = function create(properties) {
+            return new RequestInstancePropertiesResp(properties);
+        };
+
+        RequestInstancePropertiesResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
+            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
+                for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
+                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
+            return writer;
+        };
+
+        RequestInstancePropertiesResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        RequestInstancePropertiesResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestInstancePropertiesResp(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    reader.skip().pos++;
+                    if (message.properties === $util.emptyObject)
+                        message.properties = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.properties[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        RequestInstancePropertiesResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        RequestInstancePropertiesResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception")) {
+                let error = $root.BasilType.BasilException.verify(message.exception);
+                if (error)
+                    return "exception." + error;
+            }
+            if (message.properties != null && message.hasOwnProperty("properties")) {
+                if (!$util.isObject(message.properties))
+                    return "properties: object expected";
+                let key = Object.keys(message.properties);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.properties[key[i]]))
+                        return "properties: string{k:string} expected";
+            }
+            return null;
+        };
+
+        RequestInstancePropertiesResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.RequestInstancePropertiesResp)
+                return object;
+            let message = new $root.BasilServer.RequestInstancePropertiesResp();
+            if (object.exception != null) {
+                if (typeof object.exception !== "object")
+                    throw TypeError(".BasilServer.RequestInstancePropertiesResp.exception: object expected");
+                message.exception = $root.BasilType.BasilException.fromObject(object.exception);
+            }
+            if (object.properties) {
+                if (typeof object.properties !== "object")
+                    throw TypeError(".BasilServer.RequestInstancePropertiesResp.properties: object expected");
+                message.properties = {};
+                for (let keys = Object.keys(object.properties), i = 0; i < keys.length; ++i)
+                    message.properties[keys[i]] = String(object.properties[keys[i]]);
+            }
+            return message;
+        };
+
+        RequestInstancePropertiesResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.properties = {};
+            if (options.defaults)
+                object.exception = null;
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
+            let keys2;
+            if (message.properties && (keys2 = Object.keys(message.properties)).length) {
+                object.properties = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.properties[keys2[j]] = message.properties[keys2[j]];
+            }
+            return object;
+        };
+
+        RequestInstancePropertiesResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RequestInstancePropertiesResp;
+    })();
+
+    BasilServer.UpdateObjectPropertyReq = (function() {
+
+        function UpdateObjectPropertyReq(properties) {
+            this.props = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        UpdateObjectPropertyReq.prototype.auth = null;
+        UpdateObjectPropertyReq.prototype.objectId = null;
+        UpdateObjectPropertyReq.prototype.props = $util.emptyObject;
+
+        UpdateObjectPropertyReq.create = function create(properties) {
+            return new UpdateObjectPropertyReq(properties);
+        };
+
+        UpdateObjectPropertyReq.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
+                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
+            if (message.objectId != null && Object.hasOwnProperty.call(message, "objectId"))
+                $root.BasilType.ObjectIdentifier.encode(message.objectId, writer.uint32(18).fork()).ldelim();
+            if (message.props != null && Object.hasOwnProperty.call(message, "props"))
+                for (let keys = Object.keys(message.props), i = 0; i < keys.length; ++i)
+                    writer.uint32(26).fork().uint32(10).string(keys[i]).uint32(18).string(message.props[keys[i]]).ldelim();
+            return writer;
+        };
+
+        UpdateObjectPropertyReq.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        UpdateObjectPropertyReq.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateObjectPropertyReq(), key;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.objectId = $root.BasilType.ObjectIdentifier.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    reader.skip().pos++;
+                    if (message.props === $util.emptyObject)
+                        message.props = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.props[key] = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        UpdateObjectPropertyReq.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        UpdateObjectPropertyReq.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.auth != null && message.hasOwnProperty("auth")) {
+                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
+                if (error)
+                    return "auth." + error;
+            }
+            if (message.objectId != null && message.hasOwnProperty("objectId")) {
+                let error = $root.BasilType.ObjectIdentifier.verify(message.objectId);
+                if (error)
+                    return "objectId." + error;
+            }
+            if (message.props != null && message.hasOwnProperty("props")) {
+                if (!$util.isObject(message.props))
+                    return "props: object expected";
+                let key = Object.keys(message.props);
+                for (let i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.props[key[i]]))
+                        return "props: string{k:string} expected";
+            }
+            return null;
+        };
+
+        UpdateObjectPropertyReq.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.UpdateObjectPropertyReq)
+                return object;
+            let message = new $root.BasilServer.UpdateObjectPropertyReq();
+            if (object.auth != null) {
+                if (typeof object.auth !== "object")
+                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.auth: object expected");
+                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
+            }
+            if (object.objectId != null) {
+                if (typeof object.objectId !== "object")
+                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.objectId: object expected");
+                message.objectId = $root.BasilType.ObjectIdentifier.fromObject(object.objectId);
+            }
+            if (object.props) {
+                if (typeof object.props !== "object")
+                    throw TypeError(".BasilServer.UpdateObjectPropertyReq.props: object expected");
+                message.props = {};
+                for (let keys = Object.keys(object.props), i = 0; i < keys.length; ++i)
+                    message.props[keys[i]] = String(object.props[keys[i]]);
+            }
+            return message;
+        };
+
+        UpdateObjectPropertyReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.objects || options.defaults)
+                object.props = {};
+            if (options.defaults) {
+                object.auth = null;
+                object.objectId = null;
+            }
+            if (message.auth != null && message.hasOwnProperty("auth"))
+                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
+            if (message.objectId != null && message.hasOwnProperty("objectId"))
+                object.objectId = $root.BasilType.ObjectIdentifier.toObject(message.objectId, options);
+            let keys2;
+            if (message.props && (keys2 = Object.keys(message.props)).length) {
+                object.props = {};
+                for (let j = 0; j < keys2.length; ++j)
+                    object.props[keys2[j]] = message.props[keys2[j]];
+            }
+            return object;
+        };
+
+        UpdateObjectPropertyReq.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateObjectPropertyReq;
+    })();
+
+    BasilServer.UpdateObjectPropertyResp = (function() {
+
+        function UpdateObjectPropertyResp(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        UpdateObjectPropertyResp.prototype.exception = null;
+
+        UpdateObjectPropertyResp.create = function create(properties) {
+            return new UpdateObjectPropertyResp(properties);
+        };
+
+        UpdateObjectPropertyResp.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
+                $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
+            return writer;
+        };
+
+        UpdateObjectPropertyResp.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        UpdateObjectPropertyResp.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.UpdateObjectPropertyResp();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        UpdateObjectPropertyResp.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        UpdateObjectPropertyResp.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.exception != null && message.hasOwnProperty("exception")) {
+                let error = $root.BasilType.BasilException.verify(message.exception);
+                if (error)
+                    return "exception." + error;
+            }
+            return null;
+        };
+
+        UpdateObjectPropertyResp.fromObject = function fromObject(object) {
+            if (object instanceof $root.BasilServer.UpdateObjectPropertyResp)
+                return object;
+            let message = new $root.BasilServer.UpdateObjectPropertyResp();
+            if (object.exception != null) {
+                if (typeof object.exception !== "object")
+                    throw TypeError(".BasilServer.UpdateObjectPropertyResp.exception: object expected");
+                message.exception = $root.BasilType.BasilException.fromObject(object.exception);
+            }
+            return message;
+        };
+
+        UpdateObjectPropertyResp.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.exception = null;
+            if (message.exception != null && message.hasOwnProperty("exception"))
+                object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
+            return object;
+        };
+
+        UpdateObjectPropertyResp.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateObjectPropertyResp;
     })();
 
     BasilServer.UpdateInstancePositionReq = (function() {
@@ -5117,260 +6364,6 @@ export const BasilServer = $root.BasilServer = (() => {
         };
 
         return RequestObjectPropertiesResp;
-    })();
-
-    BasilServer.RequestInstancePropertiesReq = (function() {
-
-        function RequestInstancePropertiesReq(properties) {
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        RequestInstancePropertiesReq.prototype.auth = null;
-        RequestInstancePropertiesReq.prototype.instanceId = null;
-        RequestInstancePropertiesReq.prototype.propertyMatch = "";
-
-        RequestInstancePropertiesReq.create = function create(properties) {
-            return new RequestInstancePropertiesReq(properties);
-        };
-
-        RequestInstancePropertiesReq.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.auth != null && Object.hasOwnProperty.call(message, "auth"))
-                $root.BasilType.AccessAuthorization.encode(message.auth, writer.uint32(10).fork()).ldelim();
-            if (message.instanceId != null && Object.hasOwnProperty.call(message, "instanceId"))
-                $root.BasilType.InstanceIdentifier.encode(message.instanceId, writer.uint32(18).fork()).ldelim();
-            if (message.propertyMatch != null && Object.hasOwnProperty.call(message, "propertyMatch"))
-                writer.uint32(26).string(message.propertyMatch);
-            return writer;
-        };
-
-        RequestInstancePropertiesReq.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        RequestInstancePropertiesReq.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestInstancePropertiesReq();
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.auth = $root.BasilType.AccessAuthorization.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.instanceId = $root.BasilType.InstanceIdentifier.decode(reader, reader.uint32());
-                    break;
-                case 3:
-                    message.propertyMatch = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        RequestInstancePropertiesReq.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        RequestInstancePropertiesReq.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.auth != null && message.hasOwnProperty("auth")) {
-                let error = $root.BasilType.AccessAuthorization.verify(message.auth);
-                if (error)
-                    return "auth." + error;
-            }
-            if (message.instanceId != null && message.hasOwnProperty("instanceId")) {
-                let error = $root.BasilType.InstanceIdentifier.verify(message.instanceId);
-                if (error)
-                    return "instanceId." + error;
-            }
-            if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
-                if (!$util.isString(message.propertyMatch))
-                    return "propertyMatch: string expected";
-            return null;
-        };
-
-        RequestInstancePropertiesReq.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilServer.RequestInstancePropertiesReq)
-                return object;
-            let message = new $root.BasilServer.RequestInstancePropertiesReq();
-            if (object.auth != null) {
-                if (typeof object.auth !== "object")
-                    throw TypeError(".BasilServer.RequestInstancePropertiesReq.auth: object expected");
-                message.auth = $root.BasilType.AccessAuthorization.fromObject(object.auth);
-            }
-            if (object.instanceId != null) {
-                if (typeof object.instanceId !== "object")
-                    throw TypeError(".BasilServer.RequestInstancePropertiesReq.instanceId: object expected");
-                message.instanceId = $root.BasilType.InstanceIdentifier.fromObject(object.instanceId);
-            }
-            if (object.propertyMatch != null)
-                message.propertyMatch = String(object.propertyMatch);
-            return message;
-        };
-
-        RequestInstancePropertiesReq.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.defaults) {
-                object.auth = null;
-                object.instanceId = null;
-                object.propertyMatch = "";
-            }
-            if (message.auth != null && message.hasOwnProperty("auth"))
-                object.auth = $root.BasilType.AccessAuthorization.toObject(message.auth, options);
-            if (message.instanceId != null && message.hasOwnProperty("instanceId"))
-                object.instanceId = $root.BasilType.InstanceIdentifier.toObject(message.instanceId, options);
-            if (message.propertyMatch != null && message.hasOwnProperty("propertyMatch"))
-                object.propertyMatch = message.propertyMatch;
-            return object;
-        };
-
-        RequestInstancePropertiesReq.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return RequestInstancePropertiesReq;
-    })();
-
-    BasilServer.RequestInstancePropertiesResp = (function() {
-
-        function RequestInstancePropertiesResp(properties) {
-            this.properties = {};
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        RequestInstancePropertiesResp.prototype.exception = null;
-        RequestInstancePropertiesResp.prototype.properties = $util.emptyObject;
-
-        RequestInstancePropertiesResp.create = function create(properties) {
-            return new RequestInstancePropertiesResp(properties);
-        };
-
-        RequestInstancePropertiesResp.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.exception != null && Object.hasOwnProperty.call(message, "exception"))
-                $root.BasilType.BasilException.encode(message.exception, writer.uint32(10).fork()).ldelim();
-            if (message.properties != null && Object.hasOwnProperty.call(message, "properties"))
-                for (let keys = Object.keys(message.properties), i = 0; i < keys.length; ++i)
-                    writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.properties[keys[i]]).ldelim();
-            return writer;
-        };
-
-        RequestInstancePropertiesResp.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        RequestInstancePropertiesResp.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilServer.RequestInstancePropertiesResp(), key;
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.exception = $root.BasilType.BasilException.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    reader.skip().pos++;
-                    if (message.properties === $util.emptyObject)
-                        message.properties = {};
-                    key = reader.string();
-                    reader.pos++;
-                    message.properties[key] = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        RequestInstancePropertiesResp.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        RequestInstancePropertiesResp.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.exception != null && message.hasOwnProperty("exception")) {
-                let error = $root.BasilType.BasilException.verify(message.exception);
-                if (error)
-                    return "exception." + error;
-            }
-            if (message.properties != null && message.hasOwnProperty("properties")) {
-                if (!$util.isObject(message.properties))
-                    return "properties: object expected";
-                let key = Object.keys(message.properties);
-                for (let i = 0; i < key.length; ++i)
-                    if (!$util.isString(message.properties[key[i]]))
-                        return "properties: string{k:string} expected";
-            }
-            return null;
-        };
-
-        RequestInstancePropertiesResp.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilServer.RequestInstancePropertiesResp)
-                return object;
-            let message = new $root.BasilServer.RequestInstancePropertiesResp();
-            if (object.exception != null) {
-                if (typeof object.exception !== "object")
-                    throw TypeError(".BasilServer.RequestInstancePropertiesResp.exception: object expected");
-                message.exception = $root.BasilType.BasilException.fromObject(object.exception);
-            }
-            if (object.properties) {
-                if (typeof object.properties !== "object")
-                    throw TypeError(".BasilServer.RequestInstancePropertiesResp.properties: object expected");
-                message.properties = {};
-                for (let keys = Object.keys(object.properties), i = 0; i < keys.length; ++i)
-                    message.properties[keys[i]] = String(object.properties[keys[i]]);
-            }
-            return message;
-        };
-
-        RequestInstancePropertiesResp.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.objects || options.defaults)
-                object.properties = {};
-            if (options.defaults)
-                object.exception = null;
-            if (message.exception != null && message.hasOwnProperty("exception"))
-                object.exception = $root.BasilType.BasilException.toObject(message.exception, options);
-            let keys2;
-            if (message.properties && (keys2 = Object.keys(message.properties)).length) {
-                object.properties = {};
-                for (let j = 0; j < keys2.length; ++j)
-                    object.properties[keys2[j]] = message.properties[keys2[j]];
-            }
-            return object;
-        };
-
-        RequestInstancePropertiesResp.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return RequestInstancePropertiesResp;
     })();
 
     BasilServer.CloseSessionReq = (function() {
