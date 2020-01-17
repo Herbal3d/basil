@@ -183,27 +183,14 @@ export default {
         [ "convoar/Atropia_21.gltf", [512,0,256] ],
         [ "convoar/Atropia_22.gltf", [512,0,0] ]
     ],
-    // Left over from testing. Not used any more.
-    'EntrySelections': {
-        'URLBase': 'https://files.misterblue.com/BasilTest/convoar/',
-        'extension': '.gltf',
-        'formats': [ 'unoptimized', 'smallassets', 'mergedmaterials' ],
-        'scenes': [
-            'testtest88',
-            'epiccastle',
-            'PalmyraTemple'
-        ],
-        'justURLS': [
-            // [ 'title', 'url' ]
-        ]
-    },
-    // Used by Entry.html to select grid.
+    // Used by Entry.js/Entry.html to select grid.
     // Specifies a grid name and the 'get_grid_info' URL for that grid.
     'Grids': [
         {
             'Name': 'localhost',
             'GridInfo': 'http://127.0.0.1:9000/get_grid_info',
-            'LoginURL': 'http://127.0.0.1:8002/'
+            'LoginURL': 'http://127.0.0.1:8002/',
+            'Selected': true
         },
         {
             'Name': 'OSGrid.org',
@@ -214,8 +201,56 @@ export default {
             'Name': 'OurGrid.life',
             'GridInfo': 'http://ourgrid.life/get_grid_info',
             'LoginURL': 'http://ourgrid.life:80/'
+        },
+        {
+            'Name': 'localTestGrid',
+            'GridInfo': 'http://192.168.86.56:9000/get_grid_info',
+            'LoginURL': 'http://192.168.86.56:9000/'
+        },
+        {
+            'Name': 'Herbal3dTestRegion',
+            'GridInfo': 'http://region.herbal3d.org:9000/get_grid_info',
+            'LoginURL': 'http://region.herbal3d.org:9000/'
         }
-
+    ],
+    'TestGLTFFiles': [
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/mergedmaterials/alfea3.gltf',
+            'Description': 'Alfea3 (mergedmaterials)',
+            'Selected': true
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/smallassets/alfea3.gltf',
+            'Description': 'Alfea3 (smallassets)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/art_city_2025/mergedmaterials/art_city_2025.gltf',
+            'Description': 'art_city_2025 (mergedmaterials)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/art_city_2025/smallassets/art_city_2025.gltf',
+            'Description': 'art_city_2025 (smallassets)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
+            'Description': 'Epic Castle (unoptimized)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+            'Description': 'Epic Castle (smallassets)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
+            'Description': 'Epic Castle (mergedmaterials)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+            'Description': 'Testtest88 (unoptimized)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
+            'Description': 'PalmyraTemple (unoptimized)'
+        }
     ]
 }
 ;

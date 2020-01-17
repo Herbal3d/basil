@@ -12,15 +12,21 @@
         <div class="dialog-group">
             <fieldset>
                 <legend>Log Into Grid</legend>
-                <div class="textDisplayAccent">Invoke Basil viewer logging into the selected Grid</div>
+                <div class="textDisplayAccent">Invoke Basil viewer logging into the selected Grid.</div>
+                <div class="textDisplayAccent">Entry Grid login URL or select grid name</div>
                 <table id="gridLogin-table">
                     <tr>
-                        <td class="textDisplayRight"> Grid name or URL: </td>
-                        <td> <input id="gridLogin-gridName" value="localhost" type="text" size="50" maxlength="120"/> </td>
+                        <td class="textDisplayRight"> Grid name: </td>
+                        <td>
+                            <!-- filled by the script from Config.Grids -->
+                            <select id="gridLogin-gridName"> </select>
+                        </td>
                     </tr>
                     <tr>
-                        <td class="textDisplayRight"></td>
-                        <td> <span class="textDisplay" id="gridLogin-gridURL">http://127.0.0.1:9000</span> </td>
+                        <td class="textDisplayRight"> Grid URL: </td>
+                        <td>
+                            <input id="gridLogin-gridURL" value="http://127.0.0.1:9000" type="text" size="50" maxlength="120"/>
+                        </td>
                     </tr>
                     <tr>
                         <td class="textDisplayRight">.</td>
@@ -44,6 +50,7 @@
                 <div id="gridLogin-progress"> </div>
             </fieldset>
         </div>
+        <!--
         <div class="dialog-group">
             <fieldset>
                 <legend>Connect to test region</legend>
@@ -81,48 +88,23 @@
                 <button type="button" class="button clickable" op="spaceServerConnect">Launch</button>
             </fieldset>
         </div>
+        -->
         <div class="dialog-group">
+
             <fieldset>
                 <legend>Test operation</legend>
                 <div class="textDisplayAccent">Invoke Basil viewer with WebWorker tester to load the selected scene</div>
                 <span id="sceneSelection">
-                    <select id="test-sceneURL">
-                        <option value="https://files.misterblue.com/BasilTest/convoar/alfea3/mergedmaterials/alfea3.gltf"
-                            selected >
-                            Alfea3 (mergedmaterials)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/alfea3/smallassets/alfea3.gltf">
-                            Alfea3 (smallassets)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/art_city_2025/mergedmaterials/art_city_2025.gltf">
-                            art_city_2025 (mergedmaterials)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/art_city_2025/smallassets/art_city_2025.gltf">
-                            art_city_2025 (smallassets)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf">
-                            Epic Castle (unoptimized)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf">
-                            Epic Castle (smallassets)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf">
-                            Epic Castle (mergedmaterials)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf">
-                            Testtest88 (unoptimized)
-                        </option>
-                        <option value="https://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf">
-                            PalmyraTemple (unoptimized)
-                        </option>
-                    </select>
+                    <select id="test-sceneURL"> </select>
                 </span>
                 <button type="button" class="button clickable" op="testBasil">Launch</button>
             </fieldset>
         </div>
+        <!--
         <div class="dialog-group">
             <button type="button" class="button clickable" op="testLLSDParser">TestLLSD</button>
         </div>
+        -->
         <div id="DEBUGG"></div>
     </div>
 </body>

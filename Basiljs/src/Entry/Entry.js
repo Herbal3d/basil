@@ -35,7 +35,7 @@ import './Entry.less';
 // Adds a text line to a div and scroll the area
 GP.LogMessage = function LogMessage(msg, classs) {
     if (GP.EnableDebugLog) {
-        var debugg = document.querySelector('#DEBUGG');
+        var debugg = document.getElementById('DEBUGG');
         if (debugg) {
             var newLine = document.createElement('div');
             newLine.appendChild(document.createTextNode(msg));
@@ -57,19 +57,20 @@ GP.ErrorLog = function ErrorLog(msg) {
     GP.LogMessage(msg, 'errorMsg');
 };
 
-let testConfigParams = {};
-/*
-if (Config.WSTester) {
-    Object.assign(testConfigParams, Config.WSTester);
-}
-*/
 let GetSelectedValue = function(optionID) {
     let selection = document.getElementById(optionID);
     let selectionValue = selection.options[selection.selectedIndex].value;
     return selectionValue;
 }
 
+LoadGridSelection();
+LoadTestURLs();
+
 GP.CO = new Controls();
+GP.CO.ShowDebug(true);      // make debug stuff visible
+
+let testConfigParams = {};
+
 GP.CO.ClickableOps['testBasil'] = function() {
     let selectedScene = GetSelectedValue('test-sceneURL');
     testConfigParams = {
@@ -154,10 +155,6 @@ GP.CO.ClickableOps['gridLogin'] = function() {
         LoginProgress('Start location = ' + startLocation);
 
         let loginURL = document.getElementById('gridLogin-gridURL').innerHTML.trim();
-        let loginName = document.getElementById('gridLogin-gridName').value.trim();
-        if (loginName.length > 0 && loginName.startsWith('http')) {
-            loginURL = loginName;
-        }
 
         LoginXML2(firstname, lastname, password, startLocation, loginURL,
                                 LoginResponseSuccess, LoginResponseFailure);
@@ -278,7 +275,8 @@ function LoginProgress(msg, classs) {
     }
 };
 
-// Login using XMLRPC raw request (no library or frameworks)
+// Login using XMLRPC raw request (no library or frameworks).
+// I tried libraries and porting other JS code. It is easier to just do it myself.
 function LoginXML2(firstname, lastname, password, startLocation, loginURL, successCallback, failureCallback) {
     let hashedPW = '$1$' + MD5(password);
     LoginProgress('LoginXML2: Hashed password=' + hashedPW);
@@ -424,3 +422,59 @@ function LoginWS(firstname, lastname, password, startLocation, loginURL, success
         LoginProgress('Login failed: could not make WebSocket connection to ' + wsURL);
     }
 }
+
+// Load the grid name selection box with the names from the configuration file.
+// Uses the information in Config.Grids.
+function LoadGridSelection() {
+    if (Config.Grids) {
+        let selectNode = document.getElementById('gridLogin-gridName');
+        Config.Grids.forEach(grid => {
+            let opt = document.createElement('option');
+            opt.setAttribute('value', grid.LoginURL);
+            opt.appendChild(document.createTextNode(grid.Name));
+            if (grid.Selected) {
+                opt.setAttribute('selected', '');
+            }
+            selectNode.appendChild(opt);
+        });
+        selectNode.addEventListener('change', GridSelectionChanged);
+    }
+}
+
+// The grid name field was changed. Update the login URL.
+function GridSelectionChanged(evt) {
+    let selectedGridURL = GetSelectedValue('gridLogin-gridName');
+    let gridURLNode = document.getElementById('gridLogin-gridURL');
+    gridURLNode.value = selectedGridURL;
+}
+
+// Load the test URLs from Config.TestGLTFFiles
+function LoadTestURLs() {
+    if (Config.TestGLTFFiles) {
+        let selectNode = document.getElementById('test-sceneURL');
+        Config.TestGLTFFiles.forEach( testURL => {
+            let opt = document.createElement('option');
+            opt.setAttribute('value', testURL.URL);
+            opt.appendChild(document.createTextNode(testURL.Description));
+            selectNode.appendChild(opt);
+            if (testURL.Selected) {
+                opt.setAttribute('selected', '');
+            }
+            selectNode.appendChild(opt);
+        });
+    }
+}
+
+// ======================================================
+// Given a DOM node, remove all its children.
+export function EmptyNode(nn) {
+    while (nn.firstChild) {
+        nn.removeChild(nn.firstChild);
+    }
+};
+
+// Given a DOM node, empty the node and add the passed text as a text node.
+export function SetNodeText(nn, txt) {
+    EmptyNode(nn);
+    nn.appendChild(document.createTextNode(txt));
+};
