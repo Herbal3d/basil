@@ -157,12 +157,6 @@ export class Comm extends BItem {
                     GP.DebugLog('Comm.Connect: created PestoClientConnection. Id=' + svc.id);
                     resolve(svc);
                     break;
-              case 'Broth':
-                    svc = new BrothClientConnection(pTransport, params);
-                    svc.Start();
-                    GP.DebugLog('Comm.Connect: created BrothClientConnection. Id=' + svc.id);
-                    resolve(svc);
-                    break;
               default:
                     let errorMsg = 'Comm.Connect: service type unknown: ' + JSONstringify(params.service);
                     GP.ErrorLog(errorMsg)

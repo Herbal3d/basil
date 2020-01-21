@@ -15,7 +15,7 @@ export default {
         /*
         'transportURL': 'connectionURLForTransport',
         'transport': 'one of WS, WW',
-        'service': 'one of SpaceServerClient, Broth, Pesto',
+        'service': 'one of SpaceServerClient, Pesto',
         'testmode': false,
         'TestAsset': {
             'url': 'URL to asset',
@@ -215,9 +215,21 @@ export default {
     ],
     'TestGLTFFiles': [
         {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/mergedmaterials/alfea3.gltf',
-            'Description': 'Alfea3 (mergedmaterials)',
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
+            'Description': 'Epic Castle (mergedmaterials)',
             'Selected': true
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+            'Description': 'Epic Castle (smallassets)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
+            'Description': 'Epic Castle (unoptimized)'
+        },
+        {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/mergedmaterials/alfea3.gltf',
+            'Description': 'Alfea3 (mergedmaterials)'
         },
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/smallassets/alfea3.gltf',
@@ -230,18 +242,6 @@ export default {
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/art_city_2025/smallassets/art_city_2025.gltf',
             'Description': 'art_city_2025 (smallassets)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
-            'Description': 'Epic Castle (unoptimized)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-            'Description': 'Epic Castle (smallassets)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
-            'Description': 'Epic Castle (mergedmaterials)'
         },
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
