@@ -20,28 +20,37 @@ import { BItem, BItemType } from '../Items/BItem.js';
 import { RandomIdentifier } from '../Utilities.js';
 
 // A simple pub/sub system. An event producer registers a topic
-//    and later 'fire's event on the topic. A envent consumer subscribers
+//    and later 'fire's event on the topic. An event consumer subscribers
 //    to a topic and has a function called when that topic is 'fire'ed.
 // The coding pattern:
 // Event producer:
-//    topicHandle = Eventing.register(topicName, whoIsRegistering);
+//    topicHandle = Eventing.Register(topicName, whoIsRegistering);
 //    ...
 //    topicHandle.fire(params);
 //        // 'params' is a JS object which is usually a map of values
 //
 // Event consumer:
-//    eventHandle = Eventing.subscribe(topicName, function(params, topicName) {
+//    eventHandle = Eventing.Subscribe(topicName, function(params, topicName) {
 //         //event processor
 //    });
 //    ...
-//    Eventing.unsubscribe(eventHandle);
+//    Eventing.Unsubscribe(eventHandle);
 //
-// NOTE: there is no locking here so beware of using multi-threaded JavaScript
+// A topic DOES NOT NEED to be registered. In this case, subscribes will create
+// the TopicEntry and Eventing.Fire('topicName', params) is used to fire the
+// event. In this case, the TopicEntry is removed when all the subscriptions are
+// gone. This is an optimization since many topics can be fired but there will
+// not be any subscribers so doing it that way doesn't allocate structures if
+// there are no subscribers.
+//
+// NOTE: there is no locking here so beware of using multi-threaded JavaScript.
+// NOTE: subEntry.fire() returns a Promise which is resolved when the event has been processed.
+//    This also means that event processing can happen async.
 
 // ===========================================
 // One subscription
 // Subscriptions are created with a unique ID so individual subscriptions can be
-//     found for removal (because there can be multiple subescitions for the same processor).
+//     found for removal (because there can be multiple subsriptions for the same processor).
 // Note: currently 'limits' is unused but someday will be used for timing and frequency limiting
 export class SubEntry {
     constructor(topic, processor, id, limits) {
@@ -49,9 +58,17 @@ export class SubEntry {
         this.processor = processor;
         this.id = id;
         this.limits = limits;
+        this.numSubscriptionFired = 0;
     }
+    // Returns a promise for when event has been processed
     fire(params) {
-        this.processor(params, this.topic);
+        this.numSubscriptionFired++;
+        return new Promise((resolve, reject) => {
+            this.processor(params, this.topic)
+            // Debug only so I can use GP
+            GP.EventingInstance.numEventsFired++;
+            resolve();
+        });
     }
 }
 
@@ -63,6 +80,7 @@ export class TopicEntry {
     constructor(topicName) {
         this.topic = topicName;
         this.subs = [];
+        this.numTopicEventsFired = 0;
     }
     hasSubscriptions() {
         return this.subs.length > 0;
@@ -78,9 +96,12 @@ export class TopicEntry {
         }
     };
     fire(params) {
-        this.subs.forEach( sub => {
-            sub.fire(params);
-        });
+        this.numTopicEventsFired++;
+        if (this.subs.length > 0) {
+            this.subs.map( sub => { sub.fire(params); } );
+            // Could wait for the resolution of the Promises
+            // Promise.all(this.subs.map( sub => { sub.fire(params); } ));
+        }
     };
 }
 
@@ -91,8 +112,13 @@ export class Eventing extends BItem {
         this.layer = Config.layers ? Config.layers.eventing : 'org.basil.b.layer.eventing';
         this.topics = new Map();
         this.timedEventProcessors = new Map();
-        this.numSubscriptions = 0;
         this.numEventsFired = 0;
+
+        // Eventing generates events on subscriptions and registrations
+        this.OnRegister = this.Register('Eventing.Register', 'Eventing');
+        this.OnUnregister = this.Register('Eventing.Unregister', 'Eventing');
+        this.OnSubscribe = this.Register('Eventing.Subscribe', 'Eventing');
+        this.OnUnsubscribe = this.Register('Eventing.Unsubscribe', 'Eventing');
 
         // Start the timed event clock
         this._processTimedEvents();
@@ -125,7 +151,6 @@ export class Eventing extends BItem {
     // Register to receive events for a topic.
     // Returns a handle to control the subscription.
     Subscribe(topic, processor, limits) {
-        this.numSubscriptions++;
         let sub = new SubEntry(topic, processor, RandomIdentifier(), limits);
         let topicEnt = this.FindTopic(topic);
         if (topicEnt == undefined) {
@@ -136,12 +161,9 @@ export class Eventing extends BItem {
         }
         topicEnt.addSubscription(sub);
         GP.DebugLog("Eventing.subscribe: adding subscription to event " + topic);
-        if (this.SubscribeEventProcessor) this.SubscribeEventProcessor(topic);
+        this.OnSubscribe.fire({ 'topic': topic.name, 'topicEntry': topicEnt });
         return sub;
     };
-    SubscribeEvent(eventHandler) {
-        this.SubscribeEventProcessor = eventHandler;
-    }
 
     // Release a topic subscription.
     Unsubscribe(subEntry) {
@@ -149,17 +171,20 @@ export class Eventing extends BItem {
             let topicEnt = this.FindTopic(subEntry.topic);
             if (topicEnt) {
                 topicEnt.removeSubscription(subEntry);
-                if (this.UnsubscribeEventProcessor) this.UnsubscribeEventProcessor(subEntry.topic);
+                this.OnUnsubscribe.fire({ 'topic': topicEnt.name, 'topicEntry': topicEnt });
+                if (! (topicEnt.hasSubscriptions || topicEnt.wasRegistered)) {
+                    // Topics that are created from subscriptions can be removed
+                    // when there are no more subscriptions
+                    this.Unregister(topicEnt);
+                }
             }
             GP.DebugLog("Eventing.unsubscribe: removing subscription for event " + subEntry.topic);
         }
     };
-    UnsubscribeEvent(eventProcessor) {
-        this.UnsubscribeEventProcessor = eventProcessor;
-    }
 
     // Register a topic that can be generated.
     // This returns a handle for the topic for later 'event' calls.
+    // 'registar' is just a tag added to the topic registration for debugging.
     // The returned object just happens to be the TopicEntry object.
     Register(topic, registar) {
         let topicEnt = this.FindTopic(topic);
@@ -168,41 +193,38 @@ export class Eventing extends BItem {
             topicEnt.registar = registar;
             this.topics.set(topic, topicEnt);
             GP.DebugLog("Eventing.register: registering event " + topic);
-            if (this.RegisterEventProcessor) this.RegisterEventProcessor(topic);
+            if (this.OnRegister) {
+                this.OnRegister.fire({ 'topic': topicEnt.name, 'topicEntry': topicEnt });
+            }
         }
+        // Remember that it was registered so this topic expects an Unregister()
+        topicEnt.wasRegistered = true;
         return topicEnt;
     };
-    RegisterEvent(eventProcessor) {
-        this.RegisterEventProcessor = eventProcessor;
-    }
 
     // Unregister a topic.
     // @ts-ignore
     Unregister(topicEntry, topic) {
         // cannot unregister a topic yet
         GP.DebugLog("Eventing.unregister: unregistering event " + topicEntry.topic);
-        if (this.UnregisterEventProcessor) this.UnregisterEventProcessor(topic);
+        this.OnUnregister.fire({ 'topic': topicEntry.name, 'topicEntry': topicEntry });
     };
-    UnregisterEvent(eventProcessor) {
-        this.UnregisterEventProcessor = eventProcessor;
-    }
 
     // An event happened for a topic.
     // Fire the event processors and pass 'params' to all subscribers.
+    // This is a convience function if the caller doesn't have a handle to
+    //    the topic entry.
+    // If given a topic name, this will find the topic entry then do the fire() on it.
+    // This also takes a TopicEntry for convenience.
     Fire(topicEntryOrTopic, params) {
         let topicEntry = topicEntryOrTopic;
-        if (typeof(topicEntryOrTopic) == 'string') {
+        if (typeof(topicEntryOrTopic) === 'string') {
             topicEntry = this.FindTopic(topicEntryOrTopic);
         }
-        this.numEventsFired++;
         if (topicEntry && topicEntry.topic) {
             topicEntry.fire(params);
-            if (this.FireEventProcessor) this.FireEventProcessor(topicEntry.topic, params);
         }
     };
-    FireEvent(eventProcessor) {
-        this.FireEventProcessor = eventProcessor;
-    }
 
     // Return a TopicEntry for the given topic name.
     // Return undefined if not found.
@@ -214,6 +236,7 @@ export class Eventing extends BItem {
     RegisteredTopics() {
         return this.topics.keys();
     }
+    // Return all the TopicEntry's
     RegisteredTopicEntries() {
         return this.topics.values();
     }

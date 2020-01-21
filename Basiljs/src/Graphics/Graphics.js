@@ -105,6 +105,8 @@ export class Graphics extends BItem {
         // Graphics generate a bunch of events so people can display stuff
         this._generateCameraEvents();
         this._generateRendererStatEvents();
+        // This is disabled until someone needs it
+        // this.eventEachFrame = this.events.Register('display.eachFrame', 'Graphics');
 
         // Set up the BItem environment.
         // The Renderer is just a BItem.
@@ -159,7 +161,7 @@ export class Graphics extends BItem {
                 this.cameraControl.update();
             }
             if (this.eventEachFrame) {
-                this.events.Fire(this.eventEachFrame, {});
+                this.eventEachFrame.fire({});
             }
             this._doAnimation(this.lastFrameDelta);
             if (this.throttleFPS != 0) {
@@ -642,7 +644,7 @@ export class Graphics extends BItem {
                         'position': this.camera.position.clone(),
                         'rotation': this.camera.rotation.clone()
                     };
-                    this.events.Fire(this.eventCameraInfo, camInfo);
+                    this.eventCameraInfo.fire(camInfo);
                     this.eventCameraInfo.prevCamPosition = newPos;
                 }
             }
@@ -659,7 +661,7 @@ export class Graphics extends BItem {
                     // not general, but, for the moment, just return the WebGL info
                     var dispInfo = this.renderer.info;
                     dispInfo.render.fps = this.fps;
-                    this.events.Fire(this.eventDisplayInfo, dispInfo);
+                    this.eventDisplayInfo.fire(dispInfo);
                 }
             }.bind(this)
         );
