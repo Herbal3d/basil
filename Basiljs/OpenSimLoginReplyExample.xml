@@ -1,0 +1,437 @@
+<methodResponse>
+<params>
+<param>
+<value>
+<struct>
+<member> <name>agent_id </name> <value> <string>b0f86c7e-957b-4fe2-b3fa-e9e263ca6109 </string> </value> </member>
+<member> <name>session_id </name> <value> <string>4ef91d86-ee15-4537-ba89-8828269a3095 </string> </value> </member>
+<member> <name>secure_session_id </name> <value> <string>59873449-12b5-44b1-9120-a143feca332b </string> </value> </member>
+<member> <name>sim_ip </name> <value> <string>192.168.86.41 </string> </value> </member>
+<member> <name>sim_port </name> <value> <i4>9000 </i4> </value> </member>
+<member> <name>http_port </name> <value> <i4>0 </i4> </value> </member>
+<member> <name>circuit_code </name> <value> <i4>1386234253 </i4> </value> </member>
+<member> <name>seed_capability </name> <value> <string>http://192.168.86.41:9000/CAPS/cff7c94e-56bc-4736-b7c6-916f21ff7feb0000/ </string> </value> </member>
+
+<member> <name>first_name </name> <value> <string>Robert </string> </value> </member>
+<member> <name>last_name </name> <value> <string>Adams </string> </value> </member>
+<member> <name>message </name> <value> <string>Welcome, Avatar!  </string> </value> </member>
+
+<member> <name>region_x </name> <value> <i4>284416 </i4> </value> </member>
+<member> <name>region_y </name> <value> <i4>284416 </i4> </value> </member>
+<member> <name>region_size_x </name> <value> <i4>256 </i4> </value> </member>
+<member> <name>region_size_y </name> <value> <i4>256 </i4> </value> </member>
+<member> <name>look_at </name> <value> <string>[r-0.6810898,r-0.7322,r0] </string> </value> </member>
+
+<member> <name>agent_access </name> <value> <string>M </string> </value> </member>
+<member> <name>max-agent-groups </name> <value> <i4>42 </i4> </value> </member>
+<member> <name>start_location </name> <value> <string>last </string> </value> </member>
+<member> <name>login </name> <value> <string>true </string> </value> </member>
+<member> <name>seconds_since_epoch </name> <value> <i4>1568743101 </i4> </value> </member>
+<member> <name>map-server-url </name> <value> <string>http://127.0.0.1:8002/ </string> </value> </member>
+<member> <name>real_id </name> <value> <string>00000000-0000-0000-0000-000000000000 </string> </value> </member>
+<member> <name>agent_access_max </name> <value> <string>A </string> </value> </member>
+<member> <name>buddy-list </name> <value> <array> <data /> </array> </value> </member>
+<member> <name>home </name> <value> <string>{'region_handle':[r256000,r256000], 'position':[r0,r0,r0], 'look_at':[r0,r0,r0]} </string> </value> </member>
+<member> <name>event_notifications </name> <value> <array> <data /> </array> </value> </member>
+
+<member> <name>login-flags </name> <value> <array> <data> <value> <struct>
+    <member> <name>ever_logged_in </name> <value> <string>Y </string> </value> </member>
+    <member> <name>stipend_since_login </name> <value> <string>N </string> </value> </member>
+    <member> <name>gendered </name> <value> <string>Y </string> </value> </member>
+    <member> <name>daylight_savings </name> <value> <string>Y </string> </value> </member>
+    </struct> </value> </data> </array> </value> </member>
+<member> <name>initial-outfit </name> <value> <array> <data> <value> <struct>
+        <member> <name>folder_name </name> <value> <string>Nightclub Female </string> </value> </member>
+        <member> <name>gender </name> <value> <string>female </string> </value> </member>
+</struct> </value> </data> </array> </value> </member>
+
+<member> <name>gestures </name> <value> <array> <data /> </array> </value> </member>
+
+
+<member> <name>inventory-skeleton </name> <value> <array> <data> <value> <struct>
+    <member> <name>name </name> <value> <string>Textures </string> </value> </member>
+    <member> <name>version </name> <value> <i4>3 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>060b70f3-63b7-47ac-ab1a-7976150d4f31 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>0 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Landmarks </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>07a544a5-1c17-4a83-8b52-e7316e3c2c8d </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>3 </i4>
+    </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>My Outfits </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>0b700fb9-1ce3-65eb-9080-2e9d79a83fbf </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>48 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Body Parts </string> </value> </member>
+    <member> <name>version </name> <value> <i4>5 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>10f3f5d5-836e-499a-af8d-d0be8e57b4a9 </string>
+    </value> </member>
+    <member> <name>type_default </name> <value> <i4>13 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Favorites </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>1c172c89-a32f-4ccf-819c-25aeb2215fe9 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>23 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Sounds </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>1ef210ed-16cb-4600-9456-022ee1f07713 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Photo Album </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>26834470-dcd2-49fb-9c11-d107064c1dfd </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>15 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Calling Cards </string> </value> </member>
+    <member> <name>version </name> <value> <i4>3 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>477dc1e0-0ec1-4ef9-8f17-4b99b7339f06 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>2 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>#Firestorm </string> </value> </member>
+    <member> <name>version </name> <value> <i4>3 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>50222783-a733-c1bb-3fc4-655617accae0 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>-1 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Objects </string> </value> </member>
+    <member> <name>version </name> <value> <i4>16 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>52bc6ac6-b96d-447b-bb7a-0be27557edfe </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>6 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Received Items </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>672c69d3-d990-aaed-da14-e61a874a0d16 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>50 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Lost And Found </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>7d41da5c-d368-4462-9318-09292bf22008 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>16 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Gestures </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>809ff563-53e5-4031-9b22-b8ad8ddaad1f </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>21 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>#AO </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>86ebe822-e88d-d977-5e52-9c3f528ba790 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>-1 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>50222783-a733-c1bb-3fc4-655617accae0 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>#LSL Bridge </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>8d6ab50d-5d34-6a07-ff49-187040109a38 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>-1 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>50222783-a733-c1bb-3fc4-655617accae0 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Notecards </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>9258883f-5cac-4503-be59-46a9dde71d09 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>7 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Animations </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>b54238b8-e5a2-4cd5-85d0-fac31eca3239 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>20 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>My Inventory </string> </value> </member>
+    <member> <name>version </name> <value> <i4>20 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>8 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000000-0000-0000-0000-000000000000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>All </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>e088c6e6-58c6-4f67-a523-b231c9fe5609 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>2 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>fb3d65bb-9754-44d7-a226-3c9de508e430 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Current Outfit </string> </value> </member>
+    <member> <name>version </name> <value> <i4>9 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>e19ea540-8b11-46ab-9cba-5304914fd10d </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>46 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Clothing </string> </value> </member>
+    <member> <name>version </name> <value> <i4>3 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>edaa72fc-3379-44b1-abe4-ad68ad158c3d </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>5 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Scripts </string> </value> </member>
+    <member> <name>version </name> <value> <i4>5 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>f362c7fd-d2de-4bf3-8b55-277d7778d42f </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Friends </string> </value> </member>
+    <member> <name>version </name> <value> <i4>2 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>fb3d65bb-9754-44d7-a226-3c9de508e430 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>2 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>477dc1e0-0ec1-4ef9-8f17-4b99b7339f06 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Trash </string> </value> </member>
+    <member> <name>version </name> <value> <i4>26 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>fb63bf71-c381-4c87-85e9-421913db78ed </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>14 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+    </data> </array>
+    </value>
+</member>
+
+<member> <name>inventory-lib-root </name> <value> <array> <data>
+    <value> <struct>
+    <member> <name>folder_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+</data> </array> </value> </member>
+
+<member> <name>global-textures </name> <value> <array> <data> <value> <struct>
+    <member> <name>sun_texture_id </name> <value> <string>cce0f112-878f-4586-a2e2-a8f104bba271 </string> </value> </member>
+    <member> <name>cloud_texture_id </name> <value> <string>dc4b9f0b-d008-45c6-96a4-01dd947ac621 </string> </value> </member>
+    <member> <name>moon_texture_id </name> <value> <string>ec4b9f0b-d008-45c6-96a4-01dd947ac621 </string> </value> </member>
+</struct> </value> </data> </array> </value> </member>
+
+<member> <name>inventory-skel-lib </name> <value> <array> <data>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>OpenSim Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>8 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000000-0000-0000-0000-000000000000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Animations Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>f0908f10-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>20 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>BodyParts Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>d499e5e0-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>13 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Clothing Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>b75056e0-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>5 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Gestures Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>8e1e3a30-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>21 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Landmarks Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>6bcd48e0-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>3 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Notecards Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>33cbd240-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>7 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Objects Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>1576c6b0-b9bf-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>6 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Photos Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>cf7e2db0-b9be-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>15 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Scripts Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Sounds Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>c1284980-b9be-11dc-95ff-0800200c9a66 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>Texture Library </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>00000112-000f-0000-0000-000100bba001 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>0 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>00000112-000f-0000-0000-000100bba000 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>A </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba003 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>B </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba004 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>R </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba017 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>S </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba018 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>OpenSim Specific Scripts </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>284858c8-9391-6bf1-ddf5-b936f73de853 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>.Kan-ED Scripts </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba024 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>name </name> <value> <string>.Other testing scripts </string> </value> </member>
+    <member> <name>version </name> <value> <i4>1 </i4> </value> </member>
+    <member> <name>folder_id </name> <value> <string>30000112-000f-0000-0000-000100bba025 </string> </value> </member>
+    <member> <name>type_default </name> <value> <i4>10 </i4> </value> </member>
+    <member> <name>parent_id </name> <value> <string>30000112-000f-0000-0000-000100bba002 </string> </value> </member>
+    </struct> </value>
+</data> </array> </value> </member>
+
+<member> <name>event_categories </name> <value> <array> <data /> </array> </value> </member>
+
+<member> <name>inventory-lib-owner </name> <value> <array> <data>
+<value> <struct>
+    <member> <name>agent_id </name> <value> <string>11111111-1111-0000-0000-000100bba000 </string> </value> </member>
+</struct> </value>
+</data> </array> </value> </member>
+
+<member> <name>classified_categories </name> <value> <array> <data>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Shopping </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>1 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Land Rental </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>2 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Property Rental </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>3 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Special Attraction </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>4 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>New Products </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>5 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Employment </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>6 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Wanted </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>7 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Service </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>8 </i4> </value> </member>
+    </struct> </value>
+    <value> <struct>
+    <member> <name>category_name </name> <value> <string>Personal </string> </value> </member>
+    <member> <name>category_id </name> <value> <i4>9 </i4> </value> </member>
+    </struct> </value>
+</data> </array> </value> </member>
+
+<member> <name>inventory-root </name> <value> <array> <data>
+    <value> <struct>
+    <member> <name>folder_id </name> <value> <string>d14d689b-1c03-41d0-b673-4c5724a6fdf1 </string> </value> </member>
+    </struct> </value>
+</data> </array> </value> </member>
+
+<member> <name>ui-config </name> <value> <array> <data>
+    <value> <struct>
+    <member> <name>allow_first_life </name> <value> <string>Y </string> </value> </member>
+    </struct> </value>
+</data> </array> </value> </member>
+
+
+</struct>
+</value>
+</param>
+</params>
+</methodResponse>
