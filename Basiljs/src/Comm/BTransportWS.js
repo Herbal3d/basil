@@ -35,7 +35,7 @@ export class BTransportWS extends BTransport {
                 this.socket = tempSocket;
                 this.socket.binaryType = 'arraybuffer';
                 this.socket.addEventListener('message', function(event) {
-                    this.messages.push(new Uint8Array(event.data));
+                    this.messages.push(event.data);
                     this.stats.messagesReceived++;
                     this.PushReception();
                 }.bind(this));

@@ -53,6 +53,15 @@ export class BasilServerConnection  extends MsgProcessor {
         processors.set(BasilMessageOps.get('RequestInstancePropertiesReq'), this._ProcRequestInstanceProperties.bind(this));
         processors.set(BasilMessageOps.get('CloseSessionReq'), this._ProcCloseSession.bind(this));
         processors.set(BasilMessageOps.get('MakeConnectionReq'), this._ProcMakeConnection.bind(this));
+
+        processors.set(BasilMessageOps.get('CreateItemReq'), this._ProcCreateItem.bind(this));
+        processors.set(BasilMessageOps.get('DeleteItemReq'), this._ProcDeleteItem.bind(this));
+        processors.set(BasilMessageOps.get('AddAbilityReq'), this._ProcAddAbility.bind(this));
+        processors.set(BasilMessageOps.get('RemoveAbilityReq'), this._ProcRemoveAbility.bind(this));
+        processors.set(BasilMessageOps.get('RequestPropertiesReq'), this._ProcRequestProperties.bind(this));
+        processors.set(BasilMessageOps.get('UpdatePropertiesReq'), this._ProcUpdateProperties.bind(this));
+        processors.set(BasilMessageOps.get('CloseSessionReq'), this._ProcCloseSession.bind(this));
+        processors.set(BasilMessageOps.get('MakeConnectionReq'), this._ProcMakeConnection.bind(this));
         this.RegisterMsgProcess(this.transport, processors);
     }
     Start() {
@@ -65,6 +74,31 @@ export class BasilServerConnection  extends MsgProcessor {
         }
     }
 
+    _ProcCreateItem(req) {
+
+    }
+    _ProcDeleteItem(req) {
+        
+    }
+    _ProcAddAbility(req) {
+        
+    }
+    _ProcRemoveAbility(req) {
+        
+    }
+    _ProcRequestProperties(req) {
+        
+    }
+    _ProcUpdateProperties(req) {
+        
+    }
+    _ProcCloseSession(req) {
+        
+    }
+    _ProcMakeConnection(req) {
+        
+    }
+    // ============================================== OLD
     _ProcIdentifyDisplayableObject(req) {
         // console.log('IdentifyDisplayableObject');
         let ret = { 'op': BasilMessageOps.get('IdentifyDisplayableObjectResp') };

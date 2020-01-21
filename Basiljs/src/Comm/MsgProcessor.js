@@ -31,8 +31,7 @@ class TransportReceiver {
         this.context = pContext;
     }
 
-    Process(pRawMsg) {
-        let msg = BasilMessage.BasilMessage.decode(pRawMsg);
+    Process(msg) {
         if (Config.Debug && Config.Debug.MsgProcessorProcessPrintMsg) {
             GP.DebugLog('MsgProcessor.Process: received: ' + JSONstringify(msg));
         }
@@ -52,11 +51,10 @@ class TransportReceiver {
                     replyContents = processor[0](msg);
                 }
                 catch (e) {
-                    replyContents = {};
+                    replyContents = this.MakeException('Exception processing '
+                                    + BasilMessageOps.get(op) + ': ' + e);
                     replyName = String(BasilMessageOps.get(msg.op)).replace('Req$', 'Resp$');
                     replyContents['op'] = BasilMessageOps.get(replyName);
-                    replyContents['exception'] = this.MakeException('Exception processing '
-                                    + BasilMessageOps.get(op) + ': ' + e);
                 }
             }
             else {
@@ -69,30 +67,23 @@ class TransportReceiver {
         if (replyContents) {
             // There is a response to the message.
             // If the sender didn't supply response bindings, don't send the response.
-            if (msg.response) {
+            if (msg.resp) {
                 // Return the binding that allows the other side to match the response
-                replyContents['response'] = msg.response;
-
-                if (Config.Debug && Config.Debug.VerifyProtocol) {
-                    if (! BasilMessage.verify(replyContents)) {
-                        GP.ErrorLog('MsgProcessor.Process: Verification fail: '
-                                        + JSONstringify(replyContents));
-                    }
-                }
+                replyContents['resp'] = msg.resp;
 
                 if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
                     GP.DebugLog('MsgProcessor.Process: sending response: ' + JSONstringify(replyContents));
                 }
 
-                this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
+                this.transport.Send(replyContents);
             }
         }
     }
 
     MakeException(pReason, pHints) {
-        let except = { 'exception': {} };
-        if (pReason) { except.exception.reason = pReason; }
-        if (pHints) { except.exception.hints = pHints; }
+        let except = { };
+        if (pReason) { except.exception = pReason; }
+        if (pHints) { except.exceptionHints = pHints; }
         return except;
     }
 }
@@ -148,20 +139,12 @@ export class MsgProcessor extends BItem {
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
     SendAndPromiseResponse(pMsg) {
+        // Add code to message specifying we want a response and the response id
         let responseSession = RandomIdentifier();
-        pMsg['response'] = {
-            'responseSession': responseSession
-        };
-        if (Config.Debug && Config.Debug.VerifyProtocol) {
-            if (! BasilMessage.verify(pMsg)) {
-                GP.ErrorLog('MsgProcessor.SendAndPromiseResponse: verification fail: '
-                            + JSONstringify(pMsg));
-            }
-        }
+        pMsg['resp'] = responseSession;
         if (Config.Debug && Config.Debug.SendAndPromisePrintMsg) {
             GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
         }
-        let emsg = BasilMessage.BasilMessage.encode(pMsg).finish();
         // Return a promise and pass the 'resolve' function to the response message processor
         return new Promise( function(resolve,reject) {
             this.RPCSessionCallback[responseSession] = {
@@ -170,13 +153,12 @@ export class MsgProcessor extends BItem {
                 'reject': reject,
                 'rawMessage': pMsg
             };
-            this.transport.Send(emsg);
+            this.transport.Send(pMsg);
         }.bind(this));
     };
 
     // Easy, just send the message and don't expect any response
     SendMessage(pMsg) {
-        let emsg = BasilMessage.BasilMessage.encode(pMsg).finish();
         this.transport.Send(emsg);
     }
 
@@ -185,8 +167,8 @@ export class MsgProcessor extends BItem {
         if (Config.Debug && Config.Debug.HandleResponsePrintMsg) {
             GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSONstringify(responseMsg));
         }
-        if (responseMsg.response && responseMsg.response.responseSession) {
-            let sessionIndex = responseMsg.response.responseSession;
+        if (responseMsg.resp) {
+            let sessionIndex = responseMsg.resp;
             let session = this.RPCSessionCallback[sessionIndex];
             if (session) {
                 this.RPCSessionCallback.delete(sessionIndex);
@@ -217,8 +199,8 @@ export class MsgProcessor extends BItem {
     // Create an exception object
     MakeException(reason, hints) {
         let except = {};
-        if (reason) { except.reason = reason; }
-        if (hints) { except.hints = hints; }
+        if (reason) { except.exception = reason; }
+        if (hints) { except.exceptionHints = hints; }
         return except;
     };
 
@@ -237,13 +219,4 @@ export class MsgProcessor extends BItem {
         });
         return list;
     };
-
-    // Given a token string, build a Basil message auth structure
-    BuildAuth(token) {
-        return {
-            'accessProperties' : {
-                'auth': token
-            }
-        };
-    }
 }

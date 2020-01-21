@@ -15,7 +15,7 @@
 import GP from 'GP';
 
 import { BTransport } from './BTransport.js';
-import { BasilServer as BasilServerMsgs } from '../jslibs/BasilServerMessages.js';
+import { BasilMessageOps } from './BasilMessageOps.js';
 
 // TransportTest uses some global variables to keep track of running tests
 GP.TransportTestsRunning = [];
@@ -55,14 +55,15 @@ export class BTransportTest extends BTransport {
     static ProcessAliveInterval() {
         for (let test of GP.TransportTestsRunning) {
             let bmsg = {
-                'AliveCheckReqMsg': {
+                'resp': RandomIdentifier(),
+                'op': BasilMessageOps.get('AliveCheckReq'),
+                'props': {
                     'time': Date.now(),
                     'sequenceNum': test.aliveSequenceNum++
                 }
             }
             // GP.DebugLog('TransportTest: creating msg: ' + JSON.stringify(bmsg));
-            let bdata = BasilServerMsgs.BasilServerMessage.encode(bmsg).finish();
-            test.Send(bdata, test);
+            test.Send(bmsg);
         }
     }
     // Static function called from timeReceived
