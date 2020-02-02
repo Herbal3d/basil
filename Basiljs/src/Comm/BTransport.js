@@ -11,12 +11,12 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 
 import { BItem, BItemType } from '../Items/BItem.js';
 import { BException } from '../BException.js';
-import { CombineParameters, CreateUniqueId } from '../Utilities.js';
+import { CombineParameters, CreateUniqueId, JSONstringify } from '../Utilities.js';
 
 // Template for transport implmentations.
 export class BTransport extends BItem {
@@ -27,12 +27,12 @@ export class BTransport extends BItem {
             'initialSequenceNumber': 111,
             'initialAliveSequenceNumber': 333
         });
-        if (typeof params.transportid === 'undefined') {
+        if (typeof(params.transportId) === 'undefined') {
             // Really need a unique Id for every instance of transport
-            params.transportid = CreateUniqueId('transport', 'default');
+            params.transportId = CreateUniqueId('transport', 'default');
         }
-        super(params.transportid, params.transportauth, BItemType.TRANSPORT);
-        this.layer = Config.layers ? Config.layers.comm : 'org.basil.b.layer.comm';
+        super(params.transportId, params.transportauth, BItemType.TRANSPORT);
+        this.layer = (Config.layers && Config.layers.comm) ? Config.layers.comm : 'org.basil.b.layer.comm';
         this.params = params;
         this.messages = [];
         this.stats = {};
@@ -43,28 +43,28 @@ export class BTransport extends BItem {
     
         // The properties that can be read as a BItem
         super.DefineProperties( {
-            'MessagesSent': { 'get': function() { return this.stats.messagesSent; }.bind(this) },
-            'MessagesReceived': { 'get': function() { return this.stats.messagesReceived; }.bind(this) },
-            'Stats': { 'get': function() { return this.stats; }.bind(this) },
-            'QueueSize': { 'get': function() { return this.messages.length; }.bind(this) }
+            'Transport.MessagesSent': { 'get': function() { return this.stats.messagesSent; }.bind(this) },
+            'Transport.MessagesReceived': { 'get': function() { return this.stats.messagesReceived; }.bind(this) },
+            'Transport.Stats': { 'get': function() { return this.stats; }.bind(this) },
+            'Transport.QueueSize': { 'get': function() { return this.messages.length; }.bind(this) }
         } );
-    }
+    };
 
     Close() {
-    }
+    };
 
     // Send the data. Places message in output queue
     Send(data, tcontext) {
         GP.ErrorLog('BTransport: call of undefined Send()');
         throw new BException('BTransport: call of undefined Send()');
-    }
+    };
 
     // Set a callback object for recevieving messages.
     // The passed object must have a 'procMessage' method
     SetReceiveCallback(callback) {
         GP.ErrorLog('BTransport: call of undefined SetReceiveCallback()');
         throw new BException('BTransport: call of undefined SetReceiveCallback()');
-    }
+    };
 
     // Check the input queue for messages and, if present, process one.
     // If 'tthis' is passed, it is used as the BTransport to push reception for.
@@ -80,14 +80,14 @@ export class BTransport extends BItem {
             }
             else {
                 GP.ErrorLog('BTransport.PushReception: msg received but no message processor');
-            }
-        }
-    }
+            };
+        };
+    };
     // Return 'true' is there is data in the input queue
     get isDataAvailable() {
         return false;
-    }
+    };
     get isConnected() {
         return false;
-    }
+    };
 }

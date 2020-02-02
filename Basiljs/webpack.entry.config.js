@@ -19,6 +19,8 @@ module.exports = {
         'xConfig': path.resolve(__dirname, 'src/config.js'),
         'xBException': path.resolve(__dirname, 'src/BException.js'),
         'xUtilities': path.resolve(__dirname, 'src/Utilities.js'),
+        // The Globals module can have only one name so there is only one instance
+        'GLOBALS': path.resolve(__dirname, 'src/Globals.js')
     },
     extensions: [ '.js', '.jsx' ]
   },
@@ -47,10 +49,6 @@ module.exports = {
       filename: "[name].css"
     })
   ],
-  externals: {
-      // Hack for creating the GP global variable
-      'GP': '{}'
-  },
   module: {
     rules: [
       {

@@ -20,16 +20,14 @@ module.exports = {
     // Aliases so individual files don't reference the filenames
     alias: {
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
-        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js')
+        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
+        // The Globals module can have only one name so there is only one instance
+        'GLOBALS': path.resolve(__dirname, 'src/Globals.js')
     },
     extensions: [ '.js', '.jsx' ]
   },
   plugins: [
   ],
-  externals: {
-      // Hack for creating the GP global variable
-      'GP': '{}'
-  },
   module: {
     rules: [
         {

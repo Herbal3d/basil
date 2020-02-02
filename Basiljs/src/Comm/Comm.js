@@ -11,18 +11,13 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 
 import { BItem, BItemType } from '../Items/BItem.js';
+import { RegisterAbilities } from '../Items/AbilityRegistration.js';
 
-import { SpaceServerConnection } from './SpaceServer.js';
-import { SpaceServerClientConnection } from './SpaceServerClient.js';
-import { BasilServerConnection } from './BasilServer.js';
-import { BasilClientConnection } from './BasilClient.js';
-import { AliveCheckConnection } from './AliveCheckMsgs.js';
-import { PestoClientConnection } from './PestoClient.js';
-
+import { BasilComm } from './BasilComm.js';
 import { BuildBasilMessageOps } from './BasilMessageOps.js';
 
 import { BTransportWW } from './BTransportWW.js';
@@ -42,6 +37,10 @@ export class Comm extends BItem {
 
         // Build the table of ops to names and via versa
         BuildBasilMessageOps();
+
+        // Do registration of the ability constructors.
+        // Kinda of a kludge but had problems with WebPack and re-invocation of Globals.
+        RegisterAbilities();
     }
 
     Start() {
@@ -117,26 +116,37 @@ export class Comm extends BItem {
     // Returns a Promise that has a handle to the created processor or undefined.
     ConnectService(pTransport, pParams) {
         let params = CombineParameters(undefined, pParams, {
-            'service': 'SpaceServerClient',     // or 'Pesto'
+            'service': 'BasilComm',     // or 'Pesto'
             'serviceId': undefined,     // if not passed, unique one created
             'pestoId': undefined,       // if not passed, unique one created
         });
         return new Promise(function(resolve, reject) {
             let svc = undefined;
             let serviceType = params.service;
+            let errorMsg = '';
             switch (serviceType) {
-                case 'SpaceServer':
-                    // This service is not used and is here for development and debugging
-                    svc = new SpaceServerConnection(pTransport, params);
-                    svc.basilSpace = new BasilClientConnection(pTransport, params);
-                    svc.aliveCheck = new AliveCheckConnection(pTransport, params);
-                    svc.aliveCheck.Start();
-                    svc.basilSpace.Start();
+                case 'BasilComm':
+                    svc = new BasilComm(pTransport, params);
                     svc.Start();
-                    GP.DebugLog('Comm.Connect: created SpaceServerConnection. Id=' + svc.id);
+                    GP.DebugLog('Comm.Connect: created BasilComm. Id=' + svc.id);
                     resolve(svc);
                     break;
+                case 'SpaceServer':
+                    errorMsg = 'Comm.Connect: SOMEONE CALLED for SpaceServer';
+                    GP.ErrorLog(errorMsg)
+                    reject(errorMsg)
+                    break;
                 case 'SpaceServerClient':
+                    errorMsg = 'Comm.Connect: SOMEONE CALLED for SpaceServerClient!!';
+                    GP.ErrorLog(errorMsg)
+                    reject(errorMsg)
+                    break;
+                case 'Pesto':
+                    errorMsg = 'Comm.Connect: SOMEONE CALLED for Pesto!!';
+                    GP.ErrorLog(errorMsg)
+                    reject(errorMsg)
+                    break;
+                    /*
                     svc = new SpaceServerClientConnection(pTransport, params);
                     // A connection to the space server also lets the server talk to Basil
                     svc.basilClient = new BasilServerConnection(pTransport, params);
@@ -147,7 +157,8 @@ export class Comm extends BItem {
                     GP.DebugLog('Comm.Connect: created SpaceServerClientConnection. Id=' + svc.id);
                     resolve(svc);
                     break;
-              case 'Pesto':
+                case 'Pesto':
+                    GP.ErrorLog('Comm.Connect: SOMEONE CALLED for Pesto!!');
                     svc = new PestoClientConnection(pTransport, params);
                     svc.basilClient = new BasilServerConnection(pTransport, params);
                     svc.aliveCheck = new AliveCheckConnection(pTransport, params);
@@ -157,8 +168,9 @@ export class Comm extends BItem {
                     GP.DebugLog('Comm.Connect: created PestoClientConnection. Id=' + svc.id);
                     resolve(svc);
                     break;
-              default:
-                    let errorMsg = 'Comm.Connect: service type unknown: ' + JSONstringify(params.service);
+                    */
+                default:
+                    errorMsg = 'Comm.Connect: service type unknown: ' + JSONstringify(params.service);
                     GP.ErrorLog(errorMsg)
                     reject(errorMsg)
             }

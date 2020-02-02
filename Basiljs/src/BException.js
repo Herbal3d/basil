@@ -14,7 +14,7 @@
 // Global exception thingy
 export class BException {
     constructor(msg, type) {
-        this.msg = msg;
+        this.message = msg;
         if (type !== undefined) {
             this.type = type;
         }

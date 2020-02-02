@@ -11,29 +11,24 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP, GetNextUniqueNum, UniqueIdBasename } from 'GLOBALS';
 import Config from './config.js';
 
 // Create a globally unique Id based on the service and type passed.
 // If 'type' is undefined, it is not included in the name.
 export function CreateUniqueId(service, type) {
-    if (GP.UniqueIdCount === undefined) {
-        GP.UniqueIdCount = 1;
-        GP.UniqueIdBasename = '.b.basil.org';
-        // Note that basename begins with a dot
-    }
-    return String(GP.UniqueIdCount++)
+    return String(GetNextUniqueNum())
         + (type ? ( '.' + type ) : '')
         + '.'
         + service
-        + GP.UniqueIdBasename
-  /* Original form that put number at the end
+        + UniqueIdBasename;
+    /* Original form that put number at the end
     return GP.UniqueIdBasename
                 + service
                 + (type ? ( '.' + type ) : '')
                 + '.'
-                + String(GP.UniqueIdCount++);
-  */
+                + String(UniqueIdCount++);
+    */
 };
 
 // Create a locally unique instance identifier.
@@ -106,7 +101,7 @@ export function CombineParameters(configParams, passedParams, requiredParams) {
 // So, note that this DOES NOT RETURN A LEGAL JSON STRING.
 //    USE THIS FUNCTION FOR DEBUG OUTPUT ONLY!
 export function JSONstringify(obj) {
-    return JSON.stringify(obj, (k,v) => { return v === undefined ? null : v; })
+    return JSON.stringify(obj, (k,v) => { return typeof(v) === 'undefined' ? 'undefined' : v; })
 }
 
 // Parse and return three-tuple.
@@ -155,4 +150,34 @@ export function ParseFourTuple(tuple) {
     }
     // consider doing some validity checking (length, type, ...)
     return val
+}
+
+// Figure out what is being passed and turn it into an array of three numbers.
+// Usually used to create a Vector3.
+export function MakeArray3(pVal) {
+    if (Array.isArray(pVal)) {
+        if (pVal.length > 2) {
+            return [ Number(pVal[0]), Number(pVal[1]), Number(pVal[2]) ];
+        };
+    };
+    console.log('MakeArray3: typeof(pVal)=' + typeof(pVal) + ', contents=' + JSONstringify(pVal));
+    if (typeof(pVal) === 'object') {
+        return [ Number(pVal.x), Number(pVal.y), Number(pVal.z) ];
+    }
+    // This shouldn't happen but return a value that is distinctive
+    return [ -1, -2, -3 ];
+}
+// Figure out what is being passed and turn it into an array of four numbers.
+// Usually used to create a Vector4 or a Quaternion.
+export function MakeArray4(pVal) {
+    if (Array.isArray(pVal)) {
+        if (pVal.length > 3) {
+            return [ Number(pVal[0]), Number(pVal[1]), Number(pVal[2]), Number(pVal[3]) ];
+        };
+    };
+    if (typeof(pVal) === 'object') {
+        return [ Number(pVal.x), Number(pVal.y), Number(pVal.z), Number(pVal.w) ];
+    }
+    // This shouldn't happen but return a value that is distinctive
+    return [ -1, -2, -3, -4 ];
 }

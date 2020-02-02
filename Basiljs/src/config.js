@@ -125,8 +125,8 @@ export default {
     },
     // Connection and debug information when running the WebWorker test
     'WWTester': {
-        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
-        'GenerateAliveCheck': true, // whether to generate AlvieCheck messages
+        'LogToConsole': true,       // Log to console. Otherwise, use msg to debug BItem
+        'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
         'comm': {
@@ -144,30 +144,15 @@ export default {
             }
         }
     },
-    // Connection information when running WebSocket tester
-    'WSTester': {
-        'comm': {
-            'testmode': true,
-            'transport': 'WS',
-            'transportURL': 'ws://192.168.86.41:11440/',
-            'service': 'SpaceServerClient',
-            'TestAsset': {
-                // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                // 'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
-                'url': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
-                'loaderType': 'GLTF'
-            }
-        }
-    },
     // Various flags that turn on/off debug logging, etc
     'Debug': {
       'CollectDebug': true,                 // output debugging info
-      'DebugLogToConsole': false,           // output debug message to console rather than debug window
+      'DebugLogToConsole': true,           // output debug message to console rather than debug window
       'VerifyProtocol': false,              // call 'verify' on created protocol messages
-      'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
-      'MsgProcessorResponsePrintMsg': false, // DebugLog each message sent as a response by MsgProcessor
-      'SendAndPromisePrintMsg': false,      // DebugLog each message sent with expected response
-      'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
+      'MsgProcessorProcessPrintMsg': true, // DebugLog each message processed by MsgProcessor
+      'MsgProcessorResponsePrintMsg': true, // DebugLog each message sent as a response by MsgProcessor
+      'SendAndPromisePrintMsg': true,      // DebugLog each message sent with expected response
+      'HandleResponsePrintMsg': true,      // DebugLog each message handled as a response
       'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
     },
     // Information for loading multiple Atropia regions with filename and displacement.

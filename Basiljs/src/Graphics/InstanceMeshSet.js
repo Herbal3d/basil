@@ -11,7 +11,7 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
 

@@ -13,18 +13,18 @@
 /* global GP */ // debugging global context (ESlint)
 
 // Global parameters and variables. "GP.variable"
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 
 import Config from './config.js';
 import { Comm } from './Comm/Comm.js';
-import { BasilClientConnection } from './Comm/BasilClient.js';
 import { BTransportWW } from './Comm/BTransportWW.js';
+import { BasilComm } from './Comm/BasilComm.js';
+import { AbilityDisplayable } from './Items/AbilityDisplayable.js';
+import { AbilityInstance } from './Items/AbilityInstance.js';
 
-import { BuildBasilMessageOps } from './Comm/BasilMessageOps.js';
-
-import { BasilType } from './jslibs/BasilServerMessages.js'
-import { SpaceServerConnection } from './Comm/SpaceServer.js';
-import { AliveCheckConnection } from './Comm/AliveCheckMsgs.js';
+import { BasilMessage } from './jslibs/BasilMessages.js'
+import { PosInfo } from './Comm/BasilMessageOps.js';
+import { JSONstringify } from './Utilities.js';
 
 GP.Config = Config;
 
@@ -42,11 +42,7 @@ GP.wwTransport = new BTransportWW(parms);
 
 GP.Ready = true;
 
-GP.client = new BasilClientConnection(GP.wwTransport, {} );
-GP.spaceServer = new SpaceServerConnection(GP.wwTransport, {});
-GP.aliveCheck = new AliveCheckConnection(GP.wwTransport, {});
-GP.aliveCheck.Start();
-GP.spaceServer.Start();
+GP.client = new BasilComm(GP.wwTransport, { 'AsServer': true } );
 GP.client.Start();
 
 // Once client is created and connected, debug messsages can be sent to the
@@ -86,7 +82,7 @@ else {
 
 // Start AliveCheck polling if configured
 if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
-    GP.aliveCheck.WhenReady(10000)
+    GP.client.WhenReady(10000)
     .then( alive => {
         let pollMS = Config.WWTester.AliveCheckPollMS
                     ? Config.WWTester.AliveCheckPollMS : 10000;
@@ -109,33 +105,93 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
 
 // Wait for the SpaceServer to come ready (OpenSession from client)
 //    then send test data to the viewer.
-GP.DebugLog('Starting SpaceSErver');
-GP.spaceServer.WhenReady(10000)
+GP.DebugLog('Starting SpaceServer');
+GP.client.WhenReady(10000)
 .then( sServer => {
-    let props = GP.spaceServer.openSessionProperties;
+    let props = GP.client.openSessionProperties;
     let auth = undefined; // no authentication at the moment
     let anAsset = {
-        // 'id': { 'id': someID }, // not needed for creation
-        'displayInfo': {
-            'displayableType': 'meshset',
-            'asset': {
-                'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                'loaderType': 'GLTF'
-            }
+        'displayableType': 'meshset',
+        'props': {
+            'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+            'loaderType': 'GLTF'
         }
     };
     // Add the URL from the configuration file if specified
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
-        anAsset.displayInfo.asset = Config.WWTester.comm.TestAsset;
+        anAsset.props = Config.WWTester.comm.TestAsset;
     }
     if (props && props.TestURL) {
-        anAsset.displayInfo.asset.url = props.TestURL;
+        anAsset.props.url = props.TestURL;
         if (props.TestLoaderType) {
-            anAsset.displayInfo.asset.loaderType = props.TestLoaderType;
+            anAsset.props.loaderType = props.TestLoaderType;
         }
     }
-    GP.DebugLog('Asset spec for IdentifyDisplayableObject' + JSON.stringify(anAsset));
+    GP.DebugLog('Asset spec for CreateItem' + JSON.stringify(anAsset));
 
+    let displayableItemId = undefined;
+    let displayableItemIdN = undefined;
+    let instanceItemId = undefined;
+    let instanceItemIdN = undefined;
+
+    // Create the initial displayable item
+    GP.client.CreateItem(auth, props, [
+            new AbilityDisplayable().SetFromValues(anAsset.displayableType, anAsset.props)
+        ])
+    .then( resp => {
+        if (resp.Exception) {
+            throw new Exception('failed creation of displayable:' + resp.Exception);
+        };
+        displayableItemId = resp.IProps.ItemId;
+        displayableItemIdN = resp.IProps.ItemIdN;
+        GP.DebugLog('Created displayable. Id = ' + displayableItemId);
+
+        // Create a displayed instance of the displayable
+        let posInfo = PosInfo(
+                    { x: 0, y: 0, z: 0 }, 
+                    // { x: 100, y: 101, z: 102 },
+                    { x: 0, y: 0, z: 0, w: 1 },
+                    BasilMessage.CoordSystem.WGS86,
+                    BasilMessage.RotationSystem.WORLDR);
+        return GP.client.CreateItem(auth, props, [
+            new AbilityInstance().SetFromValues(displayableItemId, posInfo)
+        ]);
+    })
+    .then ( resp => {
+        if (resp.Exception) {
+            throw new Exception('failed creation of instance:' + resp.Exception);
+        };
+        instanceItemId = resp.IProps.ItemId;
+        instanceItemIdN = resp.IProps.ItemIdN;
+        GP.DebugLog('Created instance. Id = ' + instanceItemId);
+
+        // Get the properties for the instance
+        return GP.client.RequestProperties(auth, instanceItemId);
+    })
+    .then ( resp => {
+        if (resp.Exception) {
+            throw new Exception('failed fetching properties for instance ' + instanceItemId
+                + ', e=' + e);
+        }
+        GP.DebugLog('Fetched properties for ' + instanceItemId + ':');
+        if (resp.IProps) {
+            Object.keys(resp.IProps).forEach(prop => {
+                GP.DebugLog('    ' + prop + ' => ' + resp.IProps[prop]);
+            });
+        }
+        else {
+            GP.ErrorLog('No properties were returned');
+        };
+    })
+    .catch ( e => {
+        GP.ErrorLog('Test failure');
+        if (displayableItemId) GP.ErrorLog('    Displayable ItemId = ' + displayableItemId);
+        if (instanceItemId) GP.ErrorLog('    Instance ItemId = ' + instanceItemId);
+        GP.ErrorLog('    Error = ' + e);
+
+    });
+
+    /*
     GP.client.IdentifyDisplayableObject(auth, anAsset)
     .then( resp => {
         if (resp.exception) {
@@ -181,5 +237,6 @@ GP.spaceServer.WhenReady(10000)
         }
         // One asset is in the scene
     });
+    */
 
 });

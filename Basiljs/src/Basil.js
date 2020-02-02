@@ -14,7 +14,7 @@
 'use strict';
 
 // Global debugging parameters and variables. "GP.variable"
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from './config.js';
 import { BItem, BItemType, BItemState } from './Items/BItem.js';
 
@@ -28,6 +28,7 @@ import { Graphics } from './Graphics/Graphics.js';
 import { Controls } from './Controls/Controls.js';
 import { Comm } from './Comm/Comm.js';
 import { Auth, CreateToken } from './Auth/Auth.js';
+import { AnAbility } from './Items/Abilities.js';
 
 import { JSONstringify } from './Utilities.js';
 
@@ -189,9 +190,11 @@ let canvas = document.getElementById(Config.page.webGLcanvasId);
 // Create the major component instances (Singletons)
 GP.EV = new Eventing();
 GP.AU = new Auth();
-GP.GR = new Graphics(container, canvas, GP.EV);
-GP.CO = new Controls(GP.EV);
+GP.GR = new Graphics(container, canvas, Eventing.Instance());
+GP.CO = new Controls(Eventing.Instance());
 GP.CM = new Comm();
+// The following is a kludge that gets WebPack to load Globals in correct order
+GP.AB = new AnAbility('XXXX');
 
 // Push the 'Start' button
 GP.AU.Start();
@@ -237,13 +240,13 @@ if (Config.comm && Config.comm.transportURL) {
                 }
                 else {
                     // Successful OpenSession. Collect properties passed back.
-                    if (resp.properties) {
+                    if (resp.IProps) {
                         GP.DebugLog('Basiljs: Session opened to SpaceServer. Params='
-                                    + JSONstringify(resp.properties));
-                        srv.OpenSessionProperties = resp.properties;
-                        srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
-                        srv.SessionKey = resp.SessionKey;
-                        srv.ConnectionKey = resp.ConnectionKey;
+                                    + JSONstringify(resp.IProps));
+                        srv.OpenSessionProperties = resp.IProps;
+                        srv.SetOutgoingAuth(resp.IProps.SessionAuth);
+                        srv.SessionKey = resp.IProps.SessionKey;
+                        srv.ConnectionKey = resp.IProps.ConnectionKey;
                     }
                 }
             })

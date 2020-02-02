@@ -11,12 +11,12 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
-import { BasilMessage } from "../jslibs/BasilServerMessages.js"
+import { BasilMessage } from "../jslibs/BasilMessages.js"
 import { BasilMessageOps } from "./BasilMessageOps.js";
 import { RandomIdentifier, JSONstringify } from '../Utilities.js';
 import { ExpirationNever } from '../Auth/Auth.js';
@@ -37,7 +37,7 @@ class TransportReceiver {
             GP.DebugLog('MsgProcessor.Process: received: ' + JSONstringify(msg));
         }
         let replyContents = undefined;
-        let processor = MsgProcessor.processors.get(this.transport.id).get(msg.op);
+        let processor = MsgProcessor.processors.get(this.transport.id).get(msg.Op);
         if (processor) {
             // The 'processor' specification is either an array consisting of:
             //       [ processorFunction, otherParameters ]
@@ -53,10 +53,10 @@ class TransportReceiver {
                 }
                 catch (e) {
                     replyContents = {};
-                    replyName = String(BasilMessageOps.get(msg.op)).replace('Req$', 'Resp$');
-                    replyContents['op'] = BasilMessageOps.get(replyName);
-                    replyContents['exception'] = this.MakeException('Exception processing '
-                                    + BasilMessageOps.get(op) + ': ' + e);
+                    replyName = String(BasilMessageOps.get(msg.Op)).replace('Req$', 'Resp$');
+                    replyContents['Op'] = BasilMessageOps.get(replyName);
+                    replyContents['Exception'] = 'Exception processing '
+                                    + BasilMessageOps.get(op) + ': ' + e;
                 }
             }
             else {
@@ -65,36 +65,32 @@ class TransportReceiver {
         }
         else {
             GP.ErrorLog('MsgProcessor.Process: Unknown message: ' + JSONstringify(msg));
-        }
+        };
         if (replyContents) {
             // There is a response to the message.
             // If the sender didn't supply response bindings, don't send the response.
-            if (msg.response) {
+            if (msg.ResponseCode) {
                 // Return the binding that allows the other side to match the response
-                replyContents['response'] = msg.response;
+                replyContents['ResponseCode'] = msg.ResponseCode;
+                if (msg.ResponseKey) {
+                    replyContents['ResponseKey'] = msg.ResponseKey
+                }
 
                 if (Config.Debug && Config.Debug.VerifyProtocol) {
                     if (! BasilMessage.verify(replyContents)) {
                         GP.ErrorLog('MsgProcessor.Process: Verification fail: '
                                         + JSONstringify(replyContents));
                     }
-                }
+                };
 
                 if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
                     GP.DebugLog('MsgProcessor.Process: sending response: ' + JSONstringify(replyContents));
-                }
+                };
 
                 this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
-            }
-        }
-    }
-
-    MakeException(pReason, pHints) {
-        let except = { 'exception': {} };
-        if (pReason) { except.exception.reason = pReason; }
-        if (pHints) { except.exception.hints = pHints; }
-        return except;
-    }
+            };
+        };
+    };
 }
 
 export class MsgProcessor extends BItem {
@@ -142,22 +138,20 @@ export class MsgProcessor extends BItem {
         }
         else {
             this.OutgoingAuthExpiration = ExpirationNever;
-        }
-    }
+        };
+    };
 
     // Function that sends the request and returns a Promise for the response.
     // The value returned by the Promise will be the body of the response message.
     SendAndPromiseResponse(pMsg) {
         let responseSession = RandomIdentifier();
-        pMsg['response'] = {
-            'responseSession': responseSession
-        };
+        pMsg['ResponseCode'] = responseSession;
         if (Config.Debug && Config.Debug.VerifyProtocol) {
             if (! BasilMessage.verify(pMsg)) {
                 GP.ErrorLog('MsgProcessor.SendAndPromiseResponse: verification fail: '
                             + JSONstringify(pMsg));
-            }
-        }
+            };
+        };
         if (Config.Debug && Config.Debug.SendAndPromisePrintMsg) {
             GP.DebugLog('MsgProcessor.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
         }
@@ -184,9 +178,9 @@ export class MsgProcessor extends BItem {
     HandleResponse(responseMsg) {
         if (Config.Debug && Config.Debug.HandleResponsePrintMsg) {
             GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSONstringify(responseMsg));
-        }
-        if (responseMsg.response && responseMsg.response.responseSession) {
-            let sessionIndex = responseMsg.response.responseSession;
+        };
+        if (responseMsg.ResponseCode) {
+            let sessionIndex = responseMsg.ResponseCode;
             let session = this.RPCSessionCallback[sessionIndex];
             if (session) {
                 this.RPCSessionCallback.delete(sessionIndex);
@@ -214,36 +208,41 @@ export class MsgProcessor extends BItem {
             GP.ErrorLog(errMsg);
         }
     }
-    // Create an exception object
-    MakeException(reason, hints) {
-        let except = {};
-        if (reason) { except.reason = reason; }
-        if (hints) { except.hints = hints; }
-        return except;
-    };
 
-    // Create a well formed property list from an object. Values must be strings in the output.
+    // Create a well formed property list from an object.
+    // This does a lot of guessing about the values to create the ParamValue
     // Note the check for 'undefined'. Property lists cannot have undefined values.
     CreatePropertyList(obj) {
         let list = {};
         Object.keys(obj).forEach(prop => {
             let val = obj[prop];
-            if (typeof(val) != 'undefined') {
-                if (typeof(val) != 'string') {
-                    val = JSONstringify(val);
+            if (typeof(val) !== 'undefined') {
+                if (typeof(val) == 'string' ) {
+                    list[prop] = val;
                 }
-                list[prop] = val;
-            }
+                else {
+                    list[prop] = JSONstringify(val);
+                };
+            };
         });
         return list;
     };
 
-    // Given a token string, build a Basil message auth structure
-    BuildAuth(token) {
-        return {
-            'accessProperties' : {
-                'auth': token
-            }
-        };
-    }
+    // Given an array of AnAbility instances, return an array of ParamBlock's
+    // If passed 'undefined', return 'undefined'
+    BuildAbilityProps(pAbilities) {
+        if (typeof(pAbilities) === 'undefined'          // if undefined
+                || (! Array.isArray(pAbilities))        //   or if not an array
+                || pAbilities.length == 0)  {           //   or if the array is empty
+            return undefined;                           // return a nothing
+        }
+        let ret = [];
+        pAbilities.forEach( abil => {
+            ret.push( {
+                'Ability': abil.Name,
+                'Props': abil.GetProperties()
+            } );
+        });
+        return ret;
+    };
 }

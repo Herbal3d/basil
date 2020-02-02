@@ -11,7 +11,7 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 import { RandomIdentifier } from '../Utilities.js';
 

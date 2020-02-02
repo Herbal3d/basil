@@ -13,11 +13,11 @@
 'use strict';
 
 // @ts-ignore
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 
 import { BTransport } from './BTransport.js';
-import { CombineParameters } from '../Utilities.js';
+import { CombineParameters, JSONstringify } from '../Utilities.js';
 import { BException } from '../BException.js';
 
 // There are two halfs: the 'service' and the 'worker'.
@@ -26,6 +26,7 @@ export class BTransportWW extends BTransport {
         let params = CombineParameters(Config.comm.TransportWW, parms, {
             'transportURL': undefined   // name of Worker to connect to
         });
+        GP.DebugLog('BTransportWW: params=' + JSONstringify(params));
         super(params);
         this.params = params;
         this.SetLoading();
@@ -33,7 +34,6 @@ export class BTransportWW extends BTransport {
         if (typeof WorkerGlobalScope === 'undefined') {
             // We're the master
             // this.params.transporturl is WebWorker URL to connect to
-            GP.DebugLog('BTransportWW: setting up server');
             this.itemType = 'BTransport.TransportWW.Server';
             try {
                 this.worker = new Worker(this.params.transporturl);
@@ -60,7 +60,6 @@ export class BTransportWW extends BTransport {
         }
         else {
             // We're the worker
-            GP.DebugLog('BTransportWW: setting up worker');
             this.itemType = 'BTransport.TransportWW.Client';
             this.isWorker = true;
             onmessage = function(d) {

@@ -17,7 +17,7 @@
 //      display.cameraInfo
 //      display.info
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from 'xConfig';
 import * as Eventing from 'xEventing';
 

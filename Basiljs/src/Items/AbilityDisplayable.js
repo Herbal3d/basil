@@ -1,0 +1,142 @@
+// Copyright 2020 Robert Adams
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+'use strict';
+
+import { GP } from 'GLOBALS';
+import Config from '../config.js';
+import { BException } from '../BException.js';
+
+import { AnAbility, InitializeProps, GenerateProps, SetViaProps } from './Abilities.js';
+
+export class AbilityDisplayable extends AnAbility {
+  
+    static get NAME() { return 'DISP' };
+
+    constructor() {
+        super(AbilityDisplayable.NAME); // Code used in protocol to specify this ability
+    };
+
+    // Connect me to a BItem and do initialization/loading
+    Link(pParent) {
+        this.parent = pParent;
+        // A kludge that give all Displayables a handle to the Graphics instance.
+        // In the future, there might be multiple graphics engines.
+        this.graphics = GP.GR;
+
+        this.parent.DefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
+
+        this.LoadDisplayableAsset();
+    };
+
+    // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
+    Unlink(pParent) {
+        this.ReleaseResources();
+        this.parent.UndefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
+    };
+
+    SetFromValues(pDisplayType, pProps, pAabb, pId) {
+        SetViaProps(this, 'displaytype', pDisplayType, AbilityDisplayable.PropsToVars);
+        InitializeProps(this, pProps, AbilityDisplayable.PropsToVars);
+        SetViaProps(this, 'aabb', pAabb, AbilityDisplayable.PropsToVars);
+        SetViaProps(this, 'id', pId, AbilityDisplayable.PropsToVars);
+        return this;
+    };
+    // deserialized parameters from Map<string,string>()
+    InitializeWithProperties(pParamBlock) {
+        InitializeProps(this, pParamBlock, AbilityDisplayable.PropsToVars);
+        return this;
+    };
+    // Return properties that define this ability instance as Map<string,string>()
+    GetProperties() {
+        return GenerateProps(this, AbilityDisplayable.PropsToVars);
+    };
+
+    // Do the loading of the underlying asset that is the displayable.
+    // Loading progress is reported in this Ability's state.
+    LoadDisplayableAsset() {
+        let assetInfo = {
+            'url': this.Url,
+            'loaderType': this.LoaderType
+        }
+        this.SetLoading();
+        // GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
+        this.graphics.LoadSimpleAsset(assetInfo)
+        .then(theAsset => {
+            if (this.state == BItemState.LOADING) {
+                // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
+                // GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
+                // 'theAsset' is a list of ThreeJS nodes.
+                // 'representation' is whatever the graphics engine has for this asset
+                this.representation = theAsset;
+                this.SetReady();
+            }
+            else {
+                // The object went out of 'LOADING' while off in graphics.
+                // Leave the new state.
+                this.representation = theAsset; // so it can be freed.
+            };
+        })
+        .catch(err => {
+            this.SetFailed();
+            GP.ErrorLog('DisplayableMeshSet: unable to load asset ' + JSONstringify(displayInfo)
+                      + ', ERROR=' + JSONstringify(err));
+        });
+    };
+
+    ReleaseResources() {
+        if (this.representation) {
+            // release the resources from the graphics engine
+            if (this.graphics) {
+                this.graphics.ReleaseSimpleAsset(this.representation);
+            };
+            this.representation = undefined;
+        };
+    };
+
+
+};
+
+// Mapping of property list names to properties on this instance.
+// See Ability.InitializeProps() and Ability.GenerateProps() for usage.
+// Property name definitions must be loader case.
+// The entries for each property are:
+//          'get', 'set': value get and set operations
+//          'name': named used for the property when exported for the protocol
+//          'propertyName': the name of the BItem property to register for this property
+AbilityDisplayable.PropsToVars = {
+    'id': {
+        get: (obj) => { return obj.Id },
+        set: (obj, val) => { obj.Id = val ;},
+        name: 'Id'
+    },
+    'displaytype': {
+        get: (obj) => { return obj.DisplayType },
+        set: (obj, val) => { obj.DisplayType = val ;},
+        name: 'DisplayType',
+        propertyName: 'Displayable.Type'
+    },
+    'url' : {
+        get: (obj) => { return obj.Url },
+        set: (obj, val) => { obj.Url = val ;},
+        name: 'Url'
+    },
+    'loadertype' : {
+        get: (obj) => { return obj.LoaderType },
+        set: (obj, val) => { obj.LoaderType = val ;},
+        name: 'LoaderType'
+    },
+    'aabb' : {
+        get: (obj) => { return JSON.stringify(obj.Aabb) },
+        set: (obj, val) => { obj.Aabb = JSON.parse(val) ;},
+        name: 'Aabb'
+    } 
+};

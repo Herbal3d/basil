@@ -27,7 +27,9 @@ module.exports = {
         // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
         'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
         // The ThreeJS modules reference things in their build tree
-        '../../../build': path.resolve(__dirname, 'src/jslibs')
+        '../../../build': path.resolve(__dirname, 'src/jslibs'),
+        // The Globals module can have only one name so there is only one instance
+        'GLOBALS': path.resolve(__dirname, 'src/Globals.js')
     },
     extensions: [ '.js', '.jsx', '.json' ]
   },
@@ -35,7 +37,8 @@ module.exports = {
     splitChunks: {
       chunks: 'all'
     },
-    runtimeChunk: false,
+    // runtimeChunk: false,
+    runtimeChunk: 'single',
     // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
     moduleIds: 'hashed'
   },
@@ -62,10 +65,6 @@ module.exports = {
       chunkFilename: "[id].css"
     })
   ],
-  externals: {
-      // Hack for creating the GP global debug variable
-      'GP': '{}'
-  },
   module: {
     rules: [
       {

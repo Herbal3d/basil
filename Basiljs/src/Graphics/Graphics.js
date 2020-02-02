@@ -11,13 +11,12 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
-import { BItem, BItemType, BItemState } from '../Items/BItem.js';
+import { BItem, BItemType } from '../Items/BItem.js';
 
 import { CombineParameters, ParseThreeTuple, JSONstringify } from '../Utilities.js';
 
-import { DisplayableFactory, InstanceFactory } from '../Items/Factories.js';
 import * as Coord from './Coord.js';
 
 // Even though these are not explicilty referenced, this causes webpack to include the libraries.
@@ -28,6 +27,8 @@ import { DRACOLoader } from '../jslibs/DRACOLoader.js';
 import { FBXLoader } from '../jslibs/FBXLoader.js';
 import { OBJLoader } from '../jslibs/OBJLoader.js';
 import { BVHLoader } from '../jslibs/BVHLoader.js';
+
+import { AbilityCamera } from '../Items/AbilityCamera.js';
 
 // import { InstancedMesh } from 'three-instanced-mesh';
 require ( 'three-instanced-mesh')(THREE);
@@ -130,6 +131,7 @@ export class Graphics extends BItem {
 
         // Graphics creates an Instance to represent the camera.
         this._initializeCameraInstance();
+
     };
 
     Start() {
@@ -494,25 +496,8 @@ export class Graphics extends BItem {
         let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
         let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
         let cauth = undefined;
-        let cdisplayInfo = {
-            'displayableType': 'camera'
-        };
-        let cameraBItem = DisplayableFactory(cid, cauth, cdisplayInfo);
-        let cInstanceId = cparam.cameraInstanceId ? cparam.cameraInstanceId : 'org.basil.b.instance.camera';
-        let cameraInstance = InstanceFactory(cInstanceId, cauth, cameraBItem);
-        this.cameraInstance = cameraInstance;
-        cameraInstance.procgPosPreGet = function(inst) {
-            inst.gPos = this.camera.position.toArray();
-        }.bind(this);
-        cameraInstance.procgPosModified = function(inst) {
-            this.camera.position = (new THREE.Vector3()).fromArray(inst.gPos);
-        }.bind(this);
-        cameraInstance.procgRotPreGet = function(inst) {
-            inst.gRot = this.camera.quaternion.toArray();
-        }.bind(this);
-        cameraInstance.procgRotModified = function(inst) {
-            this.camera.setRotationFromQuatenion((new THREE.Quaternion()).fromArray(inst.gRot));
-        }.bind(this);
+        this.cameraInstance = new BItem(cid, cauth);
+        this.cameraInstance.AddAbility( new AbilityCamera() );
     }
 
     // Scan the scene and, if there are any duplicated geometries, replace the duplicated

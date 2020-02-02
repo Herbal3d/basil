@@ -31,7 +31,7 @@
   "dependencies": {
     "js-base64": "^2.5.1",
     "long": "^4.0.0",
-    "npm": "^6.13.6",
+    "npm": "^6.13.7",
     "protobufjs": "^6.8.8",
     "three-instanced-mesh": "^0.96.2"
   },

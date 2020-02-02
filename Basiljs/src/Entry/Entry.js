@@ -11,7 +11,7 @@
 
 'use strict';
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 
 import { Controls } from '../Controls/Controls.js';
@@ -80,7 +80,7 @@ GP.CO.ClickableOps['testBasil'] = function() {
             'transportURL': './wwtester.js',
             // 'transport': 'WS',
             // 'transportURL': 'ws://192.168.86.41:11440/',
-            'service': 'SpaceServerClient',
+            'service': 'BasilComm',
             'TestAsset': {
                 'url': selectedScene,
                 'loaderType': 'GLTF'
@@ -214,7 +214,7 @@ function LoginResponseSuccess(resp) {
                 'comm': {
                     'transport': 'WS',
                     'transportURL': 'ws://' + OSregion.simIP + ':11440',
-                    'service': 'SpaceServerClient'
+                    'service': 'BasilComm'
                 },
                 'auth': {
                     // Made up numbers for testing

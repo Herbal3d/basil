@@ -13,7 +13,7 @@
 
 // holds the controls context for this threejs instance
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 
 import { Displayable } from '../Items/Displayable.js';

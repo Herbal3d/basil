@@ -13,7 +13,7 @@
 
 // holds the controls context for this threejs instance
 
-import GP from 'GP';
+import { GP } from 'GLOBALS';
 import Config from '../config.js';
 import { BItem, BItemType } from '../Items/BItem.js';
 
@@ -26,7 +26,7 @@ export class Controls extends BItem {
         GP.DebugLog('Controls: constructor');
         super('org.basil.b.controls', undefined, BItemType.CONTROLS);
         this.layer = Config.layers ? Config.layers.service : 'org.basil.b.service';
-        this.events = eventing;
+        this.eventing = eventing;
 
         // When buttons are clicked, the 'op' says what to do.
         // Some users of this class will add their own entries to this structure.
@@ -53,7 +53,7 @@ export class Controls extends BItem {
         // Update the camera position for debugging
         this.infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
         if (this.infoCameraCoord) {
-            this.eventCameraInfo = this.events.Subscribe('display.cameraInfo', function(camInfo) {
+            this.eventCameraInfo = this.eventing.Subscribe('display.cameraInfo', function(camInfo) {
             if (camInfo && camInfo.position && this.infoCameraCoord) {
                 this.infoCameraCoord.Update(camInfo.position);
             }
@@ -69,7 +69,7 @@ export class Controls extends BItem {
         this.infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
         this.infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
         if (this.infoDrawCalls) {
-            this.eventDisplayInfo = this.events.Subscribe('display.info', function(info) {
+            this.eventDisplayInfo = this.eventing.Subscribe('display.info', function(info) {
                 if (info && info.render && this.infoDrawCalls) {
                     this.infoFPS.Update(Math.round(info.render.fps));
                     this.infoDrawCalls.Update(info.render.calls);
