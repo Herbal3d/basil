@@ -67,18 +67,14 @@ export class BItem {
         });
 
         this.deleteInProcess = false; // set to true when item is being destroyed
-        this.DefineProperties( {
-            '_Type': { 'get': function(th) { return th.itemType; } },
-            '_Id': { 'get': function(th) { return th.id; } },
-            '_OwnerId': { 'get': function(th) { return th.ownerId; } },
-            '_State': { 'get': function(th) { return th.state; } },
-            '_Layer': { 'get': function(th) { return th.layer; } },
-            '_Abilities': { 'get': function(th) { return th.AbilityNameList(); } }
-        });
+
+        // Define the properties for this item instance
+        this.DefinePropertiesWithProps(BItem.PropsToVars);
+
         BItem.AddItem(this.id, this);
 
         // The base BItem is just ready. This is usually overridden by Abilities.
-        this.BItemState = BItemState.READY;
+        this.BItemState = BItemState.UNINITIALIZED;
         // Enable when people start using this
         // this.EventName_OnStateChange = 'StateChange-' + this.id;
 
@@ -131,7 +127,7 @@ export class BItem {
     GetState() {
         let ret = this.BItemState;
         this.abilities.forEach( (key,val) => {
-            ret = CombineState(ret, val.GetState);
+            ret = this.CombineState(ret, val.GetState);
         });
         return ret;
     };
@@ -185,8 +181,9 @@ export class BItem {
         let ret = undefined;
         let propDesc = this.props.get(pProp);
         if (propDesc && propDesc.get) {
-            ret = propDesc.get(this);
-            // GP.DebugLog('BItem.GetProperty: ' + prop + ' -> ' + ret);
+            // If the property is from one of the abilities, reference that instance
+            let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
+            ret = propDesc.get(tthis);
         }
         return ret;
     };
@@ -202,14 +199,19 @@ export class BItem {
         if (filter) {
             this.props.forEach((propDesc, prop) => {
                 // Some wildcard testing
-                let propVal = propDesc.get ? propDesc.get(this) : undefined;
-                ret[prop] = value;
+                let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
+                if (propDesc.get) {
+                    ret[prop] = propDesc.get(tthis);
+                }
             });
         }
         else {
             this.props.forEach((propDesc, prop) => {
-                let propVal = propDesc.get ? propDesc.get(this) : undefined;
-                ret[prop] = propVal;
+                let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
+                if (propDesc.get) {
+                    ret[prop] = propDesc.get(tthis);
+                }
+                // GP.DebugLog('BItem.FetchProperties: setting ' + prop + ' = ' + ret[prop]);
             });
         }
         return ret;
@@ -219,7 +221,7 @@ export class BItem {
         let propDesc = this.props.get(propertyName);
         if (propDesc && propDesc.set) {
             // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
-            propDesc.set(value);
+            propDesc.set(this, value);
             /* Someday generate events for property value changing
             Eventing.Instance.Fire(this.EventName_OnPropertySet, {
                 'property': propertyName,
@@ -289,10 +291,11 @@ export class BItem {
     // Given a PropsToVars structure, define an external property if the
     //     variable description includes a value for 'propertyName'.
     DefinePropertiesWithProps(pPropMap) {
-        Object.keys(pPropMap).forEach( propInfo => {
+        Object.keys(pPropMap).forEach( propName => {
+            let propInfo = pPropMap[propName];
+            // GP.DebugLog('BItem.DefinePropertiesWithProps: checking ' + propName + ', pName=' + propInfo.propertyName);
             if (propInfo.propertyName) {
                 this.DefineProperty(propInfo.propertyName, propInfo)
-
             };
         });
     };
@@ -472,4 +475,40 @@ export class BItem {
         // newState is LOADING and prevState is not any of the bad ones
         return newState;
     };
+};
+
+// Mapping of property list names to properties on this instance.
+// See Ability.InitializeProps() and Ability.GenerateProps() for usage.
+// Property name definitions must be lower case.
+// The 'obj' is a BItem.
+// The entries for each property are:
+//          'get', 'set': value get and set operations
+//          'name': named used for the property when exported for the protocol
+//          'propertyName': the name of the BItem property to register for this property
+//          'ability': if this var is part of an ability (used by BItem fetch)
+BItem.PropsToVars = {
+    'type': {
+        get: (obj) => { return obj.itemType; },
+        propertyName: '_Type'
+    },
+    'id' : {
+        get: (obj) => { return obj.id; },
+        propertyName: '_Id'
+    },
+    'ownerid' : {
+        get: (obj) => { return obj.ownerId; },
+        propertyName: '_OwnerId'
+    },
+    'state' : {
+        get: (obj) => { return obj.state; },
+        propertyName: '_State'
+    },
+    'layer' : {
+        get: (obj) => { return obj.layer; },
+        propertyName: '_Layer'
+    },
+    'abilities' : {
+        get: (obj) => { return obj.AbilityNameList(); },
+        propertyName: '_Abilities'
+    }
 };

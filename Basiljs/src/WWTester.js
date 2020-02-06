@@ -148,8 +148,8 @@ GP.client.WhenReady(10000)
 
         // Create a displayed instance of the displayable
         let posInfo = PosInfo(
-                    { x: 0, y: 0, z: 0 }, 
-                    // { x: 100, y: 101, z: 102 },
+                    // { x: 0, y: 0, z: 0 }, 
+                    { x: 100, y: 101, z: 102 },
                     { x: 0, y: 0, z: 0, w: 1 },
                     BasilMessage.CoordSystem.WGS86,
                     BasilMessage.RotationSystem.WORLDR);

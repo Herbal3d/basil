@@ -112,20 +112,17 @@ export class Graphics extends BItem {
         // Set up the BItem environment.
         // The Renderer is just a BItem.
         super.DefineProperties( {
-            'Capabilities': {
-                'get': function() {
-                    return JSON.stringify(this.renderer.capabilities);
-                }.bind(this),
+            'capabilities': {
+                'get': (th) => { return JSON.stringify(this.renderer.capabilities); },
+                name: 'Capabilities'
             },
-            'Extensions': {
-                'get': function() {
-                    return JSON.stringify(this.renderer.extensions);
-                }.bind(this),
+            'extensions': {
+                'get': (th) => { return JSON.stringify(this.renderer.extensions); },
+                name: 'Extensions'
             },
-            'Info': {
-                'get': function() {
-                    return JSON.stringify(this.renderer.info);
-                }.bind(this),
+            'info': {
+                'get': (th) => { return JSON.stringify(this.renderer.info); },
+                name: 'Info'
             }
           } );
 

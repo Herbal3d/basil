@@ -59,7 +59,7 @@ export function AbilityFactory(pParamBlock) {
             catch (e) {
                 let errmsg = 'AnAbility.AbilityFactory: exception creating ability '
                             + pParamBlock.Ability
-                            + ', e=' +pParamBlock.Ability;
+                            + ', e=' + e;
                 GP.ErrorLog(errmsg);
                 // throw new BException(errmsg);
             };

@@ -18,7 +18,7 @@ import { BItem, BItemType } from '../Items/BItem.js';
 import { RegisterAbilities } from '../Items/AbilityRegistration.js';
 
 import { BasilComm } from './BasilComm.js';
-import { BuildBasilMessageOps } from './BasilMessageOps.js';
+import { BuildBasilMessageOpMap } from './BasilMessageOps.js';
 
 import { BTransportWW } from './BTransportWW.js';
 import { BTransportWS } from './BTransportWS.js';
@@ -36,7 +36,7 @@ export class Comm extends BItem {
         this.transports = new Map();
 
         // Build the table of ops to names and via versa
-        BuildBasilMessageOps();
+        BuildBasilMessageOpMap();
 
         // Do registration of the ability constructors.
         // Kinda of a kludge but had problems with WebPack and re-invocation of Globals.

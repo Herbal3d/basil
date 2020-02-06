@@ -43,28 +43,28 @@ export class BasilComm extends MsgProcessor {
         this.IsServer = params.AsServer;
 
         let processors = new Map();
-        processors.set(BasilMessageOps.get('CreateItemReq'), this._procCreateItem.bind(this));
-        processors.set(BasilMessageOps.get('CreateItemResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('DeleteItemReq'), this._procDeleteItem.bind(this));
-        processors.set(BasilMessageOps.get('DeleteItemResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('AddAbilityReq'), this._procAddAbility.bind(this));
-        processors.set(BasilMessageOps.get('AddAbilityResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('RemoveAbilityReq'), this._procRemoveAbility.bind(this));
-        processors.set(BasilMessageOps.get('RemoveAbilityResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('RequestPropertiesReq'), this._procRequestProperties.bind(this));
-        processors.set(BasilMessageOps.get('RequestPropertiesResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('UpdatePropertiesReq'), this._procUpdateProperties.bind(this));
-        processors.set(BasilMessageOps.get('UpdatePropertiesResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.CreateItemReq, this._procCreateItem.bind(this));
+        processors.set(BasilMessageOps.CreateItemResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.DeleteItemReq, this._procDeleteItem.bind(this));
+        processors.set(BasilMessageOps.DeleteItemResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.AddAbilityReq, this._procAddAbility.bind(this));
+        processors.set(BasilMessageOps.AddAbilityResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.RemoveAbilityReq, this._procRemoveAbility.bind(this));
+        processors.set(BasilMessageOps.RemoveAbilityResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.RequestPropertiesReq, this._procRequestProperties.bind(this));
+        processors.set(BasilMessageOps.RequestPropertiesResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.UpdatePropertiesReq, this._procUpdateProperties.bind(this));
+        processors.set(BasilMessageOps.UpdatePropertiesResp, this.HandleResponse.bind(this));
 
-        processors.set(BasilMessageOps.get('OpenSessionReq'), this._procOpenSessionSession.bind(this));
-        processors.set(BasilMessageOps.get('OpenSessionResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('CloseSessionReq'), this._procCloseSession.bind(this));
-        processors.set(BasilMessageOps.get('CloseSessionResp'), this.HandleResponse.bind(this));
-        processors.set(BasilMessageOps.get('MakeConnectionReq'), this._procMakeConnection.bind(this));
-        processors.set(BasilMessageOps.get('MakeConnectionResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.OpenSessionReq, this._procOpenSessionSession.bind(this));
+        processors.set(BasilMessageOps.OpenSessionResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.CloseSessionReq, this._procCloseSession.bind(this));
+        processors.set(BasilMessageOps.CloseSessionResp, this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.MakeConnectionReq, this._procMakeConnection.bind(this));
+        processors.set(BasilMessageOps.MakeConnectionResp, this.HandleResponse.bind(this));
 
-        processors.set(BasilMessageOps.get('AliveCheckReq'), this._procAliveCheck.bind(this));
-        processors.set(BasilMessageOps.get('AliveCheckResp'), this.HandleResponse.bind(this));
+        processors.set(BasilMessageOps.AliveCheckReq, this._procAliveCheck.bind(this));
+        processors.set(BasilMessageOps.AliveCheckResp, this.HandleResponse.bind(this));
 
         this.RegisterMsgProcess(this.transport, processors);
     };
@@ -82,15 +82,15 @@ export class BasilComm extends MsgProcessor {
     };
 
     CreateItem(pAuth, pProps, pAbilities) {
-        let msg = { 'Op': BasilMessageOps.get('CreateItemReq') };
+        let msg = { 'Op': BasilMessageOps.CreateItemReq};
         if (pAuth) msg['SessionAuth'] = pAuth;
         if (pProps) msg['IProps'] = this.CreatePropertyList(pProps);
-        msg['AProps'] = this.BuildAbilityProps(pAbilities);
+        if (pAbilities) msg['AProps'] = this.BuildAbilityProps(pAbilities);
         return this.SendAndPromiseResponse(msg);
     };
 
     _procCreateItem(req) {
-        let ret = { 'Op': BasilMessageOps.get('CreateItemResp') };
+        let ret = { 'Op': BasilMessageOps.CreateItemResp};
         if (this._CheckAuth(req.SessionAuth)) {
             // We create a unique Id if one not supplied.
             // TODO: check if ID already exists!!
@@ -111,10 +111,10 @@ export class BasilComm extends MsgProcessor {
                     };
                 });
             };
-            ret['IProps'] = {
+            ret['IProps'] = this.CreatePropertyList( {
                 'ItemId': newItem.id,
                 'ItemIdN': newItem.idN
-            };
+            });
         }
         else {
             ret['Exception'] = 'Not authorized';
@@ -139,14 +139,14 @@ export class BasilComm extends MsgProcessor {
     };
     
     RequestProperties(pAuth, pId, filter) {
-        let msg = { 'Op': BasilMessageOps.get('RequestPropertiesReq') };
+        let msg = { 'Op': BasilMessageOps.RequestPropertiesReq};
         if (pAuth) msg['SessionAuth'] = pAuth;
         if (pId) msg['ItemId'] = pId;
         if (filter) msg['IProps'] = this.CreatePropertyList({ 'filter': filter });
         return this.SendAndPromiseResponse(msg);
     };
     _procRequestProperties(req) {
-        let ret = { 'Op': BasilMessageOps.get('RequestPropertiesResp') };
+        let ret = { 'Op': BasilMessageOps.RequestPropertiesResp};
         if (this._CheckAuth(req.auth)) {
             let filter = (req.IProps && req.IProps['filter']) ? req.IProps['filter'] : undefined;
             let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
@@ -169,27 +169,27 @@ export class BasilComm extends MsgProcessor {
     };
 
     OpenSession(pAuth, propertyList) {
-        let msg = { 'Op': BasilMessageOps.get('OpenSessionReq') };
+        let msg = { 'Op': BasilMessageOps.OpenSessionReq};
         if (pAuth) msg['SessionAuth'] = pAuth;
         if (propertyList) msg['IProps'] = this.CreatePropertyList(propertyList);
         return this.SendAndPromiseResponse(msg);
     };
     _procOpenSessionSession(req) {
         // A server end is ready after processing an OpenSession request
-        let msg = { 'Op': BasilMessageOps.get('OpenSessionResp') };
+        let msg = { 'Op': BasilMessageOps.OpenSessionResp};
         this.openSessionProperties = req.IProps;
         this.SetReady();
         return msg;
     };
 
     CloseSession(pAuth, reason) {
-        let msg = { 'Op': BasilMessageOps.get('CloseSessionReq') };
+        let msg = { 'Op': BasilMessageOps.CloseSessionReq};
         if (pAuth) msg['SessionAuth'] = pAuth;
         if (reason) msg['IProps'] = this.CreatePropertyList({ 'reason': reason } );
         return this.SendAndPromiseResponse(msg);
     };
     _procCloseSession(req) {
-        let ret = { 'Op': BasilMessageOps.get('CloseSessionResp') };
+        let ret = { 'Op': BasilMessageOps.CloseSessionResp};
         return ret;
     };
 
@@ -200,7 +200,7 @@ export class BasilComm extends MsgProcessor {
     };
 
     AliveCheck(pAuth) {
-        let msg = { 'Op': BasilMessageOps.get('AliveCheckReq') };
+        let msg = { 'Op': BasilMessageOps.AliveCheckReq};
         if (pAuth) msg['pAuth'] = pAuth;
         msg['IProps'] = this.CreatePropertyList( {
             'time': Date.now(),
@@ -211,7 +211,7 @@ export class BasilComm extends MsgProcessor {
     };
 
     _procAliveCheck(req) {
-        let msg = { 'Op': BasilMessageOps.get('AliveCheckResp') };
+        let msg = { 'Op': BasilMessageOps.AliveCheckResp};
         msg['IProps'] = this.CreatePropertyList( {
             'time': Date.now(),
             'sequenceNum': this.aliveSequenceNum++,

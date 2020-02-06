@@ -88,7 +88,7 @@ export class AnAbility {
 // Given a set of properties (pProps), set the values on pObj using pPropMap.
 // This just sets the passed value. Type conversion happens in the PropMap.
 export function InitializeProps(pObj, pProps, pPropMap) {
-    GP.DebugLog('Abilities.InitializeProps: pProps=' + JSONstringify(pProps));
+    // GP.DebugLog('Abilities.InitializeProps: pProps=' + JSONstringify(pProps));
     if (pProps) {
         if (pProps instanceof Map) {
             pProps.forEach( (prop, val) => {
@@ -105,16 +105,25 @@ export function InitializeProps(pObj, pProps, pPropMap) {
 // Set the value. We undo the caseness of the property name.
 // This just sets the passed value. Type conversion happens in the PropMap.
 export function SetViaProps(pObj, pPropName, pVal, pPropMap) {
-    if (pVal) {
+    // GP.DebugLog('Abilities.SetViaProps: setting ' + pPropName);
+    if (typeof(pVal) !== 'undefined') {
         let propLower = pPropName.toLowerCase();
-        if (pPropMap[propLower]) {
+        if (pPropMap.hasOwnProperty(propLower)) {
             pPropMap[propLower].set(pObj, pVal);
+            /* DEBUG DEBUG DEBUG */
+            // let setVal = pPropMap[propLower].get(pObj);
+            // GP.DebugLog('Abilities.SetViaProps: setting ' + propLower + ' to ' + setVal);
+            /* DEBUG DEBUG DEBUG */
         }
         else {
             // Someone passed a property that doesn't have a get/set definition.
             // If that property is not already set on the object, just add it.
-            if (typeof(pObj[pProp]) === 'undefined') {
-                pObj[pProp] = pVal;
+            if (typeof(pObj[pPropName]) === 'undefined') {
+                pObj[pPropName] = pVal;
+                // GP.DebugLog('Abilities.SetViaProps: setting random property ' + pPropName + ' to ' + pVal);
+            }
+            else {
+                GP.ErrorLog('Abilities.SetViaProps: trying to reset value for ' + pPropName);
             };
         };
     };
@@ -130,11 +139,12 @@ export function GenerateProps(pObj, pPropMap) {
             if (propInfo.get) {
                 let propName = propInfo.name ? propInfo.name : key;
                 let val = propInfo.get(pObj);
-                if (val) {
+                if (typeof(val) !== 'undefined') {
                     ret[propName] = val;
                 };
             };
         });
     };
+    // GP.DebugLog('Abilities.GenerateProps: props = ' + JSONstringify(ret));
     return ret;
 };

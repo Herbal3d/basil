@@ -43,10 +43,22 @@ export class BTransport extends BItem {
     
         // The properties that can be read as a BItem
         super.DefineProperties( {
-            'Transport.MessagesSent': { 'get': function() { return this.stats.messagesSent; }.bind(this) },
-            'Transport.MessagesReceived': { 'get': function() { return this.stats.messagesReceived; }.bind(this) },
-            'Transport.Stats': { 'get': function() { return this.stats; }.bind(this) },
-            'Transport.QueueSize': { 'get': function() { return this.messages.length; }.bind(this) }
+            'messagessent': {
+                get: (th) => { return th.stats.messagesSent; },
+                name: 'Transport.MessagesSent'
+            },
+            'messagesreceived': {
+                get: (th) => { return th.stats.messagesReceived; },
+                name: 'Transport.MessagesReceived'
+            },
+            'stats': {
+                get: (th) => { return th.stats; },
+                name: 'Transport.Stats'
+            },
+            'Transport.QueueSize': {
+                get: (th) => { return th.messages.length; },
+                name: 'Transport.QueueSize'
+            }
         } );
     };
 

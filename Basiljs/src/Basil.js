@@ -97,23 +97,21 @@ export class DebugBItem extends BItem {
         this.lastErrorMessage = 'none';
 
         super.DefineProperties( {
-            'Msg': {
-                'get': function() {
-                    return this.lastMessage;
-                }.bind(this),
-                'set': function(val) {
-                    this.lastMessage = val;
+            'msg': {
+                'get': (th) => { return th.lastMessage; },
+                'set': (th, val) => {
+                    th.lastMessage = val;
                     GP.DebugLog('WORKER: ' + val);
-                }.bind(this)
+                },
+                name: 'Msg'
             },
-            'ErrorMsg': {
-                'get': function() {
-                    return this.lastErrorMessage;
-                }.bind(this),
-                'set': function(val) {
-                    this.lastErrorMessage = val;
+            'errormsg': {
+                'get': (th) => { return th.lastErrorMessage; },
+                'set': (th, val) => {
+                    th.lastErrorMessage = val;
                     GP.ErrorLog('WORKER: ' + val);
-                }.bind(this)
+                },
+                name: 'ErrorMsg'
             }
         } );
     }

@@ -114,8 +114,8 @@ export function JSONstringify(obj) {
 // NOTE: since protobuf doesn't send zero values, it's possible to get "{ y: 10 }"
 export function ParseThreeTuple(tuple) {
     let val = tuple
-    if (typeof tuple == 'String') {
-        val = JSON.Parse(tuple);
+    if (typeof(tuple) === 'string') {
+        val = JSON.parse(tuple);
     }
     if (!Array.isArray(val)) {
         let ret = [ 0, 0, 0 ];
@@ -137,8 +137,8 @@ export function ParseThreeTuple(tuple) {
 // Returns a four valued JavaScript array.
 export function ParseFourTuple(tuple) {
     let val = tuple
-    if (typeof tuple == 'String') {
-        val = JSON.Parse(tuple);
+    if (typeof(tuple) === 'string') {
+        val = JSON.parse(tuple);
     }
     if (!Array.isArray(val)) {
         let ret = [ 0, 0, 0, 0 ];
@@ -160,7 +160,7 @@ export function MakeArray3(pVal) {
             return [ Number(pVal[0]), Number(pVal[1]), Number(pVal[2]) ];
         };
     };
-    console.log('MakeArray3: typeof(pVal)=' + typeof(pVal) + ', contents=' + JSONstringify(pVal));
+    // console.log('MakeArray3: typeof(pVal)=' + typeof(pVal) + ', contents=' + JSONstringify(pVal));
     if (typeof(pVal) === 'object') {
         return [ Number(pVal.x), Number(pVal.y), Number(pVal.z) ];
     }

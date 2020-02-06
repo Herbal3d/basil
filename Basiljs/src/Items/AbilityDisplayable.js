@@ -15,6 +15,8 @@ import { GP } from 'GLOBALS';
 import Config from '../config.js';
 import { BException } from '../BException.js';
 
+import { JSONstringify } from '../Utilities.js';
+
 import { AnAbility, InitializeProps, GenerateProps, SetViaProps } from './Abilities.js';
 
 export class AbilityDisplayable extends AnAbility {
@@ -87,7 +89,7 @@ export class AbilityDisplayable extends AnAbility {
         })
         .catch(err => {
             this.SetFailed();
-            GP.ErrorLog('DisplayableMeshSet: unable to load asset ' + JSONstringify(displayInfo)
+            GP.ErrorLog('DisplayableMeshSet: unable to load asset ' + JSONstringify(assetInfo)
                       + ', ERROR=' + JSONstringify(err));
         });
     };
@@ -108,35 +110,42 @@ export class AbilityDisplayable extends AnAbility {
 // Mapping of property list names to properties on this instance.
 // See Ability.InitializeProps() and Ability.GenerateProps() for usage.
 // Property name definitions must be loader case.
+// The 'obj' is the parent BItem.
 // The entries for each property are:
 //          'get', 'set': value get and set operations
 //          'name': named used for the property when exported for the protocol
 //          'propertyName': the name of the BItem property to register for this property
+//          'ability': identifies this variable as tied to this ability (for lookup in BItem)
 AbilityDisplayable.PropsToVars = {
     'id': {
         get: (obj) => { return obj.Id },
         set: (obj, val) => { obj.Id = val ;},
-        name: 'Id'
+        name: 'Id',
+        ability: AbilityDisplayable.NAME
     },
     'displaytype': {
         get: (obj) => { return obj.DisplayType },
         set: (obj, val) => { obj.DisplayType = val ;},
         name: 'DisplayType',
-        propertyName: 'Displayable.Type'
+        propertyName: 'Displayable.Type',
+        ability: AbilityDisplayable.NAME
     },
     'url' : {
         get: (obj) => { return obj.Url },
         set: (obj, val) => { obj.Url = val ;},
-        name: 'Url'
+        name: 'Url',
+        ability: AbilityDisplayable.NAME
     },
     'loadertype' : {
         get: (obj) => { return obj.LoaderType },
         set: (obj, val) => { obj.LoaderType = val ;},
-        name: 'LoaderType'
+        name: 'LoaderType',
+        ability: AbilityDisplayable.NAME
     },
     'aabb' : {
         get: (obj) => { return JSON.stringify(obj.Aabb) },
         set: (obj, val) => { obj.Aabb = JSON.parse(val) ;},
-        name: 'Aabb'
+        name: 'Aabb',
+        ability: AbilityDisplayable.NAME
     } 
 };

@@ -11,27 +11,32 @@
 
 'use strict';
 
+import { GP } from 'GLOBALS';
+
 import { BasilMessage } from '../jslibs/BasilMessages.js';
 
-import { MakeArray3, MakeArray4 } from '../Utilities.js';
+import { MakeArray3, MakeArray4, JSONstringify } from '../Utilities.js';
+
+// A simple pointer to the codes for messages so everyone doesn't include jslibs
+export let BasilMessageOps = BasilMessage.BasilMessageOps;
 
 // List of BasilMessage 'op' codes and what the expected parameters are.
 // Indexable by either the operation code or the name of the operation.
-export let BasilMessageOps = new Map();
+export let BasilMessageOpMap = new Map();
 
-// Build 'BasilMessageOps' from the operation enum in the Protobuf definition.
+// Build 'BasilMessageOpMap' from the operation enum in the Protobuf definition.
 // The way ProtobufJS builds this array, it includes both the name to value
 //    and value to name mappings which is just what we want.
 // Note that the index is always a string even if it is a number
-export function BuildBasilMessageOps() {
+export function BuildBasilMessageOpMap() {
     for (let element in BasilMessage.BasilMessageOps) {
         // If the element is the op number, index by number rather than string
         let elementAsNum = Number(element);
         if (Number.isNaN(elementAsNum)) {
-            BasilMessageOps.set(element, BasilMessage.BasilMessageOps[element]);
+            BasilMessageOpMap.set(element, BasilMessage.BasilMessageOps[element]);
         }
         else {
-            BasilMessageOps.set(elementAsNum, BasilMessage.BasilMessageOps[element]);
+            BasilMessageOpMap.set(elementAsNum, BasilMessage.BasilMessageOps[element]);
         }
     };
 }
@@ -39,10 +44,11 @@ export function BuildBasilMessageOps() {
 // Create and return a PositionBlock with the passed information
 export function PosInfo(pPos, pRot, pPosRef, pRotRef, pVel) {
     let ret = {};
-    if (pPos) ret.Pos = MakeArray3(pPos);
-    if (pRot) ret.Rot = MakeArray4(pRot);
-    if (pPosRef) ret.PosRef = pPosRef;
-    if (pRotRef) ret.RotRef = pRotRef;
-    if (pVel) ret.Vel = MakeArray3(pVel);
+    if (typeof(pPos) !== 'undefined') ret.Pos = MakeArray3(pPos);
+    if (typeof(pRot) !== 'undefined') ret.Rot = MakeArray4(pRot);
+    if (typeof(pPosRef) !== 'undefined') ret.PosRef = pPosRef;
+    if (typeof(pRotRef) !== 'undefined') ret.RotRef = pRotRef;
+    if (typeof(pVel) !== 'undefined') ret.Vel = MakeArray3(pVel);
+    GP.DebugLog('PosInfo: created ' + JSONstringify(ret));
     return ret;
 }
