@@ -71,7 +71,7 @@ var CallBasilWithTheFile = function() {
       'transportURL': './wwtester.js',
       // 'transport': 'WS',
       // 'transportURL': 'ws://192.168.86.41:11440/',
-      'service': 'SpaceServerClient',
+      'service': 'BasilComm',
       'TestAsset': {
         'url': GLTFTOLOAD,
         'loaderType': 'GLTF'

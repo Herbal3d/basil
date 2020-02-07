@@ -183,7 +183,7 @@ export class Comm extends BItem {
             'transport': 'WS',            // the type of transport to connect (WW, WS, test)
             'transportURL': undefined,    // URL to connect transport to
             'waitTilTransportReadyMS': 5000,    // MS before timeout waiting for transport ready
-            'service': 'SpaceServerClient',     // or 'Pesto'
+            'service': 'BasilComm',     // or 'Pesto'
             'serviceId': undefined,       // if not passed, unique one created
             'pestoId': undefined          // if not passed, unique one created
         });

@@ -153,7 +153,7 @@ if (typeof(configParams) === 'undefined') {
                 'testmode': true,
                 'transportURL': './wwtester.js',
                 'transport': 'WW',
-                'service': 'SpaceServerClient',
+                'service': 'BasilComm',
                 'TestAsset': {
                     'url': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
                     'loaderType': 'GLTF'
