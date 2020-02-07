@@ -17,6 +17,7 @@ import { BException } from '../BException.js';
 
 import { JSONstringify } from '../Utilities.js';
 
+import { BItemState } from '../Items/BItem.js';
 import { AnAbility, InitializeProps, GenerateProps, SetViaProps } from './Abilities.js';
 
 export class AbilityDisplayable extends AnAbility {

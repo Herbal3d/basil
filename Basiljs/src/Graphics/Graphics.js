@@ -212,43 +212,41 @@ export class Graphics extends BItem {
         this.GroupCameraRel.remove(node);
     }
 
-    // The main funciton used to place an Instance into the world.
+    // The main function used to place an Instance into the world.
+    // Pass an AbilityInstance and an AbilityDisplayable.
+    //    The displayable is placed in the world and the node info
+    //    is added to the instance.
     // The instance is decorated with 'worldNode' which is the underlying
     //    graphical representation object.
-    PlaceInWorld(pInst) {
-        if (pInst.worldNode) {
-            return; // already in world
-        }
-        pInst.WhenReady()
-        .then( inst => {
-            if (typeof(inst.worldNode) == 'undefined') {
-                // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + inst.id);
-                let worldNode = new THREE.Group();
-                worldNode.position.fromArray(inst.gPos);
-                worldNode.quaternion.fromArray(inst.gRot);
-                worldNode.name = inst.id;
-                if (Array.isArray(inst.displayable.representation)) {
-                    inst.displayable.representation.forEach( piece => {
-                        worldNode.add(piece.clone());
-                    });
-                }
-                else {
-                    worldNode.add(inst.displayable.representation.clone());
-                }
-                inst.worldNode = worldNode;
-            }
-            if (inst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
-                // item is camera relative
-                this._addNodeToCamera(inst.worldNode);
+    // Assume the displayable is ready
+    PlaceInWorld(pInst, pDisp) {
+        if (typeof(pInst.worldNode) === 'undefined') {
+            // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + pInst.id);
+            let worldNode = new THREE.Group();
+            worldNode.position.fromArray(pInst.gPos);
+            worldNode.quaternion.fromArray(pInst.gRot);
+            worldNode.name = pInst.parent.id;
+            if (Array.isArray(pDisp.representation)) {
+                pDisp.representation.forEach( piece => {
+                    worldNode.add(piece.clone());
+                });
             }
             else {
-                // item is world coordinate relative
-                this._addNodeToWorld(inst.worldNode);
+                worldNode.add(pDisp.representation.clone());
             }
-        })
-        .catch( (inst, reason) => {
-            GP.DebugLog('Graphics.PlaceInWorld: item never ready. id=' + inst.id);
-        });
+            pInst.worldNode = worldNode;
+        }
+        else {
+            return; // already in world
+        };
+        if (pInst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
+            // item is camera relative
+            this._addNodeToCamera(pInst.worldNode);
+        }
+        else {
+            // item is world coordinate relative
+            this._addNodeToWorld(pInst.worldNode);
+        };
     };
 
     // Remove this instance from the displayed world data structure

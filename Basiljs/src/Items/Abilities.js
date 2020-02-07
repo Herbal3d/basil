@@ -59,6 +59,9 @@ export class AnAbility {
         throw new BException('AnAbility: call of undefined InitializeWithProperties()');
     }
 
+    GetState() {
+        return this.state;
+    }
     // Set the state of this Ability.
     // Someday may need to add actions around state changes
     SetState(newState) {

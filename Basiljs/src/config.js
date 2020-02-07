@@ -125,7 +125,7 @@ export default {
     },
     // Connection and debug information when running the WebWorker test
     'WWTester': {
-        'LogToConsole': true,       // Log to console. Otherwise, use msg to debug BItem
+        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
         'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
@@ -147,12 +147,12 @@ export default {
     // Various flags that turn on/off debug logging, etc
     'Debug': {
       'CollectDebug': true,                 // output debugging info
-      'DebugLogToConsole': true,           // output debug message to console rather than debug window
+      'DebugLogToConsole': false,           // output debug message to console rather than debug window
       'VerifyProtocol': false,              // call 'verify' on created protocol messages
-      'MsgProcessorProcessPrintMsg': true, // DebugLog each message processed by MsgProcessor
-      'MsgProcessorResponsePrintMsg': true, // DebugLog each message sent as a response by MsgProcessor
-      'SendAndPromisePrintMsg': true,      // DebugLog each message sent with expected response
-      'HandleResponsePrintMsg': true,      // DebugLog each message handled as a response
+      'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
+      'MsgProcessorResponsePrintMsg': false, // DebugLog each message sent as a response by MsgProcessor
+      'SendAndPromisePrintMsg': false,      // DebugLog each message sent with expected response
+      'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
       'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
     },
     // Information for loading multiple Atropia regions with filename and displacement.

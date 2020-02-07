@@ -49,6 +49,6 @@ export function PosInfo(pPos, pRot, pPosRef, pRotRef, pVel) {
     if (typeof(pPosRef) !== 'undefined') ret.PosRef = pPosRef;
     if (typeof(pRotRef) !== 'undefined') ret.RotRef = pRotRef;
     if (typeof(pVel) !== 'undefined') ret.Vel = MakeArray3(pVel);
-    GP.DebugLog('PosInfo: created ' + JSONstringify(ret));
+    // GP.DebugLog('PosInfo: created ' + JSONstringify(ret));
     return ret;
 }

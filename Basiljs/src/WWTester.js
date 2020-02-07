@@ -65,7 +65,7 @@ else {
             let props = {
                 'Msg': msg
             };
-            GP.client.UpdateInstanceProperty(auth, instanceId, props);
+            GP.client.UpdateProperties(auth, instanceId, props);
             // console.log('WW.DebugLog: ' + msg);
         };
         GP.ErrorLog = function(msg) {
@@ -74,7 +74,7 @@ else {
             let props = {
                 'ErrorMsg': msg
             };
-            GP.client.UpdateInstanceProperty(auth, instanceId, props);
+            GP.client.UpdateProperties(auth, instanceId, props);
             // console.log('WW.ErrorLog: ' + msg);
         }
     }

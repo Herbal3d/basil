@@ -93,21 +93,22 @@ export class DebugBItem extends BItem {
         let debugInstanceName = (Config.Debug && Config.Debug.DebugLogInstanceName)
                           ? Config.Debug.DebugLogInstanceName : 'org.basil.b.debug.bitem';
         super(debugInstanceName, undefined);
+        this.SetReady();
         this.lastMessage = 'none';
         this.lastErrorMessage = 'none';
 
         super.DefineProperties( {
             'msg': {
-                'get': (th) => { return th.lastMessage; },
-                'set': (th, val) => {
+                get: (th) => { return th.lastMessage; },
+                set: (th, val) => {
                     th.lastMessage = val;
                     GP.DebugLog('WORKER: ' + val);
                 },
                 name: 'Msg'
             },
             'errormsg': {
-                'get': (th) => { return th.lastErrorMessage; },
-                'set': (th, val) => {
+                get: (th) => { return th.lastErrorMessage; },
+                set: (th, val) => {
                     th.lastErrorMessage = val;
                     GP.ErrorLog('WORKER: ' + val);
                 },

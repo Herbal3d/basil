@@ -13,6 +13,7 @@
 
 import { GP, GetNextUniqueNum } from 'GLOBALS';
 import Config from '../config.js';
+import { JSONstringify } from '../Utilities.js';
 
 // The management of the itme collection is done with static functions
 var IM = IM || {};
@@ -126,8 +127,8 @@ export class BItem {
     // Scan through all the abilities and compute the overall state
     GetState() {
         let ret = this.BItemState;
-        this.abilities.forEach( (key,val) => {
-            ret = this.CombineState(ret, val.GetState);
+        this.abilities.forEach( (val, key) => {
+            ret = this.CombineState(ret, val.GetState());
         });
         return ret;
     };
@@ -147,6 +148,9 @@ export class BItem {
                 this.abilities.set(pAbility.Name, pAbility);
                 // Add the ability to this BItem
                 pAbility.Link(this);
+
+                // The state of the BItem is READY but the ability will take precidence
+                this.SetReady();
             };
         };
     };
@@ -165,7 +169,10 @@ export class BItem {
             };
         };
     };
-
+    // Get the named ability or 'undefined' if no such ability on this BItem
+    GetAbility(pAbilityName) {
+        return this.abilities.get(pAbilityName);
+    }
     // Return string of comma separated names of abilities
     AbilityNameList() {
         let names = [];
@@ -179,10 +186,10 @@ export class BItem {
     //    no such property or there isn't a value for it.
     GetProperty(pProp) {
         let ret = undefined;
-        let propDesc = this.props.get(pProp);
+        let propDesc = this.GetPropertyDesc(pProp);
         if (propDesc && propDesc.get) {
             // If the property is from one of the abilities, reference that instance
-            let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
+            let tthis = propDesc.ability ? this.GetAbility(propDesc.ability) : this;
             ret = propDesc.get(tthis);
         }
         return ret;
@@ -190,8 +197,20 @@ export class BItem {
     // Return the description block for the property.
     // Returns 'undefined' if there is no such property.
     GetPropertyDesc(pProp) {
-        return this.props.get(pProp);
-    }
+        let ret = this.props.get(pProp);
+        if (typeof(ret) === 'undefined') {
+            // Didn't find the property but case sensitivity is a pain
+            // See if we can find the property in a case-independent way
+            let propLower = pProp.toLowerCase();
+            for (let key of this.props.keys()) {
+                if (key.toLowerCase() == propLower) {
+                    ret = this.props.get(key);
+                    break;
+                };
+            };
+        };
+        return ret;
+    };
 
     // Returns an Object of properties and values
     FetchProperties(filter) {
@@ -218,20 +237,25 @@ export class BItem {
     };
 
     SetProperty(propertyName, value) {
-        let propDesc = this.props.get(propertyName);
-        if (propDesc && propDesc.set) {
-            // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
-            propDesc.set(this, value);
-            /* Someday generate events for property value changing
-            Eventing.Instance.Fire(this.EventName_OnPropertySet, {
-                'property': propertyName,
-                'value': value
-            });
-            */
+        let propDesc = this.GetPropertyDesc(propertyName);
+        if (propDesc) {
+            if (propDesc.set) {
+                // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
+                propDesc.set(this, value);
+                /* Someday generate events for property value changing
+                Eventing.Instance.Fire(this.EventName_OnPropertySet, {
+                    'property': propertyName,
+                    'value': value
+                });
+                */
+            }
+            else {
+                GP.ErrorLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
+            };
         }
         else {
-            GP.ErrorLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
-        };
+            GP.ErrorLog('BItem.SetProperty: could not get definition of ' + propertyName);
+        }
     };
     // Set several properties. Values can be an object or a Map().
     SetProperties(propValues) {

@@ -16,7 +16,8 @@ import { GP } from 'GLOBALS';
 import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '../Utilities.js';
 
 import { AnAbility, SetViaProps, GenerateProps, InitializeProps } from './Abilities.js';
-import { BItemState } from './BItem.js';
+import { BItemState, BItem } from './BItem.js';
+import { AbilityDisplayable } from './AbilityDisplayable.js';
 
 // A instance capability specifies an Item with AbilityDisplayable
 //    and a place to put it.
@@ -35,8 +36,11 @@ export class AbilityInstance extends AnAbility {
         this.parent.EventName_OnChangePos = 'Pos-' + AbilityInstance.NAME + '-' + this.parent.id;
         this.parent.EventName_OnChangeRot = 'Rot-' + AbilityInstance.NAME + '-' + this.parent.id;
 
-        GP.DebugLog('AbilityInstance.Link: linking to parent. Calling DefineProperties');
         this.parent.DefinePropertiesWithProps(AbilityInstance.PropsToVars);
+
+        this.SetLoading();
+
+        this.InstantiateInstance();
     };
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
@@ -46,8 +50,8 @@ export class AbilityInstance extends AnAbility {
 
     // Initialize this ability from individual values
     SetFromValues(pDisplayableId, pPosInfo, pProps) {
-        SetViaProps(this, 'displayableid', pDisplayableId, AbilityInstance.PropsToVars);
-        GP.DebugLog('AbilityInstance.SetFromValues: pPosInfo =' + JSONstringify(pPosInfo));
+        SetViaProps(this, 'did', pDisplayableId, AbilityInstance.PropsToVars);
+        // GP.DebugLog('AbilityInstance.SetFromValues: pPosInfo =' + JSONstringify(pPosInfo));
         if (pPosInfo) {
             SetViaProps(this, 'pos', pPosInfo.Pos, AbilityInstance.PropsToVars);
             SetViaProps(this, 'rot', pPosInfo.Rot, AbilityInstance.PropsToVars);
@@ -68,6 +72,53 @@ export class AbilityInstance extends AnAbility {
     GetProperties() {
         return GenerateProps(this, AbilityInstance.PropsToVars);
     };
+
+    InstantiateInstance() {
+        if (this.displayableId) {
+            let displayable = BItem.GetItem(this.displayableId);
+            if (displayable) {
+                this.displayable = displayable;
+                this.PlaceInWorld();
+                this.SetReady();
+            }
+            else {
+                GP.ErrorLog('AbilityInstance.InstantiateInstance: cannot find displayable ' + this.displayableId);
+            };
+        };
+    };
+
+    // Do whatever is needed to place this instance into the graphics scene.
+    PlaceInWorld() {
+        if (this.displayable) {
+            // TODO: if displayable is not ready, should display the bounding box
+            this.displayable.WhenReady()
+            .then( function(disp) {
+                let abilityDisp = disp.GetAbility(AbilityDisplayable.NAME);
+                if (abilityDisp) {
+                    abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
+                }
+                else {
+                    GP.ErrorLog('AbilityInstance.PlaceInWorld: cannot get displayable ability');
+                }
+            }.bind(this))
+            .catch( function(e) {
+                // Something wrong with the displayable
+                GP.ErrorLog('AbilityInstance.PlaceInWorld: could not place in world. e=' + e);
+                this.SetFailed();
+            }.bind(this));
+        }
+        else {
+            GP.ErrorLog('AbilityInstance.PlaceInWorld: no displayable set. InstId=' + this.parent.id);
+
+        };
+    };
+
+    // Do whatever is needed to remove this instance from the graphics scene.
+    RemoveFromWorld() {
+        if (this.displayable) {
+            this.displayable.graphics.RemoveFromWorld(this);
+        }
+    }
 
 };
 

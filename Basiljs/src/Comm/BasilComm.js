@@ -164,8 +164,40 @@ export class BasilComm extends MsgProcessor {
     };
 
     UpdateProperties(pAuth, pId, pProps) {
+        let msg = { 'Op': BasilMessageOps.UpdatePropertiesReq};
+        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (pId) msg['ItemId'] = pId;
+        if (pProps) msg['IProps'] = this.CreatePropertyList(pProps);
+        return this.SendAndPromiseResponse(msg);
     };
     _procUpdateProperties(req) {
+        let ret = { 'Op': BasilMessageOps.UpdatePropertiesResp};
+        if (this._CheckAuth(req.auth)) {
+            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+            if (item) {
+                try {
+                    if (req.IProps) {
+                        Object.keys(req.IProps).forEach( propToChange => {
+                            item.SetProperty(propToChange, req.IProps[propToChange]);
+                        });
+                    };
+                }
+                catch (e) {
+                    let errMsg = 'O'
+                    GP.ErrorLog('_procUpdateProperties: exception setting.'
+                            + ' IProps=' + JSONstringify(req.IProps)
+                            + ', e=' + e);
+                    ret['Exception'] = 'Failed setting properties';
+                };
+            }
+            else {
+                ret['Exception'] = 'Instance not found';
+            }
+        }
+        else {
+            ret['Exception'] = 'Not authorized';
+        }
+        return ret;
     };
 
     OpenSession(pAuth, propertyList) {
