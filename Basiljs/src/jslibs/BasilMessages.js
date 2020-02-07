@@ -35,252 +35,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
         return values;
     })();
 
-    BasilMessage.Vector3 = (function() {
-
-        function Vector3(properties) {
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        Vector3.prototype.x = 0;
-        Vector3.prototype.y = 0;
-        Vector3.prototype.z = 0;
-
-        Vector3.create = function create(properties) {
-            return new Vector3(properties);
-        };
-
-        Vector3.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.x != null && Object.hasOwnProperty.call(message, "x"))
-                writer.uint32(9).double(message.x);
-            if (message.y != null && Object.hasOwnProperty.call(message, "y"))
-                writer.uint32(17).double(message.y);
-            if (message.z != null && Object.hasOwnProperty.call(message, "z"))
-                writer.uint32(25).double(message.z);
-            return writer;
-        };
-
-        Vector3.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        Vector3.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilMessage.Vector3();
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.x = reader.double();
-                    break;
-                case 2:
-                    message.y = reader.double();
-                    break;
-                case 3:
-                    message.z = reader.double();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        Vector3.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        Vector3.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.x != null && message.hasOwnProperty("x"))
-                if (typeof message.x !== "number")
-                    return "x: number expected";
-            if (message.y != null && message.hasOwnProperty("y"))
-                if (typeof message.y !== "number")
-                    return "y: number expected";
-            if (message.z != null && message.hasOwnProperty("z"))
-                if (typeof message.z !== "number")
-                    return "z: number expected";
-            return null;
-        };
-
-        Vector3.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilMessage.Vector3)
-                return object;
-            let message = new $root.BasilMessage.Vector3();
-            if (object.x != null)
-                message.x = Number(object.x);
-            if (object.y != null)
-                message.y = Number(object.y);
-            if (object.z != null)
-                message.z = Number(object.z);
-            return message;
-        };
-
-        Vector3.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.defaults) {
-                object.x = 0;
-                object.y = 0;
-                object.z = 0;
-            }
-            if (message.x != null && message.hasOwnProperty("x"))
-                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
-            if (message.y != null && message.hasOwnProperty("y"))
-                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
-            if (message.z != null && message.hasOwnProperty("z"))
-                object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z;
-            return object;
-        };
-
-        Vector3.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Vector3;
-    })();
-
-    BasilMessage.Vector4 = (function() {
-
-        function Vector4(properties) {
-            if (properties)
-                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        Vector4.prototype.x = 0;
-        Vector4.prototype.y = 0;
-        Vector4.prototype.z = 0;
-        Vector4.prototype.w = 0;
-
-        Vector4.create = function create(properties) {
-            return new Vector4(properties);
-        };
-
-        Vector4.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.x != null && Object.hasOwnProperty.call(message, "x"))
-                writer.uint32(9).double(message.x);
-            if (message.y != null && Object.hasOwnProperty.call(message, "y"))
-                writer.uint32(17).double(message.y);
-            if (message.z != null && Object.hasOwnProperty.call(message, "z"))
-                writer.uint32(25).double(message.z);
-            if (message.w != null && Object.hasOwnProperty.call(message, "w"))
-                writer.uint32(33).double(message.w);
-            return writer;
-        };
-
-        Vector4.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        Vector4.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.BasilMessage.Vector4();
-            while (reader.pos < end) {
-                let tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.x = reader.double();
-                    break;
-                case 2:
-                    message.y = reader.double();
-                    break;
-                case 3:
-                    message.z = reader.double();
-                    break;
-                case 4:
-                    message.w = reader.double();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        Vector4.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        Vector4.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.x != null && message.hasOwnProperty("x"))
-                if (typeof message.x !== "number")
-                    return "x: number expected";
-            if (message.y != null && message.hasOwnProperty("y"))
-                if (typeof message.y !== "number")
-                    return "y: number expected";
-            if (message.z != null && message.hasOwnProperty("z"))
-                if (typeof message.z !== "number")
-                    return "z: number expected";
-            if (message.w != null && message.hasOwnProperty("w"))
-                if (typeof message.w !== "number")
-                    return "w: number expected";
-            return null;
-        };
-
-        Vector4.fromObject = function fromObject(object) {
-            if (object instanceof $root.BasilMessage.Vector4)
-                return object;
-            let message = new $root.BasilMessage.Vector4();
-            if (object.x != null)
-                message.x = Number(object.x);
-            if (object.y != null)
-                message.y = Number(object.y);
-            if (object.z != null)
-                message.z = Number(object.z);
-            if (object.w != null)
-                message.w = Number(object.w);
-            return message;
-        };
-
-        Vector4.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.defaults) {
-                object.x = 0;
-                object.y = 0;
-                object.z = 0;
-                object.w = 0;
-            }
-            if (message.x != null && message.hasOwnProperty("x"))
-                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
-            if (message.y != null && message.hasOwnProperty("y"))
-                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
-            if (message.z != null && message.hasOwnProperty("z"))
-                object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z;
-            if (message.w != null && message.hasOwnProperty("w"))
-                object.w = options.json && !isFinite(message.w) ? String(message.w) : message.w;
-            return object;
-        };
-
-        Vector4.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return Vector4;
-    })();
-
     BasilMessage.CoordSystem = (function() {
         const valuesById = {}, values = Object.create(valuesById);
         values[valuesById[0] = "WGS86"] = 0;
@@ -298,14 +52,18 @@ export const BasilMessage = $root.BasilMessage = (() => {
     BasilMessage.RotationSystem = (function() {
         const valuesById = {}, values = Object.create(valuesById);
         values[valuesById[0] = "WORLDR"] = 0;
-        values[valuesById[1] = "FORR"] = 1;
-        values[valuesById[2] = "CAMERAR"] = 2;
+        values[valuesById[1] = "LOCALR"] = 1;
+        values[valuesById[2] = "FORR"] = 2;
+        values[valuesById[3] = "CAMERAR"] = 3;
         return values;
     })();
 
     BasilMessage.PositionBlock = (function() {
 
         function PositionBlock(properties) {
+            this.Pos = [];
+            this.Rot = [];
+            this.Vel = [];
             this.Path = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -313,11 +71,11 @@ export const BasilMessage = $root.BasilMessage = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        PositionBlock.prototype.Pos = null;
-        PositionBlock.prototype.Rot = null;
+        PositionBlock.prototype.Pos = $util.emptyArray;
+        PositionBlock.prototype.Rot = $util.emptyArray;
         PositionBlock.prototype.PosRef = 0;
         PositionBlock.prototype.RotRef = 0;
-        PositionBlock.prototype.Vel = null;
+        PositionBlock.prototype.Vel = $util.emptyArray;
         PositionBlock.prototype.Path = $util.emptyArray;
         PositionBlock.prototype.ItemIdN = 0;
         PositionBlock.prototype.ItemId = "";
@@ -331,27 +89,42 @@ export const BasilMessage = $root.BasilMessage = (() => {
         PositionBlock.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.Pos != null && Object.hasOwnProperty.call(message, "Pos"))
-                $root.BasilMessage.Vector3.encode(message.Pos, writer.uint32(10).fork()).ldelim();
-            if (message.Rot != null && Object.hasOwnProperty.call(message, "Rot"))
-                $root.BasilMessage.Vector4.encode(message.Rot, writer.uint32(18).fork()).ldelim();
+            if (message.Pos != null && message.Pos.length) {
+                writer.uint32(10).fork();
+                for (let i = 0; i < message.Pos.length; ++i)
+                    writer.double(message.Pos[i]);
+                writer.ldelim();
+            }
+            if (message.Rot != null && message.Rot.length) {
+                writer.uint32(18).fork();
+                for (let i = 0; i < message.Rot.length; ++i)
+                    writer.double(message.Rot[i]);
+                writer.ldelim();
+            }
             if (message.PosRef != null && Object.hasOwnProperty.call(message, "PosRef"))
                 writer.uint32(24).int32(message.PosRef);
             if (message.RotRef != null && Object.hasOwnProperty.call(message, "RotRef"))
                 writer.uint32(32).int32(message.RotRef);
-            if (message.Vel != null && Object.hasOwnProperty.call(message, "Vel"))
-                $root.BasilMessage.Vector3.encode(message.Vel, writer.uint32(42).fork()).ldelim();
-            if (message.Path != null && message.Path.length)
+            if (message.Vel != null && message.Vel.length) {
+                writer.uint32(42).fork();
+                for (let i = 0; i < message.Vel.length; ++i)
+                    writer.double(message.Vel[i]);
+                writer.ldelim();
+            }
+            if (message.Path != null && message.Path.length) {
+                writer.uint32(50).fork();
                 for (let i = 0; i < message.Path.length; ++i)
-                    $root.BasilMessage.Vector4.encode(message.Path[i], writer.uint32(50).fork()).ldelim();
+                    writer.double(message.Path[i]);
+                writer.ldelim();
+            }
             if (message.ItemIdN != null && Object.hasOwnProperty.call(message, "ItemIdN"))
-                writer.uint32(88).uint32(message.ItemIdN);
+                writer.uint32(80).uint32(message.ItemIdN);
             if (message.ItemId != null && Object.hasOwnProperty.call(message, "ItemId"))
-                writer.uint32(98).string(message.ItemId);
+                writer.uint32(90).string(message.ItemId);
             if (message.SessionAuth != null && Object.hasOwnProperty.call(message, "SessionAuth"))
-                writer.uint32(106).string(message.SessionAuth);
+                writer.uint32(98).string(message.SessionAuth);
             if (message.ItemAuth != null && Object.hasOwnProperty.call(message, "ItemAuth"))
-                writer.uint32(114).string(message.ItemAuth);
+                writer.uint32(106).string(message.ItemAuth);
             return writer;
         };
 
@@ -367,10 +140,24 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.Pos = $root.BasilMessage.Vector3.decode(reader, reader.uint32());
+                    if (!(message.Pos && message.Pos.length))
+                        message.Pos = [];
+                    if ((tag & 7) === 2) {
+                        let end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.Pos.push(reader.double());
+                    } else
+                        message.Pos.push(reader.double());
                     break;
                 case 2:
-                    message.Rot = $root.BasilMessage.Vector4.decode(reader, reader.uint32());
+                    if (!(message.Rot && message.Rot.length))
+                        message.Rot = [];
+                    if ((tag & 7) === 2) {
+                        let end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.Rot.push(reader.double());
+                    } else
+                        message.Rot.push(reader.double());
                     break;
                 case 3:
                     message.PosRef = reader.int32();
@@ -379,23 +166,35 @@ export const BasilMessage = $root.BasilMessage = (() => {
                     message.RotRef = reader.int32();
                     break;
                 case 5:
-                    message.Vel = $root.BasilMessage.Vector3.decode(reader, reader.uint32());
+                    if (!(message.Vel && message.Vel.length))
+                        message.Vel = [];
+                    if ((tag & 7) === 2) {
+                        let end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.Vel.push(reader.double());
+                    } else
+                        message.Vel.push(reader.double());
                     break;
                 case 6:
                     if (!(message.Path && message.Path.length))
                         message.Path = [];
-                    message.Path.push($root.BasilMessage.Vector4.decode(reader, reader.uint32()));
+                    if ((tag & 7) === 2) {
+                        let end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.Path.push(reader.double());
+                    } else
+                        message.Path.push(reader.double());
                     break;
-                case 11:
+                case 10:
                     message.ItemIdN = reader.uint32();
                     break;
-                case 12:
+                case 11:
                     message.ItemId = reader.string();
                     break;
-                case 13:
+                case 12:
                     message.SessionAuth = reader.string();
                     break;
-                case 14:
+                case 13:
                     message.ItemAuth = reader.string();
                     break;
                 default:
@@ -416,14 +215,18 @@ export const BasilMessage = $root.BasilMessage = (() => {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.Pos != null && message.hasOwnProperty("Pos")) {
-                let error = $root.BasilMessage.Vector3.verify(message.Pos);
-                if (error)
-                    return "Pos." + error;
+                if (!Array.isArray(message.Pos))
+                    return "Pos: array expected";
+                for (let i = 0; i < message.Pos.length; ++i)
+                    if (typeof message.Pos[i] !== "number")
+                        return "Pos: number[] expected";
             }
             if (message.Rot != null && message.hasOwnProperty("Rot")) {
-                let error = $root.BasilMessage.Vector4.verify(message.Rot);
-                if (error)
-                    return "Rot." + error;
+                if (!Array.isArray(message.Rot))
+                    return "Rot: array expected";
+                for (let i = 0; i < message.Rot.length; ++i)
+                    if (typeof message.Rot[i] !== "number")
+                        return "Rot: number[] expected";
             }
             if (message.PosRef != null && message.hasOwnProperty("PosRef"))
                 switch (message.PosRef) {
@@ -447,21 +250,22 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 case 0:
                 case 1:
                 case 2:
+                case 3:
                     break;
                 }
             if (message.Vel != null && message.hasOwnProperty("Vel")) {
-                let error = $root.BasilMessage.Vector3.verify(message.Vel);
-                if (error)
-                    return "Vel." + error;
+                if (!Array.isArray(message.Vel))
+                    return "Vel: array expected";
+                for (let i = 0; i < message.Vel.length; ++i)
+                    if (typeof message.Vel[i] !== "number")
+                        return "Vel: number[] expected";
             }
             if (message.Path != null && message.hasOwnProperty("Path")) {
                 if (!Array.isArray(message.Path))
                     return "Path: array expected";
-                for (let i = 0; i < message.Path.length; ++i) {
-                    let error = $root.BasilMessage.Vector4.verify(message.Path[i]);
-                    if (error)
-                        return "Path." + error;
-                }
+                for (let i = 0; i < message.Path.length; ++i)
+                    if (typeof message.Path[i] !== "number")
+                        return "Path: number[] expected";
             }
             if (message.ItemIdN != null && message.hasOwnProperty("ItemIdN"))
                 if (!$util.isInteger(message.ItemIdN))
@@ -482,15 +286,19 @@ export const BasilMessage = $root.BasilMessage = (() => {
             if (object instanceof $root.BasilMessage.PositionBlock)
                 return object;
             let message = new $root.BasilMessage.PositionBlock();
-            if (object.Pos != null) {
-                if (typeof object.Pos !== "object")
-                    throw TypeError(".BasilMessage.PositionBlock.Pos: object expected");
-                message.Pos = $root.BasilMessage.Vector3.fromObject(object.Pos);
+            if (object.Pos) {
+                if (!Array.isArray(object.Pos))
+                    throw TypeError(".BasilMessage.PositionBlock.Pos: array expected");
+                message.Pos = [];
+                for (let i = 0; i < object.Pos.length; ++i)
+                    message.Pos[i] = Number(object.Pos[i]);
             }
-            if (object.Rot != null) {
-                if (typeof object.Rot !== "object")
-                    throw TypeError(".BasilMessage.PositionBlock.Rot: object expected");
-                message.Rot = $root.BasilMessage.Vector4.fromObject(object.Rot);
+            if (object.Rot) {
+                if (!Array.isArray(object.Rot))
+                    throw TypeError(".BasilMessage.PositionBlock.Rot: array expected");
+                message.Rot = [];
+                for (let i = 0; i < object.Rot.length; ++i)
+                    message.Rot[i] = Number(object.Rot[i]);
             }
             switch (object.PosRef) {
             case "WGS86":
@@ -535,29 +343,32 @@ export const BasilMessage = $root.BasilMessage = (() => {
             case 0:
                 message.RotRef = 0;
                 break;
-            case "FORR":
+            case "LOCALR":
             case 1:
                 message.RotRef = 1;
                 break;
-            case "CAMERAR":
+            case "FORR":
             case 2:
                 message.RotRef = 2;
                 break;
+            case "CAMERAR":
+            case 3:
+                message.RotRef = 3;
+                break;
             }
-            if (object.Vel != null) {
-                if (typeof object.Vel !== "object")
-                    throw TypeError(".BasilMessage.PositionBlock.Vel: object expected");
-                message.Vel = $root.BasilMessage.Vector3.fromObject(object.Vel);
+            if (object.Vel) {
+                if (!Array.isArray(object.Vel))
+                    throw TypeError(".BasilMessage.PositionBlock.Vel: array expected");
+                message.Vel = [];
+                for (let i = 0; i < object.Vel.length; ++i)
+                    message.Vel[i] = Number(object.Vel[i]);
             }
             if (object.Path) {
                 if (!Array.isArray(object.Path))
                     throw TypeError(".BasilMessage.PositionBlock.Path: array expected");
                 message.Path = [];
-                for (let i = 0; i < object.Path.length; ++i) {
-                    if (typeof object.Path[i] !== "object")
-                        throw TypeError(".BasilMessage.PositionBlock.Path: object expected");
-                    message.Path[i] = $root.BasilMessage.Vector4.fromObject(object.Path[i]);
-                }
+                for (let i = 0; i < object.Path.length; ++i)
+                    message.Path[i] = Number(object.Path[i]);
             }
             if (object.ItemIdN != null)
                 message.ItemIdN = object.ItemIdN >>> 0;
@@ -574,33 +385,43 @@ export const BasilMessage = $root.BasilMessage = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.arrays || options.defaults)
+            if (options.arrays || options.defaults) {
+                object.Pos = [];
+                object.Rot = [];
+                object.Vel = [];
                 object.Path = [];
+            }
             if (options.defaults) {
-                object.Pos = null;
-                object.Rot = null;
                 object.PosRef = options.enums === String ? "WGS86" : 0;
                 object.RotRef = options.enums === String ? "WORLDR" : 0;
-                object.Vel = null;
                 object.ItemIdN = 0;
                 object.ItemId = "";
                 object.SessionAuth = "";
                 object.ItemAuth = "";
             }
-            if (message.Pos != null && message.hasOwnProperty("Pos"))
-                object.Pos = $root.BasilMessage.Vector3.toObject(message.Pos, options);
-            if (message.Rot != null && message.hasOwnProperty("Rot"))
-                object.Rot = $root.BasilMessage.Vector4.toObject(message.Rot, options);
+            if (message.Pos && message.Pos.length) {
+                object.Pos = [];
+                for (let j = 0; j < message.Pos.length; ++j)
+                    object.Pos[j] = options.json && !isFinite(message.Pos[j]) ? String(message.Pos[j]) : message.Pos[j];
+            }
+            if (message.Rot && message.Rot.length) {
+                object.Rot = [];
+                for (let j = 0; j < message.Rot.length; ++j)
+                    object.Rot[j] = options.json && !isFinite(message.Rot[j]) ? String(message.Rot[j]) : message.Rot[j];
+            }
             if (message.PosRef != null && message.hasOwnProperty("PosRef"))
                 object.PosRef = options.enums === String ? $root.BasilMessage.CoordSystem[message.PosRef] : message.PosRef;
             if (message.RotRef != null && message.hasOwnProperty("RotRef"))
                 object.RotRef = options.enums === String ? $root.BasilMessage.RotationSystem[message.RotRef] : message.RotRef;
-            if (message.Vel != null && message.hasOwnProperty("Vel"))
-                object.Vel = $root.BasilMessage.Vector3.toObject(message.Vel, options);
+            if (message.Vel && message.Vel.length) {
+                object.Vel = [];
+                for (let j = 0; j < message.Vel.length; ++j)
+                    object.Vel[j] = options.json && !isFinite(message.Vel[j]) ? String(message.Vel[j]) : message.Vel[j];
+            }
             if (message.Path && message.Path.length) {
                 object.Path = [];
                 for (let j = 0; j < message.Path.length; ++j)
-                    object.Path[j] = $root.BasilMessage.Vector4.toObject(message.Path[j], options);
+                    object.Path[j] = options.json && !isFinite(message.Path[j]) ? String(message.Path[j]) : message.Path[j];
             }
             if (message.ItemIdN != null && message.hasOwnProperty("ItemIdN"))
                 object.ItemIdN = message.ItemIdN;
@@ -785,46 +606,46 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 writer = $Writer.create();
             if (message.ResponseCode != null && Object.hasOwnProperty.call(message, "ResponseCode"))
                 writer.uint32(8).uint32(message.ResponseCode);
-            if (message.ResponseKey != null && Object.hasOwnProperty.call(message, "ResponseKey"))
-                writer.uint32(18).string(message.ResponseKey);
             if (message.StreamId != null && Object.hasOwnProperty.call(message, "StreamId"))
                 writer.uint32(24).uint32(message.StreamId);
             if (message.ProtocolVersion != null && Object.hasOwnProperty.call(message, "ProtocolVersion"))
                 writer.uint32(32).uint32(message.ProtocolVersion);
-            if (message.ChangeSeq != null && Object.hasOwnProperty.call(message, "ChangeSeq"))
-                writer.uint32(80).uint64(message.ChangeSeq);
-            if (message.ChangeTime != null && Object.hasOwnProperty.call(message, "ChangeTime"))
-                writer.uint32(88).uint64(message.ChangeTime);
-            if (message.QueueTime != null && Object.hasOwnProperty.call(message, "QueueTime"))
-                writer.uint32(160).uint32(message.QueueTime);
-            if (message.SendTime != null && Object.hasOwnProperty.call(message, "SendTime"))
-                writer.uint32(168).uint32(message.SendTime);
-            if (message.TransportClass != null && Object.hasOwnProperty.call(message, "TransportClass"))
-                writer.uint32(176).uint32(message.TransportClass);
             if (message.Op != null && Object.hasOwnProperty.call(message, "Op"))
-                writer.uint32(240).uint32(message.Op);
+                writer.uint32(40).uint32(message.Op);
             if (message.SessionAuth != null && Object.hasOwnProperty.call(message, "SessionAuth"))
-                writer.uint32(250).string(message.SessionAuth);
+                writer.uint32(50).string(message.SessionAuth);
             if (message.ItemIdN != null && Object.hasOwnProperty.call(message, "ItemIdN"))
-                writer.uint32(256).uint32(message.ItemIdN);
+                writer.uint32(56).uint32(message.ItemIdN);
             if (message.ItemId != null && Object.hasOwnProperty.call(message, "ItemId"))
-                writer.uint32(266).string(message.ItemId);
-            if (message.ItemAuth != null && Object.hasOwnProperty.call(message, "ItemAuth"))
-                writer.uint32(274).string(message.ItemAuth);
+                writer.uint32(66).string(message.ItemId);
             if (message.IProps != null && Object.hasOwnProperty.call(message, "IProps"))
                 for (let keys = Object.keys(message.IProps), i = 0; i < keys.length; ++i)
-                    writer.uint32(282).fork().uint32(10).string(keys[i]).uint32(18).string(message.IProps[keys[i]]).ldelim();
+                    writer.uint32(74).fork().uint32(10).string(keys[i]).uint32(18).string(message.IProps[keys[i]]).ldelim();
             if (message.AProps != null && message.AProps.length)
                 for (let i = 0; i < message.AProps.length; ++i)
-                    $root.BasilMessage.ParamBlock.encode(message.AProps[i], writer.uint32(290).fork()).ldelim();
+                    $root.BasilMessage.ParamBlock.encode(message.AProps[i], writer.uint32(82).fork()).ldelim();
             if (message.Positions != null && message.Positions.length)
                 for (let i = 0; i < message.Positions.length; ++i)
-                    $root.BasilMessage.PositionBlock.encode(message.Positions[i], writer.uint32(298).fork()).ldelim();
+                    $root.BasilMessage.PositionBlock.encode(message.Positions[i], writer.uint32(90).fork()).ldelim();
             if (message.Exception != null && Object.hasOwnProperty.call(message, "Exception"))
-                writer.uint32(322).string(message.Exception);
+                writer.uint32(98).string(message.Exception);
+            if (message.ResponseKey != null && Object.hasOwnProperty.call(message, "ResponseKey"))
+                writer.uint32(162).string(message.ResponseKey);
+            if (message.ItemAuth != null && Object.hasOwnProperty.call(message, "ItemAuth"))
+                writer.uint32(170).string(message.ItemAuth);
             if (message.ExceptionHints != null && Object.hasOwnProperty.call(message, "ExceptionHints"))
                 for (let keys = Object.keys(message.ExceptionHints), i = 0; i < keys.length; ++i)
-                    writer.uint32(330).fork().uint32(10).string(keys[i]).uint32(18).string(message.ExceptionHints[keys[i]]).ldelim();
+                    writer.uint32(178).fork().uint32(10).string(keys[i]).uint32(18).string(message.ExceptionHints[keys[i]]).ldelim();
+            if (message.ChangeSeq != null && Object.hasOwnProperty.call(message, "ChangeSeq"))
+                writer.uint32(240).uint64(message.ChangeSeq);
+            if (message.ChangeTime != null && Object.hasOwnProperty.call(message, "ChangeTime"))
+                writer.uint32(248).uint64(message.ChangeTime);
+            if (message.QueueTime != null && Object.hasOwnProperty.call(message, "QueueTime"))
+                writer.uint32(320).uint32(message.QueueTime);
+            if (message.SendTime != null && Object.hasOwnProperty.call(message, "SendTime"))
+                writer.uint32(328).uint32(message.SendTime);
+            if (message.TransportClass != null && Object.hasOwnProperty.call(message, "TransportClass"))
+                writer.uint32(336).uint32(message.TransportClass);
             return writer;
         };
 
@@ -842,7 +663,7 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 case 1:
                     message.ResponseCode = reader.uint32();
                     break;
-                case 2:
+                case 20:
                     message.ResponseKey = reader.string();
                     break;
                 case 3:
@@ -851,37 +672,37 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 case 4:
                     message.ProtocolVersion = reader.uint32();
                     break;
-                case 10:
+                case 30:
                     message.ChangeSeq = reader.uint64();
                     break;
-                case 11:
+                case 31:
                     message.ChangeTime = reader.uint64();
                     break;
-                case 20:
+                case 40:
                     message.QueueTime = reader.uint32();
                     break;
-                case 21:
+                case 41:
                     message.SendTime = reader.uint32();
                     break;
-                case 22:
+                case 42:
                     message.TransportClass = reader.uint32();
                     break;
-                case 30:
+                case 5:
                     message.Op = reader.uint32();
                     break;
-                case 31:
+                case 6:
                     message.SessionAuth = reader.string();
                     break;
-                case 32:
+                case 7:
                     message.ItemIdN = reader.uint32();
                     break;
-                case 33:
+                case 8:
                     message.ItemId = reader.string();
                     break;
-                case 34:
+                case 21:
                     message.ItemAuth = reader.string();
                     break;
-                case 35:
+                case 9:
                     reader.skip().pos++;
                     if (message.IProps === $util.emptyObject)
                         message.IProps = {};
@@ -889,20 +710,20 @@ export const BasilMessage = $root.BasilMessage = (() => {
                     reader.pos++;
                     message.IProps[key] = reader.string();
                     break;
-                case 36:
+                case 10:
                     if (!(message.AProps && message.AProps.length))
                         message.AProps = [];
                     message.AProps.push($root.BasilMessage.ParamBlock.decode(reader, reader.uint32()));
                     break;
-                case 37:
+                case 11:
                     if (!(message.Positions && message.Positions.length))
                         message.Positions = [];
                     message.Positions.push($root.BasilMessage.PositionBlock.decode(reader, reader.uint32()));
                     break;
-                case 40:
+                case 12:
                     message.Exception = reader.string();
                     break;
-                case 41:
+                case 22:
                     reader.skip().pos++;
                     if (message.ExceptionHints === $util.emptyObject)
                         message.ExceptionHints = {};
@@ -1108,9 +929,15 @@ export const BasilMessage = $root.BasilMessage = (() => {
             }
             if (options.defaults) {
                 object.ResponseCode = 0;
-                object.ResponseKey = "";
                 object.StreamId = 0;
                 object.ProtocolVersion = 0;
+                object.Op = 0;
+                object.SessionAuth = "";
+                object.ItemIdN = 0;
+                object.ItemId = "";
+                object.Exception = "";
+                object.ResponseKey = "";
+                object.ItemAuth = "";
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, true);
                     object.ChangeSeq = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -1124,37 +951,13 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 object.QueueTime = 0;
                 object.SendTime = 0;
                 object.TransportClass = 0;
-                object.Op = 0;
-                object.SessionAuth = "";
-                object.ItemIdN = 0;
-                object.ItemId = "";
-                object.ItemAuth = "";
-                object.Exception = "";
             }
             if (message.ResponseCode != null && message.hasOwnProperty("ResponseCode"))
                 object.ResponseCode = message.ResponseCode;
-            if (message.ResponseKey != null && message.hasOwnProperty("ResponseKey"))
-                object.ResponseKey = message.ResponseKey;
             if (message.StreamId != null && message.hasOwnProperty("StreamId"))
                 object.StreamId = message.StreamId;
             if (message.ProtocolVersion != null && message.hasOwnProperty("ProtocolVersion"))
                 object.ProtocolVersion = message.ProtocolVersion;
-            if (message.ChangeSeq != null && message.hasOwnProperty("ChangeSeq"))
-                if (typeof message.ChangeSeq === "number")
-                    object.ChangeSeq = options.longs === String ? String(message.ChangeSeq) : message.ChangeSeq;
-                else
-                    object.ChangeSeq = options.longs === String ? $util.Long.prototype.toString.call(message.ChangeSeq) : options.longs === Number ? new $util.LongBits(message.ChangeSeq.low >>> 0, message.ChangeSeq.high >>> 0).toNumber(true) : message.ChangeSeq;
-            if (message.ChangeTime != null && message.hasOwnProperty("ChangeTime"))
-                if (typeof message.ChangeTime === "number")
-                    object.ChangeTime = options.longs === String ? String(message.ChangeTime) : message.ChangeTime;
-                else
-                    object.ChangeTime = options.longs === String ? $util.Long.prototype.toString.call(message.ChangeTime) : options.longs === Number ? new $util.LongBits(message.ChangeTime.low >>> 0, message.ChangeTime.high >>> 0).toNumber(true) : message.ChangeTime;
-            if (message.QueueTime != null && message.hasOwnProperty("QueueTime"))
-                object.QueueTime = message.QueueTime;
-            if (message.SendTime != null && message.hasOwnProperty("SendTime"))
-                object.SendTime = message.SendTime;
-            if (message.TransportClass != null && message.hasOwnProperty("TransportClass"))
-                object.TransportClass = message.TransportClass;
             if (message.Op != null && message.hasOwnProperty("Op"))
                 object.Op = message.Op;
             if (message.SessionAuth != null && message.hasOwnProperty("SessionAuth"))
@@ -1163,8 +966,6 @@ export const BasilMessage = $root.BasilMessage = (() => {
                 object.ItemIdN = message.ItemIdN;
             if (message.ItemId != null && message.hasOwnProperty("ItemId"))
                 object.ItemId = message.ItemId;
-            if (message.ItemAuth != null && message.hasOwnProperty("ItemAuth"))
-                object.ItemAuth = message.ItemAuth;
             let keys2;
             if (message.IProps && (keys2 = Object.keys(message.IProps)).length) {
                 object.IProps = {};
@@ -1183,11 +984,31 @@ export const BasilMessage = $root.BasilMessage = (() => {
             }
             if (message.Exception != null && message.hasOwnProperty("Exception"))
                 object.Exception = message.Exception;
+            if (message.ResponseKey != null && message.hasOwnProperty("ResponseKey"))
+                object.ResponseKey = message.ResponseKey;
+            if (message.ItemAuth != null && message.hasOwnProperty("ItemAuth"))
+                object.ItemAuth = message.ItemAuth;
             if (message.ExceptionHints && (keys2 = Object.keys(message.ExceptionHints)).length) {
                 object.ExceptionHints = {};
                 for (let j = 0; j < keys2.length; ++j)
                     object.ExceptionHints[keys2[j]] = message.ExceptionHints[keys2[j]];
             }
+            if (message.ChangeSeq != null && message.hasOwnProperty("ChangeSeq"))
+                if (typeof message.ChangeSeq === "number")
+                    object.ChangeSeq = options.longs === String ? String(message.ChangeSeq) : message.ChangeSeq;
+                else
+                    object.ChangeSeq = options.longs === String ? $util.Long.prototype.toString.call(message.ChangeSeq) : options.longs === Number ? new $util.LongBits(message.ChangeSeq.low >>> 0, message.ChangeSeq.high >>> 0).toNumber(true) : message.ChangeSeq;
+            if (message.ChangeTime != null && message.hasOwnProperty("ChangeTime"))
+                if (typeof message.ChangeTime === "number")
+                    object.ChangeTime = options.longs === String ? String(message.ChangeTime) : message.ChangeTime;
+                else
+                    object.ChangeTime = options.longs === String ? $util.Long.prototype.toString.call(message.ChangeTime) : options.longs === Number ? new $util.LongBits(message.ChangeTime.low >>> 0, message.ChangeTime.high >>> 0).toNumber(true) : message.ChangeTime;
+            if (message.QueueTime != null && message.hasOwnProperty("QueueTime"))
+                object.QueueTime = message.QueueTime;
+            if (message.SendTime != null && message.hasOwnProperty("SendTime"))
+                object.SendTime = message.SendTime;
+            if (message.TransportClass != null && message.hasOwnProperty("TransportClass"))
+                object.TransportClass = message.TransportClass;
             return object;
         };
 
