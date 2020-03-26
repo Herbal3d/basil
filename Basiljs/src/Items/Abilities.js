@@ -26,10 +26,12 @@ import { JSONstringify } from '../Utilities.js';
 
 // Parent class for an Ability defintion.
 export class AnAbility {
-    constructor(pAbilityCode) {
+    constructor(pAbilityCode, pPropMap) {
         this.Name = pAbilityCode;
         this.state = BItemState.UNINITIALIZED;
         this.eventing = Eventing.Instance();
+
+        this.SetObjPropDefaults(this, pPropMap);
     };
 
     // Link this ability to the enclosing BItem. This is overloaded by actual Ability.
@@ -105,6 +107,19 @@ export function InitializeProps(pObj, pProps, pPropMap) {
         };
     };
 };
+// Set the default values for properties on this object
+export function SetObjPropDefaults(pObj, pPropMap) {
+    pPropMap.forEach( propInfo => {
+        if (propInfo.set) {
+            if (propInfo.default) {
+                propInfo.set(pObj, propInfo.default);
+            }
+            else {
+                propInfo.set(pObj, null);
+            }
+        }
+    });
+}
 // Set the value. We undo the caseness of the property name.
 // This just sets the passed value. Type conversion happens in the PropMap.
 export function SetViaProps(pObj, pPropName, pVal, pPropMap) {

@@ -26,7 +26,7 @@ export class AbilityInstance extends AnAbility {
     static get NAME() { return 'INST' };
 
     constructor() {
-        super(AbilityInstance.NAME); // Code used in protocol to specify this ability
+        super(AbilityInstance.NAME, AbilityInstance.PropsToVars); // Code used in protocol to specify this ability
     };
 
     // Link ability to parent BItem and do initialization
@@ -136,12 +136,14 @@ AbilityInstance.PropsToVars = {
         get: (obj) => { return obj.gPos ? JSON.stringify(obj.gPos) : undefined },
         set: (obj, val) => { obj.gPos = ParseThreeTuple(val) ;},
         propertyName: 'Instance.Position',
+        default: "0,2,4",
         ability: AbilityInstance.NAME
     },
     'rot' : {
         get: (obj) => { return obj.gRot ? JSON.stringify(obj.gRot) : undefined },
         set: (obj, val) => { obj.gRot = ParseFourTuple(val); },
         propertyName: 'Instance.Rotation',
+        default: "0,0,0,1",
         ability: AbilityInstance.NAME
     },
     'possystem' : {
@@ -149,6 +151,7 @@ AbilityInstance.PropsToVars = {
         set: (obj, val) => { obj.gPosCoordSystem = Number(val) ;},
         name: 'posSystem',
         propertyName: 'Instance.PosCoordSystem',
+        default: "0",
         ability: AbilityInstance.NAME
     },
     'rotsystem' : {
@@ -156,6 +159,7 @@ AbilityInstance.PropsToVars = {
         set: (obj, val) => { obj.gRotCoordSystem = Number(val) ;},
         name: 'rotSystem',
         propertyName: 'Instance.RotCoordSystem',
+        default: "0",
         ability: AbilityInstance.NAME
     },
     'did' : {
@@ -168,6 +172,7 @@ AbilityInstance.PropsToVars = {
         get: (obj) => { return obj.displayable ? obj.displayable.state : undefined; },
         name: 'displayableState',
         propertyName: 'Instance.DisplayableState',
+        default: BItemState.UNINITIALIZED,
         ability: AbilityInstance.NAME
     },
 };

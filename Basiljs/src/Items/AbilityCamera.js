@@ -24,7 +24,7 @@ export class AbilityCamera extends AnAbility {
     static get NAME() { return 'CAM' };
 
     constructor() {
-        super(AbilityCamera.NAME); // Code used in protocol to specify this ability
+        super(AbilityCamera.NAME, AbilityCamera.PropsToVals);
     };
 
     // Link ability to parent BItem and do initialization
@@ -78,8 +78,11 @@ AbilityCamera.PropsToVals = {
         get: (obj) => { return JSON.stringify(obj.graphics.camera.position.toArray()); },
         set: (obj, val) => {
             let newPos = ParseThreeTuple(val);
-            obj.graphics.camera.position = (new THREE.Vector3()).fromArray(newPos);
+            if (newPos) {
+                obj.graphics.camera.position = (new THREE.Vector3()).fromArray(newPos);
+            }
         },
+        default: "0,1,2",
         propertyName: 'Camera.Position'
     },
     'rot' : {
@@ -88,18 +91,21 @@ AbilityCamera.PropsToVals = {
             let newRot = ParseFourTuple(val);
             obj.graphics.camera.rotation = (new THREE.Quaterion()).fromArray(newRot);
         },
+        default: "0,0,0,1",
         propertyName: 'Camera.Rotation'
     },
     'possystem' : {
         get: (obj) => { return String(obj.gPosCoordSystem) },
         set: (obj, val) => { obj.gPosCoordSystem = Integer(val) ;},
         name: 'posSystem',
+        default: "0",
         propertyName: 'Camera.PosCoordSystem'
     },
     'rotsystem' : {
         get: (obj) => { return String(obj.gRotCoordSystem) },
         set: (obj, val) => { obj.gRotCoordSystem = Integer(val) ;},
         name: 'rotSystem',
+        default: "0",
         propertyName: 'Camera.RotCoordSystem'
     }
 };

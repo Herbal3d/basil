@@ -25,7 +25,7 @@ export class AbilityDisplayable extends AnAbility {
     static get NAME() { return 'DISP' };
 
     constructor() {
-        super(AbilityDisplayable.NAME); // Code used in protocol to specify this ability
+        super(AbilityDisplayable.NAME, AbilityDisplayable.PropsToVars);
     };
 
     // Connect me to a BItem and do initialization/loading
@@ -48,9 +48,9 @@ export class AbilityDisplayable extends AnAbility {
 
     SetFromValues(pDisplayType, pProps, pAabb, pId) {
         SetViaProps(this, 'displaytype', pDisplayType, AbilityDisplayable.PropsToVars);
-        InitializeProps(this, pProps, AbilityDisplayable.PropsToVars);
         SetViaProps(this, 'aabb', pAabb, AbilityDisplayable.PropsToVars);
         SetViaProps(this, 'id', pId, AbilityDisplayable.PropsToVars);
+        InitializeProps(this, pProps, AbilityDisplayable.PropsToVars);
         return this;
     };
     // deserialized parameters from Map<string,string>()
@@ -68,7 +68,8 @@ export class AbilityDisplayable extends AnAbility {
     LoadDisplayableAsset() {
         let assetInfo = {
             'url': this.Url,
-            'loaderType': this.LoaderType
+            'loaderType': this.LoaderType,
+            'auth': this.DisplayAuth
         }
         this.SetLoading();
         // GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
@@ -110,7 +111,7 @@ export class AbilityDisplayable extends AnAbility {
 
 // Mapping of property list names to properties on this instance.
 // See Ability.InitializeProps() and Ability.GenerateProps() for usage.
-// Property name definitions must be loader case.
+// Property name definitions must be lower case.
 // The 'obj' is the parent BItem.
 // The entries for each property are:
 //          'get', 'set': value get and set operations
@@ -135,6 +136,12 @@ AbilityDisplayable.PropsToVars = {
         get: (obj) => { return obj.Url },
         set: (obj, val) => { obj.Url = val ;},
         name: 'Url',
+        ability: AbilityDisplayable.NAME
+    },
+    'auth' : {
+        get: (obj) => { return obj.DisplayAuth },
+        set: (obj, val) => { obj.DisplayAuth = val ;},
+        name: 'Displayable.Auth',
         ability: AbilityDisplayable.NAME
     },
     'loadertype' : {
