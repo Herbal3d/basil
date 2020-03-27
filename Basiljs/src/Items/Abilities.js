@@ -31,7 +31,7 @@ export class AnAbility {
         this.state = BItemState.UNINITIALIZED;
         this.eventing = Eventing.Instance();
 
-        this.SetObjPropDefaults(this, pPropMap);
+        SetObjPropDefaults(this, pPropMap);
     };
 
     // Link this ability to the enclosing BItem. This is overloaded by actual Ability.
