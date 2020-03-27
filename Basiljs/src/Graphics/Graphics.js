@@ -291,6 +291,8 @@ export class Graphics extends BItem {
             }
             if (loader) {
                 let requestURL = parms.url;
+                // If auth info is in parameters, add a "bearer-*" item into the access URL
+                //     so the receiver can verify the request.
                 if (parms.auth && parms.auth.length > 0) {
                     // Authorization code is packed into the URL
                     let urlPieces = parms.url.split('/');

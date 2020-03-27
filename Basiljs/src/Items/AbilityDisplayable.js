@@ -91,7 +91,7 @@ export class AbilityDisplayable extends AnAbility {
         })
         .catch(err => {
             this.SetFailed();
-            GP.ErrorLog('DisplayableMeshSet: unable to load asset ' + JSONstringify(assetInfo)
+            GP.ErrorLog('AbilityDisplayable: unable to load asset ' + JSONstringify(assetInfo)
                       + ', ERROR=' + JSONstringify(err));
         });
     };
