@@ -23,7 +23,6 @@ import { AbilityDisplayable } from './Items/AbilityDisplayable.js';
 import { AbilityInstance } from './Items/AbilityInstance.js';
 
 import { BasilMessage } from './jslibs/BasilMessages.js'
-import { PosInfo } from './Comm/BasilMessageOps.js';
 import { JSONstringify } from './Utilities.js';
 
 GP.Config = Config;
@@ -108,26 +107,30 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
 GP.DebugLog('Starting SpaceServer');
 GP.client.WhenReady(10000)
 .then( sServer => {
-    let props = GP.client.openSessionProperties;
+    // Fetch the IProps that were saved from the OpenSession request
+    let openSessionProps = GP.client.openSessionProperties;
     let auth = undefined; // no authentication at the moment
-    let anAsset = {
-        'displayableType': 'meshset',
-        'props': {
-            'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-            'loaderType': 'GLTF'
-        }
+    let displayableProps = {
+        'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+        'loaderType': 'GLTF',
+        'displayaType': 'meshset'
     };
     // Add the URL from the configuration file if specified
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
-        anAsset.props = Config.WWTester.comm.TestAsset;
+        displayableProps.props = Config.WWTester.comm.TestAsset;
     }
-    if (props && props.TestURL) {
-        anAsset.props.url = props.TestURL;
-        if (props.TestLoaderType) {
-            anAsset.props.loaderType = props.TestLoaderType;
+    if (openSessionProps) {
+        if (openSessionProps.TestURL) {
+            displayableProps.url = openSessionProps.TestURL;
+        }
+        if (openSessionProps.TestLoaderType) {
+            displayableProps.loaderType = openSessionProps.TestLoaderType;
+        }
+        if (openSessionProps.TestDisplayType) {
+            displayableProps.displayType = openSessionProps.TestDisplayType;
         }
     }
-    GP.DebugLog('Asset spec for CreateItem' + JSON.stringify(anAsset));
+    GP.DebugLog('Asset spec for CreateItem' + JSON.stringify(displayableProps));
 
     let displayableItemId = undefined;
     let displayableItemIdN = undefined;
@@ -135,9 +138,10 @@ GP.client.WhenReady(10000)
     let instanceItemIdN = undefined;
 
     // Create the initial displayable item
-    GP.client.CreateItem(auth, props, [
-            new AbilityDisplayable().SetFromValues(anAsset.displayableType, anAsset.props)
-        ])
+    let createItemProps = {};
+    GP.client.CreateItem(auth, createItemProps, [
+            new AbilityDisplayable().SetFromValues(undefined, displayableProps)
+    ])
     .then( resp => {
         if (resp.Exception) {
             throw new Exception('failed creation of displayable:' + resp.Exception);
@@ -147,14 +151,14 @@ GP.client.WhenReady(10000)
         GP.DebugLog('Created displayable. Id = ' + displayableItemId);
 
         // Create a displayed instance of the displayable
-        let posInfo = PosInfo(
-                    // { x: 0, y: 0, z: 0 }, 
-                    { x: 100, y: 101, z: 102 },
-                    { x: 0, y: 0, z: 0, w: 1 },
-                    BasilMessage.CoordSystem.WGS86,
-                    BasilMessage.RotationSystem.WORLDR);
-        return GP.client.CreateItem(auth, props, [
-            new AbilityInstance().SetFromValues(displayableItemId, posInfo)
+        createItemProps = {};
+        let aProps = {};
+        aProps.Pos = '[ 100, 101, 102 ]';
+        aProps.Rot = '[ 0, 0, 0, 1 ]';
+        aProps.PosRef = '0';   // BasilMessage.CoordSystem.WGS86,
+        aProps.RotRef = '0';   // BasilMessage.RotationSystem.WORLDR
+        return GP.client.CreateItem(auth, createItemProps, [
+            new AbilityInstance().SetFromValues(displayableItemId, aProps)
         ]);
     })
     .then ( resp => {

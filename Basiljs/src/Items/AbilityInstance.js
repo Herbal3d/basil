@@ -50,7 +50,7 @@ export class AbilityInstance extends AnAbility {
 
     // Initialize this ability from individual values
     SetFromValues(pDisplayableId, pPosInfo, pProps) {
-        SetViaProps(this, 'did', pDisplayableId, AbilityInstance.PropsToVars);
+        SetViaProps(this, 'displayableid', pDisplayableId, AbilityInstance.PropsToVars);
         // GP.DebugLog('AbilityInstance.SetFromValues: pPosInfo =' + JSONstringify(pPosInfo));
         if (pPosInfo) {
             SetViaProps(this, 'pos', pPosInfo.Pos, AbilityInstance.PropsToVars);
@@ -78,12 +78,15 @@ export class AbilityInstance extends AnAbility {
             let displayable = BItem.GetItem(this.displayableId);
             if (displayable) {
                 this.displayable = displayable;
-                this.PlaceInWorld();
+                this.PlaceInWorld(this, displayable);
                 this.SetReady();
             }
             else {
                 GP.ErrorLog('AbilityInstance.InstantiateInstance: cannot find displayable ' + this.displayableId);
             };
+        }
+        else {
+            GP.ErrorLog('AbilityInstance.InstantiateInstance: No displayableId specified.');
         };
     };
 
@@ -103,7 +106,8 @@ export class AbilityInstance extends AnAbility {
             }.bind(this))
             .catch( function(e) {
                 // Something wrong with the displayable
-                GP.ErrorLog('AbilityInstance.PlaceInWorld: could not place in world. e=' + e);
+                GP.ErrorLog('AbilityInstance.PlaceInWorld: could not place in world. e='
+                            + JSONstringify(e));
                 this.SetFailed();
             }.bind(this));
         }
@@ -136,36 +140,37 @@ AbilityInstance.PropsToVars = {
         get: (obj) => { return obj.gPos ? JSON.stringify(obj.gPos) : undefined },
         set: (obj, val) => { obj.gPos = ParseThreeTuple(val) ;},
         propertyName: 'Instance.Position',
-        default: "0,2,4",
+        default: "[0,2,4]",
         ability: AbilityInstance.NAME
     },
     'rot' : {
         get: (obj) => { return obj.gRot ? JSON.stringify(obj.gRot) : undefined },
         set: (obj, val) => { obj.gRot = ParseFourTuple(val); },
         propertyName: 'Instance.Rotation',
-        default: "0,0,0,1",
+        default: "[0,0,0,1]",
         ability: AbilityInstance.NAME
     },
     'possystem' : {
-        get: (obj) => { return obj.gPosCoordSystem; },
-        set: (obj, val) => { obj.gPosCoordSystem = Number(val) ;},
+        get: (obj) => { return String(obj.gPosCoordSystem); },
+        set: (obj, val) => { obj.gPosCoordSystem = Number.parseInt(val, 10) ;},
         name: 'posSystem',
         propertyName: 'Instance.PosCoordSystem',
         default: "0",
         ability: AbilityInstance.NAME
     },
     'rotsystem' : {
-        get: (obj) => { return obj.gRotCoordSystem; },
-        set: (obj, val) => { obj.gRotCoordSystem = Number(val) ;},
+        get: (obj) => { return String(obj.gRotCoordSystem); },
+        set: (obj, val) => { obj.gRotCoordSystem = Number.parseInt(val, 10) ;},
         name: 'rotSystem',
         propertyName: 'Instance.RotCoordSystem',
         default: "0",
         ability: AbilityInstance.NAME
     },
-    'did' : {
+    'displayableid' : {
         get: (obj) => { return obj.displayableId },
         set: (obj, val) => { obj.displayableId = val ;},
         name: 'displayableId',
+        propertyName: 'Instance.DisplayableId',
         ability: AbilityInstance.NAME
     },
     'dstate' : {

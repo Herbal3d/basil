@@ -70,9 +70,6 @@ export class Graphics extends BItem {
         if (renderParms.clearColor) {
             this.renderer.setClearColor(this._colorFromValue(renderParms.clearColor));
         }
-        if (renderParms.gammaOutput) {
-            this.renderer.gammaOutput = renderParms.gammaOutput;
-        }
         if (renderParms.gammaFactor) {
             this.renderer.gammaFactor = Number(renderParms.gammaFactor);
         }
@@ -218,15 +215,17 @@ export class Graphics extends BItem {
     //    is added to the instance.
     // The instance is decorated with 'worldNode' which is the underlying
     //    graphical representation object.
-    // Assume the displayable is ready
+    // Assume the displayable is ready.
     PlaceInWorld(pInst, pDisp) {
         if (typeof(pInst.worldNode) === 'undefined') {
-            // GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + pInst.id);
+            GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + pInst.id);
+            GP.DebugLog('Graphics.PlaceInWorld: pInst=' + pInst + ', pDisp=' +pDisp);
             let worldNode = new THREE.Group();
             worldNode.position.fromArray(pInst.gPos);
             worldNode.quaternion.fromArray(pInst.gRot);
             worldNode.name = pInst.parent.id;
             if (Array.isArray(pDisp.representation)) {
+                GP.DebugLog('Graphics.PlaceInWorld: adding ' + pieces.count + ' nodes to worldNode');
                 pDisp.representation.forEach( piece => {
                     worldNode.add(piece.clone());
                 });
@@ -241,10 +240,12 @@ export class Graphics extends BItem {
         };
         if (pInst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
             // item is camera relative
+            GP.DebugLog('Graphics.PlaceInWorld: adding to camera');
             this._addNodeToCamera(pInst.worldNode);
         }
         else {
             // item is world coordinate relative
+            GP.DebugLog('Graphics.PlaceInWorld: adding to world');
             this._addNodeToWorld(pInst.worldNode);
         };
     };

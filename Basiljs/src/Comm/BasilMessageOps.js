@@ -15,8 +15,6 @@ import { GP } from 'GLOBALS';
 
 import { BasilMessage } from '../jslibs/BasilMessages.js';
 
-import { MakeArray3, MakeArray4, JSONstringify } from '../Utilities.js';
-
 // A simple pointer to the codes for messages so everyone doesn't include jslibs
 export let BasilMessageOps = BasilMessage.BasilMessageOps;
 
@@ -39,16 +37,4 @@ export function BuildBasilMessageOpMap() {
             BasilMessageOpMap.set(elementAsNum, BasilMessage.BasilMessageOps[element]);
         }
     };
-}
-
-// Create and return a PositionBlock with the passed information
-export function PosInfo(pPos, pRot, pPosRef, pRotRef, pVel) {
-    let ret = {};
-    if (typeof(pPos) !== 'undefined') ret.Pos = MakeArray3(pPos);
-    if (typeof(pRot) !== 'undefined') ret.Rot = MakeArray4(pRot);
-    if (typeof(pPosRef) !== 'undefined') ret.PosRef = pPosRef;
-    if (typeof(pRotRef) !== 'undefined') ret.RotRef = pRotRef;
-    if (typeof(pVel) !== 'undefined') ret.Vel = MakeArray3(pVel);
-    // GP.DebugLog('PosInfo: created ' + JSONstringify(ret));
-    return ret;
 }

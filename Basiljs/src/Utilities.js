@@ -115,7 +115,13 @@ export function JSONstringify(obj) {
 export function ParseThreeTuple(tuple) {
     let val = tuple
     if (typeof(tuple) === 'string') {
-        val = JSON.parse(tuple);
+        try {
+            val = JSON.parse(tuple);
+        }
+        catch (e) {
+            GP.DebugLog("Utility.ParseThreeTuple: JSON parse failure on '" + tuple + "', e=" + e);
+            val = null;
+        }
     }
     if (!Array.isArray(val)) {
         let ret = [ 0, 0, 0 ];

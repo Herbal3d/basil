@@ -109,7 +109,8 @@ export function InitializeProps(pObj, pProps, pPropMap) {
 };
 // Set the default values for properties on this object
 export function SetObjPropDefaults(pObj, pPropMap) {
-    pPropMap.forEach( propInfo => {
+    Object.keys(pPropMap).forEach( propName => {
+        let propInfo = pPropMap[propName];
         if (propInfo.set) {
             if (propInfo.default) {
                 propInfo.set(pObj, propInfo.default);
@@ -141,6 +142,9 @@ export function SetViaProps(pObj, pPropName, pVal, pPropMap) {
                 // GP.DebugLog('Abilities.SetViaProps: setting random property ' + pPropName + ' to ' + pVal);
             }
             else {
+                // This error means someone is trying to reset the value on an
+                //    existing object property. This is either a mistake or someone
+                //    being malicious. Not good in either case.
                 GP.ErrorLog('Abilities.SetViaProps: trying to reset value for ' + pPropName);
             };
         };
@@ -157,7 +161,7 @@ export function GenerateProps(pObj, pPropMap) {
             if (propInfo.get) {
                 let propName = propInfo.name ? propInfo.name : key;
                 let val = propInfo.get(pObj);
-                if (typeof(val) !== 'undefined') {
+                if (typeof(val) !== 'undefined' && val !== null && val !== 'null') {
                     ret[propName] = val;
                 };
             };

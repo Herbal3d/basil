@@ -192,8 +192,6 @@ GP.AU = new Auth();
 GP.GR = new Graphics(container, canvas, Eventing.Instance());
 GP.CO = new Controls(Eventing.Instance());
 GP.CM = new Comm();
-// The following is a kludge that gets WebPack to load Globals in correct order
-GP.AB = new AnAbility('XXXX');
 
 // Push the 'Start' button
 GP.AU.Start();

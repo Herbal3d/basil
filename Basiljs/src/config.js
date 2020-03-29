@@ -98,7 +98,6 @@ export default {
             'clearColor': [ 0.1, 0.1, 0.1 ],
             'shadows': false,
             // As suggested in the ThreeJS documentation for GLTFLoader:
-            'gammaOutput': true,
             'gammaFactor': 2.20
         },
     },
@@ -140,7 +139,8 @@ export default {
                 // 'url': 'http://files.misterblue.com/BasilTest/convoar/Atropia_11/smallassets/Atropia_11.gltf',
                 // 'url': 'http://files.misterblue.com/BasilTest/convoar/Atropia_11/unoptimized/Atropia_11.gltf',
                 'url': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-                'loaderType': 'GLTF'
+                'loaderType': 'GLTF',
+                'displayType': 'meshset'
             }
         }
     },

@@ -15,6 +15,8 @@ import { GP } from 'GLOBALS';
 import Config from '../config.js';
 import { BException } from '../BException.js';
 
+import { ParseThreeTuple, ParseFourTuple } from '../Utilities.js';
+
 import { AnAbility, InitializeProps, GenerateProps, SetViaProps } from './Abilities.js';
 
 // A instance capability specifies an Item with AbilityDisplayable
@@ -78,32 +80,34 @@ AbilityCamera.PropsToVals = {
         get: (obj) => { return JSON.stringify(obj.graphics.camera.position.toArray()); },
         set: (obj, val) => {
             let newPos = ParseThreeTuple(val);
-            if (newPos) {
+            if (newPos && obj.graphics) {
                 obj.graphics.camera.position = (new THREE.Vector3()).fromArray(newPos);
             }
         },
-        default: "0,1,2",
+        default: "[0,1,2]",
         propertyName: 'Camera.Position'
     },
     'rot' : {
         get: (obj) => { return JSON.stringify(obj.graphics.camera.rotation.toArray()); },
         set: (obj, val) => {
             let newRot = ParseFourTuple(val);
-            obj.graphics.camera.rotation = (new THREE.Quaterion()).fromArray(newRot);
+            if (newRot && obj.graphics) {
+                obj.graphics.camera.rotation = (new THREE.Quaterion()).fromArray(newRot);
+            }
         },
-        default: "0,0,0,1",
+        default: "[0,0,0,1]",
         propertyName: 'Camera.Rotation'
     },
     'possystem' : {
         get: (obj) => { return String(obj.gPosCoordSystem) },
-        set: (obj, val) => { obj.gPosCoordSystem = Integer(val) ;},
+        set: (obj, val) => { obj.gPosCoordSystem = Number.parseInt(val, 10) ;},
         name: 'posSystem',
         default: "0",
         propertyName: 'Camera.PosCoordSystem'
     },
     'rotsystem' : {
         get: (obj) => { return String(obj.gRotCoordSystem) },
-        set: (obj, val) => { obj.gRotCoordSystem = Integer(val) ;},
+        set: (obj, val) => { obj.gRotCoordSystem = Number.parseInt(val, 10) ;},
         name: 'rotSystem',
         default: "0",
         propertyName: 'Camera.RotCoordSystem'

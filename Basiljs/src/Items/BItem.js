@@ -217,18 +217,28 @@ export class BItem {
         let ret = {};
         if (filter) {
             this.props.forEach((propDesc, prop) => {
-                // Some wildcard testing
+                // TODO: Some wildcard testing
+                // If this description has an ability name, get value directly from there
                 let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
                 if (propDesc.get) {
-                    ret[prop] = propDesc.get(tthis);
+                    let val = propDesc.get(tthis);
+                    if (typeof(val) !== 'undefined' && val !== null
+                                        && val !== 'null' && val !== 'undefined') {
+                        ret[prop] = val;
+                    }
                 }
             });
         }
         else {
             this.props.forEach((propDesc, prop) => {
+                // If this description has an ability name, get value directly from there
                 let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
                 if (propDesc.get) {
-                    ret[prop] = propDesc.get(tthis);
+                    let val = propDesc.get(tthis);
+                    if (typeof(val) !== 'undefined' && val !== null
+                                        && val !== 'null' && val !== 'undefined') {
+                        ret[prop] = val;
+                    }
                 }
                 // GP.DebugLog('BItem.FetchProperties: setting ' + prop + ' = ' + ret[prop]);
             });
@@ -476,28 +486,41 @@ export class BItem {
     // Normally everything is READY. Otherwise, return the worse state.
     //     UNINITIALIZED LOADING FAILED READY SHUTDOWN
     CombineState(prevState, newState) {
+        let ret = BItemState.UNINITIALIZED;
         if (newState == BItemState.READY && prevState == BItemState.READY) {
-            return BItemState.READY;
-        };
-        // Not the simple case of READY. If someone is already in SHUTDOWN, everyone is shutdown
-        if (prevState == BItemState.SHUTDOWN) {
-            return BItemState.SHUTDOWN;
+            ret = BItemState.READY;
         }
-        // If the new state is failed or shutdown, that's what it will be
-        if (newState == BItemState.FAILED || newState == BItemState.SHUTDOWN) {
-            return newState;
+        else {
+            // Not the simple case of READY. If someone is already in SHUTDOWN, everyone is shutdown
+            if (prevState == BItemState.SHUTDOWN) {
+                ret = BItemState.SHUTDOWN;
+            }
+            else {
+                // If the new state is failed or shutdown, that's what it will be
+                if (newState == BItemState.FAILED || newState == BItemState.SHUTDOWN) {
+                    ret = newState;
+                }
+                else {
+                    // Anyone being unitialized makes everyone that way
+                    if (newState == BItemState.UNINITIALIZED) {
+                        ret = newState;
+                    }
+                    else {
+                        // The newState is either LOADING or READY
+                        // If READY, we know prevState is not READY so don't change the state.
+                        if (newState == BItemState.READY) {
+                            ret = prevState;
+                        }
+                        else {
+                            // newState is LOADING and prevState is not any of the bad ones
+                            ret = newState;
+                        }
+                    }
+                }
+            }
         }
-        // Anyone being unitialized makes everyone that way
-        if (newState == BItemState.UNINITIALIZED) {
-            return newState;
-        }
-        // The newState is either LOADING or READY
-        // If READY, we know prevState is not READY so don't change the state.
-        if (newState == BItemState.READY) {
-            return prevState;
-        }
-        // newState is LOADING and prevState is not any of the bad ones
-        return newState;
+        // GP.DebugLog('BItem.CombineState: prev=' + prevState + ', new=' + newState + ', ret=' + ret);
+        return ret;
     };
 };
 

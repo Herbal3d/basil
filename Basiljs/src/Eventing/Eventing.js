@@ -247,7 +247,6 @@ export class Eventing extends BItem {
     CreateTimedEventProcessor (topicEntryOrTopic, processor) {
         let topic = topicEntryOrTopic;
         if ('topic' in topicEntryOrTopic) {
-            GP.DebugLog("Eventing.createTimedEventProcessor: topicEntry. Getting topic");
             topic = topicEntryOrTopic.topic;
         }
         this.timedEventProcessors.set(topic, processor);
