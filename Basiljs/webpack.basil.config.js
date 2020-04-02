@@ -15,7 +15,7 @@ module.exports = {
   },
   output: {
     // use webpack.HashedModuleIdsPlugin to create unique filenames for each build
-    filename: '[name].[chunkhash].js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist')
   },
   // Create aliases for the main components so filenames aren't required in each file
@@ -39,8 +39,6 @@ module.exports = {
     },
     // runtimeChunk: false,
     runtimeChunk: 'single',
-    // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
-    moduleIds: 'hashed'
   },
   plugins: [
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)

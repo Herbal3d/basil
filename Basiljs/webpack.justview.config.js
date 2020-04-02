@@ -9,7 +9,7 @@ module.exports = {
     justview: './src/Entry/JustView.js'
   },
   output: {
-    filename: '[name].[chunkhash].js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
@@ -29,8 +29,6 @@ module.exports = {
       chunks: 'all'
     },
     runtimeChunk: false,
-    // Keep track of the module versions/hashs so chunkhash doesn't change unless files change
-    moduleIds: 'hashed'
   },
   plugins: [
     // Create dist/Entry.html from my template
