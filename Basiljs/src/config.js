@@ -35,7 +35,7 @@ export default {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
         'showDebug': false,
-        'debugLogLines': 20
+        'debugLogLines': 30
     },
     // Loader for assets
     'assetLoader': {
