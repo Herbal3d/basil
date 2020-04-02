@@ -31,15 +31,20 @@ export class AbilityCamera extends AnAbility {
 
     // Link ability to parent BItem and do initialization
     Link(pParent) {
-        this.parent = pParent;
-        // A kludge that gives the camerae to the Graphics instance.
-        // In the future, there might be multiple graphics engines.
-        this.graphics = GP.GR;
-        // Kludge: someday figure out how to pass the evening root around
-        this.parent.EventName_OnChangePos = 'Pos-' + AbilityCamera.NAME + '-' + this.parent.id;
-        this.parent.EventName_OnChangeRot = 'Rot-' + AbilityCamera.NAME + '-' + this.parent.id;
+        return new Promise( function(resolve, reject) {
+            this.parent = pParent;
+            // A kludge that gives the camerae to the Graphics instance.
+            // In the future, there might be multiple graphics engines.
+            this.graphics = GP.GR;
 
-        this.parent.DefinePropertiesWithProps(AbilityCamera.PropsToVals);
+            // Set for change of position and rotation change events
+            this.parent.EventName_OnChangePos = 'Pos-' + AbilityCamera.NAME + '-' + this.parent.id;
+            this.parent.EventName_OnChangeRot = 'Rot-' + AbilityCamera.NAME + '-' + this.parent.id;
+
+            this.parent.DefinePropertiesWithProps(AbilityCamera.PropsToVals);
+
+            resolve(this);
+        }.bind(this) );
     };
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.

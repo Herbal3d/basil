@@ -218,34 +218,34 @@ export class Graphics extends BItem {
     // Assume the displayable is ready.
     PlaceInWorld(pInst, pDisp) {
         if (typeof(pInst.worldNode) === 'undefined') {
-            GP.DebugLog('Graphics.PlaceInWorld: creating THREE node for ' + pInst.id);
-            GP.DebugLog('Graphics.PlaceInWorld: pInst=' + pInst + ', pDisp=' +pDisp);
-            let worldNode = new THREE.Group();
-            worldNode.position.fromArray(pInst.gPos);
-            worldNode.quaternion.fromArray(pInst.gRot);
-            worldNode.name = pInst.parent.id;
-            if (Array.isArray(pDisp.representation)) {
-                GP.DebugLog('Graphics.PlaceInWorld: adding ' + pieces.count + ' nodes to worldNode');
-                pDisp.representation.forEach( piece => {
-                    worldNode.add(piece.clone());
-                });
+            try {
+                let worldNode = new THREE.Group();
+                worldNode.position.fromArray(pInst.gPos);
+                worldNode.quaternion.fromArray(pInst.gRot);
+                worldNode.name = pInst.parent.id;
+                if (Array.isArray(pDisp.representation)) {
+                    pDisp.representation.forEach( piece => {
+                        worldNode.add(piece.clone());
+                    });
+                }
+                else {
+                    worldNode.add(pDisp.representation.clone());
+                }
+                pInst.worldNode = worldNode;
             }
-            else {
-                worldNode.add(pDisp.representation.clone());
+            catch (e) {
+                GP.ErrorLog('Graphics.PlaceInWorld: Exception adding. e=' + JSONStringify(e));
             }
-            pInst.worldNode = worldNode;
         }
         else {
             return; // already in world
         };
         if (pInst.gPosCoordSystem == Coord.CoordSystem.CAMERA) {
             // item is camera relative
-            GP.DebugLog('Graphics.PlaceInWorld: adding to camera');
             this._addNodeToCamera(pInst.worldNode);
         }
         else {
             // item is world coordinate relative
-            GP.DebugLog('Graphics.PlaceInWorld: adding to world');
             this._addNodeToWorld(pInst.worldNode);
         };
     };

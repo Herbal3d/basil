@@ -29,6 +29,7 @@ export class AbilityDisplayable extends AnAbility {
     };
 
     // Connect me to a BItem and do initialization/loading
+    // Returns a promise that resolves when the displayable is loaded
     Link(pParent) {
         this.parent = pParent;
         // A kludge that give all Displayables a handle to the Graphics instance.
@@ -37,7 +38,8 @@ export class AbilityDisplayable extends AnAbility {
 
         this.parent.DefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
 
-        this.LoadDisplayableAsset();
+        // This returns a promise that is resolved to the loaded AbilityDisplayable
+        return this.LoadDisplayableAsset();
     };
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
@@ -65,6 +67,7 @@ export class AbilityDisplayable extends AnAbility {
 
     // Do the loading of the underlying asset that is the displayable.
     // Loading progress is reported in this Ability's state.
+    // Returns a Promise that is completed when the object is loaded.
     LoadDisplayableAsset() {
         let assetInfo = {
             'url': this.Url,
@@ -72,28 +75,32 @@ export class AbilityDisplayable extends AnAbility {
             'auth': this.DisplayAuth
         }
         this.SetLoading();
-        // GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
-        this.graphics.LoadSimpleAsset(assetInfo)
-        .then(theAsset => {
-            if (this.state == BItemState.LOADING) {
-                // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
-                // GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
-                // 'theAsset' is a list of ThreeJS nodes.
-                // 'representation' is whatever the graphics engine has for this asset
-                this.representation = theAsset;
-                this.SetReady();
-            }
-            else {
-                // The object went out of 'LOADING' while off in graphics.
-                // Leave the new state.
-                this.representation = theAsset; // so it can be freed.
-            };
-        })
-        .catch(err => {
-            this.SetFailed();
-            GP.ErrorLog('AbilityDisplayable: unable to load asset ' + JSONstringify(assetInfo)
-                      + ', ERROR=' + JSONstringify(err));
-        });
+        return new Promise( function(resolve, reject) {
+            // GP.DebugLog('DisplayableMeshSet.constructor: begining load of asset.State to LOADING');
+            this.graphics.LoadSimpleAsset(assetInfo)
+            .then(function(theAsset) {
+                if (this.state == BItemState.LOADING) {
+                    // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
+                    // GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
+                    // 'theAsset' is a list of ThreeJS nodes.
+                    // 'representation' is whatever the graphics engine has for this asset
+                    this.representation = theAsset;
+                    this.SetReady();
+                }
+                else {
+                    // The object went out of 'LOADING' while off in graphics.
+                    // Leave the new state.
+                    this.representation = theAsset; // so it can be freed.
+                };
+                resolve(this);
+            }.bind(this) )
+            .catch(function(err) {
+                this.SetFailed();
+                GP.ErrorLog('AbilityDisplayable: unable to load asset ' + JSONstringify(assetInfo)
+                          + ', ERROR=' + JSONstringify(err));
+                reject(new BException(err));
+            }.bind(this) );
+        }.bind(this) );
     };
 
     ReleaseResources() {

@@ -12,6 +12,7 @@
 'use strict';
 
 import { GP } from 'GLOBALS';
+import { BException } from '../BException.js';
 
 import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '../Utilities.js';
 
@@ -30,6 +31,7 @@ export class AbilityInstance extends AnAbility {
     };
 
     // Link ability to parent BItem and do initialization
+    // returns a Promise that resolves when the Displayable is Instanced
     Link(pParent) {
         this.parent = pParent;
 
@@ -40,7 +42,11 @@ export class AbilityInstance extends AnAbility {
 
         this.SetLoading();
 
-        this.InstantiateInstance();
+        return new Promise( function(resolve, reject) {
+            this.InstantiateInstance();
+
+            resolve(this);
+        }.bind(this) );
     };
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
@@ -78,8 +84,13 @@ export class AbilityInstance extends AnAbility {
             let displayable = BItem.GetItem(this.displayableId);
             if (displayable) {
                 this.displayable = displayable;
-                this.PlaceInWorld(this, displayable);
-                this.SetReady();
+                this.PlaceInWorld()
+                .then( function(disp) {
+                    this.SetReady();
+                }.bind(this) )
+                .catch(err => {
+                    GP.ErrorLog('AbilityInstance.InstantiateInstance: ' + err.Msg);
+                });
             }
             else {
                 GP.ErrorLog('AbilityInstance.InstantiateInstance: cannot find displayable ' + this.displayableId);
@@ -91,30 +102,37 @@ export class AbilityInstance extends AnAbility {
     };
 
     // Do whatever is needed to place this instance into the graphics scene.
+    // Returns a Promise that is resolved when the Instance is in the scene.
     PlaceInWorld() {
-        if (this.displayable) {
-            // TODO: if displayable is not ready, should display the bounding box
-            this.displayable.WhenReady()
-            .then( function(disp) {
-                let abilityDisp = disp.GetAbility(AbilityDisplayable.NAME);
-                if (abilityDisp) {
-                    abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
-                }
-                else {
-                    GP.ErrorLog('AbilityInstance.PlaceInWorld: cannot get displayable ability');
-                }
-            }.bind(this))
-            .catch( function(e) {
-                // Something wrong with the displayable
-                GP.ErrorLog('AbilityInstance.PlaceInWorld: could not place in world. e='
-                            + JSONstringify(e));
-                this.SetFailed();
-            }.bind(this));
-        }
-        else {
-            GP.ErrorLog('AbilityInstance.PlaceInWorld: no displayable set. InstId=' + this.parent.id);
-
-        };
+        return new Promise( function(resolve, reject) {
+            if (this.displayable) {
+                // TODO: if displayable is not ready, should display the bounding box
+                this.displayable.WhenReady()
+                .then( function(disp) {
+                    let abilityDisp = disp.GetAbility(AbilityDisplayable.NAME);
+                    if (abilityDisp) {
+                        abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
+                    }
+                    else {
+                        GP.ErrorLog('AbilityInstance.PlaceInWorld: cannot get displayable ability');
+                    }
+                    resolve(disp);
+                }.bind(this))
+                .catch( function(e) {
+                    // Something wrong with the displayable
+                    let err = 'AbilityInstance.PlaceInWorld: could not place in world. e='
+                                + JSONstringify(e);
+                    GP.ErrorLog(err);
+                    this.SetFailed();
+                    reject(new BException(err));
+                }.bind(this));
+            }
+            else {
+                let err = 'AbilityInstance.PlaceInWorld: no displayable set. InstId=' + this.parent.id;
+                GP.ErrorLog(err);
+                reject(new BException(err));
+            };
+        }.bind(this) );
     };
 
     // Do whatever is needed to remove this instance from the graphics scene.

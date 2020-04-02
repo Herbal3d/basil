@@ -35,6 +35,7 @@ export class AnAbility {
     };
 
     // Link this ability to the enclosing BItem. This is overloaded by actual Ability.
+    // Returns a Promise.
     Link(pParent) {
         GP.ErrorLog('AnAbility: call of undefined Link()');
         throw new BException('AnAbility: call of undefined Link()');

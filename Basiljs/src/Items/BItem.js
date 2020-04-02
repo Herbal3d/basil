@@ -147,10 +147,12 @@ export class BItem {
             else {
                 this.abilities.set(pAbility.Name, pAbility);
                 // Add the ability to this BItem
-                pAbility.Link(this);
+                pAbility.Link(this)
+                .then( function(abil) {
+                    this.SetReady();
+                }.bind(this) );
 
                 // The state of the BItem is READY but the ability will take precidence
-                this.SetReady();
             };
         };
     };
