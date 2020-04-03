@@ -120,7 +120,7 @@ export class AbilityInstance extends AnAbility {
                 }.bind(this))
                 .catch( function(e) {
                     // Something wrong with the displayable
-                    let err = 'AbilityInstance.PlaceInWorld: could not place in world. e='
+                    let err = 'AbilityInstance.PlaceInWorld: timeout waiting for displayable to load. e='
                                 + JSONstringify(e);
                     GP.ErrorLog(err);
                     this.SetFailed();

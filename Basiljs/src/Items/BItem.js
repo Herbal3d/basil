@@ -75,7 +75,7 @@ export class BItem {
         BItem.AddItem(this.id, this);
 
         // The base BItem is just ready. This is usually overridden by Abilities.
-        this.BItemState = BItemState.UNINITIALIZED;
+        this.bItemState = BItemState.UNINITIALIZED;
         // Enable when people start using this
         // this.EventName_OnStateChange = 'StateChange-' + this.id;
 
@@ -103,8 +103,8 @@ export class BItem {
     // Set the state of this BItem.
     // The local BItem state is combined with the state of the abilities.
     SetState(newState) {
-        let oldState = this.BItemState;
-        this.BItemState = newState;
+        let oldState = this.bItemState;
+        this.bItemState = newState;
         this.FireStateChangeEvent(newState, oldState);
     };
     // Helper functions so caller doesn't need to have BItem imports.
@@ -126,7 +126,7 @@ export class BItem {
 
     // Scan through all the abilities and compute the overall state
     GetState() {
-        let ret = this.BItemState;
+        let ret = this.bItemState;
         this.abilities.forEach( (val, key) => {
             ret = this.CombineState(ret, val.GetState());
         });
@@ -372,56 +372,55 @@ export class BItem {
     //    Would make a useful display when things are slow/hung.
     WhenReady(timeoutMS) {
         return new Promise( function(resolve, reject) {
+            if (this.state == BItemState.READY) {
+                resolve(this);
+            };
             if (this.NeverGonnaBeReady()) {
                 reject(this);
             };
-            if (this.state == BItemState.READY) {
-                resolve(this);
-            }
-            else {
-                let checkInterval = 200;
-                if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
-                    checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
-                }
-                let timeout = 5000;
-                if (Config.assets && Config.assets.assetFetchTimeoutMS) {
-                    timeout = Number(Config.assets.assetFetchTimeoutMS);
-                }
-                if (timeoutMS) {  // use the passed timeout if specified
-                    timeout = timeoutMS;
-                }
-                // Wait for 'checkInterval' and test again for 'READY'.
-                setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
-                    if (this.NeverGonnaBeReady()) {
-                        rejecter(this);
-                    }
-                    let levelTimeout = calledTimeout - checkInterval;
-                    if (this.state == BItemState.READY) {
-                        resolver(this);
-                    }
-                    if (levelTimeout <= 0) {
-                        rejecter(this);
-                    }
-                    // If still not ready, tail recursion to more waiting
-                    this.WhenReady(levelTimeout)
-                    .then(xitem => {
-                        if (this.NeverGonnaBeReady()) {
-                            rejector(this);
-                        }
-                        resolver(xitem);
-                    })
-                    .catch(xitem => {
-                        rejecter(xitem);
-                    });
-                }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
+            let checkInterval = 200;
+            if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
+                checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
             };
+            let timeout = 5000;
+            if (Config.assets && Config.assets.assetFetchTimeoutMS) {
+                timeout = Number(Config.assets.assetFetchTimeoutMS);
+            };
+            if (timeoutMS) {  // use the passed timeout if specified
+                timeout = timeoutMS;
+            };
+            // Wait for 'checkInterval' and test again for 'READY'.
+            setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
+                if (this.NeverGonnaBeReady()) {
+                    rejecter(this);
+                }
+                let levelTimeout = calledTimeout - checkInterval;
+                if (this.state == BItemState.READY) {
+                    resolver(this);
+                }
+                if (levelTimeout <= 0) {
+                    rejecter(this);
+                }
+                // If still not ready, tail recursion to more waiting
+                this.WhenReady(levelTimeout)
+                .then(xitem => {
+                    if (xitem.NeverGonnaBeReady()) {
+                        rejector(xitem);
+                    }
+                    resolver(xitem);
+                })
+                .catch(xitem => {
+                    rejecter(xitem);
+                });
+            }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
         }.bind(this));
     };
     // Return 'true' if something is wrong with this BItem and it will never go READY.
     NeverGonnaBeReady() {
+        let currentState = this.state;
         return this.deleteInProcess
-                || this.state == BItemState.FAILED
-                || this.state == BItemState.SHUTDOWN;
+                || currentState == BItemState.FAILED
+                || currentState == BItemState.SHUTDOWN;
     };
 
     // Release any resources this item might be holding.
