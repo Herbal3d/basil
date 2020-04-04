@@ -371,6 +371,61 @@ export class BItem {
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
     WhenReady(timeoutMS) {
+        if (typeof(this.whenReadyLevel) === 'undefined') this.whenReadyLevel = 1;
+        return new Promise( function(resolve, reject) {
+            if (this.state == BItemState.READY) {
+                GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
+                resolve(this);
+            }
+            else {
+                if (this.NeverGonnaBeReady()) {
+                    reject(this);
+                }
+                else {
+                    let checkInterval = 200;
+                    if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
+                        checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
+                    };
+                    let timeout = 5000;
+                    if (Config.assets && Config.assets.assetFetchTimeoutMS) {
+                        timeout = Number(Config.assets.assetFetchTimeoutMS);
+                    };
+                    if (timeoutMS) {  // use the passed timeout if specified
+                        timeout = timeoutMS;
+                    };
+                    if (timeout <= 0) {
+                        GP.DebugLog('BItem.WhenReady: reject timeout. lvl=' + this.whenReadyLevel + ', id=' + this.id);
+                        reject(this);
+                    }
+                    // Wait for 'checkInterval' and test again for 'READY'.
+                    GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
+                                + ' with timeout ' + timeout
+                                + ', id=' + this.id);
+                    BItem.WaitABit(checkInterval)
+                    .then( function() {
+                        timeout = timeout - checkInterval;
+                        this.whenReadyLevel++;
+                        this.WhenReady(timeout)
+                        .then( function(xitem) {
+                            GP.DebugLog('BItem.WhenReady: READY. lvl=' + this.whenReadyLevel + ', id=' + this.id);
+                            this.whenReadyLevel--;
+                            resolve(this);
+                        }.bind(this) )
+                        .catch( function(e) {
+                            GP.DebugLog('BItem.WhenReady: NOT READY. lvl=' + this.whenReadyLevel + ', id=' + this.id);
+                            this.whenReadyLevel--;
+                            reject(this);
+                        }.bind(this) );
+                    }.bind(this) );
+                };
+            };
+        }.bind(this) );
+    };
+    static WaitABit(ms) {
+        return new Promise( resolver => { setTimeout(resolver, ms); } );
+    };
+    /*
+    WhenReady(timeoutMS) {
         return new Promise( function(resolve, reject) {
             if (this.state == BItemState.READY) {
                 resolve(this);
@@ -390,31 +445,41 @@ export class BItem {
                 timeout = timeoutMS;
             };
             // Wait for 'checkInterval' and test again for 'READY'.
+            GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval + ' with timeout ' + timeout);
             setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
                 if (this.NeverGonnaBeReady()) {
                     rejecter(this);
                 }
-                let levelTimeout = calledTimeout - checkInterval;
                 if (this.state == BItemState.READY) {
+                    GP.DebugLog('BItem.WhenReady: resolver READY');
                     resolver(this);
                 }
+                let levelTimeout = calledTimeout - checkInterval;
                 if (levelTimeout <= 0) {
+                    GP.DebugLog('BItem.WhenReady: rejecter timeout');
                     rejecter(this);
                 }
+                GP.DebugLog('BItem.WhenReady: waited. Still not ready. levelTimout=' + levelTimeout);
                 // If still not ready, tail recursion to more waiting
                 this.WhenReady(levelTimeout)
                 .then(xitem => {
                     if (xitem.NeverGonnaBeReady()) {
                         rejector(xitem);
                     }
+                    GP.DebugLog('BItem.WhenReady: in WhenReady. resolver READY');
                     resolver(xitem);
                 })
                 .catch(xitem => {
+                    GP.DebugLog('BItem.WhenReady: in WhenReady. rejecter timeout');
                     rejecter(xitem);
                 });
+                GP.DebugLog('BItem.WhenReady: exiting after inner WhenReady');
             }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
+            GP.DebugLog('BItem.WhenReady: exiting after setTimeout');
         }.bind(this));
+        GP.DebugLog('BItem.WhenReady: exiting end');
     };
+    */
     // Return 'true' if something is wrong with this BItem and it will never go READY.
     NeverGonnaBeReady() {
         let currentState = this.state;

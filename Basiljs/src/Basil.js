@@ -203,7 +203,7 @@ GP.Ready = true;
 // If there are connection parameters, start the first connection
 if (Config.comm && Config.comm.transportURL) {
     GP.DebugLog('Basiljs: starting transport and service: ' + JSONstringify(Config.comm));
-    GP.CM.ConnectTransportAndService(Config.comm)
+    GP.CM.ConnectTransportAndService(GP.CM, Config.comm)
     .then( srv => {
         GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
         try {

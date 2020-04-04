@@ -191,56 +191,7 @@ GP.client.WhenReady(10000)
         GP.ErrorLog('Test failure');
         if (displayableItemId) GP.ErrorLog('    Displayable ItemId = ' + displayableItemId);
         if (instanceItemId) GP.ErrorLog('    Instance ItemId = ' + instanceItemId);
-        GP.ErrorLog('    Error = ' + e);
+        GP.ErrorLog('    Error = ' + JSONstringify(e));
 
     });
-
-    /*
-    GP.client.IdentifyDisplayableObject(auth, anAsset)
-    .then( resp => {
-        if (resp.exception) {
-            GP.DebugLog('failed creation of displayable:' + resp.exception.reason);
-        }
-        else {
-            let displayableId = resp.objectId.id;
-            GP.DebugLog('Created displayable ' + displayableId);
-            let instancePositionInfo = {
-                // 'id': { 'id': someID },  // not needed for creation
-                'pos': {
-                    // 'pos': { x: 100, y: 101, z: 102 },
-                    'pos': { x: 0, y: 0, z: 0 },
-                    // 'rot': { x: 0, y: 0, z: 0, w: 1 },
-                    'posRef': BasilType.CoordSystem.WGS86,
-                    'rotRef': BasilType.RotationSystem.WORLDR
-                }
-            };
-            GP.client.CreateObjectInstance(auth, displayableId, instancePositionInfo)
-            .then( resp => {
-                if (resp.exception) {
-                    GP.DebugLog('failed creation of instance:' + resp.exception.reason);
-                }
-                else {
-                    let instanceId = resp.instanceId.id;
-                    GP.DebugLog('Created instance ' + instanceId);
-                    GP.client.RequestInstanceProperties(auth, instanceId)
-                    .then( resp => {
-                        if (resp.exception) {
-                            GP.DebugLog('failed fetching of instance properties: ' + resp.exception.reason);
-                        }
-                        else {
-                            if (resp.properties) {
-                                GP.DebugLog('Fetched properties for ' + instanceId + ':');
-                                Object.keys(resp.properties).forEach(prop => {
-                                    GP.DebugLog('    ' + prop + ' => ' + resp.properties[prop]);
-                                });
-                            }
-                        }
-                    })
-                }
-            });
-        }
-        // One asset is in the scene
-    });
-    */
-
 });

@@ -49,7 +49,7 @@ export class Comm extends BItem {
 
     // Make a connection to a service.
     // 'parms' is passed to the created transport/service
-    ConnectTransport(parms) {
+    static ConnectTransport(pComm, parms) {
         let params = CombineParameters(undefined, parms, {
             'transportId': undefined,     // identifier for the created transport
             'transport': 'WS',            // the type of transport to connect (WW, WS, test)
@@ -59,8 +59,8 @@ export class Comm extends BItem {
         return new Promise(function(resolve, reject) {
             let xport = undefined;
             // If there is already a transport for this destination URL, return that
-            if (this.transports.has(params.transporturl)) {
-                xport = this.transports.get(params.transporturl);
+            if (pComm.transports.has(params.transporturl)) {
+                xport = pComm.transports.get(params.transporturl);
                 GP.DebugLog('Comm.ConnectTransport: reusing transport '
                             + xport.id
                             + ' (' + params.transporturl + ')' );
@@ -84,7 +84,7 @@ export class Comm extends BItem {
                             GP.ErrorLog(errorMsg);
                             reject(errorMsg);
                     }
-                    this.transports.set(params.transporturl, xport);
+                    pComm.transports.set(params.transporturl, xport);
                     GP.DebugLog('Comm.ConnectTransport: created transport ' + xport.id)
                 }
                 catch(e) {
@@ -106,7 +106,7 @@ export class Comm extends BItem {
                 GP.ErrorLog(errorMsg);
                 reject(errorMsg);
             }
-        }.bind(this));
+        });
     };
 
     // This will connect a transport to either a Pseto service or a
@@ -114,7 +114,7 @@ export class Comm extends BItem {
     // Note: this just makes the transport connection and sets up the messsage
     //     processors. Actual communication happens later.
     // Returns a Promise that has a handle to the created processor or undefined.
-    ConnectService(pTransport, pParams) {
+    static ConnectService(pComm, pTransport, pParams) {
         let params = CombineParameters(undefined, pParams, {
             'service': 'BasilComm',     // or 'Pesto'
             'serviceId': undefined,     // if not passed, unique one created
@@ -146,29 +146,6 @@ export class Comm extends BItem {
                     GP.ErrorLog(errorMsg)
                     reject(errorMsg)
                     break;
-                    /*
-                    svc = new SpaceServerClientConnection(pTransport, params);
-                    // A connection to the space server also lets the server talk to Basil
-                    svc.basilClient = new BasilServerConnection(pTransport, params);
-                    svc.aliveCheck = new AliveCheckConnection(pTransport, params);
-                    svc.aliveCheck.Start();
-                    svc.basilClient.Start();
-                    svc.Start();
-                    GP.DebugLog('Comm.Connect: created SpaceServerClientConnection. Id=' + svc.id);
-                    resolve(svc);
-                    break;
-                case 'Pesto':
-                    GP.ErrorLog('Comm.Connect: SOMEONE CALLED for Pesto!!');
-                    svc = new PestoClientConnection(pTransport, params);
-                    svc.basilClient = new BasilServerConnection(pTransport, params);
-                    svc.aliveCheck = new AliveCheckConnection(pTransport, params);
-                    svc.aliveCheck.Start();
-                    svc.basilClient.Start();
-                    svc.Start();
-                    GP.DebugLog('Comm.Connect: created PestoClientConnection. Id=' + svc.id);
-                    resolve(svc);
-                    break;
-                    */
                 default:
                     errorMsg = 'Comm.Connect: service type unknown: ' + JSONstringify(params.service);
                     GP.ErrorLog(errorMsg)
@@ -177,21 +154,21 @@ export class Comm extends BItem {
         });
     };
 
-    ConnectTransportAndService(pParams) {
+    ConnectTransportAndService(pComm, pParams) {
         let params = CombineParameters(undefined, pParams, {
-            'transportId': undefined,     // identifier for the created transport
-            'transport': 'WS',            // the type of transport to connect (WW, WS, test)
-            'transportURL': undefined,    // URL to connect transport to
+            'transportId': undefined,   // identifier for the created transport
+            'transport': 'WS',          // the type of transport to connect (WW, WS, test)
+            'transportURL': undefined,  // URL to connect transport to
             'waitTilTransportReadyMS': 5000,    // MS before timeout waiting for transport ready
             'service': 'BasilComm',     // or 'Pesto'
-            'serviceId': undefined,       // if not passed, unique one created
-            'pestoId': undefined          // if not passed, unique one created
+            'serviceId': undefined,     // if not passed, unique one created
+            'pestoId': undefined        // if not passed, unique one created
         });
-        return new Promise((resolve, reject) => {
-            this.ConnectTransport(params)
-            .then( xport => {
+        return new Promise( function(resolve, reject) {
+            Comm.ConnectTransport(pComm, params)
+            .then( function(xport) {
                 GP.DebugLog('Comm.ConnectTransportAndService: transport connected. Id=' + xport.id);
-                this.ConnectService(xport, params)
+                Comm.ConnectService(pComm, xport, params)
                 .then( srv => {
                     GP.DebugLog('Comm.ConnectTransportAndService: service connected. Id=' + srv.id);
                     resolve(srv);
@@ -199,10 +176,10 @@ export class Comm extends BItem {
                 .catch ( e => {
                     reject(e);
                 });
-            })
+            } )
             .catch( e => {
                 reject(e);
             });
-        });
+        } );
     }
 }
