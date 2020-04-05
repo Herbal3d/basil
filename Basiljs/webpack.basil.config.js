@@ -5,6 +5,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -42,9 +43,9 @@ module.exports = {
   },
   plugins: [
     // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
-    new webpack.ProvidePlugin({
-        THREE: path.resolve(__dirname, 'src/jslibs/three.min.js')
-    }),
+    // new webpack.ProvidePlugin({
+    //     THREE: path.resolve(__dirname, 'src/jslibs/three.min.js')
+    // }),
 
     // Create dist/Basil.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
@@ -61,7 +62,13 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
-    })
+    }),
+    //     ref: https://webpack.js.org/plugins/copy-webpack-plugin/
+    new CopyWebpackPlugin([
+      {
+        from: 'src/jslibs/three.min.js'
+      }
+    ])
   ],
   module: {
     rules: [
