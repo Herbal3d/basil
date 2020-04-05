@@ -366,15 +366,15 @@ export class BItem {
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.
     // If the item is deleted while waiting, this Promise is rejected.
+    // Note that this promise returns this item for both the resolve and reject
     // TODO: this is a kludge routine using polling. Use state change
     //    events when they existw
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
     WhenReady(timeoutMS) {
-        if (typeof(this.whenReadyLevel) === 'undefined') this.whenReadyLevel = 1;
         return new Promise( function(resolve, reject) {
             if (this.state == BItemState.READY) {
-                GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
+                // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
                 resolve(this);
             }
             else {
@@ -386,6 +386,10 @@ export class BItem {
                     if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
                         checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
                     };
+                    let maxCheckInterval = 1000;
+                    if (Config.assets && Config.assets.assetFetchCheckIntervalMaxMS) {
+                        maxCheckInterval = Number(Config.assets.assetFetchCheckIntervalMaxMS);
+                    };
                     let timeout = 5000;
                     if (Config.assets && Config.assets.assetFetchTimeoutMS) {
                         timeout = Number(Config.assets.assetFetchTimeoutMS);
@@ -394,35 +398,36 @@ export class BItem {
                         timeout = timeoutMS;
                     };
                     if (timeout <= 0) {
-                        GP.DebugLog('BItem.WhenReady: reject timeout. lvl=' + this.whenReadyLevel + ', id=' + this.id);
+                        // GP.DebugLog('BItem.WhenReady: reject timeout. id=' + this.id);
                         reject(this);
                     }
-                    // Wait for 'checkInterval' and test again for 'READY'.
-                    GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
-                                + ' with timeout ' + timeout
-                                + ', id=' + this.id);
-                    BItem.WaitABit(checkInterval)
-                    .then( function() {
-                        timeout = timeout - checkInterval;
-                        this.whenReadyLevel++;
-                        this.WhenReady(timeout)
-                        .then( function(xitem) {
-                            GP.DebugLog('BItem.WhenReady: READY. lvl=' + this.whenReadyLevel + ', id=' + this.id);
-                            this.whenReadyLevel--;
-                            resolve(this);
-                        }.bind(this) )
-                        .catch( function(e) {
-                            GP.DebugLog('BItem.WhenReady: NOT READY. lvl=' + this.whenReadyLevel + ', id=' + this.id);
-                            this.whenReadyLevel--;
-                            reject(this);
-                        }.bind(this) );
-                    }.bind(this) );
+                    else {
+                        // Wait for 'checkInterval' and test again for 'READY'.
+                        // GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
+                        //             + ' with timeout ' + timeout
+                        //             + ', id=' + this.id);
+                        BItem.WaitABit(checkInterval, this)
+                        .then( xitem => {
+                            checkInterval += checkInterval;
+                            if (checkInterval > maxCheckInterval) checkInterval = maxCheckInterval;
+                            timeout = timeout - checkInterval;
+                            xitem.WhenReady(timeout)
+                            .then( yitem => {
+                                // GP.DebugLog('BItem.WhenReady: READY. id=' + yitem.id);
+                                resolve(yitem);
+                            })
+                            .catch( zitem => {
+                                // GP.DebugLog('BItem.WhenReady: NOT READY. id=' + zitem.id);
+                                reject(zitem);
+                            });
+                        });
+                    };
                 };
             };
         }.bind(this) );
     };
-    static WaitABit(ms) {
-        return new Promise( resolver => { setTimeout(resolver, ms); } );
+    static WaitABit(ms, pParam) {
+        return new Promise( resolver => { setTimeout(resolver, ms, pParam); } );
     };
     /*
     WhenReady(timeoutMS) {
