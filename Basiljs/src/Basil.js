@@ -208,28 +208,15 @@ if (Config.comm && Config.comm.transportURL) {
         GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
         try {
             let srvParams = {};
-            if (Config.comm.testmode) {
-                // If a test session, pass the test parameters to the service
-                Object.assign(srvParams, {
-                    'TestConnection': 'true',
-                    'TestURL': Config.comm.TestAsset.url,
-                    'TestLoaderType': Config.comm.TestAsset.loaderType
-                });
-            }
+            // If the invoker passed auth information, construct response with our auth info.
+            let userAuth = Config.auth ? Config.auth.UserAuth : undefined;
+            let sessionKey = Config.auth? Config.auth.SessionKey : undefined;
             // Create a token that authenticates incoming requests
-            srv.SetIncomingAuth(CreateToken('Basil'));
-            let authForOpen = null;
-            // If the invoker passed auth information, construct response with our auth info
-            if (Config.auth) {
-                authForOpen = {
-                    'accessProperties': {
-                        'SessionKey': Config.auth.SessionKey,   // key identifying this session
-                        'Auth': Config.auth.UserAuth,       // my auth for making requests to service
-                        'ClientAuth': srv.IncomingAuth      // auth for making requests to me
-                    }
-                }
-            }
-            srv.OpenSession(authForOpen, srvParams)
+            let clientAuth = CreateToken('Basil');
+            srvParams['ClientAuth'] = clientAuth;
+            srv.SetIncomingAuth(clientAuth);
+
+            srv.OpenSession(userAuth, sessionKey, srvParams)
             .then( resp => {
                 if (resp.exception) {
                     GP.DebugLog('Basiljs: OpenSession failed: '

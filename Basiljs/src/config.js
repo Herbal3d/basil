@@ -34,7 +34,7 @@ export default {
     'page': {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
-        'showDebug': false,
+        'showDebug': true,
         'debugLogLines': 30
     },
     // Loader for assets
@@ -125,7 +125,7 @@ export default {
     },
     // Connection and debug information when running the WebWorker test
     'WWTester': {
-        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
+        'LogToConsole': true,       // Log to console. Otherwise, use msg to debug BItem
         'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
@@ -136,9 +136,6 @@ export default {
             'service': 'SpaceServerClient',
             'TestAsset': {
                 // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                // 'url': 'http://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
-                // 'url': 'http://files.misterblue.com/BasilTest/convoar/Atropia_11/smallassets/Atropia_11.gltf',
-                // 'url': 'http://files.misterblue.com/BasilTest/convoar/Atropia_11/unoptimized/Atropia_11.gltf',
                 'url': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
                 'loaderType': 'GLTF',
                 'displayType': 'meshset'
@@ -148,12 +145,12 @@ export default {
     // Various flags that turn on/off debug logging, etc
     'Debug': {
       'CollectDebug': true,                 // output debugging info
-      'DebugLogToConsole': false,           // output debug message to console rather than debug window
+      'DebugLogToConsole': true,           // output debug message to console rather than debug window
       'VerifyProtocol': false,              // call 'verify' on created protocol messages
-      'MsgProcessorProcessPrintMsg': false, // DebugLog each message processed by MsgProcessor
-      'MsgProcessorResponsePrintMsg': false, // DebugLog each message sent as a response by MsgProcessor
-      'SendAndPromisePrintMsg': false,      // DebugLog each message sent with expected response
-      'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
+      'MsgProcessorProcessPrintMsg': true, // DebugLog each message processed by MsgProcessor
+      'MsgProcessorResponsePrintMsg': true, // DebugLog each message sent as a response by MsgProcessor
+      'SendAndPromisePrintMsg': true,      // DebugLog each message sent with expected response
+      'HandleResponsePrintMsg': true,      // DebugLog each message handled as a response
       'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
     },
     // Information for loading multiple Atropia regions with filename and displacement.
@@ -168,6 +165,19 @@ export default {
         [ "convoar/Atropia_20.gltf", [512,0,512] ],
         [ "convoar/Atropia_21.gltf", [512,0,256] ],
         [ "convoar/Atropia_22.gltf", [512,0,0] ]
+    ],
+    // Used by Entry.js/Entry.html to specify BasilTest URLs
+    'BasilTestURLs': [
+        {   'URL': 'ws://127.0.0.1:14690',
+            'Description': 'LocalHost',
+            'selected': true
+        },
+        {   'URL': 'ws://regions.herbal3d.org:14690',
+            'Description': 'Region test service (region.herbal3d.org:14690)',
+        },
+        {   'URL': 'ws://basiltest.herbal3d.org:14690',
+            'Description': 'Official test service (basiltest.herbal3d.org:14690)',
+        }
     ],
     // Used by Entry.js/Entry.html to select grid.
     // Specifies a grid name and the 'get_grid_info' URL for that grid.
@@ -199,6 +209,7 @@ export default {
             'LoginURL': 'http://region.herbal3d.org:9000/'
         }
     ],
+    // Used by Entry.js/Entry.html to select test files to load.
     'TestGLTFFiles': [
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',

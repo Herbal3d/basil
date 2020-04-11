@@ -65,6 +65,7 @@ let GetSelectedValue = function(optionID) {
 
 LoadGridSelection();
 LoadTestURLs();
+LoadBasilTestURLs();
 
 GP.CO = new Controls();
 GP.CO.ShowDebug(true);      // make debug stuff visible
@@ -85,6 +86,27 @@ GP.CO.ClickableOps['testBasil'] = function() {
                 'url': selectedScene,
                 'loaderType': 'GLTF'
             }
+        }
+    };
+    console.log('testConfigParams=' + JSONstringify(testConfigParams));
+
+    let configParams = Base64.encode(JSONstringify(testConfigParams));
+
+    window.location = 'Basil.html?c=' + configParams;
+};
+GP.CO.ClickableOps['connectBasilTest'] = function() {
+    let basilTestURL = GetSelectedValue('test-basilURL');
+    testConfigParams = {
+        'comm': {
+            'testmode': true,
+            'transport': 'WS',
+            'transportURL': basilTestURL,
+            'service': 'BasilComm'
+        },
+        'auth': {
+            // Made up numbers for testing
+            'SessionKey': 'EntrySession-' + RandomIdentifier(),               // identifier for the session
+            'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
         }
     };
     console.log('testConfigParams=' + JSONstringify(testConfigParams));
@@ -463,7 +485,23 @@ function LoadTestURLs() {
             selectNode.appendChild(opt);
         });
     }
-}
+};
+// Load the possible BasilTest URLs
+function LoadBasilTestURLs() {
+    if (Config.BasilTestURLs) {
+        let selectNode = document.getElementById('test-basilURL');
+        Config.BasilTestURLs.forEach( testURL => {
+            let opt = document.createElement('option');
+            opt.setAttribute('value', testURL.URL);
+            opt.appendChild(document.createTextNode(testURL.Description));
+            selectNode.appendChild(opt);
+            if (testURL.Selected) {
+                opt.setAttribute('selected', '');
+            }
+            selectNode.appendChild(opt);
+        });
+    };
+};
 
 // ======================================================
 // Given a DOM node, remove all its children.

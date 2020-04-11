@@ -90,14 +90,22 @@
         </div>
         -->
         <div class="dialog-group">
-
             <fieldset>
-                <legend>Test operation</legend>
+                <legend>Test operation -- WebWorker</legend>
                 <div class="textDisplayAccent">Invoke Basil viewer with WebWorker tester to load the selected scene</div>
                 <span id="sceneSelection">
+                    <!-- filled by the script from Config.Grids -->
                     <select id="test-sceneURL"> </select>
                 </span>
                 <button type="button" class="button clickable" op="testBasil">Launch</button>
+            </fieldset>
+            <fieldset>
+                <legend>Test operation -- BasilTest</legend>
+                <div class="textDisplayAccent">Invoke BasilTest to do remote  functionality testing</div>
+                <span id="basilTestSelection">
+                    <select id="test-basilURL"> </select>
+                </span>
+                <button type="button" class="button clickable" op="connectBasilTest">Launch</button>
             </fieldset>
         </div>
         <!--

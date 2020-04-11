@@ -200,10 +200,14 @@ export class BasilComm extends MsgProcessor {
         return ret;
     };
 
-    OpenSession(pAuth, propertyList) {
+    // OpenSession has an 'extended' authorization as it contains the new sessionkey
+    //    as well as the auth for access the service.
+    OpenSession(pUserAuth, pSessionKey, propertyList) {
         let msg = { 'Op': BasilMessageOps.OpenSessionReq};
-        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (pUserAuth) msg['SessionAuth'] = pUserAuth;
+        if (pSessionKey) msg['SessionKey'] = pSessionKey;
         if (propertyList) msg['IProps'] = this.CreatePropertyList(propertyList);
+        GP.DebugLog('BasilComm.OpenSession: sending message: ' + JSONstringify(msg));
         return this.SendAndPromiseResponse(msg);
     };
     _procOpenSessionSession(req) {
