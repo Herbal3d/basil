@@ -135,8 +135,8 @@ export default {
             'transportURL': './wwtester.js',
             'service': 'SpaceServerClient',
             'TestAsset': {
-                // 'displayableurl': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                'displayableurl': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                // 'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
                 'loaderType': 'GLTF',
                 'displayType': 'meshset'
             }

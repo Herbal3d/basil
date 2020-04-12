@@ -111,7 +111,7 @@ GP.client.WhenReady(10000)
     let openSessionProps = GP.client.openSessionProperties;
     let auth = undefined; // no authentication at the moment
     let displayableProps = {
-        'displayableurl': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+        'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
         'loaderType': 'GLTF',
         'displayableType': 'meshset'
     };
