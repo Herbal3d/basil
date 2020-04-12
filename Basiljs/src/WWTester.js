@@ -109,7 +109,6 @@ GP.client.WhenReady(10000)
 .then( sServer => {
     // Fetch the IProps that were saved from the OpenSession request
     let openSessionProps = GP.client.openSessionProperties;
-    let auth = undefined; // no authentication at the moment
     let displayableProps = {
         'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
         'loaderType': 'GLTF',
@@ -140,7 +139,7 @@ GP.client.WhenReady(10000)
 
     // Create the initial displayable item
     let createItemProps = {};
-    GP.client.CreateItem(auth, createItemProps, [
+    GP.client.CreateItem(createItemProps, [
             new AbilityDisplayable().SetFromValues(undefined, displayableProps)
     ])
     .then( resp => {
@@ -159,7 +158,7 @@ GP.client.WhenReady(10000)
             'PosRef': '0',   // BasilMessage.CoordSystem.WGS86,
             'RotRef': '0'    // BasilMessage.RotationSystem.WORLDR
         };
-        return GP.client.CreateItem(auth, createItemProps, [
+        return GP.client.CreateItem(createItemProps, [
             new AbilityInstance().SetFromValues(displayableItemId, aProps)
         ]);
     })
@@ -172,7 +171,7 @@ GP.client.WhenReady(10000)
         GP.DebugLog('Created instance. Id = ' + instanceItemId);
 
         // Get the properties for the instance
-        return GP.client.RequestProperties(auth, instanceItemId);
+        return GP.client.RequestProperties(instanceItemId);
     })
     .then ( resp => {
         if (resp.Exception) {

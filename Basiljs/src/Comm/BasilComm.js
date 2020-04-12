@@ -81,9 +81,9 @@ export class BasilComm extends MsgProcessor {
     Close() {
     };
 
-    CreateItem(pAuth, pProps, pAbilities) {
+    CreateItem(pProps, pAbilities) {
         let msg = { 'Op': BasilMessageOps.CreateItemReq};
-        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (pProps) msg['IProps'] = this.CreatePropertyList(pProps);
         if (pAbilities) msg['AProps'] = this.BuildAbilityProps(pAbilities);
         return this.SendAndPromiseResponse(msg);
@@ -122,9 +122,9 @@ export class BasilComm extends MsgProcessor {
       return ret;
     };
 
-    DeleteItem(pAuth, pId, pItemAuth) {
+    DeleteItem(pId, pItemAuth) {
         let ret = { 'Op': BasilMessageOps.DeleteItemReq};
-        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (pId) msg['ItemId'] = pId;
         if (pItemAuth) msg['ItemAuth'] = pItemAuth;
         return this.SendAndPromiseResponse(msg);
@@ -144,23 +144,47 @@ export class BasilComm extends MsgProcessor {
         }
         else {
             ret['Exception'] = 'Not authorized';
-      };
+        };
       return ret;
     };
 
-    AddAbility(pAuth, pId, pAbilities) {
+    AddAbility(pId, pAbilities) {
+        let ret = { 'Op': BasilMessageOps.AddAbilityReq};
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
+        // TODO:
+        return this.SendAndPromiseResponse(msg);
     };
     _procAddAbility(req) {
+        let ret = { 'Op': BasilMessageOps.AddAbilityResp};
+        if (this._CheckAuth(req.SessionAuth)) {
+            // TODO:
+        }
+        else {
+            ret['Exception'] = 'Not authorized';
+        };
+        return ret;
     };
     
-    RemoveAbility(pAuth, pId, pAbilities) {
+    RemoveAbility(pId, pAbilities) {
+        let ret = { 'Op': BasilMessageOps.RemoveAbilityReq};
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
+        // TODO:
+        return this.SendAndPromiseResponse(msg);
     };
     _procRemoveAbility(req) {
+        let ret = { 'Op': BasilMessageOps.RemoveAbilityResp};
+        if (this._CheckAuth(req.SessionAuth)) {
+            // TODO:
+        }
+        else {
+            ret['Exception'] = 'Not authorized';
+        };
+        return ret;
     };
     
-    RequestProperties(pAuth, pId, filter) {
+    RequestProperties(pId, filter) {
         let msg = { 'Op': BasilMessageOps.RequestPropertiesReq};
-        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (pId) msg['ItemId'] = pId;
         if (filter) msg['IProps'] = this.CreatePropertyList({ 'filter': filter });
         return this.SendAndPromiseResponse(msg);
@@ -183,9 +207,9 @@ export class BasilComm extends MsgProcessor {
         return ret;
     };
 
-    UpdateProperties(pAuth, pId, pProps) {
+    UpdateProperties(pId, pProps) {
         let msg = { 'Op': BasilMessageOps.UpdatePropertiesReq};
-        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (pId) msg['ItemId'] = pId;
         if (pProps) msg['IProps'] = this.CreatePropertyList(pProps);
         return this.SendAndPromiseResponse(msg);
@@ -237,9 +261,9 @@ export class BasilComm extends MsgProcessor {
         return msg;
     };
 
-    CloseSession(pAuth, reason) {
+    CloseSession(reason) {
         let msg = { 'Op': BasilMessageOps.CloseSessionReq};
-        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (reason) msg['IProps'] = this.CreatePropertyList({ 'reason': reason } );
         return this.SendAndPromiseResponse(msg);
     };
@@ -248,15 +272,17 @@ export class BasilComm extends MsgProcessor {
         return ret;
     };
 
-    MakeConnection(pAuth, propertyList) {
-
+    MakeConnection(propertyList) {
+        let msg = { 'Op': BasilMessageOps.MakeConnectionReq};
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
+        return this.SendAndPromiseResponse(msg);
     };
     _procMakeConnection(req) {
     };
 
-    AliveCheck(pAuth) {
+    AliveCheck() {
         let msg = { 'Op': BasilMessageOps.AliveCheckReq};
-        if (pAuth) msg['pAuth'] = pAuth;
+        if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         msg['IProps'] = this.CreatePropertyList( {
             'time': Date.now(),
             'sequenceNum': this.aliveSequenceNum++
