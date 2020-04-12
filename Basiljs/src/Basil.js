@@ -27,7 +27,7 @@ import { Eventing } from './Eventing/Eventing.js';
 import { Graphics } from './Graphics/Graphics.js';
 import { Controls } from './Controls/Controls.js';
 import { Comm } from './Comm/Comm.js';
-import { Auth, CreateToken } from './Auth/Auth.js';
+import { CreateToken } from './Auth/Auth.js';
 import { AnAbility } from './Items/Abilities.js';
 
 import { JSONstringify } from './Utilities.js';
@@ -188,13 +188,11 @@ let canvas = document.getElementById(Config.page.webGLcanvasId);
 
 // Create the major component instances (Singletons)
 GP.EV = new Eventing();
-GP.AU = new Auth();
 GP.GR = new Graphics(container, canvas, Eventing.Instance());
 GP.CO = new Controls(Eventing.Instance());
 GP.CM = new Comm();
 
 // Push the 'Start' button
-GP.AU.Start();
 GP.CO.Start();
 GP.GR.Start();
 GP.CM.Start();
@@ -214,9 +212,10 @@ if (Config.comm && Config.comm.transportURL) {
             // Create a token that authenticates incoming requests
             let clientAuth = CreateToken('Basil');
             srvParams['ClientAuth'] = clientAuth;
+            srvParams['SessionKey'] = sessionKey;
             srv.SetIncomingAuth(clientAuth);
 
-            srv.OpenSession(userAuth, sessionKey, srvParams)
+            srv.OpenSession(userAuth, srvParams)
             .then( resp => {
                 if (resp.exception) {
                     GP.DebugLog('Basiljs: OpenSession failed: '

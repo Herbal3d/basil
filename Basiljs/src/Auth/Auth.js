@@ -20,7 +20,7 @@ import { BItem, BItemType } from '../Items/BItem.js';
 import { Base64 } from 'js-base64';
 
 // Create an identifying token. Just randomly generated.
-export static function CreateToken(connection) {
+export function CreateToken(connection) {
     let token = RandomIdentifier() + RandomIdentifier() + RandomIdentifier();
     if (connection) {
         token = connection + '-' + token;
@@ -29,13 +29,13 @@ export static function CreateToken(connection) {
 }
 
 // As good as 'never'. This will be a problem in 2300.
-export static function ExpirationNever() {
+export function ExpirationNever() {
     return '2299-12-31T23:59:59Z';
 }
 
 export class AuthToken extends BItem {
     constructor() {
-        super(CreateToken(CreateToken('Basil'), null, BItemType.SERVICE);
+        super(CreateToken('Basil'), null, BItemType.SERVICE);
         this.srv = 'Basil';             // Service
         this.exp = ExpirationNever();   // expiration time of this token
         this.sid = undefined;           // serviceId
@@ -79,5 +79,5 @@ export class AuthToken extends BItem {
 }
 
 // Return a new AuthToken instance built from the passed string.
-export static function FromString(pTokenString) {
+export function FromString(pTokenString) {
 }

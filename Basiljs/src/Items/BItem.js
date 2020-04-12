@@ -150,6 +150,10 @@ export class BItem {
                 pAbility.Link(this)
                 .then( function(abil) {
                     this.SetReady();
+                }.bind(this) )
+                .catch( function(e) {
+                    this.SetFailed();
+                    GP.DebugLog('BItem.AddAbility: failed linking ability: ' + JSONstringify(e));
                 }.bind(this) );
 
                 // The state of the BItem is READY but the ability will take precidence
@@ -241,6 +245,9 @@ export class BItem {
                                         && val !== 'null' && val !== 'undefined') {
                         ret[prop] = val;
                     }
+                    // else {
+                    //     GP.DebugLog('BItem.FetchProperties: not fetching ' + prop + ' because value null');
+                    // }
                 }
                 // GP.DebugLog('BItem.FetchProperties: setting ' + prop + ' = ' + ret[prop]);
             });
@@ -294,6 +301,7 @@ export class BItem {
     DefineProperty(propertyName, propertyDefinition) {
         if (propertyName && propertyDefinition) {
             this.props.set(propertyName, propertyDefinition);
+            GP.DebugLog('BItem.DefineProperty: adding ' + propertyName);
 
             /*  This adds the property to this Object as a property.
               Had some problems with this so use GetProperty and SetProperty.
@@ -329,7 +337,7 @@ export class BItem {
     DefinePropertiesWithProps(pPropMap) {
         Object.keys(pPropMap).forEach( propName => {
             let propInfo = pPropMap[propName];
-            // GP.DebugLog('BItem.DefinePropertiesWithProps: checking ' + propName + ', pName=' + propInfo.propertyName);
+            GP.DebugLog('BItem.DefinePropertiesWithProps: checking ' + propName + ', pName=' + propInfo.propertyName);
             if (propInfo.propertyName) {
                 this.DefineProperty(propInfo.propertyName, propInfo)
             };
@@ -362,6 +370,11 @@ export class BItem {
             };
         });
     };
+    // Diagnostic routine that turns props into just a string
+    PropsToString() {
+        let currentProps = this.FetchProperties();
+        return JSONstringify(currentProps);
+    }
 
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.

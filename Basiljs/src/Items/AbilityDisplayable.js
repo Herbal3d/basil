@@ -36,14 +36,18 @@ export class AbilityDisplayable extends AnAbility {
         // In the future, there might be multiple graphics engines.
         this.graphics = GP.GR;
 
+        GP.DebugLog('AbilityDisplayable.Link: adding DISP properties to parent');
         this.parent.DefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
+        GP.DebugLog('AbilityDisplayable.Link: props = ' + this.parent.PropsToString());
 
         // This returns a promise that is resolved to the loaded AbilityDisplayable
+        GP.DebugLog('AbilityDisplayable.Link: Starting to load asset');
         return this.LoadDisplayableAsset();
     };
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
     Unlink(pParent) {
+        GP.DebugLog('AbilityDisplayable.Unlink');
         this.ReleaseResources();
         this.parent.UndefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
     };
@@ -148,7 +152,8 @@ AbilityDisplayable.PropsToVars = {
     'auth' : {
         get: (obj) => { return obj.DisplayAuth },
         set: (obj, val) => { obj.DisplayAuth = val ;},
-        name: 'Displayable.Auth',
+        name: 'Auth',
+        propertyName: 'Displayable.Auth',
         ability: AbilityDisplayable.NAME
     },
     'loadertype' : {

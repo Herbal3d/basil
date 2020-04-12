@@ -113,7 +113,7 @@ GP.client.WhenReady(10000)
     let displayableProps = {
         'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
         'loaderType': 'GLTF',
-        'displayaType': 'meshset'
+        'displayType': 'meshset'
     };
     // Add the URL from the configuration file if specified
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
