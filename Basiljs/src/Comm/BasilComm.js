@@ -157,7 +157,24 @@ export class BasilComm extends MsgProcessor {
     _procAddAbility(req) {
         let ret = { 'Op': BasilMessageOps.AddAbilityResp};
         if (this._CheckAuth(req.SessionAuth)) {
-            // TODO:
+            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+            if (item) {
+                // If Ability definitions have been sent, add those abilities
+                if (req.AProps && req.AProps.length > 0) {
+                    req.AProps.forEach( abil => {
+                        let newAbility = AbilityFactory(abil);
+                        if (newAbility) {
+                            item.AddAbility(newAbility);
+                        }
+                        else {
+                            GP.ErrorLog('BasilComm._procCreateItem: failed creation of ability: ' + JSONstringify(abil));
+                        };
+                    });
+                };
+            }
+            else {
+                ret['Exception'] = 'Item does not exist';
+            }
         }
         else {
             ret['Exception'] = 'Not authorized';
@@ -174,7 +191,17 @@ export class BasilComm extends MsgProcessor {
     _procRemoveAbility(req) {
         let ret = { 'Op': BasilMessageOps.RemoveAbilityResp};
         if (this._CheckAuth(req.SessionAuth)) {
-            // TODO:
+            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+            if (item) {
+                if (req.AProps && req.AProps.length > 0) {
+                    req.AProps.forEach( abil => {
+                        item.RemoveAbility(abil.AbilityCode);
+                    });
+                };
+            }
+            else {
+                ret['Exception'] = 'Item does not exist';
+            }
         }
         else {
             ret['Exception'] = 'Not authorized';

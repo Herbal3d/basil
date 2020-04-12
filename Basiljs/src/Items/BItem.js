@@ -448,7 +448,7 @@ export class BItem {
     // Overloaded by routines to release graphic/communication/etc resources.
     ReleaseResources() {
         // Unhook, delete, and release any abilities
-        this.AbilityNameList().forEach( abilName => {
+        for (var abilName in this.abilities.keys()) {
             try {
                 // This calls Ability.Unlink which releases ability resources.
                 this.RemoveAbility(abilName);
@@ -456,7 +456,7 @@ export class BItem {
             catch (e) {
                 GP.ErrorLog('BItem.ReleaseResources: exception: ' + JSONstringify(e))
             };
-        });
+        };
     };
 
     // Add an item to the database of items.
