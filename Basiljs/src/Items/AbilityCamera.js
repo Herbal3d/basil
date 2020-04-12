@@ -90,7 +90,8 @@ AbilityCamera.PropsToVals = {
             }
         },
         default: "[0,1,2]",
-        propertyName: 'Camera.Position'
+        name: 'Pos',
+        ability: AbilityCamera.NAME
     },
     'rot' : {
         get: (obj) => { return JSON.stringify(obj.graphics.camera.rotation.toArray()); },
@@ -101,20 +102,23 @@ AbilityCamera.PropsToVals = {
             }
         },
         default: "[0,0,0,1]",
-        propertyName: 'Camera.Rotation'
+        name: 'Rot',
+        ability: AbilityCamera.NAME
     },
     'possystem' : {
         get: (obj) => { return String(obj.gPosCoordSystem) },
         set: (obj, val) => { obj.gPosCoordSystem = Number.parseInt(val, 10) ;},
         name: 'posSystem',
         default: "0",
-        propertyName: 'Camera.PosCoordSystem'
+        name: 'PosSystem',
+        ability: AbilityCamera.NAME
     },
     'rotsystem' : {
         get: (obj) => { return String(obj.gRotCoordSystem) },
         set: (obj, val) => { obj.gRotCoordSystem = Number.parseInt(val, 10) ;},
         name: 'rotSystem',
         default: "0",
-        propertyName: 'Camera.RotCoordSystem'
+        name: 'RotSystem',
+        ability: AbilityCamera.NAME
     }
 };

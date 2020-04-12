@@ -269,9 +269,9 @@ export class Graphics extends BItem {
     // Note: only returns the nodes. For animations, etc, need a different routine.
     LoadSimpleAsset(passedParams, progressCallback) {
         let parms = CombineParameters(Config.assetLoader, passedParams, {
-            'url': undefined,       // URL to load from
+            'displayableurl': undefined,       // URL to load from
             'loaderType': 'gltf',   // type of loader to use
-            'auth': undefined,      // authorization needed to access URL
+            'displayableauth': undefined,      // authorization needed to access URL
             'useDRACO': true,
             'combineInstances': true    // whether to combine instances
         });
@@ -291,15 +291,15 @@ export class Graphics extends BItem {
                 case 'bvh':     loader = new THREE.BVHLoader(); break;
             }
             if (loader) {
-                let requestURL = parms.url;
+                let requestURL = parms.displayableurl;
                 // If auth info is in parameters, add a "bearer-*" item into the access URL
                 //     so the receiver can verify the request.
                 if (parms.auth && parms.auth.length > 0) {
                     // Authorization code is packed into the URL
-                    let urlPieces = parms.url.split('/');
+                    let urlPieces = parms.displayableurl.split('/');
                     let lastIndex = urlPieces.length - 1;
                     urlPieces.push(urlPieces[lastIndex]);
-                    urlPieces[lastIndex] = 'bearer-' + parms.auth;
+                    urlPieces[lastIndex] = 'bearer-' + parms.displayableauth;
                     requestURL = urlPieces.join('/');
                 }
                 GP.DebugLog('Graphics.LoadSimpleAsset: loading from: ' + requestURL);
@@ -317,7 +317,7 @@ export class Graphics extends BItem {
                             }
                             catch (e) {
                                 let err = 'Graphics.LoadSimpleAsset: Exception combining instances.'
-                                    + ' url=' + parms.url
+                                    + ' url=' + parms.displayableurl
                                     + ', e=' + e;
                                 reject(err);
                             }
@@ -334,7 +334,7 @@ export class Graphics extends BItem {
                     else {
                         let err = 'Graphics.LoadSimpleAsset: Could not understand loaded contents.'
                             + ' type=' + parms.loaderType
-                            + ', url=' + parms.url;
+                            + ', url=' + parms.displayableurl;
                         reject(err);
                     }
                 },

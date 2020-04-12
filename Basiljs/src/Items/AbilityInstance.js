@@ -55,8 +55,8 @@ export class AbilityInstance extends AnAbility {
     };
 
     // Initialize this ability from individual values
-    SetFromValues(pDisplayableId, pPosInfo, pProps) {
-        SetViaProps(this, 'displayableid', pDisplayableId, AbilityInstance.PropsToVars);
+    SetFromValues(pDisplayableItemId, pPosInfo, pProps) {
+        SetViaProps(this, 'displayableid', pDisplayableItemId, AbilityInstance.PropsToVars);
         // GP.DebugLog('AbilityInstance.SetFromValues: pPosInfo =' + JSONstringify(pPosInfo));
         if (pPosInfo) {
             SetViaProps(this, 'pos', pPosInfo.Pos, AbilityInstance.PropsToVars);
@@ -80,8 +80,8 @@ export class AbilityInstance extends AnAbility {
     };
 
     InstantiateInstance() {
-        if (this.displayableId) {
-            let displayable = BItem.GetItem(this.displayableId);
+        if (this.displayableItemId) {
+            let displayable = BItem.GetItem(this.displayableItemId);
             if (displayable) {
                 this.displayable = displayable;
                 this.PlaceInWorld()
@@ -93,11 +93,11 @@ export class AbilityInstance extends AnAbility {
                 });
             }
             else {
-                GP.ErrorLog('AbilityInstance.InstantiateInstance: cannot find displayable ' + this.displayableId);
+                GP.ErrorLog('AbilityInstance.InstantiateInstance: cannot find displayable ' + this.displayableItemId);
             };
         }
         else {
-            GP.ErrorLog('AbilityInstance.InstantiateInstance: No displayableId specified.');
+            GP.ErrorLog('AbilityInstance.InstantiateInstance: No displayableItemId specified.');
         };
     };
 
@@ -157,45 +157,40 @@ AbilityInstance.PropsToVars = {
     'pos': {
         get: (obj) => { return obj.gPos ? JSON.stringify(obj.gPos) : undefined },
         set: (obj, val) => { obj.gPos = ParseThreeTuple(val) ;},
-        propertyName: 'Instance.Position',
+        name: 'Pos',
         default: "[0,2,4]",
         ability: AbilityInstance.NAME
     },
     'rot' : {
         get: (obj) => { return obj.gRot ? JSON.stringify(obj.gRot) : undefined },
         set: (obj, val) => { obj.gRot = ParseFourTuple(val); },
-        propertyName: 'Instance.Rotation',
+        name: 'Rot',
         default: "[0,0,0,1]",
         ability: AbilityInstance.NAME
     },
-    'possystem' : {
+    'posref' : {
         get: (obj) => { return String(obj.gPosCoordSystem); },
         set: (obj, val) => { obj.gPosCoordSystem = Number.parseInt(val, 10) ;},
-        name: 'posSystem',
-        propertyName: 'Instance.PosCoordSystem',
+        name: 'PosRef',
         default: "0",
         ability: AbilityInstance.NAME
     },
-    'rotsystem' : {
+    'rotref' : {
         get: (obj) => { return String(obj.gRotCoordSystem); },
         set: (obj, val) => { obj.gRotCoordSystem = Number.parseInt(val, 10) ;},
-        name: 'rotSystem',
-        propertyName: 'Instance.RotCoordSystem',
+        name: 'RotRef',
         default: "0",
         ability: AbilityInstance.NAME
     },
-    'displayableid' : {
-        get: (obj) => { return obj.displayableId },
-        set: (obj, val) => { obj.displayableId = val ;},
-        name: 'displayableId',
-        propertyName: 'Instance.DisplayableId',
+    'instancedisplayableitemid' : {
+        get: (obj) => { return obj.displayableItemId },
+        set: (obj, val) => { obj.displayableItemId = val ;},
+        name: 'InstanceDisplayableItemId',
         ability: AbilityInstance.NAME
     },
-    'dstate' : {
+    'instancedisplayablestate' : {
         get: (obj) => { return obj.displayable ? obj.displayable.state : undefined; },
-        name: 'displayableState',
-        propertyName: 'Instance.DisplayableState',
-        default: BItemState.UNINITIALIZED,
+        name: 'InstanceDisplayableState',
         ability: AbilityInstance.NAME
     },
 };

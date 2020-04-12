@@ -111,9 +111,9 @@ GP.client.WhenReady(10000)
     let openSessionProps = GP.client.openSessionProperties;
     let auth = undefined; // no authentication at the moment
     let displayableProps = {
-        'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+        'displayableurl': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
         'loaderType': 'GLTF',
-        'displayType': 'meshset'
+        'displayableType': 'meshset'
     };
     // Add the URL from the configuration file if specified
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
@@ -152,11 +152,12 @@ GP.client.WhenReady(10000)
 
         // Create a displayed instance of the displayable
         createItemProps = {};
-        let aProps = {};
-        aProps.Pos = '[ 100, 101, 102 ]';
-        aProps.Rot = '[ 0, 0, 0, 1 ]';
-        aProps.PosRef = '0';   // BasilMessage.CoordSystem.WGS86,
-        aProps.RotRef = '0';   // BasilMessage.RotationSystem.WORLDR
+        let aProps = {
+            'Pos': '[ 100, 101, 102 ]',
+            'Rot':  '[ 0, 0, 0, 1 ]',
+            'PosRef': '0',   // BasilMessage.CoordSystem.WGS86,
+            'RotRef': '0'    // BasilMessage.RotationSystem.WORLDR
+        };
         return GP.client.CreateItem(auth, createItemProps, [
             new AbilityInstance().SetFromValues(displayableItemId, aProps)
         ]);

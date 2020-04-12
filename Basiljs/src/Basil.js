@@ -155,7 +155,7 @@ if (typeof(configParams) === 'undefined') {
                 'transport': 'WW',
                 'service': 'BasilComm',
                 'TestAsset': {
-                    'url': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
+                    'displayableurl': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
                     'loaderType': 'GLTF'
                 }
             }

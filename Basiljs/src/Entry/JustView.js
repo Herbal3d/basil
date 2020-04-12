@@ -73,7 +73,7 @@ var CallBasilWithTheFile = function() {
       // 'transportURL': 'ws://192.168.86.41:11440/',
       'service': 'BasilComm',
       'TestAsset': {
-        'url': GLTFTOLOAD,
+        'displayableurl': GLTFTOLOAD,
         'loaderType': 'GLTF'
       }
     }

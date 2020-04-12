@@ -74,9 +74,9 @@ export class AbilityDisplayable extends AnAbility {
     // Returns a Promise that is completed when the object is loaded.
     LoadDisplayableAsset() {
         let assetInfo = {
-            'url': this.Url,
+            'displayableurl': this.DisplayableUrl,
             'loaderType': this.LoaderType,
-            'auth': this.DisplayAuth
+            'displayableauth': this.DisplayableAuth
         }
         this.SetLoading();
         return new Promise( function(resolve, reject) {
@@ -130,42 +130,36 @@ export class AbilityDisplayable extends AnAbility {
 //          'propertyName': the name of the BItem property to register for this property
 //          'ability': identifies this variable as tied to this ability (for lookup in BItem)
 AbilityDisplayable.PropsToVars = {
-    'id': {
-        get: (obj) => { return obj.Id },
-        set: (obj, val) => { obj.Id = val ;},
-        name: 'Id',
-        ability: AbilityDisplayable.NAME
-    },
-    'displaytype': {
+    'displayabletype': {
         get: (obj) => { return obj.DisplayType },
         set: (obj, val) => { obj.DisplayType = val ;},
-        name: 'DisplayType',
-        propertyName: 'Displayable.Type',
+        name: 'DisplayableType',
+        default: 'meshset',
         ability: AbilityDisplayable.NAME
     },
-    'url' : {
-        get: (obj) => { return obj.Url },
-        set: (obj, val) => { obj.Url = val ;},
-        name: 'Url',
+    'displayableurl' : {
+        get: (obj) => { return obj.DisplayableUrl },
+        set: (obj, val) => { obj.DisplayableUrl = val ;},
+        name: 'DisplayableUrl',
         ability: AbilityDisplayable.NAME
     },
-    'auth' : {
-        get: (obj) => { return obj.DisplayAuth },
-        set: (obj, val) => { obj.DisplayAuth = val ;},
-        name: 'Auth',
-        propertyName: 'Displayable.Auth',
+    'displayableauth' : {
+        get: (obj) => { return obj.DisplayableAuth },
+        set: (obj, val) => { obj.DisplayableAuth = val ;},
+        name: 'DisplayableAuth',
         ability: AbilityDisplayable.NAME
     },
     'loadertype' : {
         get: (obj) => { return obj.LoaderType },
         set: (obj, val) => { obj.LoaderType = val ;},
         name: 'LoaderType',
+        default: 'GLTF',
         ability: AbilityDisplayable.NAME
     },
-    'aabb' : {
+    'displayableaabb' : {
         get: (obj) => { return JSON.stringify(obj.Aabb) },
         set: (obj, val) => { obj.Aabb = JSON.parse(val) ;},
-        name: 'Aabb',
+        name: 'DisplayableAabb',
         ability: AbilityDisplayable.NAME
     } 
 };

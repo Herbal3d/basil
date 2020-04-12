@@ -618,28 +618,28 @@ export class BItem {
 //          'propertyName': the name of the BItem property to register for this property
 //          'ability': if this var is part of an ability (used by BItem fetch)
 BItem.PropsToVars = {
-    'type': {
+    'itemtype': {
         get: (obj) => { return obj.itemType; },
-        propertyName: '_Type'
+        name: 'ItemType'
     },
-    'id' : {
+    'itemid' : {
         get: (obj) => { return obj.id; },
-        propertyName: '_Id'
+        name: 'ItemId'
     },
     'ownerid' : {
         get: (obj) => { return obj.ownerId; },
-        propertyName: '_OwnerId'
+        name: 'OwnerId'
     },
     'state' : {
         get: (obj) => { return obj.state; },
-        propertyName: '_State'
+        name: 'State'
     },
     'layer' : {
         get: (obj) => { return obj.layer; },
-        propertyName: '_Layer'
+        name: 'Layer'
     },
     'abilities' : {
         get: (obj) => { return obj.AbilityNameList(); },
-        propertyName: '_Abilities'
+        name: 'Abilities'
     }
 };

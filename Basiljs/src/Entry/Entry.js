@@ -83,7 +83,7 @@ GP.CO.ClickableOps['testBasil'] = function() {
             // 'transportURL': 'ws://192.168.86.41:11440/',
             'service': 'BasilComm',
             'TestAsset': {
-                'url': selectedScene,
+                'displayableurl': selectedScene,
                 'loaderType': 'GLTF'
             }
         }

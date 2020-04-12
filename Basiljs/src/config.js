@@ -18,7 +18,7 @@ export default {
         'service': 'one of SpaceServerClient, Pesto',
         'testmode': false,
         'TestAsset': {
-            'url': 'URL to asset',
+            'displayableurl': 'URL to asset',
             'loaderType': 'GLTF'
         }
         */
@@ -135,8 +135,8 @@ export default {
             'transportURL': './wwtester.js',
             'service': 'SpaceServerClient',
             'TestAsset': {
-                // 'url': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                'url': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                // 'displayableurl': 'http://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                'displayableurl': 'http://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
                 'loaderType': 'GLTF',
                 'displayType': 'meshset'
             }
