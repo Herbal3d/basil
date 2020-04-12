@@ -117,7 +117,7 @@ export class BItem {
     FireStateChangeEvent(pNewState, pOldState) {
         if (pOldState != pNewState && this.EventName_OnStateChange) {
             this.eventing.Fire(this.EventName_OnStateChange, {
-                'id': this.id,
+                'itemid': this.id,
                 'state': pNewState,
                 'oldState': pOldState,
             });
@@ -203,19 +203,8 @@ export class BItem {
     // Return the description block for the property.
     // Returns 'undefined' if there is no such property.
     GetPropertyDesc(pProp) {
-        let ret = this.props.get(pProp);
-        if (typeof(ret) === 'undefined') {
-            // Didn't find the property but case sensitivity is a pain
-            // See if we can find the property in a case-independent way
-            let propLower = pProp.toLowerCase();
-            for (let key of this.props.keys()) {
-                if (key.toLowerCase() == propLower) {
-                    ret = this.props.get(key);
-                    break;
-                };
-            };
-        };
-        return ret;
+        let propLower = pProp.toLowerCase();
+        return this.props.get(pPropLower);
     };
 
     // Returns an Object of properties and values
@@ -227,10 +216,11 @@ export class BItem {
                 // If this description has an ability name, get value directly from there
                 let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
                 if (propDesc.get) {
+                    let propName = propDesc.name ? propDesc.name : prop;
                     let val = propDesc.get(tthis);
                     if (typeof(val) !== 'undefined' && val !== null
                                         && val !== 'null' && val !== 'undefined') {
-                        ret[prop] = val;
+                        ret[propName] = val;
                     }
                 }
             });
@@ -240,10 +230,11 @@ export class BItem {
                 // If this description has an ability name, get value directly from there
                 let tthis = propDesc.ability ? this.abilities.get(propDesc.ability) : this;
                 if (propDesc.get) {
+                    let propName = propDesc.name ? propDesc.name : prop;
                     let val = propDesc.get(tthis);
                     if (typeof(val) !== 'undefined' && val !== null
                                         && val !== 'null' && val !== 'undefined') {
-                        ret[prop] = val;
+                        ret[propName] = val;
                     }
                     // else {
                     //     GP.DebugLog('BItem.FetchProperties: not fetching ' + prop + ' because value null');
@@ -297,11 +288,13 @@ export class BItem {
     //     'set': setFunction,
     //     'get': getFunction,
     //     'local': if defined and 'true', only local access is allowed
+    //     'name': properties are always indexed by lowercased name. This is real name.
+    //     'ability': if an ability property, the type of the ability
     // }
     DefineProperty(propertyName, propertyDefinition) {
         if (propertyName && propertyDefinition) {
-            this.props.set(propertyName, propertyDefinition);
-            GP.DebugLog('BItem.DefineProperty: adding ' + propertyName);
+            this.props.set(propertyName.toLowerCase(), propertyDefinition);
+            // GP.DebugLog('BItem.DefineProperty: adding ' + propertyName);
 
             /*  This adds the property to this Object as a property.
               Had some problems with this so use GetProperty and SetProperty.
@@ -337,16 +330,16 @@ export class BItem {
     DefinePropertiesWithProps(pPropMap) {
         Object.keys(pPropMap).forEach( propName => {
             let propInfo = pPropMap[propName];
-            GP.DebugLog('BItem.DefinePropertiesWithProps: checking ' + propName + ', pName=' + propInfo.propertyName);
-            if (propInfo.propertyName) {
-                this.DefineProperty(propInfo.propertyName, propInfo)
+            // GP.DebugLog('BItem.DefinePropertiesWithProps: checking ' + propName + ', pName=' + propInfo.name);
+            if (propInfo.name) {
+                this.DefineProperty(propInfo.name, propInfo)
             };
         });
     };
 
     // Remove a property definition
     UndefineProperty(propertyName) {
-        this.props.delete(propertyName);
+        this.props.delete(propertyName.toLowerCase());
     };
     // Remove a set of property definitions. Pass an array of property names.
     UndefineProperties(propertyNames) {
@@ -365,8 +358,8 @@ export class BItem {
     // Remove property definition based on PropsToVars
     UndefinePropertiesWithProps(pPropMap) {
         Object.keys(pPropMap).forEach( propInfo => {
-            if (propInfo.propertyName) {
-                this.UndefineProperty(propInfo.propertyName);
+            if (propInfo.name) {
+                this.UndefineProperty(propInfo.name);
             };
         });
     };
@@ -615,7 +608,7 @@ export class BItem {
 // The entries for each property are:
 //          'get', 'set': value get and set operations
 //          'name': named used for the property when exported for the protocol
-//          'propertyName': the name of the BItem property to register for this property
+//          'name': the name of the BItem property to register for this property
 //          'ability': if this var is part of an ability (used by BItem fetch)
 BItem.PropsToVars = {
     'itemtype': {

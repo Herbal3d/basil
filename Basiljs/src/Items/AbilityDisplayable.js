@@ -36,12 +36,9 @@ export class AbilityDisplayable extends AnAbility {
         // In the future, there might be multiple graphics engines.
         this.graphics = GP.GR;
 
-        GP.DebugLog('AbilityDisplayable.Link: adding DISP properties to parent');
         this.parent.DefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
-        GP.DebugLog('AbilityDisplayable.Link: props = ' + this.parent.PropsToString());
 
         // This returns a promise that is resolved to the loaded AbilityDisplayable
-        GP.DebugLog('AbilityDisplayable.Link: Starting to load asset');
         return this.LoadDisplayableAsset();
     };
 
@@ -53,9 +50,9 @@ export class AbilityDisplayable extends AnAbility {
     };
 
     SetFromValues(pDisplayType, pProps, pAabb, pId) {
-        SetViaProps(this, 'displaytype', pDisplayType, AbilityDisplayable.PropsToVars);
+        SetViaProps(this, 'displayabletype', pDisplayType, AbilityDisplayable.PropsToVars);
         SetViaProps(this, 'aabb', pAabb, AbilityDisplayable.PropsToVars);
-        SetViaProps(this, 'id', pId, AbilityDisplayable.PropsToVars);
+        SetViaProps(this, 'itemid', pId, AbilityDisplayable.PropsToVars);
         InitializeProps(this, pProps, AbilityDisplayable.PropsToVars);
         return this;
     };

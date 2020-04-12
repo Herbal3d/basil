@@ -57,8 +57,8 @@ export class AbilityCamera extends AnAbility {
         if (pPosInfo) {
             SetViaProps(this, 'pos', pPosInfo.pos, AbilityInstance.PropsToVars);
             SetViaProps(this, 'rot', pPosInfo.rot, AbilityInstance.PropsToVars);
-            SetViaProps(this, 'possystem', pPosInfo.posRef, AbilityInstance.PropsToVars);
-            SetViaProps(this, 'rotsystem', pPosInfo.rotRef, AbilityInstance.PropsToVars);
+            SetViaProps(this, 'posref', pPosInfo.posRef, AbilityInstance.PropsToVars);
+            SetViaProps(this, 'rotref', pPosInfo.rotRef, AbilityInstance.PropsToVars);
         };
         if (pProps) {
             InitializeProps(this, pProps, AbilityInstance.PropsToVars);
@@ -105,20 +105,18 @@ AbilityCamera.PropsToVals = {
         name: 'Rot',
         ability: AbilityCamera.NAME
     },
-    'possystem' : {
+    'posref' : {
         get: (obj) => { return String(obj.gPosCoordSystem) },
         set: (obj, val) => { obj.gPosCoordSystem = Number.parseInt(val, 10) ;},
-        name: 'posSystem',
+        name: 'PosRef',
         default: "0",
-        name: 'PosSystem',
         ability: AbilityCamera.NAME
     },
-    'rotsystem' : {
+    'rotref' : {
         get: (obj) => { return String(obj.gRotCoordSystem) },
         set: (obj, val) => { obj.gRotCoordSystem = Number.parseInt(val, 10) ;},
-        name: 'rotSystem',
+        name: 'RotRef',
         default: "0",
-        name: 'RotSystem',
         ability: AbilityCamera.NAME
     }
 };

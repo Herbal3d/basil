@@ -44,7 +44,6 @@ export class AbilityInstance extends AnAbility {
 
         return new Promise( function(resolve, reject) {
             this.InstantiateInstance();
-
             resolve(this);
         }.bind(this) );
     };
@@ -56,13 +55,13 @@ export class AbilityInstance extends AnAbility {
 
     // Initialize this ability from individual values
     SetFromValues(pDisplayableItemId, pPosInfo, pProps) {
-        SetViaProps(this, 'displayableid', pDisplayableItemId, AbilityInstance.PropsToVars);
+        SetViaProps(this, 'displayableitemid', pDisplayableItemId, AbilityInstance.PropsToVars);
         // GP.DebugLog('AbilityInstance.SetFromValues: pPosInfo =' + JSONstringify(pPosInfo));
         if (pPosInfo) {
             SetViaProps(this, 'pos', pPosInfo.Pos, AbilityInstance.PropsToVars);
             SetViaProps(this, 'rot', pPosInfo.Rot, AbilityInstance.PropsToVars);
-            SetViaProps(this, 'possystem', pPosInfo.PosRef, AbilityInstance.PropsToVars);
-            SetViaProps(this, 'rotsystem', pPosInfo.RotRef, AbilityInstance.PropsToVars);
+            SetViaProps(this, 'posref', pPosInfo.PosRef, AbilityInstance.PropsToVars);
+            SetViaProps(this, 'rotref', pPosInfo.RotRef, AbilityInstance.PropsToVars);
         };
         if (pProps) {
             InitializeProps(this, pProps, AbilityInstance.PropsToVars);
@@ -182,15 +181,15 @@ AbilityInstance.PropsToVars = {
         default: "0",
         ability: AbilityInstance.NAME
     },
-    'instancedisplayableitemid' : {
+    'displayableitemid' : {
         get: (obj) => { return obj.displayableItemId },
         set: (obj, val) => { obj.displayableItemId = val ;},
-        name: 'InstanceDisplayableItemId',
+        name: 'DisplayableItemId',
         ability: AbilityInstance.NAME
     },
-    'instancedisplayablestate' : {
+    'displayablestate' : {
         get: (obj) => { return obj.displayable ? obj.displayable.state : undefined; },
-        name: 'InstanceDisplayableState',
+        name: 'DisplayableState',
         ability: AbilityInstance.NAME
     },
 };

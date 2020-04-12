@@ -206,6 +206,24 @@ if (Config.comm && Config.comm.transportURL) {
         GP.DebugLog('Basiljs: initial service connection successful. Id=' + srv.id);
         try {
             let srvParams = {};
+            if (Config.comm.testmode) {
+                if (Config.comm.TestAsset) {
+                    // If a test asset has been specified in test mode, that asset info
+                    //    is passed in the OpenSession request so the test server knows
+                    //    what asset to ask for. This is a very round about way of passing
+                    //    the asset spec from Basil.js invocation parameters to the server.
+                    let testMapping = { // mapping from TestAsset to special OpenSession params.
+                        'displayableurl': 'TestURL',
+                        'loadertype': 'TestLoaderType' ,
+                        'displayabletype': 'TestDisplayableType'
+                    };
+                    Object.keys(testMapping).forEach( assetProp => {
+                        if (Config.comm.TestAsset[assetProp]) {
+                            srvParams[testMapping[assetProp]] = Config.comm.TestAsset[assetProp];
+                        }
+                    });
+                };
+            };
             // If the invoker passed auth information, construct response with our auth info.
             let userAuth = Config.auth ? Config.auth.UserAuth : undefined;
             let sessionKey = Config.auth? Config.auth.SessionKey : undefined;

@@ -79,13 +79,16 @@ GP.CO.ClickableOps['testBasil'] = function() {
             'testmode': true,
             'transport': 'WW',
             'transportURL': './wwtester.js',
-            // 'transport': 'WS',
-            // 'transportURL': 'ws://192.168.86.41:11440/',
             'service': 'BasilComm',
             'TestAsset': {
                 'displayableurl': selectedScene,
                 'loaderType': 'GLTF'
             }
+        },
+        'auth': {
+            // Made up numbers for testing
+            'SessionKey': 'EntrySession-' + RandomIdentifier(),               // identifier for the session
+            'UserAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier()  // authorization key
         }
     };
     console.log('testConfigParams=' + JSONstringify(testConfigParams));

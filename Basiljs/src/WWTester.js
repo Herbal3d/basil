@@ -117,17 +117,18 @@ GP.client.WhenReady(10000)
     };
     // Add the URL from the configuration file if specified
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
-        displayableProps.props = Config.WWTester.comm.TestAsset;
+        displayableProps = Config.WWTester.comm.TestAsset;
     }
+    // Parameters could have been passed from the invoker (test info in OpenSession req)
     if (openSessionProps) {
         if (openSessionProps.TestURL) {
-            displayableProps.url = openSessionProps.TestURL;
+            displayableProps.displayableurl = openSessionProps.TestURL;
         }
         if (openSessionProps.TestLoaderType) {
             displayableProps.loaderType = openSessionProps.TestLoaderType;
         }
         if (openSessionProps.TestDisplayType) {
-            displayableProps.displayType = openSessionProps.TestDisplayType;
+            displayableProps.displayableType = openSessionProps.TestDisplayType;
         }
     }
     GP.DebugLog('Asset spec for CreateItem' + JSON.stringify(displayableProps));
