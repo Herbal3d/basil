@@ -122,10 +122,30 @@ export class BasilComm extends MsgProcessor {
       return ret;
     };
 
-    DeleteItem(asset, id) {
+    DeleteItem(pAuth, pId, pItemAuth) {
+        let ret = { 'Op': BasilMessageOps.DeleteItemReq};
+        if (pAuth) msg['SessionAuth'] = pAuth;
+        if (pId) msg['ItemId'] = pId;
+        if (pItemAuth) msg['ItemAuth'] = pItemAuth;
+        return this.SendAndPromiseResponse(msg);
     };
 
     _procDeleteItem(req) {
+        let ret = { 'Op': BasilMessageOps.DeleteItemResp};
+        if (this._CheckAuth(req.SessionAuth)) {
+            // Find the item to delete
+            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+            if (item) {
+                BItem.ForgetItem(item);
+            }
+            else {
+                ret['Exception'] = 'Item does not exist';
+            }
+        }
+        else {
+            ret['Exception'] = 'Not authorized';
+      };
+      return ret;
     };
 
     AddAbility(pAuth, pId, pAbilities) {

@@ -432,65 +432,10 @@ export class BItem {
             };
         }.bind(this) );
     };
+    // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
     static WaitABit(ms, pParam) {
         return new Promise( resolver => { setTimeout(resolver, ms, pParam); } );
     };
-    /*
-    WhenReady(timeoutMS) {
-        return new Promise( function(resolve, reject) {
-            if (this.state == BItemState.READY) {
-                resolve(this);
-            };
-            if (this.NeverGonnaBeReady()) {
-                reject(this);
-            };
-            let checkInterval = 200;
-            if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
-                checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
-            };
-            let timeout = 5000;
-            if (Config.assets && Config.assets.assetFetchTimeoutMS) {
-                timeout = Number(Config.assets.assetFetchTimeoutMS);
-            };
-            if (timeoutMS) {  // use the passed timeout if specified
-                timeout = timeoutMS;
-            };
-            // Wait for 'checkInterval' and test again for 'READY'.
-            GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval + ' with timeout ' + timeout);
-            setTimeout( function(calledTimeout, checkInterval, resolver, rejecter) {
-                if (this.NeverGonnaBeReady()) {
-                    rejecter(this);
-                }
-                if (this.state == BItemState.READY) {
-                    GP.DebugLog('BItem.WhenReady: resolver READY');
-                    resolver(this);
-                }
-                let levelTimeout = calledTimeout - checkInterval;
-                if (levelTimeout <= 0) {
-                    GP.DebugLog('BItem.WhenReady: rejecter timeout');
-                    rejecter(this);
-                }
-                GP.DebugLog('BItem.WhenReady: waited. Still not ready. levelTimout=' + levelTimeout);
-                // If still not ready, tail recursion to more waiting
-                this.WhenReady(levelTimeout)
-                .then(xitem => {
-                    if (xitem.NeverGonnaBeReady()) {
-                        rejector(xitem);
-                    }
-                    GP.DebugLog('BItem.WhenReady: in WhenReady. resolver READY');
-                    resolver(xitem);
-                })
-                .catch(xitem => {
-                    GP.DebugLog('BItem.WhenReady: in WhenReady. rejecter timeout');
-                    rejecter(xitem);
-                });
-                GP.DebugLog('BItem.WhenReady: exiting after inner WhenReady');
-            }.bind(this), checkInterval, timeout, checkInterval, resolve, reject);
-            GP.DebugLog('BItem.WhenReady: exiting after setTimeout');
-        }.bind(this));
-        GP.DebugLog('BItem.WhenReady: exiting end');
-    };
-    */
     // Return 'true' if something is wrong with this BItem and it will never go READY.
     NeverGonnaBeReady() {
         let currentState = this.state;
@@ -502,6 +447,16 @@ export class BItem {
     // Release any resources this item might be holding.
     // Overloaded by routines to release graphic/communication/etc resources.
     ReleaseResources() {
+        // Unhook, delete, and release any abilities
+        this.AbilityNameList().forEach( abilName => {
+            try {
+                // This calls Ability.Unlink which releases ability resources.
+                this.RemoveAbility(abilName);
+            }
+            catch (e) {
+                GP.ErrorLog('BItem.ReleaseResources: exception: ' + JSONstringify(e))
+            };
+        });
     };
 
     // Add an item to the database of items.
@@ -539,6 +494,7 @@ export class BItem {
             if (theItem) {
                 theItem.deleteInProcess = true;
                 theItem.SetShutdown();
+                theItem.ReleaseResources();
                 IM.Items.delete(item);
                 IM.ItemsN.delete(item);
                 IM.ItemsDeleted.set(item, theItem);
