@@ -42,14 +42,13 @@ export class AbilityInstance extends AnAbility {
 
         this.SetLoading();
 
-        return new Promise( function(resolve, reject) {
-            this.InstantiateInstance();
-            resolve(this);
-        }.bind(this) );
+        return this.InstantiateInstance();
     };
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
     Unlink(pParent) {
+        GP.DebugLog('AbilityInstance.Unlink: doing RemoveFromWorld');
+        this.RemoveFromWorld();
         this.parent.UndefinePropertiesWithProps(AbilityInstance.PropsToVars);
     };
 
@@ -79,25 +78,36 @@ export class AbilityInstance extends AnAbility {
     };
 
     InstantiateInstance() {
-        if (this.displayableItemId) {
-            let displayable = BItem.GetItem(this.displayableItemId);
-            if (displayable) {
-                this.displayable = displayable;
-                this.PlaceInWorld()
-                .then( function(disp) {
-                    this.SetReady();
-                }.bind(this) )
-                .catch(err => {
-                    GP.ErrorLog('AbilityInstance.InstantiateInstance: ' + err.Msg);
-                });
+        return new Promise( function(resolve, reject) {
+            if (this.displayableItemId) {
+                let displayable = BItem.GetItem(this.displayableItemId);
+                if (displayable) {
+                    this.displayable = displayable;
+                    this.PlaceInWorld()
+                    .then( function(disp) {
+                        this.SetReady();
+                        resolve(this);
+                    }.bind(this) )
+                    .catch(e => {
+                        let err = 'AbilityInstance.InstantiateInstance: '
+                                + 'Exception placing in world: ' + JSONstringify(e);
+                        GP.ErrorLog(err);
+                        reject(new BException(err));
+                    });
+                }
+                else {
+                    let err = 'AbilityInstance.InstantiateInstance: cannot find displayable '
+                                    + this.displayableItemId;
+                    GP.ErrorLog(err);
+                    reject(new BException(err));
+                };
             }
             else {
-                GP.ErrorLog('AbilityInstance.InstantiateInstance: cannot find displayable ' + this.displayableItemId);
+                let err = 'AbilityInstance.InstantiateInstance: No displayableItemId specified.';
+                GP.ErrorLog(err);
+                reject(new BException(err));
             };
-        }
-        else {
-            GP.ErrorLog('AbilityInstance.InstantiateInstance: No displayableItemId specified.');
-        };
+        });
     };
 
     // Do whatever is needed to place this instance into the graphics scene.
@@ -113,13 +123,16 @@ export class AbilityInstance extends AnAbility {
                         abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
                     }
                     else {
-                        GP.ErrorLog('AbilityInstance.PlaceInWorld: cannot get displayable ability');
+                        let err = 'AbilityInstance.PlaceInWorld: cannot get displayable ability';
+                        GP.ErrorLog(err);
+                        reject(new BException(err));
                     }
                     resolve(disp);
                 }.bind(this))
                 .catch( function(e) {
                     // Something wrong with the displayable
-                    let err = 'AbilityInstance.PlaceInWorld: timeout waiting for displayable to load. e='
+                    let err = 'AbilityInstance.PlaceInWorld:'
+                                + ' error waiting for displayable to load. e='
                                 + JSONstringify(e);
                     GP.ErrorLog(err);
                     this.SetFailed();
@@ -139,6 +152,9 @@ export class AbilityInstance extends AnAbility {
         if (this.displayable) {
             this.displayable.graphics.RemoveFromWorld(this);
         }
+        else {
+            GP.ErrorLog('AbilityInstance.RemoveFromWorld: no displayable available');
+        };
     }
 
 };

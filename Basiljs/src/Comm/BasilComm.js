@@ -96,7 +96,16 @@ export class BasilComm extends MsgProcessor {
             // TODO: check if ID already exists!!
             let id = req.ItemId ? req.ItemId : CreateUniqueId('remote');
             let itemAuth = req.ItemAuth ? req.itemAuth : req.SessionAuth;
-            let newItem = new BItem(id, itemAuth);
+
+            // Figure out the layer for this BItem. It is either specified or
+            //     defaults to the connection talking.
+            let layer = this.layer;
+            if (req.IProps && req.IProps['layer']) {
+                layer = req.IProps['layer'];
+            };
+            // TODO: figure out how to get a layer name from the SpaceServer.
+
+            let newItem = new BItem(id, itemAuth, BItemType.CONTAINER, layer);
             newItem.ownerId = this.id;    // So we know who created what
             // TODO: copy IProps
             // If Ability definitions have been sent, add those abilities

@@ -52,7 +52,7 @@ export const BItemType = {
 //  An 'auth' which is auth info for access to and from this item.
 //  An 'itemType' which identifies the type of the item.
 export class BItem {
-    constructor(pId, pAuth, pItemType) {
+    constructor(pId, pAuth, pItemType, pLayer) {
         this.props = new Map();
         this.abilities = new Map();
         this.id = pId;             // index this item is stored under
@@ -60,6 +60,7 @@ export class BItem {
         this.auth = pAuth;         // authorization information
         this.ownerId = undefined; // this item is not yet associated with  some service/connection
         this.layer = Config.layers ? Config.layers.default : 'layer.default';
+        if (pLayer) this.layer = pLayer;
         this.itemType = pItemType ? pItemType : BItemType.CONTAINER;  // the type of the item
 
         // State is the combination of the state of all the Abilities
@@ -172,6 +173,8 @@ export class BItem {
                 this.abilities.delete(pAbilityCode);
             }
             else {
+                GP.ErrorLog('BItem.RemoveAbility: ability not found.'
+                    + ' id=' + this.id + ', abil=' + pAbilityCode);
             };
         };
     };
@@ -451,6 +454,7 @@ export class BItem {
         for (var abilName in this.abilities.keys()) {
             try {
                 // This calls Ability.Unlink which releases ability resources.
+                GP.DebugLog('BItem.ReleaseResources: removing ability ' + abilName);
                 this.RemoveAbility(abilName);
             }
             catch (e) {
@@ -492,21 +496,29 @@ export class BItem {
         if (typeof(item) == 'string') {
             var theItem = this.GetItem(item);
             if (theItem) {
-                theItem.deleteInProcess = true;
                 theItem.SetShutdown();
-                theItem.ReleaseResources();
+                theItem.deleteInProcess = true;
                 IM.Items.delete(item);
                 IM.ItemsN.delete(item);
+                theItem.ReleaseResources();
                 IM.ItemsDeleted.set(item, theItem);
                 theItem.whenDeleted = Date.now();
             }
         }
         else {
-            item.deleteInProcess = true;
-            IM.Items.delete(item.id);
-            IM.ItemsN.delete(item);
-            IM.ItemsDeleted.set(item.id, item);
-            item.whenDeleted = Date.now();
+            GP.DebugLog('BItem.ForgetItem: id=' + item.id);
+            try {
+                item.SetShutdown();
+                item.deleteInProcess = true;
+                IM.Items.delete(item.id);
+                IM.ItemsN.delete(item.idN);
+                item.ReleaseResources();
+                IM.ItemsDeleted.set(item.id, item);
+                item.whenDeleted = Date.now();
+            }
+            catch (e) {
+                GP.ErrorLog('BItem.ForgetItem: exception forgetting: ' + JSONstringify(e));
+            }
         }
     };
 

@@ -494,7 +494,7 @@ export class Graphics extends BItem {
         let cparam = (Config.webgl && Config.webgl.camera) ? Config.webgl.camera : {};
         let cid = cparam.cameraId ? cparam.cameraId : 'org.basil.b.camera';
         let cauth = undefined;
-        this.cameraInstance = new BItem(cid, cauth);
+        this.cameraInstance = new BItem(cid, cauth, BItemType.CAMERA);
         this.cameraInstance.AddAbility( new AbilityCamera() );
     }
 
