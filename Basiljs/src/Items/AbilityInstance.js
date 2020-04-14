@@ -107,7 +107,7 @@ export class AbilityInstance extends AnAbility {
                 GP.ErrorLog(err);
                 reject(new BException(err));
             };
-        });
+        }.bind(this) );
     };
 
     // Do whatever is needed to place this instance into the graphics scene.
