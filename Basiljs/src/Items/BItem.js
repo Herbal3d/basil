@@ -76,7 +76,7 @@ export class BItem {
         BItem.AddItem(this.id, this);
 
         // The base BItem is just ready. This is usually overridden by Abilities.
-        this.bItemState = BItemState.UNINITIALIZED;
+        this.bItemState = BItemState.READY;
         // Enable when people start using this
         // this.EventName_OnStateChange = 'StateChange-' + this.id;
 
@@ -94,6 +94,7 @@ export class BItem {
                         if ((Date.now() - bItem.whenDeleted) > waitInterval) {
                             bItem.ReleaseResources();
                             IM.ItemsDeleted.delete(bItem.id);
+                            GP.DebugLog('BItem.deleter: finally deleting ' + bItem.id);
                         };
                     };
                 });
@@ -113,6 +114,7 @@ export class BItem {
     SetFailed() { this.SetState(BItemState.FAILED); };
     SetLoading() { this.SetState(BItemState.LOADING); };
     SetShutdown() { this.SetState(BItemState.SHUTDOWN); };
+    IsReady() { return this.GetState() === BItemState.READY; };
 
     // If state has changed and state change events are enabled, fire the event
     FireStateChangeEvent(pNewState, pOldState) {
@@ -125,7 +127,12 @@ export class BItem {
         };
     };
 
-    // Scan through all the abilities and compute the overall state
+    // Scan through all the abilities and compute the overall state.
+    // Note that the BItem keeps a local state in 'bItemState' while the
+    //     Abilities (derived from 'AnAbility') keep state in 'state' and
+    //     have own 'SetState' functions.
+    //     So, remember that 'SetState' and 'GetState' is different for
+    //     BItems and Abilities.
     GetState() {
         let ret = this.bItemState;
         this.abilities.forEach( (val, key) => {
@@ -140,7 +147,7 @@ export class BItem {
             pAbility.forEach( abil => { this.AddAbility(abil); });
         }
         else {
-            GP.DebugLog('BItem.AddAbility: adding ability ' + pAbility.Name + ' to ' + this.id);
+            // GP.DebugLog('BItem.AddAbility: adding ability ' + pAbility.Name + ' to ' + this.id);
             if (this.abilities.has(pAbility.Name)) {
                 // This already has the ability
                 GP.ErrorLog('BItem.AddAbility: re-adding an ability: ' + pAbility.Name);
@@ -149,10 +156,11 @@ export class BItem {
                 this.abilities.set(pAbility.Name, pAbility);
                 // Add the ability to this BItem
                 pAbility.Link(this)
-                .then( function(abil) {
-                    this.SetReady();
-                }.bind(this) )
+                .then( function(abilBItem) {
+                    // If ability linked, things should be set READY
+                })
                 .catch( function(e) {
+                    // If link failed, the BItem operation has failed
                     this.SetFailed();
                     GP.DebugLog('BItem.AddAbility: failed linking ability: ' + JSONstringify(e));
                 }.bind(this) );
@@ -168,9 +176,10 @@ export class BItem {
         }
         else {
             if (this.abilities.has(pAbilityCode)) {
-                let removedAbility = this.abilities[pAbilityCode];
-                removedAbility.Unlink(this);
+                // GP.DebugLog('BItem.RemoveAbility: removing ability ' + pAbilityCode);
+                let removedAbility = this.abilities.get(pAbilityCode);
                 this.abilities.delete(pAbilityCode);
+                removedAbility.Unlink(this);
             }
             else {
                 GP.ErrorLog('BItem.RemoveAbility: ability not found.'
@@ -207,7 +216,7 @@ export class BItem {
     // Returns 'undefined' if there is no such property.
     GetPropertyDesc(pProp) {
         let propLower = pProp.toLowerCase();
-        return this.props.get(pPropLower);
+        return this.props.get(propLower);
     };
 
     // Returns an Object of properties and values
@@ -382,7 +391,7 @@ export class BItem {
     //    Would make a useful display when things are slow/hung.
     WhenReady(timeoutMS) {
         return new Promise( function(resolve, reject) {
-            if (this.state == BItemState.READY) {
+            if (this.GetState() == BItemState.READY) {
                 // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
                 resolve(this);
             }
@@ -451,16 +460,16 @@ export class BItem {
     // Overloaded by routines to release graphic/communication/etc resources.
     ReleaseResources() {
         // Unhook, delete, and release any abilities
-        for (var abilName in this.abilities.keys()) {
+        this.abilities.forEach( (abil, abilName) => {
             try {
                 // This calls Ability.Unlink which releases ability resources.
-                GP.DebugLog('BItem.ReleaseResources: removing ability ' + abilName);
+                // GP.DebugLog('BItem.ReleaseResources: removing ability ' + abilName);
                 this.RemoveAbility(abilName);
             }
             catch (e) {
                 GP.ErrorLog('BItem.ReleaseResources: exception: ' + JSONstringify(e))
             };
-        };
+        }, this );
     };
 
     // Add an item to the database of items.
@@ -496,30 +505,30 @@ export class BItem {
         if (typeof(item) == 'string') {
             var theItem = this.GetItem(item);
             if (theItem) {
-                theItem.SetShutdown();
-                theItem.deleteInProcess = true;
-                IM.Items.delete(item);
-                IM.ItemsN.delete(item);
-                theItem.ReleaseResources();
-                IM.ItemsDeleted.set(item, theItem);
-                theItem.whenDeleted = Date.now();
+                BItem.RemoveAndReleaseItem(theItem);
             }
+            else {
+                GP.ErrorLog('BItem.ForgetItem: asked to remove item that does not exist. id=' + item);
+            };
         }
         else {
-            GP.DebugLog('BItem.ForgetItem: id=' + item.id);
+            // GP.DebugLog('BItem.ForgetItem: id=' + item.id);
             try {
-                item.SetShutdown();
-                item.deleteInProcess = true;
-                IM.Items.delete(item.id);
-                IM.ItemsN.delete(item.idN);
-                item.ReleaseResources();
-                IM.ItemsDeleted.set(item.id, item);
-                item.whenDeleted = Date.now();
+                BItem.RemoveAndReleaseItem(item);
             }
             catch (e) {
                 GP.ErrorLog('BItem.ForgetItem: exception forgetting: ' + JSONstringify(e));
-            }
-        }
+            };
+        };
+    };
+    static RemoveAndReleaseItem(item) {
+        item.SetShutdown();
+        item.deleteInProcess = true;
+        IM.Items.delete(item.id);
+        IM.ItemsN.delete(item.idN);
+        item.ReleaseResources();
+        IM.ItemsDeleted.set(item.id, item);
+        item.whenDeleted = Date.now();
     };
 
     // Iterate over all the known items.

@@ -17,7 +17,7 @@ import { BException } from '../BException.js';
 
 import { JSONstringify } from '../Utilities.js';
 
-import { BItemState } from '../Items/BItem.js';
+import { BItemState, BItem } from '../Items/BItem.js';
 import { AnAbility, InitializeProps, GenerateProps, SetViaProps } from './Abilities.js';
 
 export class AbilityDisplayable extends AnAbility {
@@ -44,7 +44,7 @@ export class AbilityDisplayable extends AnAbility {
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
     Unlink(pParent) {
-        GP.DebugLog('AbilityDisplayable.Unlink');
+        // GP.DebugLog('AbilityDisplayable.Unlink');
         this.ReleaseResources();
         this.parent.UndefinePropertiesWithProps(AbilityDisplayable.PropsToVars);
     };
@@ -81,7 +81,7 @@ export class AbilityDisplayable extends AnAbility {
             this.graphics.LoadSimpleAsset(assetInfo)
             .then(function(theAsset) {
                 if (this.state == BItemState.LOADING) {
-                    // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
+                    GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
                     // GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
                     // 'theAsset' is a list of ThreeJS nodes.
                     // 'representation' is whatever the graphics engine has for this asset
@@ -105,9 +105,11 @@ export class AbilityDisplayable extends AnAbility {
     };
 
     ReleaseResources() {
+        // GP.DebugLog('AbilityDisplayable.ReleaseResources:');
         if (this.representation) {
             // release the resources from the graphics engine
             if (this.graphics) {
+                // GP.DebugLog('AbilityDisplayable.ReleaseResources: releasing representation');
                 this.graphics.ReleaseSimpleAsset(this.representation);
             };
             this.representation = undefined;

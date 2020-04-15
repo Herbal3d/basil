@@ -57,24 +57,25 @@ if (Config.WWTester && Config.WWTester.LogToConsole) {
 else {
     // Debug messages are sent to debug BItem and displayed there.
     if (Config.Debug && Config.Debug.DebugLogInstanceName) {
-        GP.DebugInstanceId = Config.Debug.DebugLogInstanceName;
         GP.DebugLog = function(msg) {
-            let auth = undefined;
-            let instanceId = GP.DebugInstanceId;
-            let props = {
-                'Msg': msg
+            if (GP.client && GP.client.IsReady()) {
+                GP.client.UpdateProperties(Config.Debug.DebugLogInstanceName,
+                        { 'Msg': msg } );
+            }
+            else {
+                console.log('WW.DebugLog: ' + msg);
             };
-            GP.client.UpdateProperties(auth, instanceId, props);
-            // console.log('WW.DebugLog: ' + msg);
         };
         GP.ErrorLog = function(msg) {
-            let auth = undefined;
-            let instanceId = GP.DebugInstanceId;
             let props = {
-                'ErrorMsg': msg
             };
-            GP.client.UpdateProperties(auth, instanceId, props);
-            // console.log('WW.ErrorLog: ' + msg);
+            if (GP.client && GP.client.IsReady()) {
+                GP.client.UpdateProperties(Config.Debug.DebugLogInstanceName,
+                        { 'ErrorMsg': msg } );
+            }
+            else {
+                console.log('WW.ErrorLog: ' + msg);
+            };
         }
     }
 }

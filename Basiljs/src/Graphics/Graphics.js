@@ -253,9 +253,11 @@ export class Graphics extends BItem {
     // Remove this instance from the displayed world data structure
     RemoveFromWorld(inst) {
         if (inst.worldNode) {
-            this._removeNodeFromWorld(inst.worldNode);
-            this._removeNodeFromCamera(inst.worldNode);
+            let wNode = inst.worldNode;
             inst.worldNode = undefined;
+            this._removeNodeFromWorld(wNode);
+            this._removeNodeFromCamera(wNode);
+            this.ReleaseSimpleAsset(wNode);
         }
     };
 

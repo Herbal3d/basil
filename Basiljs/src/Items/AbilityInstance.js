@@ -31,7 +31,7 @@ export class AbilityInstance extends AnAbility {
     };
 
     // Link ability to parent BItem and do initialization
-    // returns a Promise that resolves when the Displayable is Instanced
+    // returns a Promise that resolves with the enclosing BItem when the Displayable is Instanced
     Link(pParent) {
         this.parent = pParent;
 
@@ -47,7 +47,7 @@ export class AbilityInstance extends AnAbility {
 
     // Unlink this ability from the enclosing BItem. This is overloaded by actual Ability.
     Unlink(pParent) {
-        GP.DebugLog('AbilityInstance.Unlink: doing RemoveFromWorld');
+        // GP.DebugLog('AbilityInstance.Unlink: doing RemoveFromWorld');
         this.RemoveFromWorld();
         this.parent.UndefinePropertiesWithProps(AbilityInstance.PropsToVars);
     };
@@ -77,16 +77,18 @@ export class AbilityInstance extends AnAbility {
         return GenerateProps(this, AbilityInstance.PropsToVars);
     };
 
+    // Place an instance in the graphics scene.
+    // Returns a Promise that is resolved with the Instance BItem when the instance has been placed.
+    // Rejection is a new BException.
     InstantiateInstance() {
         return new Promise( function(resolve, reject) {
             if (this.displayableItemId) {
                 let displayable = BItem.GetItem(this.displayableItemId);
                 if (displayable) {
-                    this.displayable = displayable;
-                    this.PlaceInWorld()
-                    .then( function(disp) {
+                    this.PlaceInWorld(displayable)
+                    .then( function(abilInstance) {
                         this.SetReady();
-                        resolve(this);
+                        resolve(this.parent);
                     }.bind(this) )
                     .catch(e => {
                         let err = 'AbilityInstance.InstantiateInstance: '
@@ -110,50 +112,75 @@ export class AbilityInstance extends AnAbility {
         }.bind(this) );
     };
 
-    // Do whatever is needed to place this instance into the graphics scene.
-    // Returns a Promise that is resolved when the Instance is in the scene.
-    PlaceInWorld() {
-        return new Promise( function(resolve, reject) {
-            if (this.displayable) {
-                // TODO: if displayable is not ready, should display the bounding box
-                this.displayable.WhenReady()
-                .then( function(disp) {
-                    let abilityDisp = disp.GetAbility(AbilityDisplayable.NAME);
-                    if (abilityDisp) {
-                        abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
-                    }
-                    else {
-                        let err = 'AbilityInstance.PlaceInWorld: cannot get displayable ability';
-                        GP.ErrorLog(err);
-                        reject(new BException(err));
-                    }
-                    resolve(disp);
-                }.bind(this))
-                .catch( function(e) {
-                    // Something wrong with the displayable
-                    let err = 'AbilityInstance.PlaceInWorld:'
-                                + ' error waiting for displayable to load. e='
-                                + JSONstringify(e);
-                    GP.ErrorLog(err);
-                    this.SetFailed();
-                    reject(new BException(err));
-                }.bind(this));
-            }
-            else {
-                let err = 'AbilityInstance.PlaceInWorld: no displayable set. InstId=' + this.parent.id;
-                GP.ErrorLog(err);
-                reject(new BException(err));
+    // Remove the instance from the graphics scene.
+    // Safe to call multiple times.
+    DeinstantiateInstance() {
+        if (this.displayableItemId) {
+            let displayableBItem = BItem.GetItem(this.displayableItemId);
+            if (displayableBItem) {
+                this.RemoveFromWorld(displayableBItem)
             };
+        };
+    };
+
+    // Do whatever is needed to place this instance into the graphics scene.
+    // Returns a Promise that is resolved with this ability when the Instance is in the scene.
+    // Rejection is a new BException.
+    PlaceInWorld(displayableBItem) {
+        return new Promise( function(resolve, reject) {
+            // TODO: if displayable is not ready, should display the bounding box
+            displayableBItem.WhenReady(20000)
+            .then( function(dispBItem) {
+                let abilityDisp = dispBItem.GetAbility(AbilityDisplayable.NAME);
+                if (abilityDisp) {
+                    // GP.DebugLog('AbilityInstance.PlaceInWorld: calling graphics.PlaceInWorld');
+                    abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
+                    // This is a kludge that gives this instance a handle to displayable graphic context
+                    this.graphics = abilityDisp.graphics;
+                }
+                else {
+                    let err = 'AbilityInstance.PlaceInWorld: cannot get displayable ability';
+                    GP.ErrorLog(err);
+                    reject(new BException(err));
+                }
+                resolve(this);
+            }.bind(this))
+            .catch( function(e) {
+                // Something wrong with the displayable
+                let err = 'AbilityInstance.PlaceInWorld:'
+                            + ' error waiting for displayable to load. e='
+                            + JSONstringify(e);
+                GP.ErrorLog(err);
+                this.SetFailed();
+                reject(new BException(err));
+            }.bind(this));
         }.bind(this) );
     };
 
+    // The position and rotation have been updated
+    UpdatePosRot() {
+        if (this.worldNode) {
+            this.worldNode.position.set(this.gPos);
+            this.worldNode.quaternion.set(this.gRot);
+
+        };
+    };
+
     // Do whatever is needed to remove this instance from the graphics scene.
-    RemoveFromWorld() {
-        if (this.displayable) {
-            this.displayable.graphics.RemoveFromWorld(this);
+    // Pass the BItem instance that includes the AbilityDisplayable
+    RemoveFromWorld(displayableBItem) {
+        if (this.graphics) {
+            this.graphics.RemoveFromWorld(this);
         }
         else {
-            GP.ErrorLog('AbilityInstance.RemoveFromWorld: no displayable available');
+            GP.ErrorLog('AbilityInstance.RemoveFromWorld: no graphics context available');
+        };
+    }
+
+    ReleaseResources() {
+        // GP.DebugLog('AbilityInstance.ReleaseResources');
+        if (this.parent) {
+            this.RemoveFromWorld(this.parent);
         };
     }
 
@@ -171,14 +198,18 @@ export class AbilityInstance extends AnAbility {
 AbilityInstance.PropsToVars = {
     'pos': {
         get: (obj) => { return obj.gPos ? JSON.stringify(obj.gPos) : undefined },
-        set: (obj, val) => { obj.gPos = ParseThreeTuple(val) ;},
+        set: (obj, val) => { obj.gPos = ParseThreeTuple(val);
+                            // obj.GetAbility(AbilityInstance.NAME).UpdatePosRot();
+                            },
         name: 'Pos',
         default: "[0,2,4]",
         ability: AbilityInstance.NAME
     },
     'rot' : {
         get: (obj) => { return obj.gRot ? JSON.stringify(obj.gRot) : undefined },
-        set: (obj, val) => { obj.gRot = ParseFourTuple(val); },
+        set: (obj, val) => { obj.gRot = ParseFourTuple(val);
+                            // obj.GetAbility(AbilityInstance.NAME).UpdatePosRot();
+                            },
         name: 'Rot',
         default: "[0,0,0,1]",
         ability: AbilityInstance.NAME
