@@ -91,7 +91,7 @@ GP.ErrorLog = function ErrorLog(msg) {
 export class DebugBItem extends BItem {
     constructor() {
         let debugInstanceName = (Config.Debug && Config.Debug.DebugLogInstanceName)
-                          ? Config.Debug.DebugLogInstanceName : 'org.basil.b.debug.bitem';
+                          ? Config.Debug.DebugLogInstanceName : 'bitem.debug.b.basil.org';
         super(debugInstanceName, undefined);
         this.SetReady();
         this.lastMessage = 'none';
@@ -102,7 +102,7 @@ export class DebugBItem extends BItem {
                 get: (th) => { return th.lastMessage; },
                 set: (th, val) => {
                     th.lastMessage = val;
-                    GP.DebugLog('WORKER: ' + val);
+                    GP.DebugLog('REMOTE: ' + val);
                 },
                 name: 'Msg'
             },
@@ -110,7 +110,7 @@ export class DebugBItem extends BItem {
                 get: (th) => { return th.lastErrorMessage; },
                 set: (th, val) => {
                     th.lastErrorMessage = val;
-                    GP.ErrorLog('WORKER: ' + val);
+                    GP.ErrorLog('REMOTE: ' + val);
                 },
                 name: 'ErrorMsg'
             }

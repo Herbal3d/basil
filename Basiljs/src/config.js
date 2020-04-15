@@ -151,7 +151,7 @@ export default {
       'MsgProcessorResponsePrintMsg': false, // DebugLog each message sent as a response by MsgProcessor
       'SendAndPromisePrintMsg': false,      // DebugLog each message sent with expected response
       'HandleResponsePrintMsg': false,      // DebugLog each message handled as a response
-      'DebugLogInstanceName': 'org.basil.b.debug.BItem' // Name of debug logging instance
+      'DebugLogInstanceName': 'bitem.debug.b.basil.org' // Name of debug logging instance
     },
     // Information for loading multiple Atropia regions with filename and displacement.
     // Left over from testing multiple region display. Not used any more.
