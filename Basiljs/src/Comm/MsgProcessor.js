@@ -17,9 +17,10 @@ import Config from '../config.js';
 import { BItem, BItemType, BItemState } from '../Items/BItem.js';
 
 import { BasilMessage } from "../jslibs/BasilMessages.js"
-import { BasilMessageOps } from "./BasilMessageOps.js";
+import { BasilMessageOpMap } from "./BasilMessageOps.js";
 import { RandomIdentifier, JSONstringify } from '../Utilities.js';
 import { ExpirationNever } from '../Auth/Auth.js';
+import { BException } from '../BException.js';
 
 // A class which is instanced for each transport system and
 //   maps received messsages to the message processors.
@@ -36,59 +37,46 @@ class TransportReceiver {
         if (Config.Debug && Config.Debug.MsgProcessorProcessPrintMsg) {
             GP.DebugLog('MsgProcessor.Process: received: ' + JSONstringify(msg));
         }
-        let replyContents = undefined;
         let processor = MsgProcessor.processors.get(this.transport.id).get(msg.Op);
         if (processor) {
-            // The 'processor' specification is either an array consisting of:
-            //       [ processorFunction, otherParameters ]
-            //   where 'procesorFunction' takes the parameters:
-            //       processorFunction(messageBody)
-            //   The return of 'processorFunction' is the reply contents or 'undefined'.
-            // If 'processor' is not an array, it is expected to be a function
-            //   that returns what should be returned as a reply or 'undefined'.
-            if (Array.isArray(processor)) {
-                let replyContents = undefined;
-                try {
-                    replyContents = processor[0](msg);
-                }
-                catch (e) {
-                    replyContents = {};
-                    replyName = String(BasilMessageOps.get(msg.Op)).replace('Req$', 'Resp$');
-                    replyContents['Op'] = BasilMessageOps.get(replyName);
-                    replyContents['Exception'] = 'Exception processing '
-                                    + BasilMessageOps.get(op) + ': ' + e;
-                }
-            }
-            else {
-                replyContents = processor(msg);
-            }
+            processor(msg)
+            .then (resp => {
+                if (resp) {
+                    // There is a response to the message.
+                    // If the sender didn't supply response bindings, don't send the response.
+                    if (msg.ResponseCode) {
+                        // Return the binding that allows the other side to match the response
+                        resp['ResponseCode'] = msg.ResponseCode;
+                        if (msg.ResponseKey) {
+                            resp['ResponseKey'] = msg.ResponseKey
+                        }
+
+                        if (Config.Debug && Config.Debug.VerifyProtocol) {
+                            if (! BasilMessage.verify(resp)) {
+                                GP.ErrorLog('MsgProcessor.Process: Verification fail: '
+                                                + JSONstringify(resp));
+                            }
+                        };
+
+                        if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
+                            GP.DebugLog('MsgProcessor.Process: sending response: ' + JSONstringify(resp));
+                        };
+                    };
+                    this.transport.Send(BasilMessage.BasilMessage.encode(resp).finish());
+                };
+            })
+            .catch ( e => {
+                let replyContents = {};
+                let replyName = String(BasilMessageOpMap.get(msg.Op)).replace('Req$', 'Resp$');
+                replyContents['Op'] = BasilMessageOpMap.get(replyName);
+                let errMsg = 'Exception processing ' + BasilMessageOpMap.get(msg.Op) + ': ' + JSONstringify(e);
+                replyContents['Exception'] = errMsg;
+                GP.ErrorLog('MsgProcessor.Process: ' + errMsg);
+                this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
+            });
         }
         else {
             GP.ErrorLog('MsgProcessor.Process: Unknown message: ' + JSONstringify(msg));
-        };
-        if (replyContents) {
-            // There is a response to the message.
-            // If the sender didn't supply response bindings, don't send the response.
-            if (msg.ResponseCode) {
-                // Return the binding that allows the other side to match the response
-                replyContents['ResponseCode'] = msg.ResponseCode;
-                if (msg.ResponseKey) {
-                    replyContents['ResponseKey'] = msg.ResponseKey
-                }
-
-                if (Config.Debug && Config.Debug.VerifyProtocol) {
-                    if (! BasilMessage.verify(replyContents)) {
-                        GP.ErrorLog('MsgProcessor.Process: Verification fail: '
-                                        + JSONstringify(replyContents));
-                    }
-                };
-
-                if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
-                    GP.DebugLog('MsgProcessor.Process: sending response: ' + JSONstringify(replyContents));
-                };
-
-                this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
-            };
         };
     };
 }
@@ -176,37 +164,45 @@ export class MsgProcessor extends BItem {
 
     // Function that handles the response type message
     HandleResponse(responseMsg) {
-        if (Config.Debug && Config.Debug.HandleResponsePrintMsg) {
-            GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSONstringify(responseMsg));
-        };
-        if (responseMsg.ResponseCode) {
-            let sessionIndex = responseMsg.ResponseCode;
-            let session = this.RPCSessionCallback[sessionIndex];
-            if (session) {
-                this.RPCSessionCallback.delete(sessionIndex);
-                try {
-                    (session.resolve)(responseMsg);
+        return new Promise (function( resolve, reject) {
+            if (Config.Debug && Config.Debug.HandleResponsePrintMsg) {
+                GP.DebugLog('MsgProcessor.HandleResponse: received: ' + JSONstringify(responseMsg));
+            };
+            if (responseMsg.ResponseCode) {
+                let sessionIndex = responseMsg.ResponseCode;
+                let session = this.RPCSessionCallback[sessionIndex];
+                if (session) {
+                    this.RPCSessionCallback.delete(sessionIndex);
+                    try {
+                        (session.resolve)(responseMsg);
+                        // A response doesn't generate a response
+                        resolve(undefined);
+                    }
+                    catch (e) {
+                        let errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + e;
+                        console.log(errMsg);
+                        GP.ErrorLog(errMsg);
+                        (session.reject)(errMsg);
+                        reject(new BException(errMsg));
+                    }
                 }
-                catch (e) {
-                    let errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + e;
+                else {
+                    let errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
+                                        + JSONstringify(responseMsg);
                     console.log(errMsg);
                     GP.ErrorLog(errMsg);
-                    (session.reject)(errMsg);
+                    reject(new BException(errMsg));
                 }
             }
             else {
-                let errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
+                let errMsg = 'MsgProcessor.HandleResponse: received misformed msg: '
                                     + JSONstringify(responseMsg);
                 console.log(errMsg);
                 GP.ErrorLog(errMsg);
-            }
-        }
-        else {
-            let errMsg = 'MsgProcessor.HandleResponse: received misformed msg: '
-                                + JSONstringify(responseMsg);
-            console.log(errMsg);
-            GP.ErrorLog(errMsg);
-        }
+                reject(new BException(errMsg));
+            };
+            // Return from the promise with no reply message
+        }.bind(this) );
     }
 
     // Create a well formed property list from an object.

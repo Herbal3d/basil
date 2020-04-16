@@ -90,45 +90,48 @@ export class BasilComm extends MsgProcessor {
     };
 
     _procCreateItem(req) {
-        let ret = { 'Op': BasilMessageOps.CreateItemResp};
-        if (this._CheckAuth(req.SessionAuth)) {
-            // We create a unique Id if one not supplied.
-            // TODO: check if ID already exists!!
-            let id = req.ItemId ? req.ItemId : CreateUniqueId('remote');
-            let itemAuth = req.ItemAuth ? req.itemAuth : req.SessionAuth;
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.CreateItemResp};
+            if (this._CheckAuth(req.SessionAuth)) {
+                // We create a unique Id if one not supplied.
+                // TODO: check if ID already exists!!
+                let id = req.ItemId ? req.ItemId : CreateUniqueId('remote');
+                let itemAuth = req.ItemAuth ? req.itemAuth : req.SessionAuth;
 
-            // Figure out the layer for this BItem. It is either specified or
-            //     defaults to the connection talking.
-            let layer = this.layer;
-            if (req.IProps && req.IProps['layer']) {
-                layer = req.IProps['layer'];
-            };
-            // TODO: figure out how to get a layer name from the SpaceServer.
+                // Figure out the layer for this BItem. It is either specified or
+                //     defaults to the connection talking.
+                let layer = this.layer;
+                if (req.IProps && req.IProps['layer']) {
+                    layer = req.IProps['layer'];
+                };
+                // TODO: figure out how to get a layer name from the SpaceServer.
 
-            let newItem = new BItem(id, itemAuth, BItemType.CONTAINER, layer);
-            newItem.ownerId = this.id;    // So we know who created what
-            // TODO: copy IProps
-            // If Ability definitions have been sent, add those abilities
-            if (req.AProps && req.AProps.length > 0) {
-                req.AProps.forEach( abil => {
-                    let newAbility = AbilityFactory(abil);
-                    if (newAbility) {
-                        newItem.AddAbility(newAbility);
-                    }
-                    else {
-                        GP.ErrorLog('BasilComm._procCreateItem: failed creation of ability: ' + JSONstringify(abil));
-                    };
+                let newItem = new BItem(id, itemAuth, BItemType.CONTAINER, layer);
+                newItem.ownerId = this.id;    // So we know who created what
+                // TODO: copy IProps
+                // If Ability definitions have been sent, add those abilities
+                if (req.AProps && req.AProps.length > 0) {
+                    req.AProps.forEach( abil => {
+                        let newAbility = AbilityFactory(abil);
+                        if (newAbility) {
+                            newItem.AddAbility(newAbility);
+                        }
+                        else {
+                            GP.ErrorLog('BasilComm._procCreateItem: failed creation of ability: ' + JSONstringify(abil));
+                        };
+                    });
+                };
+                ret['IProps'] = this.CreatePropertyList( {
+                    'ItemId': newItem.id,
+                    'ItemIdN': newItem.idN
                 });
+                resolve(ret);
+            }
+            else {
+                ret['Exception'] = 'Not authorized';
+                resolve(ret);
             };
-            ret['IProps'] = this.CreatePropertyList( {
-                'ItemId': newItem.id,
-                'ItemIdN': newItem.idN
-            });
-        }
-        else {
-            ret['Exception'] = 'Not authorized';
-      };
-      return ret;
+        }.bind(this) );
     };
 
     DeleteItem(pId, pItemAuth) {
@@ -140,21 +143,23 @@ export class BasilComm extends MsgProcessor {
     };
 
     _procDeleteItem(req) {
-        let ret = { 'Op': BasilMessageOps.DeleteItemResp};
-        if (this._CheckAuth(req.SessionAuth)) {
-            // Find the item to delete
-            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
-            if (item) {
-                BItem.ForgetItem(item);
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.DeleteItemResp};
+            if (this._CheckAuth(req.SessionAuth)) {
+                // Find the item to delete
+                let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+                if (item) {
+                    BItem.ForgetItem(item);
+                }
+                else {
+                    ret['Exception'] = 'Item does not exist';
+                }
             }
             else {
-                ret['Exception'] = 'Item does not exist';
-            }
-        }
-        else {
-            ret['Exception'] = 'Not authorized';
-        };
-      return ret;
+                ret['Exception'] = 'Not authorized';
+            };
+            resolve(ret);
+        }.bind(this) );
     };
 
     AddAbility(pId, pAbilities) {
@@ -164,31 +169,33 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procAddAbility(req) {
-        let ret = { 'Op': BasilMessageOps.AddAbilityResp};
-        if (this._CheckAuth(req.SessionAuth)) {
-            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
-            if (item) {
-                // If Ability definitions have been sent, add those abilities
-                if (req.AProps && req.AProps.length > 0) {
-                    req.AProps.forEach( abil => {
-                        let newAbility = AbilityFactory(abil);
-                        if (newAbility) {
-                            item.AddAbility(newAbility);
-                        }
-                        else {
-                            GP.ErrorLog('BasilComm._procCreateItem: failed creation of ability: ' + JSONstringify(abil));
-                        };
-                    });
-                };
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.AddAbilityResp};
+            if (this._CheckAuth(req.SessionAuth)) {
+                let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+                if (item) {
+                    // If Ability definitions have been sent, add those abilities
+                    if (req.AProps && req.AProps.length > 0) {
+                        req.AProps.forEach( abil => {
+                            let newAbility = AbilityFactory(abil);
+                            if (newAbility) {
+                                item.AddAbility(newAbility);
+                            }
+                            else {
+                                GP.ErrorLog('BasilComm._procCreateItem: failed creation of ability: ' + JSONstringify(abil));
+                            };
+                        });
+                    };
+                }
+                else {
+                    ret['Exception'] = 'Item does not exist';
+                }
             }
             else {
-                ret['Exception'] = 'Item does not exist';
-            }
-        }
-        else {
-            ret['Exception'] = 'Not authorized';
-        };
-        return ret;
+                ret['Exception'] = 'Not authorized';
+            };
+            resolve(ret);
+        }.bind(this) );
     };
     
     RemoveAbility(pId, pAbilities) {
@@ -198,24 +205,26 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procRemoveAbility(req) {
-        let ret = { 'Op': BasilMessageOps.RemoveAbilityResp};
-        if (this._CheckAuth(req.SessionAuth)) {
-            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
-            if (item) {
-                if (req.AProps && req.AProps.length > 0) {
-                    req.AProps.forEach( abil => {
-                        item.RemoveAbility(abil.AbilityCode);
-                    });
-                };
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.RemoveAbilityResp};
+            if (this._CheckAuth(req.SessionAuth)) {
+                let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+                if (item) {
+                    if (req.AProps && req.AProps.length > 0) {
+                        req.AProps.forEach( abil => {
+                            item.RemoveAbility(abil.AbilityCode);
+                        });
+                    };
+                }
+                else {
+                    ret['Exception'] = 'Item does not exist';
+                }
             }
             else {
-                ret['Exception'] = 'Item does not exist';
-            }
-        }
-        else {
-            ret['Exception'] = 'Not authorized';
-        };
-        return ret;
+                ret['Exception'] = 'Not authorized';
+            };
+            resolve(ret);
+        }.bind(this) );
     };
     
     RequestProperties(pId, filter) {
@@ -226,21 +235,23 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procRequestProperties(req) {
-        let ret = { 'Op': BasilMessageOps.RequestPropertiesResp};
-        if (this._CheckAuth(req.auth)) {
-            let filter = (req.IProps && req.IProps['filter']) ? req.IProps['filter'] : undefined;
-            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
-            if (item) {
-                ret['IProps'] = this.CreatePropertyList(item.FetchProperties(filter));
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.RequestPropertiesResp};
+            if (this._CheckAuth(req.auth)) {
+                let filter = (req.IProps && req.IProps['filter']) ? req.IProps['filter'] : undefined;
+                let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+                if (item) {
+                    ret['IProps'] = this.CreatePropertyList(item.FetchProperties(filter));
+                }
+                else {
+                    ret['Exception'] = 'Instance not found';
+                }
             }
             else {
-                ret['Exception'] = 'Instance not found';
-            }
-        }
-        else {
-            ret['Exception'] = 'Not authorized';
-        }
-        return ret;
+                ret['Exception'] = 'Not authorized';
+            };
+            resolve(ret);
+        }.bind(this) );
     };
 
     UpdateProperties(pId, pProps) {
@@ -251,33 +262,35 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procUpdateProperties(req) {
-        let ret = { 'Op': BasilMessageOps.UpdatePropertiesResp};
-        if (this._CheckAuth(req.auth)) {
-            let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
-            if (item) {
-                try {
-                    if (req.IProps) {
-                        Object.keys(req.IProps).forEach( propToChange => {
-                            item.SetProperty(propToChange, req.IProps[propToChange]);
-                        });
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.UpdatePropertiesResp};
+            if (this._CheckAuth(req.auth)) {
+                let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
+                if (item) {
+                    try {
+                        if (req.IProps) {
+                            Object.keys(req.IProps).forEach( propToChange => {
+                                item.SetProperty(propToChange, req.IProps[propToChange]);
+                            });
+                        };
+                    }
+                    catch (e) {
+                        let errMsg = 'O'
+                        GP.ErrorLog('_procUpdateProperties: exception setting.'
+                                + ' IProps=' + JSONstringify(req.IProps)
+                                + ', e=' + e);
+                        ret['Exception'] = 'Failed setting properties';
                     };
                 }
-                catch (e) {
-                    let errMsg = 'O'
-                    GP.ErrorLog('_procUpdateProperties: exception setting.'
-                            + ' IProps=' + JSONstringify(req.IProps)
-                            + ', e=' + e);
-                    ret['Exception'] = 'Failed setting properties';
-                };
+                else {
+                    ret['Exception'] = 'Instance not found';
+                }
             }
             else {
-                ret['Exception'] = 'Instance not found';
-            }
-        }
-        else {
-            ret['Exception'] = 'Not authorized';
-        }
-        return ret;
+                ret['Exception'] = 'Not authorized';
+            };
+            resolve(ret);
+        }.bind(this) );
     };
 
     // OpenSession has an 'extended' authorization as it contains the new sessionkey
@@ -290,11 +303,13 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procOpenSessionSession(req) {
-        // A server end is ready after processing an OpenSession request
-        let msg = { 'Op': BasilMessageOps.OpenSessionResp};
-        this.openSessionProperties = req.IProps;
-        this.SetReady();
-        return msg;
+        return new Promise( function(resolve, reject) {
+            // A server end is ready after processing an OpenSession request
+            let ret = { 'Op': BasilMessageOps.OpenSessionResp};
+            this.openSessionProperties = req.IProps;
+            this.SetReady();
+            resolve(ret);
+        }.bind(this) );
     };
 
     CloseSession(reason) {
@@ -304,8 +319,10 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procCloseSession(req) {
-        let ret = { 'Op': BasilMessageOps.CloseSessionResp};
-        return ret;
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.CloseSessionResp};
+            resolve(ret);
+        }.bind(this) );
     };
 
     MakeConnection(propertyList) {
@@ -314,6 +331,10 @@ export class BasilComm extends MsgProcessor {
         return this.SendAndPromiseResponse(msg);
     };
     _procMakeConnection(req) {
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.MakeConnectionResp};
+            resolve(ret);
+        }.bind(this) );
     };
 
     AliveCheck() {
@@ -328,14 +349,16 @@ export class BasilComm extends MsgProcessor {
     };
 
     _procAliveCheck(req) {
-        let msg = { 'Op': BasilMessageOps.AliveCheckResp};
-        msg['IProps'] = this.CreatePropertyList( {
-            'time': Date.now(),
-            'sequenceNum': this.aliveSequenceNum++,
-            'timeReceived': req.IProps.Values['time'],
-            'sequenceNumberReceived': req.IProps.Values['sequenceNum']
-        });
-        return msg;
+        return new Promise( function(resolve, reject) {
+            let ret = { 'Op': BasilMessageOps.AliveCheckResp};
+            ret['IProps'] = this.CreatePropertyList( {
+                'time': Date.now(),
+                'sequenceNum': this.aliveSequenceNum++,
+                'timeReceived': req.IProps.Values['time'],
+                'sequenceNumberReceived': req.IProps.Values['sequenceNum']
+            });
+            resolve(ret);
+        }.bind(this) );
     };
 
     _CheckAuth(pAuth) {
