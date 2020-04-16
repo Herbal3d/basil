@@ -81,7 +81,7 @@ export class AbilityDisplayable extends AnAbility {
             this.graphics.LoadSimpleAsset(assetInfo)
             .then(function(theAsset) {
                 if (this.state == BItemState.LOADING) {
-                    GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
+                    // GP.DebugLog('DisplayableMeshSet.constructor: asset load successful. State to READY');
                     // GP.DebugLog('DisplayableMeshSet.constructor:' + ' numAsset=' + theAsset.length);
                     // 'theAsset' is a list of ThreeJS nodes.
                     // 'representation' is whatever the graphics engine has for this asset

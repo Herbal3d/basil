@@ -94,7 +94,7 @@ export class BItem {
                         if ((Date.now() - bItem.whenDeleted) > waitInterval) {
                             bItem.ReleaseResources();
                             IM.ItemsDeleted.delete(bItem.id);
-                            GP.DebugLog('BItem.deleter: finally deleting ' + bItem.id);
+                            // GP.DebugLog('BItem.deleter: finally deleting ' + bItem.id);
                         };
                     };
                 });
