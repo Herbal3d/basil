@@ -82,6 +82,16 @@ export class AbilityInstance extends AnAbility {
     // Rejection is a new BException.
     InstantiateInstance() {
         return new Promise( function(resolve, reject) {
+            if (typeof(this.displayableItemId) == 'undefined') {
+                // No displayable was specified in the AbilityInstance creation.
+                // Check to see if there is a displayable in this BItem and
+                //    use that if found. This is the case where a displayable
+                //    and an instance are put in the same BItem.
+                let displayable = parent.GetAbility(AbilityDisplayable.NAME);
+                if (displayable) {
+                    this.parent.SetProperty("DisplayableItemId", displayable.id);
+                }
+            }
             if (this.displayableItemId) {
                 let displayable = BItem.GetItem(this.displayableItemId);
                 if (displayable) {
