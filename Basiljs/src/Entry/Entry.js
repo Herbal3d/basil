@@ -177,9 +177,9 @@ GP.CO.ClickableOps['gridLogin'] = function() {
         if (startLocation.length == 0) {
             startLocation = 'last';
         }
-        LoginProgress('Start location = ' + startLocation);
 
-        let loginURL = document.getElementById('gridLogin-gridURL').innerHTML.trim();
+        let loginURL = document.getElementById('gridLogin-gridURL').value.trim();
+        LoginProgress('Start location = ' + startLocation + ', loginURL=' + loginURL);
 
         LoginXML2(firstname, lastname, password, startLocation, loginURL,
                                 LoginResponseSuccess, LoginResponseFailure);
@@ -281,7 +281,7 @@ function LoginResponseSuccess(resp) {
 
 function LoginResponseFailure(resp) {
     return new Promise( function(resolve, reject) {
-        LoginProgress('Login failure: ' + resp.message);
+        LoginProgress('Login failure: ' + JSONstringify(resp));
         FailedLogin = true;
         resolve();
     });
@@ -459,6 +459,9 @@ function LoadGridSelection() {
             opt.appendChild(document.createTextNode(grid.Name));
             if (grid.Selected) {
                 opt.setAttribute('selected', '');
+                // Put the value of the selected item into the URL text field
+                let textField = document.getElementById('gridLogin-gridURL');
+                textField.setAttribute('value', grid.LoginURL);
             }
             selectNode.appendChild(opt);
         });
