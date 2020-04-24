@@ -32,6 +32,10 @@ class TransportReceiver {
         this.context = pContext;
     }
 
+    // Process the received message.
+    // If a new message (usually _procXXX), if successful the processor returns
+    //     a response message. If failed (Promise.reject), the processor returns
+    //     a response with the exception information set.
     Process(pRawMsg) {
         let msg = BasilMessage.BasilMessage.decode(pRawMsg);
         if (Config.Debug && Config.Debug.MsgProcessorProcessPrintMsg) {
@@ -61,18 +65,22 @@ class TransportReceiver {
                         if (Config.Debug && Config.Debug.MsgProcessorResponsePrintMsg) {
                             GP.DebugLog('MsgProcessor.Process: sending response: ' + JSONstringify(resp));
                         };
+
+                        this.transport.Send(BasilMessage.BasilMessage.encode(resp).finish());
                     };
-                    this.transport.Send(BasilMessage.BasilMessage.encode(resp).finish());
                 };
             })
-            .catch ( e => {
-                let replyContents = {};
-                let replyName = String(BasilMessageOpMap.get(msg.Op)).replace('Req$', 'Resp$');
-                replyContents['Op'] = BasilMessageOpMap.get(replyName);
-                let errMsg = 'Exception processing ' + BasilMessageOpMap.get(msg.Op) + ': ' + JSONstringify(e);
-                replyContents['Exception'] = errMsg;
-                GP.ErrorLog('MsgProcessor.Process: ' + errMsg);
-                this.transport.Send(BasilMessage.BasilMessage.encode(replyContents).finish());
+            .catch ( eresp => {
+                // If there was no 'reply' requested, don't return the error condition
+                if (msg.ResponseCode) {
+                    eresp['ResponseCode'] = msg.ResponseCode;
+                    if (msg.ResponseKey) {
+                        // Make the error returned into the response
+                        eresp['ResponseKey'] = msg.ResponseKey
+                    }
+                    GP.ErrorLog('MsgProcessor.Process: Exception processing:' + JSONstringify(eresp));
+                    this.transport.Send(BasilMessage.BasilMessage.encode(eresp).finish());
+                };
             });
         }
         else {
@@ -204,41 +212,51 @@ export class MsgProcessor extends BItem {
             // Return from the promise with no reply message
         }.bind(this) );
     }
+};
 
-    // Create a well formed property list from an object.
-    // This does a lot of guessing about the values to create the ParamValue
-    // Note the check for 'undefined'. Property lists cannot have undefined values.
-    CreatePropertyList(obj) {
-        let list = {};
-        Object.keys(obj).forEach(prop => {
-            let val = obj[prop];
-            if (typeof(val) !== 'undefined') {
-                if (typeof(val) == 'string' ) {
-                    list[prop] = val;
-                }
-                else {
-                    list[prop] = JSONstringify(val);
-                };
+// Create a well formed property list from an object.
+// This does a lot of guessing about the values to create the ParamValue
+// Note the check for 'undefined'. Property lists cannot have undefined values.
+export function CreatePropertyList(obj) {
+    let list = {};
+    Object.keys(obj).forEach(prop => {
+        let val = obj[prop];
+        if (typeof(val) !== 'undefined') {
+            if (typeof(val) == 'string' ) {
+                list[prop] = val;
+            }
+            else {
+                list[prop] = JSONstringify(val);
             };
-        });
-        return list;
-    };
+        };
+    });
+    return list;
+};
 
-    // Given an array of AnAbility instances, return an array of ParamBlock's
-    // If passed 'undefined', return 'undefined'
-    BuildAbilityProps(pAbilities) {
-        if (typeof(pAbilities) === 'undefined'          // if undefined
-                || (! Array.isArray(pAbilities))        //   or if not an array
-                || pAbilities.length == 0)  {           //   or if the array is empty
-            return undefined;                           // return a nothing
-        }
-        let ret = [];
-        pAbilities.forEach( abil => {
-            ret.push( {
-                'Ability': abil.Name,
-                'Props': abil.GetProperties()
-            } );
-        });
-        return ret;
-    };
+// Given an array of AnAbility instances, return an array of ParamBlock's
+// If passed 'undefined', return 'undefined'
+export function BuildAbilityProps(pAbilities) {
+    if (typeof(pAbilities) === 'undefined'          // if undefined
+            || (! Array.isArray(pAbilities))        //   or if not an array
+            || pAbilities.length == 0)  {           //   or if the array is empty
+        return undefined;                           // return a nothing
+    }
+    let ret = [];
+    pAbilities.forEach( abil => {
+        ret.push( {
+            'Ability': abil.Name,
+            'Props': abil.GetProperties()
+        } );
+    });
+    return ret;
+};
+
+// Turn a response into an error exception message.
+// This is used in the message processors to create the error response.
+export function MakeExceptionResp(resp, exceptionMsg, exceptionHints) {
+    resp.Exception = exceptionMsg;
+    if (exceptionHints) {
+        resp.ExceptionHints = this.CreatePropertyList(exceptionHints);
+    }
+    return resp;
 }

@@ -185,7 +185,7 @@ export default {
         {
             'Name': 'localhost',
             'GridInfo': 'http://127.0.0.1:9000/get_grid_info',
-            'LoginURL': 'http://127.0.0.1:8002/',
+            'LoginURL': 'http://127.0.0.1:9000/',
             'Selected': true
         },
         {

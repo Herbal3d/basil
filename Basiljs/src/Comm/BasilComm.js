@@ -15,13 +15,15 @@ import { GP } from 'GLOBALS';
 
 import Config from '../config.js';
 import { BItem, BItemType } from '../Items/BItem.js';
+import { CreateToken } from '../Auth/Auth.js';
 
-import { MsgProcessor } from './MsgProcessor.js';
+import { MsgProcessor, MakeExceptionResp, CreatePropertyList, BuildAbilityProps } from './MsgProcessor.js';
 import { BasilMessageOps } from './BasilMessageOps.js';
 
 import { CombineParameters, CreateUniqueId, JSONstringify } from '../Utilities.js';
 
 import { AbilityFactory } from '../Items/AbilityRegistration.js';
+import { BException } from '../BException.js';
 
 // Message API for the Basil <=> SpaceServer connection.
 
@@ -84,8 +86,8 @@ export class BasilComm extends MsgProcessor {
     CreateItem(pProps, pAbilities) {
         let msg = { 'Op': BasilMessageOps.CreateItemReq};
         if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
-        if (pProps) msg['IProps'] = this.CreatePropertyList(pProps);
-        if (pAbilities) msg['AProps'] = this.BuildAbilityProps(pAbilities);
+        if (pProps) msg['IProps'] = CreatePropertyList(pProps);
+        if (pAbilities) msg['AProps'] = BuildAbilityProps(pAbilities);
         return this.SendAndPromiseResponse(msg);
     };
 
@@ -121,15 +123,14 @@ export class BasilComm extends MsgProcessor {
                         };
                     });
                 };
-                ret['IProps'] = this.CreatePropertyList( {
+                ret['IProps'] = CreatePropertyList( {
                     'ItemId': newItem.id,
                     'ItemIdN': newItem.idN
                 });
                 resolve(ret);
             }
             else {
-                ret['Exception'] = 'Not authorized';
-                resolve(ret);
+                reject(MakeExceptionResp(ret, 'Not authorized'));
             };
         }.bind(this) );
     };
@@ -150,15 +151,15 @@ export class BasilComm extends MsgProcessor {
                 let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
                 if (item) {
                     BItem.ForgetItem(item);
+                    resolve(ret);
                 }
                 else {
-                    ret['Exception'] = 'Item does not exist';
+                    reject(MakeExceptionResp(ret, 'Item does not exist'));
                 }
             }
             else {
-                ret['Exception'] = 'Not authorized';
+                reject(MakeExceptionResp(ret, 'Not authorized'));
             };
-            resolve(ret);
         }.bind(this) );
     };
 
@@ -177,24 +178,30 @@ export class BasilComm extends MsgProcessor {
                     // If Ability definitions have been sent, add those abilities
                     if (req.AProps && req.AProps.length > 0) {
                         req.AProps.forEach( abil => {
-                            let newAbility = AbilityFactory(abil);
-                            if (newAbility) {
-                                item.AddAbility(newAbility);
+                            try {
+                                let newAbility = AbilityFactory(abil);
+                                if (newAbility) {
+                                    item.AddAbility(newAbility);
+                                };
                             }
-                            else {
-                                GP.ErrorLog('BasilComm._procCreateItem: failed creation of ability: ' + JSONstringify(abil));
+                            catch (e) {
+                                // Creation of this ability failed
+                                reject(MakeExceptionResp(ret, JSONstringify(e)));
                             };
                         });
+                        resolve(ret);
+                    }
+                    else {
+                        reject(MakeExceptionResp(ret, 'No abilities to create'));
                     };
                 }
                 else {
-                    ret['Exception'] = 'Item does not exist';
+                    reject(MakeExceptionResp(ret, 'Item does not exist'));
                 }
             }
             else {
-                ret['Exception'] = 'Not authorized';
+                reject(MakeExceptionResp(ret, 'Not authorized'));
             };
-            resolve(ret);
         }.bind(this) );
     };
     
@@ -215,15 +222,15 @@ export class BasilComm extends MsgProcessor {
                             item.RemoveAbility(abil.AbilityCode);
                         });
                     };
+                    resolve(ret);
                 }
                 else {
-                    ret['Exception'] = 'Item does not exist';
+                    reject(MakeExceptionResp(ret, 'Item does not exist'));
                 }
             }
             else {
-                ret['Exception'] = 'Not authorized';
+                reject(MakeExceptionResp(ret, 'Not authorized'));
             };
-            resolve(ret);
         }.bind(this) );
     };
     
@@ -231,7 +238,7 @@ export class BasilComm extends MsgProcessor {
         let msg = { 'Op': BasilMessageOps.RequestPropertiesReq};
         if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (pId) msg['ItemId'] = pId;
-        if (filter) msg['IProps'] = this.CreatePropertyList({ 'filter': filter });
+        if (filter) msg['IProps'] = CreatePropertyList({ 'filter': filter });
         return this.SendAndPromiseResponse(msg);
     };
     _procRequestProperties(req) {
@@ -241,16 +248,16 @@ export class BasilComm extends MsgProcessor {
                 let filter = (req.IProps && req.IProps['filter']) ? req.IProps['filter'] : undefined;
                 let item = BItem.GetItemN(req.ItemId, req.ItemIdN);
                 if (item) {
-                    ret['IProps'] = this.CreatePropertyList(item.FetchProperties(filter));
+                    ret['IProps'] = CreatePropertyList(item.FetchProperties(filter));
+                    resolve(ret);
                 }
                 else {
-                    ret['Exception'] = 'Instance not found';
+                    reject(MakeExceptionResp(ret, 'Item does not exist'));
                 }
             }
             else {
-                ret['Exception'] = 'Not authorized';
+                reject(MakeExceptionResp(ret, 'Not authorized'));
             };
-            resolve(ret);
         }.bind(this) );
     };
 
@@ -258,7 +265,7 @@ export class BasilComm extends MsgProcessor {
         let msg = { 'Op': BasilMessageOps.UpdatePropertiesReq};
         if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
         if (pId) msg['ItemId'] = pId;
-        if (pProps) msg['IProps'] = this.CreatePropertyList(pProps);
+        if (pProps) msg['IProps'] = CreatePropertyList(pProps);
         return this.SendAndPromiseResponse(msg);
     };
     _procUpdateProperties(req) {
@@ -273,23 +280,22 @@ export class BasilComm extends MsgProcessor {
                                 item.SetProperty(propToChange, req.IProps[propToChange]);
                             });
                         };
+                        resolve(ret);
                     }
                     catch (e) {
-                        let errMsg = 'O'
                         GP.ErrorLog('_procUpdateProperties: exception setting.'
                                 + ' IProps=' + JSONstringify(req.IProps)
                                 + ', e=' + e);
-                        ret['Exception'] = 'Failed setting properties';
+                        reject(MakeExceptionResp(ret, 'Failed setting properties: ' + JSONstringify(e)));
                     };
                 }
                 else {
-                    ret['Exception'] = 'Instance not found';
+                    reject(MakeExceptionResp(ret, 'Item does not exist'));
                 }
             }
             else {
-                ret['Exception'] = 'Not authorized';
+                reject(MakeExceptionResp(ret, 'Not authorized'));
             };
-            resolve(ret);
         }.bind(this) );
     };
 
@@ -298,7 +304,7 @@ export class BasilComm extends MsgProcessor {
     OpenSession(pUserAuth, propertyList) {
         let msg = { 'Op': BasilMessageOps.OpenSessionReq};
         if (pUserAuth) msg['SessionAuth'] = pUserAuth;
-        if (propertyList) msg['IProps'] = this.CreatePropertyList(propertyList);
+        if (propertyList) msg['IProps'] = CreatePropertyList(propertyList);
         GP.DebugLog('BasilComm.OpenSession: sending message: ' + JSONstringify(msg));
         return this.SendAndPromiseResponse(msg);
     };
@@ -315,7 +321,7 @@ export class BasilComm extends MsgProcessor {
     CloseSession(reason) {
         let msg = { 'Op': BasilMessageOps.CloseSessionReq};
         if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
-        if (reason) msg['IProps'] = this.CreatePropertyList({ 'reason': reason } );
+        if (reason) msg['IProps'] = CreatePropertyList({ 'reason': reason } );
         return this.SendAndPromiseResponse(msg);
     };
     _procCloseSession(req) {
@@ -333,14 +339,61 @@ export class BasilComm extends MsgProcessor {
     _procMakeConnection(req) {
         return new Promise( function(resolve, reject) {
             let ret = { 'Op': BasilMessageOps.MakeConnectionResp};
-            resolve(ret);
+            if (this._CheckAuth(req.SessionAuth)) {
+                let params = CombineParameters(undefined, req.IProps, {
+                    'transportURL': undefined,
+                    'transport': 'WS',
+                    'service': undefined,
+                    'serviceauth': undefined
+                });
+                GP.DebugLog('BasilComm.MakeConnection: props=' + JSONstringify(params));
+    
+                GP.CM.ConnectTransportAndService(GP.CM, params)
+                .then( srv => {
+                    // A new service so new tokens to talk to me with
+                    srv.SetIncomingAuth(CreateToken('makeconn'));
+                    let props = {
+                        'SessionKey': CreateToken('session'),
+                        'ClientAuth': srv.IncomingAuth
+                    };
+                    srv.OpenSession(params.serviceauth, props)
+                    .then( resp => {
+                        if (resp.Exception) {
+                            GP.DebugLog('BasilComm.ProcMakeConnection: OpenSession failed:'
+                                        + JSONstringify(resp));
+                            reject(MakeExceptionResp(ret, resp.Exception, resp.ExceptionHints));
+                        }
+                        else {
+                            GP.DebugLog('BasilComm.ProcMakeConnection: Session opened to SpaceServer. Params='
+                                        + JSONstringify(resp.IProps));
+                            // Copy the authorizations onto the service for later checking
+                            srv.SetOutgoingAuth(resp.SessionAuth, resp.SessionAuthExpiration);
+                            srv.SessionKey = resp.SessionKey;
+                            srv.ConnectionKey = resp.ConnectionKey;
+                            // TODO: response includes 'Services' which give access info for asset server
+                            resolve(ret);
+                        }
+                    })
+                    .catch( e => {
+                        GP.ErrorLog('BasilComm.ProcMakeConnection: failed to open session: ' + e.message);
+                        reject(MakeExceptionResp(ret, JSONstringify(e)));
+                    });
+                })
+                .catch (e => {
+                    GP.ErrorLog('BasilComm.ProcMakeConnection: failed connecting to transport/service: ' + e.message);
+                    reject(MakeExceptionResp(ret, JSONstringify(e)));
+                });
+            }
+            else {
+                reject(MakeExceptionResp(ret, 'Not authorized'));
+            };
         }.bind(this) );
     };
 
     AliveCheck() {
         let msg = { 'Op': BasilMessageOps.AliveCheckReq};
         if (this.OutgoingAuth) msg['SessionAuth'] = this.OutgoingAuth;
-        msg['IProps'] = this.CreatePropertyList( {
+        msg['IProps'] = CreatePropertyList( {
             'time': Date.now(),
             'sequenceNum': this.aliveSequenceNum++
         });
@@ -351,7 +404,7 @@ export class BasilComm extends MsgProcessor {
     _procAliveCheck(req) {
         return new Promise( function(resolve, reject) {
             let ret = { 'Op': BasilMessageOps.AliveCheckResp};
-            ret['IProps'] = this.CreatePropertyList( {
+            ret['IProps'] = CreatePropertyList( {
                 'time': Date.now(),
                 'sequenceNum': this.aliveSequenceNum++,
                 'timeReceived': req.IProps.Values['time'],

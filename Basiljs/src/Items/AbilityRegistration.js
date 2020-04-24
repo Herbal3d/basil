@@ -61,14 +61,14 @@ export function AbilityFactory(pParamBlock) {
                             + pParamBlock.Ability
                             + ', e=' + e;
                 GP.ErrorLog(errmsg);
-                // throw new BException(errmsg);
+                throw new BException(errmsg);
             };
         }
         else {
             let errmsg = 'AnAbility.AbilityFactory: attempting to create unknown ability '
                         + pParamBlock.Ability;
             GP.ErrorLog(errmsg);
-            // throw new BException(errmsg);
+            throw new BException(errmsg);
         };
     };
     return ret
