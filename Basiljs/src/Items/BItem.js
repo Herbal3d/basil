@@ -389,7 +389,11 @@ export class BItem {
     //    events when they existw
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
-    WhenReady(timeoutMS) {
+    WhenReady(timeoutMS, waitObject) {
+        // If 'waitObject' is specified, it is used as the 'this' that has
+        //     'waitObject.GetState()' checked. This allows waiting on 
+        //     Abilities as well as BItem's.
+        let tthis = typeof(waitObject) === 'undefined' ? this : waitObject;
         return new Promise( function(resolve, reject) {
             if (this.GetState() == BItemState.READY) {
                 // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
@@ -442,7 +446,7 @@ export class BItem {
                     };
                 };
             };
-        }.bind(this) );
+        }.bind(tthis) );
     };
     // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
     static WaitABit(ms, pParam) {

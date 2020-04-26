@@ -78,6 +78,20 @@ export class AnAbility {
     SetLoading() { this.SetState(BItemState.LOADING); };
     SetShutdown() { this.SetState(BItemState.SHUTDOWN); };
 
+    // Return 'true' if something is wrong with this Ability and it will never go READY.
+    // This is used by WhenReady if waiting on the ability to get ready.
+    NeverGonnaBeReady() {
+        let currentState = this.state;
+        return this.deleteInProcess
+                || currentState == BItemState.FAILED
+                || currentState == BItemState.SHUTDOWN;
+    };
+    // Used by BItem.WhenReady to wait on an Ability.
+    // Return the promise in the BItem but waiting on this instance.
+    WhenReady(timeout) {
+        return this.parent.WhenReady(timeout, this);
+    }
+
     // If state has changed and state change events are enabled, fire the event
     FireStateChangeEvent(pNewState, pOldState) {
         if (pOldState != pNewState && this.parent && this.parent.EventName_OnStateChange) {

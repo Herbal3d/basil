@@ -139,31 +139,44 @@ export class AbilityInstance extends AnAbility {
     PlaceInWorld(displayableBItem) {
         return new Promise( function(resolve, reject) {
             // TODO: if displayable is not ready, should display the bounding box
-            displayableBItem.WhenReady(20000)
-            .then( function(dispBItem) {
-                let abilityDisp = dispBItem.GetAbility(AbilityDisplayable.NAME);
-                if (abilityDisp) {
+            let displayableAbility = displayableBItem.GetAbility(AbilityDisplayable.NAME);
+            if (displayableAbility) {
+                displayableAbility.WhenReady(20000)
+                .then( function(dispAbility) {
                     // GP.DebugLog('AbilityInstance.PlaceInWorld: calling graphics.PlaceInWorld');
-                    abilityDisp.graphics.PlaceInWorld(this, abilityDisp);
+                    displayableAbility.graphics.PlaceInWorld(this, displayableAbility);
                     // This is a kludge that gives this instance a handle to displayable graphic context
-                    this.graphics = abilityDisp.graphics;
-                }
-                else {
-                    let err = 'AbilityInstance.PlaceInWorld: cannot get displayable ability';
+                    this.graphics = displayableAbility.graphics;
+                    this.SetReady();
+                    resolve(this);  // return this AbilityInstance
+                }.bind(this))
+                .catch( function(waitedItem) {
+                    // Something wrong with the displayable
+                    let err = '';
+                    if (waitedItem.parent) {
+                        // the item waited on seems to be an Ability
+                        err = 'AbilityInstance.PlaceInWorld:'
+                                    + ' error waiting for ability to load.'
+                                    + ' id=' + waitedItem.parent.id
+                                    + ', state=' + waitedItem.GetState();
+                    }
+                    else {
+                        // the item waited on is a BItem
+                        err = 'AbilityInstance.PlaceInWorld:'
+                                + ' error waiting for BItem to load.'
+                                + ' id=' + waitedItem.id
+                                + ', state=' + waitedItem.GetState();
+                    }
                     GP.ErrorLog(err);
+                    this.SetFailed();
                     reject(new BException(err));
-                }
-                resolve(this);
-            }.bind(this))
-            .catch( function(e) {
-                // Something wrong with the displayable
-                let err = 'AbilityInstance.PlaceInWorld:'
-                            + ' error waiting for displayable to load. e='
-                            + JSONstringify(e);
+                }.bind(this));
+            }
+            else {
+                let err = 'AbilityInstance.PlaceInWorld: cannot get displayable ability';
                 GP.ErrorLog(err);
-                this.SetFailed();
                 reject(new BException(err));
-            }.bind(this));
+            }
         }.bind(this) );
     };
 
