@@ -78,7 +78,7 @@ class TransportReceiver {
                         // Make the error returned into the response
                         eresp['ResponseKey'] = msg.ResponseKey
                     }
-                    GP.ErrorLog('MsgProcessor.Process: Exception processing:' + JSONstringify(eresp));
+                    // GP.ErrorLog('MsgProcessor.Process: Exception processing:' + JSONstringify(eresp));
                     this.transport.Send(BasilMessage.BasilMessage.encode(eresp).finish());
                 };
             });

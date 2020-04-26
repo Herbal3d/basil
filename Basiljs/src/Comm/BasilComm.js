@@ -305,7 +305,7 @@ export class BasilComm extends MsgProcessor {
         let msg = { 'Op': BasilMessageOps.OpenSessionReq};
         if (pUserAuth) msg['SessionAuth'] = pUserAuth;
         if (propertyList) msg['IProps'] = CreatePropertyList(propertyList);
-        GP.DebugLog('BasilComm.OpenSession: sending message: ' + JSONstringify(msg));
+        // GP.DebugLog('BasilComm.OpenSession: sending message: ' + JSONstringify(msg));
         return this.SendAndPromiseResponse(msg);
     };
     _procOpenSessionSession(req) {

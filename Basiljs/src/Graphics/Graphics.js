@@ -277,7 +277,7 @@ export class Graphics extends BItem {
             'useDRACO': true,
             'combineInstances': true    // whether to combine instances
         });
-        GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
+        // GP.DebugLog('Graphics.LoadSimpleAsset: call parms: ' + JSON.stringify(parms));
         return new Promise(function(resolve, reject) {
             let loader = undefined;
             switch (parms.loadertype.toLowerCase()) {
