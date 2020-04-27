@@ -108,8 +108,6 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
 GP.DebugLog('Starting SpaceServer');
 GP.client.WhenReady(10000)
 .then( sServer => {
-    // Fetch the IProps that were saved from the OpenSession request
-    let openSessionProps = GP.client.openSessionProperties;
     let displayableProps = {
         'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
         'loaderType': 'GLTF',
@@ -119,6 +117,7 @@ GP.client.WhenReady(10000)
     if (Config.WWTester && Config.WWTester.comm.TestAsset) {
         displayableProps = Config.WWTester.comm.TestAsset;
     }
+    let openSessionProps = GP.client.openSessionProperties;
     // Parameters could have been passed from the invoker (test info in OpenSession req)
     if (openSessionProps) {
         if (openSessionProps.TestURL) {

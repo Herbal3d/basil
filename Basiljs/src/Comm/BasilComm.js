@@ -58,7 +58,7 @@ export class BasilComm extends MsgProcessor {
         processors.set(BasilMessageOps.UpdatePropertiesReq, this._procUpdateProperties.bind(this));
         processors.set(BasilMessageOps.UpdatePropertiesResp, this.HandleResponse.bind(this));
 
-        processors.set(BasilMessageOps.OpenSessionReq, this._procOpenSessionSession.bind(this));
+        processors.set(BasilMessageOps.OpenSessionReq, this._procOpenSession.bind(this));
         processors.set(BasilMessageOps.OpenSessionResp, this.HandleResponse.bind(this));
         processors.set(BasilMessageOps.CloseSessionReq, this._procCloseSession.bind(this));
         processors.set(BasilMessageOps.CloseSessionResp, this.HandleResponse.bind(this));
@@ -74,6 +74,7 @@ export class BasilComm extends MsgProcessor {
     Start() {
         if (this.IsServer) {
             // If a server, don't become ready until an OpenSession has been received
+            this.SetLoading();
         }
         else {
           this.SetReady();
@@ -308,10 +309,11 @@ export class BasilComm extends MsgProcessor {
         // GP.DebugLog('BasilComm.OpenSession: sending message: ' + JSONstringify(msg));
         return this.SendAndPromiseResponse(msg);
     };
-    _procOpenSessionSession(req) {
+    _procOpenSession(req) {
         return new Promise( function(resolve, reject) {
             // A server end is ready after processing an OpenSession request
             let ret = { 'Op': BasilMessageOps.OpenSessionResp};
+            // GP.DebugLog('procOpenSession. req=' + JSONstringify(req));
             this.openSessionProperties = req.IProps;
             this.SetReady();
             resolve(ret);

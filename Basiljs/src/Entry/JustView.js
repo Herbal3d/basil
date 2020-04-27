@@ -74,7 +74,8 @@ var CallBasilWithTheFile = function() {
       'service': 'BasilComm',
       'TestAsset': {
         'displayableurl': GLTFTOLOAD,
-        'loaderType': 'GLTF'
+        'loadertype': 'GLTF',
+        'displayabletype': 'meshset'
       }
     }
   };
