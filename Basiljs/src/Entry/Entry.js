@@ -294,10 +294,10 @@ function LoginProgress(msg, classs) {
         var newLine = document.createElement('div');
         newLine.appendChild(document.createTextNode(msg));
         if (classs) {
-        newLine.setAttribute('class', classs);
-        }
+            newLine.setAttribute('class', classs);
+        };
         logPlace.appendChild(newLine);
-    }
+    };
 };
 
 // Login using XMLRPC raw request (no library or frameworks).
@@ -330,7 +330,8 @@ function LoginXML2(firstname, lastname, password, startLocation, loginURL, succe
         method: 'POST',
         cache: 'no-cache',
         headers: {
-            'Content-Type': 'text/xml'
+            'Content-Type': 'text/xml',
+            'Content-Length': xmlreq.length
         },
         body: xmlreq
     }) 
