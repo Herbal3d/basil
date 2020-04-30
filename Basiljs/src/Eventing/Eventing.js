@@ -1,4 +1,3 @@
-//@ts-check
 // Copyright 2018 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -61,14 +60,14 @@ export class SubEntry {
         this.numSubscriptionFired = 0;
     }
     // Returns a promise for when event has been processed
-    fire(params) {
+    async fire(params) {
         this.numSubscriptionFired++;
-        return new Promise((resolve, reject) => {
+        return new Promise(function(resolve, reject) {
             this.processor(params, this.topic)
             // Debug only so I can use GP
             GP.EventingInstance.numEventsFired++;
-            resolve();
-        });
+            resolve(this);
+        }.bind(this) );
     }
 }
 
@@ -95,13 +94,14 @@ export class TopicEntry {
             }
         }
     };
-    fire(params) {
+    async fire(params) {
         this.numTopicEventsFired++;
         if (this.subs.length > 0) {
-            this.subs.map( sub => { sub.fire(params); } );
+            // this.subs.map( sub => { sub.fire(params); } );
             // Could wait for the resolution of the Promises
-            // Promise.all(this.subs.map( sub => { sub.fire(params); } ));
-        }
+            return Promise.all(this.subs.map( sub => { return sub.fire(params); } ));
+        };
+        return null;
     };
 }
 
@@ -195,8 +195,8 @@ export class Eventing extends BItem {
             GP.DebugLog("Eventing.register: registering event " + topic);
             if (this.OnRegister) {
                 this.OnRegister.fire({ 'topic': topicEnt.name, 'topicEntry': topicEnt });
-            }
-        }
+            };
+        };
         // Remember that it was registered so this topic expects an Unregister()
         topicEnt.wasRegistered = true;
         return topicEnt;
@@ -216,14 +216,16 @@ export class Eventing extends BItem {
     //    the topic entry.
     // If given a topic name, this will find the topic entry then do the fire() on it.
     // This also takes a TopicEntry for convenience.
-    Fire(topicEntryOrTopic, params) {
+    // Note: this returns a Promise which is completed when the fired event is done processing.
+    async Fire(topicEntryOrTopic, params) {
         let topicEntry = topicEntryOrTopic;
         if (typeof(topicEntryOrTopic) === 'string') {
             topicEntry = this.FindTopic(topicEntryOrTopic);
-        }
+        };
         if (topicEntry && topicEntry.topic) {
-            topicEntry.fire(params);
-        }
+            return topicEntry.fire(params);
+        };
+        return null;
     };
 
     // Return a TopicEntry for the given topic name.
