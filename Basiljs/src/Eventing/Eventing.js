@@ -88,7 +88,7 @@ export class TopicEntry {
         this.subs.push(sub);
     };
     removeSubscription(sub) {
-        for (let ii=0; ii<this.subs.length; ii++) {
+        for (let ii=this.subs.length-1; ii>=0; ii--) {
             if (this.subs[ii].id == sub.id) {
                 this.subs.splice(ii, 1);
             }
