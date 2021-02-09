@@ -211,7 +211,7 @@ export class AbilityInstance extends AnAbility {
 
 // Mapping of property list names to properties on this instance.
 // See Ability.InitializeProps() and Ability.GenerateProps() for usage.
-// Property name definitions must be loader case.
+// Property name definitions must be lower case.
 // The 'obj' is the parent BItem.
 // The entries for each property are:
 //          'get', 'set': value get and set operations
@@ -221,18 +221,14 @@ export class AbilityInstance extends AnAbility {
 AbilityInstance.PropsToVars = {
     'pos': {
         get: (obj) => { return obj.gPos ? JSON.stringify(obj.gPos) : undefined },
-        set: (obj, val) => { obj.gPos = ParseThreeTuple(val);
-                            // obj.GetAbility(AbilityInstance.NAME).UpdatePosRot();
-                            },
+        set: (obj, val) => { obj.gPos = ParseThreeTuple(val); },
         name: 'Pos',
         default: "[0,2,4]",
         ability: AbilityInstance.NAME
     },
     'rot' : {
         get: (obj) => { return obj.gRot ? JSON.stringify(obj.gRot) : undefined },
-        set: (obj, val) => { obj.gRot = ParseFourTuple(val);
-                            // obj.GetAbility(AbilityInstance.NAME).UpdatePosRot();
-                            },
+        set: (obj, val) => { obj.gRot = ParseFourTuple(val); },
         name: 'Rot',
         default: "[0,0,0,1]",
         ability: AbilityInstance.NAME

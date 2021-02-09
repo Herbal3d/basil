@@ -17,6 +17,8 @@ import { BItem, BItemType } from '../Items/BItem.js';
 
 import { CombineParameters, ParseThreeTuple, JSONstringify } from '../Utilities.js';
 
+import { Register, Subscribe } from '../Eventing/Eventing.js';
+
 import * as Coord from './Coord.js';
 
 // Even though these are not explicilty referenced, this causes webpack to include the libraries.

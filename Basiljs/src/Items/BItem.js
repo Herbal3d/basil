@@ -43,6 +43,8 @@ export const BItemType = {
     TRANSPORT: 'Transport'
 }
 
+export let BItem_EventName_OnBItemPropertyUpdate = 'BItem.PropertyUpdate';
+
 // All things referenced by the Basil interface are "items' and thus they
 //   have these access methods.
 // The main features of a BItem are:
@@ -52,6 +54,8 @@ export const BItemType = {
 //  An 'auth' which is auth info for access to and from this item.
 //  An 'itemType' which identifies the type of the item.
 export class BItem {
+    // Event generated whenever any BItem updates a property
+
     constructor(pId, pAuth, pItemType, pLayer) {
         this.props = new Map();
         this.abilities = new Map();
@@ -79,6 +83,10 @@ export class BItem {
         this.bItemState = BItemState.READY;
         // Enable when people start using this
         // this.EventName_OnStateChange = 'StateChange-' + this.id;
+        // Enable this so things can subscribe to per-item property changes
+        // this.EventName_OnPropertyChange = 'PropertyChange-' + this.id;
+        this.EventName_OnBItemPropertyUpdate = 'BItem.PropertyUpdate';
+        // this.eventing = Eventing.Instance();
 
         // When BItems are deleted, they are placed in the 'ItemsDeleted'
         //    list. This list is scanned and items are removed when they
@@ -126,6 +134,22 @@ export class BItem {
             });
         };
     };
+    // Event generated when a property is updated
+    FirePropertyUpdatedEvent(pPropertyName, pValue, pPropertyDesc) {
+        let eventInfo = {
+            'itemid': this.id,
+            'directBItem': this,
+            'property': pPropertyName
+        };
+        if (pValue) eventInfo['value'] = pValue;
+        if (pPropertyDesc) eventInfo['propertyDesc'] = pPropertyDesc;
+
+        if (this.EventName_OnPropertyChange) {
+            this.eventing.Fire(this.EventName_OnPropertyChange, eventInfo);
+        };
+        // Commented out as BItem cannot reference Eventing because it references BItem
+        // this.eventing.Fire(this.EventName_OnBItemPropertyUpdate, eventInfo);
+    }
 
     // Scan through all the abilities and compute the overall state.
     // Note that the BItem keeps a local state in 'bItemState' while the
@@ -264,12 +288,7 @@ export class BItem {
             if (propDesc.set) {
                 // GP.DebugLog('BItem.SetProperty: ' + propertyName + ' => ' + JSON.stringify(value));
                 propDesc.set(this, value);
-                /* Someday generate events for property value changing
-                Eventing.Instance.Fire(this.EventName_OnPropertySet, {
-                    'property': propertyName,
-                    'value': value
-                });
-                */
+                this.FirePropertyUpdatedEvent(propertyName, value, propDesc);
             }
             else {
                 GP.ErrorLog('BItem.SetProperty: could not set ' + propertyName + ' because no "set" function');
