@@ -6,7 +6,6 @@
 	],
 	"settings": {
 		"workbench.editor.enablePreview": false,
-		"workbench.editor.enablePreviewFromQuickOpen": false,
-		"editor.tabSize": 2
+    "workbench.editor.enablePreviewFromQuickOpen": false
 	}
 }
