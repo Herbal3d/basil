@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "target": "es6",
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "baseUrl": ".",
+        "paths": {
+            "@Abilities/*": ["./src/Abilities/*"],
+            "@Base/*": ["./src/*"],
+            "@BItem/*": ["./src/BItem/*"],
+            "@Comm/*": ["./src/Comm/*"],
+            "@Eventing/*": ["./src/Eventing/*"],
+            "@Tools/*": ["./src/Tools/*"],
+            "*": [ "node_modules/*" ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "src/static/**/*",
+        "src/jslibs/*"
+    ]
+}
