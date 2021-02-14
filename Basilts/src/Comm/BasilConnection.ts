@@ -56,41 +56,41 @@ export class BasilConnection extends BItem {
     };
 
     async CreateItem(pProps: BKeyedCollection): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.CreateItemReq };
+        const bmsg: BMessage = { 'Op': BMessageOps.CreateItemReq };
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async DeleteItem(pId: string, pItemAuth?: AuthToken): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.DeleteItemReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.DeleteItemReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pId) bmsg.ItemId = pId;
         if (pItemAuth) bmsg.ItemAuth = pItemAuth.token;
         return SendAndPromiseResponse(bmsg, this);
     };
     async AddAbility(pId: string, pAbilities: any): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.AddAbilityReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.AddAbilityReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pId) bmsg.ItemId = pId;
         // TODO:
         return SendAndPromiseResponse(bmsg, this);
     };
     async RemoveAbility(pId: string, pAbilities: any): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.RemoveAbilityReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.RemoveAbilityReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pId) bmsg.ItemId = pId;
         // TODO:
         return SendAndPromiseResponse(bmsg, this);
     };
     async RequestProperties(pId: string, filter: string): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.RequestPropertiesReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.RequestPropertiesReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pId) bmsg.ItemId = pId;
         if (filter) bmsg.ItemProps = CreatePropertyList({ 'filter': filter });
         return SendAndPromiseResponse(bmsg, this);
     };
     async UpdateProperties(pId: string, pProps: BKeyedCollection): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.UpdatePropertiesReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.UpdatePropertiesReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pId) bmsg.ItemId = pId;
         if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
@@ -99,29 +99,29 @@ export class BasilConnection extends BItem {
     // OpenSession has an 'extended' authorization as it contains the new sessionkey
     //    as well as the auth for access the service.
     async OpenSession(pUserAuth: AuthToken, pProps: BKeyedCollection): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.OpenSessionReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.OpenSessionReq};
         if (pUserAuth) bmsg.SessionAuth = pUserAuth.token;
         if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async CloseSession(reason: string): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.CloseSessionReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.CloseSessionReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (reason) bmsg.ItemProps = CreatePropertyList({ 'reason': reason } );
         return SendAndPromiseResponse(bmsg, this);
     };
     async MakeConnection(pProps: BKeyedCollection): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.MakeConnectionReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.MakeConnectionReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async AliveCheck(): Promise<BMessage> {
-        let bmsg: BMessage = { 'Op': BMessageOps.AliveCheckReq};
+        const bmsg: BMessage = { 'Op': BMessageOps.AliveCheckReq};
         if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
         bmsg.ItemProps = CreatePropertyList( {
             'time': Date.now(),
-            'sequenceNum': this._aliveSequenceNumber++;
+            'sequenceNum': this._aliveSequenceNumber++
         });
         return SendAndPromiseResponse(bmsg, this);
     };
@@ -131,19 +131,19 @@ export class BasilConnection extends BItem {
 function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol) {
     if (pMsg.ResponseCode) {
         // Has a response code. Must be a response to an RPC
-        let session = pContext._rpcSessions.get(pMsg.ResponseCode);
+        const session = pContext._rpcSessions.get(pMsg.ResponseCode);
         if (session) {
             try {
                 session.resolve(pMsg);
             }
             catch (err) {
-                let errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + e;
+                const errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + err;
                 Logger.error(errMsg);
                 session.reject(errMsg);
             };
         }
         else {
-            let errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
+            const errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
                                         + JSONstringify(pMsg);
             Logger.error(errMsg);
         };
@@ -152,39 +152,39 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
         // No response code, must be an incoming request
         switch (pMsg.Op) {
             case BMessageOps.CreateItemReq: {
-                let msg: BMessage = { 'Op': BMessageOps.CreateItemResp};
+                const msg: BMessage = { 'Op': BMessageOps.CreateItemResp};
                 break;
             }
             case BMessageOps.DeleteItemReq: {
-                let msg: BMessage = { 'Op': BMessageOps.DeleteItemResp};
+                const msg: BMessage = { 'Op': BMessageOps.DeleteItemResp};
                 break;
             }
             case BMessageOps.AddAbilityReq: {
-                let msg: BMessage = { 'Op': BMessageOps.add};
+                const msg: BMessage = { 'Op': BMessageOps.AddAbilityResp};
                 break;
             }
             case BMessageOps.RemoveAbilityReq: {
-                let msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = { 'Op': BMessageOps.RemoveAbilityResp};
                 break;
             }
             case BMessageOps.RequestPropertiesReq: {
-                let msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = { 'Op': BMessageOps.RequestPropertiesResp};
                 break;
             }
             case BMessageOps.UpdatePropertiesReq: {
-                let msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = { 'Op': BMessageOps.UpdatePropertiesResp};
                 break;
             }
             case BMessageOps.OpenSessionReq: {
-                let msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = { 'Op': BMessageOps.OpenSessionResp};
                 break;
             }
             case BMessageOps.CloseSessionReq: {
-                let msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = { 'Op': BMessageOps.CloseSessionResp};
                 break;
             }
             case BMessageOps.MakeConnectionReq: {
-                let msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
                 // I'm being asked to make a connection somewhere
                 const params: BKeyedCollection = {
                     'transport': 'WS',
@@ -197,15 +197,15 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
                 };
                 Comm.MakeConnection(params)
                 .then ( bconnection => {
-
+                    const xx = 5;     // make tslint ignore this
                 })
                 .catch ( err => {
-
+                    const xx = 5;     // make tslint ignore this
                 });
                 break;
             }
             case BMessageOps.AliveCheckReq: {
-                let msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
+                const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
                 msg.ItemProps = CreatePropertyList( {
                     'time': Date.now(),
                     'sequenceNum': this.aliveSequenceNum++,
@@ -222,11 +222,11 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
 };
 
 function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
-    let list: BKeyedCollection = {};
+    const list: BKeyedCollection = {};
     Object.keys(pProps).forEach(prop => {
-        let val = pProps[prop];
+        const val = pProps[prop];
         if (typeof(val) !== 'undefined') {
-            if (typeof(val) == 'string' ) {
+            if (typeof(val) === 'string' ) {
                 list[prop] = val;
             }
             else {
@@ -238,7 +238,7 @@ function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
 };
 
 function SendAndPromiseResponse(pMsg: BMessage, pContext: BasilConnection): Promise<BMessage> {
-    let responseSession = RandomIdentifier();
+    const responseSession = RandomIdentifier();
     pMsg.ResponseCode = responseSession;
     if (Config.Debug && Config.Debug.SendAndPromisePrintMsg) {
         Logger.debug('MsgProcessor.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
@@ -247,8 +247,8 @@ function SendAndPromiseResponse(pMsg: BMessage, pContext: BasilConnection): Prom
     return new Promise( (resolve,reject) => {
         pContext.RememberRPCSession(responseSession, {
             timeRPCCreated: Date.now(),
-            resolve: resolve,
-            reject: reject,
+            resolve,
+            reject,
         } );
         pContext._proto.Send(pMsg);
     });

@@ -11,11 +11,15 @@
 
 'use strict';
 
+import { BItem } from "@BItem/BItem";
+
 export abstract class Ability {
 
-  name: string;
+    name: string;
 
-  constructor(pName: string) {
-    this.name = pName;
-  };
+    // Creating an ability automatically adds it to it's BItem
+    constructor(pName: string, pBItem: BItem) {
+        this.name = pName;
+        pBItem._addAbility(this);
+    };
 };

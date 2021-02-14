@@ -12,69 +12,82 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { AbilityBItem, BItemState } from '@Abilities/AbilityBItem';
+import { AbilityBItem, BItemState, StateProp } from '@Abilities/AbilityBItem';
 
 import { AuthToken } from '@Tools/Auth';
 
+// A property entry has either getter/setters to access the property value or
+//    it has just a 'value' entry. Calling getProp() or setProp() uses what
+//    is defined for that property.
 export type getterFunction = (pDfd: PropEntry, pD: BItem) => Promise<any>;
 export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: any) => Promise<void>;
 export interface PropEntry {
-  name: string,
-  getter: getterFunction,
-  setter: setterFunction,
-  ability: Ability
-}
+    name: string,
+    value?: any,
+    getter?: getterFunction,
+    setter?: setterFunction,
+    ability: Ability
+};
+
 export abstract class BItem {
 
-  _props: Map<string, PropEntry>;
-  _abilities: Map<string, Ability>;
+    _props: Map<string, PropEntry>;
+    _abilities: Map<string, Ability>;
 
-  constructor(pId: string, pAuth: AuthToken, pLayer: string) {
-    this._props = new Map<string,PropEntry>();
-    new AbilityBItem(this, pId, pAuth, pLayer);
-    this.setProp('state', BItemState.UNINITIALIZED)
-  };
+    constructor(pId: string, pAuth: AuthToken, pLayer: string) {
+        this._props = new Map<string,PropEntry>();
 
-  async getProp(pPropName: string): Promise<any> {
-    const prop = this._props.get(pPropName);
-    if (prop && prop.getter) {
-      return prop.getter(prop, this);
+        const xx = new AbilityBItem(this, pId, pAuth, pLayer);
+
+        this.setProp(StateProp, BItemState.UNINITIALIZED)
     };
-    return undefined;
-  };
-  async setProp(pPropName: string, pVal: any): Promise<void> {
-    const prop = this._props.get(pPropName);
-    if (prop && prop.setter) {
-      return prop.setter(prop, this, pVal);
+    async getProp(pPropName: string): Promise<any> {
+        const prop = this._props.get(pPropName);
+        if (prop && prop.getter) {
+            return prop.getter(prop, this);
+        }
+        return prop.value;
     };
-    return undefined;
-  };
-  addProperty(pPropEntry: PropEntry) {
-    this._props.set(pPropEntry.name, pPropEntry);
-  };
-  removeProperty(pPropEntry: PropEntry) {
-    this._props.delete(pPropEntry.name);
-  };
-  _addAbility(pAbility: Ability) {
-    this._abilities.set(pAbility.name, pAbility);
-  };
-  _removeAbility(pAbility: Ability) {
-    this._abilities.delete(pAbility.name);
-  };
-  setReady() {
-    this.setProp('state', BItemState.READY)
-  };
-  setFailed() {
-    this.setProp('state', BItemState.FAILED)
-  };
-  setLoading() {
-    this.setProp('state', BItemState.LOADING)
-  };
-  setShutdown() {
-    this.setProp('state', BItemState.SHUTDOWN)
-  };
-
-
-
-
-}
+    async setProp(pPropName: string, pVal: any): Promise<void> {
+        const prop = this._props.get(pPropName);
+        if (prop && prop.setter) {
+            return prop.setter(prop, this, pVal);
+        };
+        prop.value = pVal;
+        return;
+    };
+    async incrementProp(pPropName: string) : Promise<number> {
+        const prop = this._props.get(pPropName);
+        if (prop && prop.getter && prop.setter) {
+            const val = await prop.getter(prop, this) + 1;
+            await prop.setter(prop, this, val);
+            return val;
+        };
+        prop.value += 1;
+        return prop.value;
+    };
+    addProperty(pPropEntry: PropEntry) {
+        this._props.set(pPropEntry.name, pPropEntry);
+    };
+    removeProperty(pPropEntry: PropEntry) {
+        this._props.delete(pPropEntry.name);
+    };
+    _addAbility(pAbility: Ability) {
+        this._abilities.set(pAbility.name, pAbility);
+    };
+    _removeAbility(pAbility: Ability) {
+        this._abilities.delete(pAbility.name);
+    };
+    setReady() {
+        this.setProp('state', BItemState.READY)
+    };
+    setFailed() {
+        this.setProp('state', BItemState.FAILED)
+    };
+    setLoading() {
+        this.setProp('state', BItemState.LOADING)
+    };
+    setShutdown() {
+        this.setProp('state', BItemState.SHUTDOWN)
+    };
+};

@@ -54,13 +54,13 @@ export class BProtocolJSON extends BProtocol {
 function Processor(pMsg: any, pContext: BProtocolJSON, pXPort: BTransport) {
     // Unpack the message into a BMessage
     try {
-        let parsedMessage = JSON.parse(pMsg);
+        const parsedMessage = JSON.parse(pMsg);
         if (pContext._receiveCallback) {
             pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
         };
     }
     catch ( err ) {
-        let errMsg = `BProtocolJSON: error parsing JSON message: ${err}`;
+        const errMsg = `BProtocolJSON: error parsing JSON message: ${err}`;
         Logger.error(errMsg);
     };
 };

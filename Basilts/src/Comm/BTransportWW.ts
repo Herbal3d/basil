@@ -11,6 +11,7 @@
 'use strict';
 
 import { BTransport, BTransportReceptionCallback } from '@Comm/BTransport';
+import { MessagesSentProp } from '@Abilities/AbilityMsgStats';
 
 import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -84,7 +85,7 @@ export class BTransportWW extends BTransport {
             // @ts-ignore
             postMessage(pData);
         };
-        this._stats.messagesSent++;
+        this.incrementProp(MessagesSentProp);
         return true;
     };
 

@@ -24,7 +24,7 @@ export class AuthToken {
             this._token = pToken;
         };
     };
-    // 
+    //
     get token(): string {
         return this._token;
     };

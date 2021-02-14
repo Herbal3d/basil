@@ -13,6 +13,7 @@
 import { BTransport, BTransportReceptionCallback } from '@Comm/BTransport';
 import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
+import { MessagesSentProp } from '@Abilities/AbilityMsgStats';
 
 import { Logger } from '@Tools/Logging';
 
@@ -68,7 +69,7 @@ export class BTransportWS extends BTransport {
     Send(pData: any): boolean {
         if (this._socket) {
             this._socket.send(pData);
-            this._stats.messagesSent++;
+            this.incrementProp(MessagesSentProp);
             return true;
         };
         return false;

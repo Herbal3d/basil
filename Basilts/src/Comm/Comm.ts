@@ -102,7 +102,7 @@ export const Comm = {
 
   },
   async BasilConnectionFactory(pParams: BKeyedCollection, pProto: BProtocol): Promise<BasilConnection> {
-      let connection = new BasilConnection(pParams, pProto);
+      const connection = new BasilConnection(pParams, pProto);
       return undefined;
   }
 };

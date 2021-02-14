@@ -14,11 +14,7 @@ import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
-
-export interface TransportStats {
-    messagesSent: number;
-    messagesReceived: number;
-};
+import { AbilityMsgStats, MessagesReceivedProp } from '@Abilities/AbilityMsgStats';
 
 // On reception, the receiver gets a binary message to deserialize
 export type BTransportReceptionCallback = (pMsg: any, pContext: any, pTransport: BTransport) => void;
@@ -29,17 +25,13 @@ export abstract class BTransport extends BItem {
     _messages: any[];
     _receiveCallback: BTransportReceptionCallback;
     _receiveCallbackContext: any;
-    _stats: TransportStats;
 
     constructor(pId: string, pLayer: string) {
         super(pId, undefined, pLayer);
         this._messages = [];
         this._receiveCallback = undefined;
-        this._stats = {
-            messagesReceived: 0,
-            messagesSent: 0
-        };
-    }
+        const xx = new AbilityMsgStats(this);
+    };
 
     abstract Start(pParams: BKeyedCollection): Promise<BTransport>;
 
@@ -56,7 +48,7 @@ export abstract class BTransport extends BItem {
     PushReception(): void {
         const msg = this._messages.shift();
         if (msg) {
-            this._stats.messagesReceived++;
+            this.incrementProp(MessagesReceivedProp);
 
             if (this._receiveCallback && (typeof(this._receiveCallback) === 'function')) {
                 this._receiveCallback(msg, this._receiveCallbackContext, this);

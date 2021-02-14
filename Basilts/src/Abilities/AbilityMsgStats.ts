@@ -14,15 +14,10 @@
 import { Config } from '@Base/Config';
 
 import { Ability } from '@Abilities/Ability';
-import { CreateUniqueId } from '@Base/Tools/Utilities';
 import { BItem, PropEntry } from '@BItem/BItem';
 
-import { AuthToken } from '@Tools/Auth';
-import { stringify } from 'uuid';
-
-export let IdProp: string = 'id';
-export let LayerProp: string = 'layer';
-export let StateProp: string = 'state';
+export let MessagesReceivedProp: string = 'messagesReceived';
+export let MessagesSentProp: string = 'messagesSent';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -32,25 +27,18 @@ export enum BItemState {
     SHUTDOWN
 };
 
-export class AbilityBItem extends Ability {
-    constructor(pBItem: BItem, pId: string, pAuth: AuthToken, pLayer: string) {
-        super('AbilityBItem', pBItem);
+export class AbilityMsgStats extends Ability {
+    constructor(pBItem: BItem) {
+        super('AbilityMsgStats', pBItem);
 
         pBItem.addProperty({
-            name: 'id',
-            value: CreateUniqueId('remote'),
-            ability: this,
-            getter: async (pDfd: PropEntry, pD: BItem) => { return pDfd.value; },
-            setter: undefined
-        });
-        pBItem.addProperty({
-            name: 'layer',
-            value: 'org.herbal3d.b.unknown',
+            name: MessagesReceivedProp,
+            value: 0,
             ability: this,
         });
         pBItem.addProperty({
-            name: 'state',
-            value: BItemState.UNINITIALIZED,
+            name: MessagesSentProp,
+            value: 0,
             ability: this,
         });
     };
