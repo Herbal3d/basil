@@ -38,6 +38,8 @@ export class AbilityBItem extends Ability {
     this._id = CreateUniqueId('remote');
     this._layer = 'org.herbal3d.b.unknown';
 
+    pBItem._addAbility(this);
+
     pBItem.addProperty({
       name: 'id',
       ability: this,

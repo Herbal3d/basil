@@ -42,11 +42,7 @@ export abstract class BProtocol extends BItem {
       this._receiveCallbackContext = pContext;
     };
 
-    abstract PushReception(): void;
-
     abstract isDataAvailable: boolean;
 
     abstract isConnected: boolean;
 };
-
-

@@ -14,14 +14,15 @@ import { BMessage } from '@Comm/BMessage';
 import { BProtocol, BProtocolReceptionCallback } from '@Comm/BProtocol';
 import { BTransport } from '@Comm/BTransport';
 
-import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
+import { CombineParameters, CreateUniqueId, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { Logger } from '@Base/Tools/Logging';
 
+// The data format is just JSON text.
 export class BProtocolJSON extends BProtocol {
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
         super(pXPort, CreateUniqueId('BProtocolFB'), 'org.herbal3d.b.protocol.fb');
         this._params = CombineParameters(undefined, pParams, {
-            'transportURL': undefined   // name of Worker to connect to
         });
     };
     async Start(pParams: BKeyedCollection): Promise<BProtocol> {
@@ -29,27 +30,37 @@ export class BProtocolJSON extends BProtocol {
         return this;
     };
     Close(): void {
-        throw new Error('Method not implemented.');
+        if (this._xport) {
+            this._xport.Close();
+            this._xport = undefined;
+        };
     };
     Send(pData: BMessage): boolean {
-        throw new Error('Method not implemented.');
-    };
-    SetReceiveCallback(pCallBack: BProtocolReceptionCallback): void {
-        throw new Error('Method not implemented.');
-    };
-    PushReception(): void {
-        throw new Error('Method not implemented.');
+        if (this._xport) {
+            this._xport.Send(JSONstringify(pData));
+            return true;
+        };
+        return false;
     };
     get isDataAvailable(): boolean {
         return false;
     };
     get isConnected(): boolean {
-        return false;
+        return typeof(this._xport) !== 'undefined';
     };
 };
 
 // Process the incoming message
 function Processor(pMsg: any, pContext: BProtocolJSON, pXPort: BTransport) {
     // Unpack the message into a BMessage
-    const x = 5;      // make tslint happy. Remove when code is here
+    try {
+        let parsedMessage = JSON.parse(pMsg);
+        if (pContext._receiveCallback) {
+            pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
+        };
+    }
+    catch ( err ) {
+        let errMsg = `BProtocolJSON: error parsing JSON message: ${err}`;
+        Logger.error(errMsg);
+    };
 };

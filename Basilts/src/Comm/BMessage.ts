@@ -67,28 +67,28 @@ export interface PositionBlock {
 };
 
 export interface BMessage {
-  ResponseCode: number;
-  ResponseKey: string;
-  StreamId: number;
-  ProtocolVersion: number
+  ResponseCode?: string;
+  ResponseKey?: string;
+  StreamId?: number;
+  ProtocolVersion?: number
 
-  ChangeSeq: number;
-  ChangeTime: number;
+  ChangeSeq?: number;
+  ChangeTime?: number;
 
-  QueueTime: number;
-  SendTime: number;
-  TransportClass: number;
+  QueueTime?: number;
+  SendTime?: number;
+  TransportClass?: number;
 
   Op: number;
-  SessionAuth: string;
-  ItemId: string;
-  ItemAuth: string;
-  ItemProps: { [ key: string ]: string };
+  SessionAuth?: string;
+  ItemId?: string;
+  ItemAuth?: string;
+  ItemProps?: { [ key: string ]: string };
 
-  Positions: PositionBlock[];
+  Positions?: PositionBlock[];
 
   // Responses can report errors
-  Exception: string;
-  ExceptionHints: { [ key: string ]: string }
+  Exception?: string;
+  ExceptionHints?: { [ key: string ]: string }
 };
 

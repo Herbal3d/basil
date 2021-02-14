@@ -37,9 +37,6 @@ export class BProtocolPB extends BProtocol {
     SetReceiveCallback(pCallBack: BProtocolReceptionCallback): void {
         throw new Error('Method not implemented.');
     };
-    PushReception(): void {
-        throw new Error('Method not implemented.');
-    };
     get isDataAvailable(): boolean {
         return false;
     };

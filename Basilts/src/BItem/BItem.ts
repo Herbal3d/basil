@@ -26,40 +26,40 @@ export interface PropEntry {
 }
 export abstract class BItem {
 
-  props: Map<string, PropEntry>;
-  abilities: Map<string, Ability>;
+  _props: Map<string, PropEntry>;
+  _abilities: Map<string, Ability>;
 
   constructor(pId: string, pAuth: AuthToken, pLayer: string) {
-    this.props = new Map<string,PropEntry>();
-    this.addAbility(new AbilityBItem(this, pId, pAuth, pLayer));
+    this._props = new Map<string,PropEntry>();
+    new AbilityBItem(this, pId, pAuth, pLayer);
     this.setProp('state', BItemState.UNINITIALIZED)
   };
 
   async getProp(pPropName: string): Promise<any> {
-    const prop = this.props.get(pPropName);
+    const prop = this._props.get(pPropName);
     if (prop && prop.getter) {
       return prop.getter(prop, this);
     };
     return undefined;
   };
   async setProp(pPropName: string, pVal: any): Promise<void> {
-    const prop = this.props.get(pPropName);
+    const prop = this._props.get(pPropName);
     if (prop && prop.setter) {
       return prop.setter(prop, this, pVal);
     };
     return undefined;
   };
   addProperty(pPropEntry: PropEntry) {
-    this.props.set(pPropEntry.name, pPropEntry);
+    this._props.set(pPropEntry.name, pPropEntry);
   };
   removeProperty(pPropEntry: PropEntry) {
-    this.props.delete(pPropEntry.name);
+    this._props.delete(pPropEntry.name);
   };
-  addAbility(pAbility: Ability) {
-    this.abilities.set(pAbility.name, pAbility);
+  _addAbility(pAbility: Ability) {
+    this._abilities.set(pAbility.name, pAbility);
   };
-  removeAbility(pAbility: Ability) {
-    this.abilities.delete(pAbility.name);
+  _removeAbility(pAbility: Ability) {
+    this._abilities.delete(pAbility.name);
   };
   setReady() {
     this.setProp('state', BItemState.READY)

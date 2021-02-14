@@ -11,8 +11,21 @@
 
 'use strict';
 
+import { GenUUID, IsNullOrEmpty } from '@Tools/Misc';
+
 export class AuthToken {
-  constructor() {
-    const x = 5;
-  };
+    _token: string;
+
+    constructor(pToken?: string) {
+        if (IsNullOrEmpty(pToken)) {
+            this._token = GenUUID();
+        }
+        else {
+            this._token = pToken;
+        };
+    };
+    // 
+    get token(): string {
+        return this._token;
+    };
 };
