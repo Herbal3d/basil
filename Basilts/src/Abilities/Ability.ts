@@ -20,6 +20,5 @@ export abstract class Ability {
     // Creating an ability automatically adds it to it's BItem
     constructor(pName: string, pBItem: BItem) {
         this.name = pName;
-        pBItem._addAbility(this);
     };
 };

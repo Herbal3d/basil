@@ -37,7 +37,7 @@ export abstract class BItem {
     constructor(pId: string, pAuth: AuthToken, pLayer: string) {
         this._props = new Map<string,PropEntry>();
 
-        const xx = new AbilityBItem(this, pId, pAuth, pLayer);
+        this.addAbility(new AbilityBItem(this, pId, pAuth, pLayer));
 
         this.setProp(StateProp, BItemState.UNINITIALIZED)
     };
@@ -72,10 +72,10 @@ export abstract class BItem {
     removeProperty(pPropEntry: PropEntry) {
         this._props.delete(pPropEntry.name);
     };
-    _addAbility(pAbility: Ability) {
+    addAbility(pAbility: Ability) {
         this._abilities.set(pAbility.name, pAbility);
     };
-    _removeAbility(pAbility: Ability) {
+    removeAbility(pAbility: Ability) {
         this._abilities.delete(pAbility.name);
     };
     setReady() {
