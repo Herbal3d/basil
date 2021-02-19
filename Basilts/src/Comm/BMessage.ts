@@ -56,36 +56,34 @@ export enum RotationSystem {
 export interface PositionBlock {
   Pos: number[];
   Rot: number[];
-  CoordSystem: CoordSystem,
-  RotationSystem: RotationSystem,
+  CS: CoordSystem,
+  RS: RotationSystem,
   Vel: number[];
   Path: number[];
   // Sometimes PostionBlock is repeated to apply to many Items/Components
-  ItemId: string;         // BItem being operated on
-  SessionAuth: string;    // Auth for the session
-  ItemAuth: string;       // Auth for accessing the BItem
+  IId: string;          // BItem being operated on
+  Auth: string;         // Auth for the session
+  IAuth: string;        // Auth for accessing the BItem
 };
 
 export interface BMessage {
-  ResponseCode?: string;
+  RCode?: string;         // unique code returned in response for RPC'ish calls
   ResponseKey?: string;
   StreamId?: number;
   ProtocolVersion?: number
 
-  ChangeSeq?: number;
-  ChangeTime?: number;
-
+  // Fields for protocol tracking and analysis
   QueueTime?: number;
   SendTime?: number;
   TransportClass?: number;
 
   Op: number;
-  SessionAuth?: string;
-  ItemId?: string;
-  ItemAuth?: string;
-  ItemProps?: { [ key: string ]: string };
+  Auth?: string;
+  IId?: string;        // BItem id being referenced
+  IAuth?: string;      // Any authentication necessary for access BItem
+  IProps?: { [ key: string ]: string };   // Properties to apply
 
-  Positions?: PositionBlock[];
+  Pos?: PositionBlock[];  // If a multi-position update, new positions for items
 
   // Responses can report errors
   Exception?: string;

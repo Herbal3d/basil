@@ -28,9 +28,11 @@ export enum BItemState {
 };
 
 export class AbilityMsgStats extends Ability {
-    constructor(pBItem: BItem) {
-        super('AbilityMsgStats', pBItem);
+    constructor() {
+        super('AbilityMsgStats');
+    };
 
+    addProperties(pBItem: BItem) {
         pBItem.addProperty({
             name: MessagesReceivedProp,
             value: 0,

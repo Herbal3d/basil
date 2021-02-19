@@ -18,7 +18,10 @@ export abstract class Ability {
     name: string;
 
     // Creating an ability automatically adds it to it's BItem
-    constructor(pName: string, pBItem: BItem) {
+    constructor(pName: string) {
         this.name = pName;
     };
+    // Add this ability's properties to the BItem
+    // This happens when the ability is added to the BItem
+    abstract addProperties(pBItem: BItem): void;
 };

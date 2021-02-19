@@ -33,6 +33,7 @@ module.exports = {
         '@Base': path.resolve(__dirname, 'src'),
         '@BItem': path.resolve(__dirname, 'src/BItem'),
         '@Comm': path.resolve(__dirname, 'src/Comm'),
+        '@Entry': path.resolve(__dirname, 'src/Entry'),
         '@Eventing': path.resolve(__dirname, 'src/Eventing'),
         '@Tools': path.resolve(__dirname, 'src/Tools')
     },

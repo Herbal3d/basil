@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   mode: 'development',
   entry: {
-    entry: './src/Entry/Entry.js'
+    entry: './src/Entry/Entry.ts'
   },
   output: {
     filename: '[name].[contenthash].js',
@@ -16,13 +16,15 @@ module.exports = {
     modules: [ path.resolve(__dirname, "src/jslibs"), "node_modules" ],
     // Aliases so individual files don't reference the filenames
     alias: {
-        'xConfig': path.resolve(__dirname, 'src/config.js'),
-        'xBException': path.resolve(__dirname, 'src/BException.js'),
-        'xUtilities': path.resolve(__dirname, 'src/Utilities.js'),
-        // The Globals module can have only one name so there is only one instance
-        'GLOBALS': path.resolve(__dirname, 'src/Globals.js')
+        '@Abilities': path.resolve(__dirname, 'src/Abilities'),
+        '@Base': path.resolve(__dirname, 'src'),
+        '@BItem': path.resolve(__dirname, 'src/BItem'),
+        '@Comm': path.resolve(__dirname, 'src/Comm'),
+        '@Entry': path.resolve(__dirname, 'src/Entry'),
+        '@Eventing': path.resolve(__dirname, 'src/Eventing'),
+        '@Tools': path.resolve(__dirname, 'src/Tools')
     },
-    extensions: [ '.js', '.jsx' ]
+    extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
     splitChunks: {
@@ -49,6 +51,11 @@ module.exports = {
   ],
   module: {
     rules: [
+      {
+        test: /\.tsx?/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      },
       {
         // process less files to the dist directory
         //    ref: https://webpack.js.org/loaders/less-loader/

@@ -30,7 +30,7 @@ export abstract class BTransport extends BItem {
         super(pId, undefined, pLayer);
         this._messages = [];
         this._receiveCallback = undefined;
-        this.addAbility(new AbilityMsgStats(this));
+        this.addAbility(new AbilityMsgStats());
     };
 
     abstract Start(pParams: BKeyedCollection): Promise<BTransport>;

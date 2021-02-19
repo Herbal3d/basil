@@ -6,7 +6,7 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'development',
   entry: {
-    wwtester: './src/WWTester.js',
+    wwtester: './src/WWTester.ts',
   },
   output: {
     filename: 'wwtester.js',
@@ -19,17 +19,25 @@ module.exports = {
     modules: [ path.resolve(__dirname, "src/jslibs"), "node_modules" ],
     // Aliases so individual files don't reference the filenames
     alias: {
-        // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
-        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
-        // The Globals module can have only one name so there is only one instance
-        'GLOBALS': path.resolve(__dirname, 'src/Globals.js')
+        '@Abilities': path.resolve(__dirname, 'src/Abilities'),
+        '@Base': path.resolve(__dirname, 'src'),
+        '@BItem': path.resolve(__dirname, 'src/BItem'),
+        '@Comm': path.resolve(__dirname, 'src/Comm'),
+        '@Entry': path.resolve(__dirname, 'src/Entry'),
+        '@Eventing': path.resolve(__dirname, 'src/Eventing'),
+        '@Tools': path.resolve(__dirname, 'src/Tools')
     },
-    extensions: [ '.js', '.jsx' ]
+    extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   plugins: [
   ],
   module: {
     rules: [
+      {
+        test: /\.tsx?/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      },
         {
             // move image files to the dist directory
             //    ref: https://webpack.js.org/loaders/file-loader/

@@ -28,6 +28,11 @@ interface RPCInfo {
     reject: any,
 };
 
+export let ServiceSpaceServer = 'SpaceServer';
+export let ServiceBasilServer = 'BasilServer';
+
+export let OpenBasilConnections: Map<string, BasilConnection> = new Map<string,BasilConnection>();
+
 export class BasilConnection extends BItem {
     _params: BKeyedCollection;
     _proto: BProtocol;
@@ -39,6 +44,7 @@ export class BasilConnection extends BItem {
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
         super(CreateUniqueId('BasilConnection'), undefined, 'org.herbal3d.b.protocol.fb');
         this._params = CombineParameters(undefined, pParams, {
+            'service': ServiceSpaceServer
         });
         this._proto.SetReceiveCallback(Processor, this);
         this._rpcSessions = new Map<string,RPCInfo>();
@@ -57,69 +63,69 @@ export class BasilConnection extends BItem {
 
     async CreateItem(pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.CreateItemReq };
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async DeleteItem(pId: string, pItemAuth?: AuthToken): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.DeleteItemReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pId) bmsg.ItemId = pId;
-        if (pItemAuth) bmsg.ItemAuth = pItemAuth.token;
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pId) bmsg.IId = pId;
+        if (pItemAuth) bmsg.IAuth = pItemAuth.token;
         return SendAndPromiseResponse(bmsg, this);
     };
     async AddAbility(pId: string, pAbilities: any): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.AddAbilityReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pId) bmsg.ItemId = pId;
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pId) bmsg.IId = pId;
         // TODO:
         return SendAndPromiseResponse(bmsg, this);
     };
     async RemoveAbility(pId: string, pAbilities: any): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.RemoveAbilityReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pId) bmsg.ItemId = pId;
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pId) bmsg.IId = pId;
         // TODO:
         return SendAndPromiseResponse(bmsg, this);
     };
     async RequestProperties(pId: string, filter: string): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.RequestPropertiesReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pId) bmsg.ItemId = pId;
-        if (filter) bmsg.ItemProps = CreatePropertyList({ 'filter': filter });
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pId) bmsg.IId = pId;
+        if (filter) bmsg.IProps = CreatePropertyList({ 'filter': filter });
         return SendAndPromiseResponse(bmsg, this);
     };
     async UpdateProperties(pId: string, pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.UpdatePropertiesReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pId) bmsg.ItemId = pId;
-        if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pId) bmsg.IId = pId;
+        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     // OpenSession has an 'extended' authorization as it contains the new sessionkey
     //    as well as the auth for access the service.
     async OpenSession(pUserAuth: AuthToken, pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.OpenSessionReq};
-        if (pUserAuth) bmsg.SessionAuth = pUserAuth.token;
-        if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
+        if (pUserAuth) bmsg.Auth = pUserAuth.token;
+        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async CloseSession(reason: string): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.CloseSessionReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (reason) bmsg.ItemProps = CreatePropertyList({ 'reason': reason } );
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (reason) bmsg.IProps = CreatePropertyList({ 'reason': reason } );
         return SendAndPromiseResponse(bmsg, this);
     };
     async MakeConnection(pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.MakeConnectionReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        if (pProps) bmsg.ItemProps = CreatePropertyList(pProps);
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async AliveCheck(): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.AliveCheckReq};
-        if (this._outgoingAuth) bmsg.SessionAuth = this._outgoingAuth.token;
-        bmsg.ItemProps = CreatePropertyList( {
+        if (this._outgoingAuth) bmsg.Auth = this._outgoingAuth.token;
+        bmsg.IProps = CreatePropertyList( {
             'time': Date.now(),
             'sequenceNum': this._aliveSequenceNumber++
         });
@@ -129,9 +135,9 @@ export class BasilConnection extends BItem {
 
 // Process the incoming message
 function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol) {
-    if (pMsg.ResponseCode) {
+    if (pMsg.RCode) {
         // Has a response code. Must be a response to an RPC
-        const session = pContext._rpcSessions.get(pMsg.ResponseCode);
+        const session = pContext._rpcSessions.get(pMsg.RCode);
         if (session) {
             try {
                 session.resolve(pMsg);
@@ -150,73 +156,112 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
     }
     else {
         // No response code, must be an incoming request
-        switch (pMsg.Op) {
-            case BMessageOps.CreateItemReq: {
-                const msg: BMessage = { 'Op': BMessageOps.CreateItemResp};
-                break;
-            }
-            case BMessageOps.DeleteItemReq: {
-                const msg: BMessage = { 'Op': BMessageOps.DeleteItemResp};
-                break;
-            }
-            case BMessageOps.AddAbilityReq: {
-                const msg: BMessage = { 'Op': BMessageOps.AddAbilityResp};
-                break;
-            }
-            case BMessageOps.RemoveAbilityReq: {
-                const msg: BMessage = { 'Op': BMessageOps.RemoveAbilityResp};
-                break;
-            }
-            case BMessageOps.RequestPropertiesReq: {
-                const msg: BMessage = { 'Op': BMessageOps.RequestPropertiesResp};
-                break;
-            }
-            case BMessageOps.UpdatePropertiesReq: {
-                const msg: BMessage = { 'Op': BMessageOps.UpdatePropertiesResp};
-                break;
-            }
-            case BMessageOps.OpenSessionReq: {
-                const msg: BMessage = { 'Op': BMessageOps.OpenSessionResp};
-                break;
-            }
-            case BMessageOps.CloseSessionReq: {
-                const msg: BMessage = { 'Op': BMessageOps.CloseSessionResp};
-                break;
-            }
-            case BMessageOps.MakeConnectionReq: {
-                const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
-                // I'm being asked to make a connection somewhere
-                const params: BKeyedCollection = {
-                    'transport': 'WS',
-                    'transportURL': undefined,
-                    'protocol': 'Basil-JSON',
-                    'service': 'SpaceServer',
-                    'receiveAuth': undefined,
-                    'sendAuth': undefined,
-                    'openParams': undefined
+        switch (this._params.service) {
+            // Person on the other side is talking to a SpaceServer
+            // In this Javascript code, this is used by the WWTester
+            // Someday fixup so there can be NodeJS SpaceServers
+            case ServiceSpaceServer: {
+                switch (pMsg.Op) {
+                    case BMessageOps.OpenSessionReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.OpenSessionResp};
+                        break;
+                    }
+                    case BMessageOps.CloseSessionReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.CloseSessionResp};
+                        break;
+                    }
+                    case BMessageOps.AliveCheckReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
+                        msg.IProps = CreatePropertyList( {
+                            'time': Date.now(),
+                            'sequenceNum': this.aliveSequenceNum++,
+                            'timeReceived': pMsg.IProps??['time'],
+                            'sequenceNumberReceived': pMsg.IProps??['sequenceNum']
+                        });
+                        pContext.Send(msg);
+                        break;
+                    }
+                    default:
+                        break;
                 };
-                Comm.MakeConnection(params)
-                .then ( bconnection => {
-                    const xx = 5;     // make tslint ignore this
-                })
-                .catch ( err => {
-                    const xx = 5;     // make tslint ignore this
-                });
                 break;
             }
-            case BMessageOps.AliveCheckReq: {
-                const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
-                msg.ItemProps = CreatePropertyList( {
-                    'time': Date.now(),
-                    'sequenceNum': this.aliveSequenceNum++,
-                    'timeReceived': pMsg.ItemProps??['time'],
-                    'sequenceNumberReceived': pMsg.ItemProps??['sequenceNum']
-                });
-                pContext.Send(msg);
+            // The person on the other side is talking to a Basil server
+            case ServiceBasilServer: {
+                switch (pMsg.Op) {
+                    case BMessageOps.CreateItemReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.CreateItemResp};
+                        break;
+                    }
+                    case BMessageOps.DeleteItemReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.DeleteItemResp};
+                        break;
+                    }
+                    case BMessageOps.AddAbilityReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.AddAbilityResp};
+                        break;
+                    }
+                    case BMessageOps.RemoveAbilityReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.RemoveAbilityResp};
+                        break;
+                    }
+                    case BMessageOps.RequestPropertiesReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.RequestPropertiesResp};
+                        break;
+                    }
+                    case BMessageOps.UpdatePropertiesReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.UpdatePropertiesResp};
+                        break;
+                    }
+                    case BMessageOps.MakeConnectionReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                        // I'm being asked to make a connection somewhere
+                        const params: BKeyedCollection = {
+                            'transport':    pMsg.IProps['transport'] ?? 'WS',
+                            'transportURL': pMsg.IProps['transportURL'] ?? undefined,
+                            'protocol':     pMsg.IProps['protocol'] ?? 'Basil-JSON',
+                            'service':      pMsg.IProps['service'] ?? 'SpaceServer',
+                            'receiveAuth':  pMsg.IProps['receiveAuth'] ?? undefined,
+                        };
+                        Comm.MakeConnection(params)
+                        .then ( bconnection => {
+                            let token = new AuthToken();
+                            let openProps: BKeyedCollection = {};
+                            for ( let prop of Object.keys(pMsg.IProps)) {
+                                openProps[prop] = pMsg.IProps
+                            }
+                            bconnection.OpenSession(token, openProps)
+                            .then ( resp => {
+
+                            })
+                            .catch ( err => {
+
+                            });
+                        })
+                        .catch ( err => {
+                            const xx = 5;     // make tslint ignore this
+                        });
+                        break;
+                    }
+                    case BMessageOps.AliveCheckReq: {
+                        const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
+                        msg.IProps = CreatePropertyList( {
+                            'time': Date.now(),
+                            'sequenceNum': this.aliveSequenceNum++,
+                            'timeReceived': pMsg.IProps??['time'],
+                            'sequenceNumberReceived': pMsg.IProps??['sequenceNum']
+                        });
+                        pContext.Send(msg);
+                        break;
+                    }
+                    default:
+                        break;
+                };
                 break;
             }
-            default:
+            default: {
                 break;
+            }
         };
     };
 };
@@ -239,7 +284,7 @@ function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
 
 function SendAndPromiseResponse(pMsg: BMessage, pContext: BasilConnection): Promise<BMessage> {
     const responseSession = RandomIdentifier();
-    pMsg.ResponseCode = responseSession;
+    pMsg.RCode = responseSession;
     if (Config.Debug && Config.Debug.SendAndPromisePrintMsg) {
         Logger.debug('MsgProcessor.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
     }

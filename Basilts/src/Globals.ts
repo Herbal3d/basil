@@ -12,6 +12,7 @@
 'use strict';
 
 import { BKeyedCollection } from '@Tools/bTypes';
+import { BItem } from '@BItem/BItem';
 
 // Global debugging parameters and variables. "GP.variable"
 export let GP: {

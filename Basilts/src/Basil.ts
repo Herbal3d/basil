@@ -1,4 +1,4 @@
-// Copyright 2020 Robert Adams
+// Copyright 2021 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -49,13 +49,13 @@ if (IsNullOrEmpty(configParams)) {
     }
     else {
         testConfigParams = {
-            'initialMakeConnection': {
-                'transport': 'WW',
-                'transportURL': './wwtester.js',
-                'protocol': 'Basil-JSON',
-                'receiveAuth': undefined,
-                'sendAuth': undefined,
-                'openParams': {
+            'Init': {
+                'Transport': 'WW',
+                'TransportURL': './wwtester.js',
+                'Protocol': 'Basil-JSON',
+                'Service': undefined,
+                'ServiceAuth': undefined,
+                'OpenParams': {
                     'testAssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
                     'loaderType': 'GLTF'
                 }
@@ -74,7 +74,7 @@ if (IsNotNullOrEmpty(configParams)) {
             // Could do this assign but then the caller could change any configuration param.
             // Only the 'initialMakeConnection' parameter is passed in for more security.
             // deepmerge(Config, newParams);    // property merge of unpacked into Config
-            Config.initialMakeConnection = newParams.initialMakeConnection;
+            Config.initialMakeConnection = newParams.Init;
         };
     }
     catch(e) {
@@ -85,11 +85,6 @@ if (IsNotNullOrEmpty(configParams)) {
 // Names of display regions on web page.
 const container = document.getElementById(Config.page.webGLcontainerId);
 const canvas = document.getElementById(Config.page.webGLcanvasId);
-
-// Push the 'Start' button
-// GP.CO.Start();
-// GP.GR.Start();
-// GP.CM.Start();
 
 GP.Ready = true;
 

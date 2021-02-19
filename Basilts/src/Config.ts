@@ -15,15 +15,14 @@ export let Config = {
      },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
-        'transport': 'WW',
-        'transportURL': './wwtester.js',
-        'protocol': 'Basil-JSON',
-        'service': 'SpaceServerClient',
-        'receiveAuth': '',
-        'sendAuth': '',
-        'openParams': {
-            'testAssetURL': '',
-            'loaderType': 'GLTF'
+        'Transport': 'WW',
+        'TransportURL': './wwtester.js',
+        'Protocol': 'Basil-JSON',
+        'Service': 'SpaceServer',
+        'ServiceAuth': '',
+        'OpenParams': {
+            'AssetURL': '',
+            'LoaderType': 'GLTF'
         }
     },
     'comm': {
@@ -156,7 +155,7 @@ export let Config = {
     'BasilTestURLs': [
         {   'URL': 'ws://127.0.0.1:14690',
             'Description': 'LocalHost',
-            'selected': true
+            'Selected': true
         },
         {   'URL': 'ws://regions.herbal3d.org:14690',
             'Description': 'Region test service (region.herbal3d.org:14690)',

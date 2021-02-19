@@ -24,85 +24,84 @@ import { CombineParameters } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 
 export const Comm = {
-  async MakeConnection(pParams: BKeyedCollection): Promise<BasilConnection> {
-    const params = CombineParameters(undefined, pParams, {
-      'transport': 'WS',          // type of the transport
-      'transportURL': undefined,  // name of Worker to connect to
-      'protocol': 'Basil-JSON',   // format of the messages on the transport
-      'service': 'SpaceServer',   // type of service connecting to
-      'receiveAuth': undefined,   // authentication expected on reception
-      'sendAuth': undefined,      // authentication for sent messages
-      'openParams': undefined  // parameters to send on the open connection message
-    });
-    return new Promise( (resolve,reject) => {
-      Comm.TransportFactory(params)
-      .then( xport => {
-        Comm.ProtocolFactory(params, xport)
-        .then( proto => {
-          Comm.BasilConnectionFactory(params, proto)
-          .then( conn => {
-            resolve(conn);
-          })
-          .catch( err => {
-            reject(err);
-          });
-        })
-        .catch( err => {
-          reject(err);
+    async MakeConnection(pParams: BKeyedCollection): Promise<BasilConnection> {
+        const params = CombineParameters(undefined, pParams, {
+            'transport': 'WS',          // type of the transport
+            'transporturl': undefined,  // link to service to connect to
+            'protocol': 'Basil-JSON',   // format of the messages on the transport
+            'service': 'SpaceServer',   // type of service connecting to
+            'receiveauth': undefined,   // authentication expected on reception (created by BasilConnection if not specified)
+            'serviceauth': undefined,   // authentication for sent messages
+            'openParams': undefined     // parameters to send on the open connection message
         });
-      })
-      .catch( err => {
-        reject(err);
-      });
-    });
-  },
-  async TransportFactory(pParams: BKeyedCollection): Promise<BTransport> {
-    const params = CombineParameters(undefined, pParams, {
-      'transport': 'WS',          // type of transport
-      'transportURL': undefined   // name of Worker to connect to
-    });
-    let xport: BTransport;
-    switch (params.transport) {
-      case 'WW':
-        xport = new BTransportWW(params);
-        break;
-      case 'WS':
-        xport = new BTransportWS(params);
-        break;
-      default:
-        break;
-    };
-    if (xport) {
-      return xport.Start(params);
+        return new Promise( (resolve,reject) => {
+            Comm.TransportFactory(params)
+            .then( xport => {
+                Comm.ProtocolFactory(params, xport)
+                .then( proto => {
+                    Comm.BasilConnectionFactory(params, proto)
+                    .then( conn => {
+                        resolve(conn);
+                    })
+                    .catch( err => {
+                        reject(err);
+                    });
+                })
+                .catch( err => {
+                    reject(err);
+                });
+            })
+            .catch( err => {
+                reject(err);
+            });
+        });
+    },
+    async TransportFactory(pParams: BKeyedCollection): Promise<BTransport> {
+        const params = CombineParameters(undefined, pParams, {
+            'transport': 'WS',          // type of transport
+            'transporturl': undefined   // link to service to connect to
+        });
+        let xport: BTransport;
+        switch (params.transport) {
+            case 'WW':
+                xport = new BTransportWW(params);
+                break;
+            case 'WS':
+                xport = new BTransportWS(params);
+                break;
+            default:
+                break;
+        };
+        if (xport) {
+            return xport.Start(params);
+        }
+        return undefined;
+    },
+    async ProtocolFactory(pParams: BKeyedCollection, pXPort: BTransport): Promise<BProtocol> {
+        const params = CombineParameters(undefined, pParams, {
+            'protocol': 'Basil-JSON',          // type of protocol processor
+        });
+        let proto: BProtocol;
+        switch (params.transport) {
+            case 'Basil-JSON':
+                proto = new BProtocolJSON(params, pXPort);
+                break;
+            case 'Basil-PB':
+                proto = new BProtocolPB(params, pXPort);
+                break;
+            case 'Basil-FB':
+                proto = new BProtocolFB(params, pXPort);
+                break;
+            default:
+                break;
+        };
+        if (proto) {
+            return proto.Start(params);
+        }
+        return undefined;
+    },
+    async BasilConnectionFactory(pParams: BKeyedCollection, pProto: BProtocol): Promise<BasilConnection> {
+        const connection = new BasilConnection(pParams, pProto);
+        return connection;
     }
-    return undefined;
-  },
-  async ProtocolFactory(pParams: BKeyedCollection, pXPort: BTransport): Promise<BProtocol> {
-    const params = CombineParameters(undefined, pParams, {
-      'protocol': 'Basil-JSON',          // type of protocol processor
-    });
-    let proto: BProtocol;
-    switch (params.transport) {
-      case 'Basil-JSON':
-        proto = new BProtocolJSON(params, pXPort);
-        break;
-      case 'Basil-PB':
-        proto = new BProtocolPB(params, pXPort);
-        break;
-      case 'Basil-FB':
-        proto = new BProtocolFB(params, pXPort);
-        break;
-      default:
-        break;
-    };
-    if (proto) {
-      return proto.Start(params);
-    }
-    return undefined;
-
-  },
-  async BasilConnectionFactory(pParams: BKeyedCollection, pProto: BProtocol): Promise<BasilConnection> {
-      const connection = new BasilConnection(pParams, pProto);
-      return undefined;
-  }
 };

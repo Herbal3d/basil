@@ -18,11 +18,11 @@ import { CreateUniqueId } from '@Base/Tools/Utilities';
 import { BItem, PropEntry } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
-import { stringify } from 'uuid';
 
-export let IdProp: string = 'id';
-export let LayerProp: string = 'layer';
-export let StateProp: string = 'state';
+export let IdProp: string = 'bitem.id';
+export let LayerProp: string = 'bitem.layer';
+export let StateProp: string = 'bitem.state';
+export let AuthTokenProp: string = 'bitem.authToken';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -33,23 +33,35 @@ export enum BItemState {
 };
 
 export class AbilityBItem extends Ability {
-    constructor(pBItem: BItem, pId: string, pAuth: AuthToken, pLayer: string) {
-        super('AbilityBItem', pBItem);
+    _id: string;
+    _auth: AuthToken;
+    _layer: string;
+    constructor(pId: string, pAuth: AuthToken, pLayer: string) {
+        super('AbilityBItem');
+        this._id = pId;
+        this._auth = pAuth;
+        this._layer = pLayer;
+    };
 
+    addProperties(pBItem: BItem) {
         pBItem.addProperty({
-            name: 'id',
-            value: CreateUniqueId('remote'),
+            name: IdProp,
+            value: this._id ?? CreateUniqueId('remote'),
             ability: this,
-            getter: async (pDfd: PropEntry, pD: BItem) => { return pDfd.value; },
             setter: undefined
         });
         pBItem.addProperty({
-            name: 'layer',
-            value: 'org.herbal3d.b.unknown',
+            name: LayerProp,
+            value: this._layer ?? 'org.herbal3d.b.unknown',
             ability: this,
         });
         pBItem.addProperty({
-            name: 'state',
+            name: AuthTokenProp,
+            value: this._auth,
+            ability: this,
+        });
+        pBItem.addProperty({
+            name: StateProp,
             value: BItemState.UNINITIALIZED,
             ability: this,
         });
