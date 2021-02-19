@@ -25,13 +25,23 @@ interface ALogger {
     setLogLevel(level: string ): void
 };
 
+export type LogIt = (pMsg:string, pClass?: string) => void;
+let LogOutputters: LogIt[] = [];
+
 // This is an initial logger that exists before configuration is complete.
 // The later 'initializeLogger' will reset the logger to be to files or whatever.
 export let TheLogger: ALogger;
 
 function DoLog(pMsg: string, pClass?: string) {
-    if (Config.Debug.EnableLogging) {
-        if (Config.Debug.DebugLogToConsole) {
+    LogOutputters.forEach( logg => {
+        logg(pMsg, pClass);
+    });
+};
+
+// Initialize logging by adding the console and debug loggers
+export function initLogging() {
+    if (Config.Debug.DebugLogToConsole) {
+        LogOutputters.push( (pMsg: string, pClass?: string) => {
             if (pClass) {
                 /* tslint:disable-next-line */
                 console.log(pClass + ": " + pMsg);
@@ -40,8 +50,10 @@ function DoLog(pMsg: string, pClass?: string) {
                 /* tslint:disable-next-line */
                 console.log(pMsg);
             };
-        };
-        if (Config.page.showDebug) {
+        });
+    };
+    if (Config.page.showDebug) {
+        LogOutputters.push( (pMsg: string, pClass?: string) => {
             const debugg = document.querySelector(Config.page.debugElementId);
             if (debugg) {
                 const newLine = document.createElement('div');
@@ -54,13 +66,13 @@ function DoLog(pMsg: string, pClass?: string) {
                     debugg.removeChild(debugg.firstChild);
                 };
             };
-        };
+        });
     };
 };
 
-// Switch the logger from the startup console logger to the file logger.
-export function initLogging() {
-    const temp = 4;   // Make tslint happy. May be removed when code is added.
+// Add an aditional log outputter. This is used by WWTester to add message sender.
+export function AddLogOutputter(pOutputter: LogIt) {
+    LogOutputters.push(pOutputter);
 };
 
 let _logLevel = Config.Debug.LogLevel;

@@ -28,6 +28,7 @@ interface RPCInfo {
     reject: any,
 };
 
+// The type of server that I am
 export let ServiceSpaceServer = 'SpaceServer';
 export let ServiceBasilServer = 'BasilServer';
 
@@ -42,7 +43,7 @@ export class BasilConnection extends BItem {
     _aliveSequenceNumber: number = 22;
 
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
-        super(CreateUniqueId('BasilConnection'), undefined, 'org.herbal3d.b.protocol.fb');
+        super(CreateUniqueId('BasilConnection'), undefined, 'org.herbal3d.b.basilconn');
         this._params = CombineParameters(undefined, pParams, {
             'service': ServiceSpaceServer
         });
@@ -149,8 +150,7 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
             };
         }
         else {
-            const errMsg = 'MsgProcessor.HandleResponse: received msg which is not RPC response: '
-                                        + JSONstringify(pMsg);
+            const errMsg = `MsgProcessor.HandleResponse: received msg which is not RPC response: ${JSONstringify(pMsg)}`;
             Logger.error(errMsg);
         };
     }
@@ -164,10 +164,12 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
                 switch (pMsg.Op) {
                     case BMessageOps.OpenSessionReq: {
                         const msg: BMessage = { 'Op': BMessageOps.OpenSessionResp};
+                        pContext.setReady();
                         break;
                     }
                     case BMessageOps.CloseSessionReq: {
                         const msg: BMessage = { 'Op': BMessageOps.CloseSessionResp};
+                        pContext.setShutdown();
                         break;
                     }
                     case BMessageOps.AliveCheckReq: {

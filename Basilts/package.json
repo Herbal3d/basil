@@ -24,6 +24,22 @@
         "@Eventing": "dist/Eventing",
         "@Tools": "dist/Tools"
     },
+    "eslint": {
+        "env": {
+            "browser": true,
+            "es6": true
+        },
+        "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+        "globals": {
+            "Atomics": "readonly",
+            "SharedArrayBuffer": "readonly"
+        },
+        "parserOptions": {
+            "ecmaVersion": 2018,
+            "sourceType": "module"
+        },
+        "rules": {}
+    },
     "scripts": {
         "build": "npm-run-all -s \"clean-dist\" \"build:basil\"",
         "xxbuild": "npm-run-all -s \"clean-dist\" \"build:entry\" \"build:basil\" \"build:wwtester\" \"build:justview\"",
@@ -34,13 +50,13 @@
         "copy-static": "node build_scripts/copyStatic.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "production": "npm-run-all -s \"clean:dist\" \"production:entry\" \"production:basil\" \"production:wwtester\" \"production:justview\"",
-        "prebuild:entry": "eslint -c eslint.json -p tsconfig.json --fix",
+        "prebuild:entry": "eslint --ext .js,.ts",
         "build:entry": "webpack --config webpack.entry.config.js",
         "production:entry": "webpack --mode production --config webpack.entry.config.js",
         "prebuild:justview": "eslint -c eslint.json -p tsconfig.json --fix",
         "build:justview": "webpack --config webpack.justview.config.js",
         "production:justview": "webpack --mode production --config webpack.justview.config.js",
-        "prebuild:basil": "eslint -c eslint.json -p tsconfig.json --fix",
+        "prebuild:basil": "eslint --ext .js,.ts",
         "build:basil": "webpack --config webpack.basil.config.js",
         "production:basil": "webpack --mode production --config webpack.basil.config.js",
         "prebuild:wwtester": "eslint -c eslint.json -p tsconfig.json --fix",
@@ -57,10 +73,14 @@
     "devDependencies": {
         "@types/js-base64": "^3.0.0",
         "@types/uuid": "^8.3.0",
+        "@typescript-eslint/eslint-plugin": "^4.15.1",
+        "@typescript-eslint/parser": "^4.15.1",
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^1.0.1",
         "deepmerge": "^4.2.2",
-        "eslint": "^5.16.0",
+        "eslint": "^7.20.0",
+        "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-plugin-import": "^2.22.1",
         "html-webpack-plugin": "^3.2.0",
         "less": "^3.11.1",
         "less-loader": "^4.0.5",
@@ -68,7 +88,7 @@
         "npm-run-all": "^4.1.5",
         "style-loader": "^0.19.1",
         "ts-loader": "^8.0.17",
-        "typescript": "^3.9.7",
+        "typescript": "^3.9.9",
         "webpack": "^4.42.1",
         "webpack-cli": "^3.3.11"
     }

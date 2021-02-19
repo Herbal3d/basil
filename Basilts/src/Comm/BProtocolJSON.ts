@@ -21,7 +21,7 @@ import { Logger } from '@Base/Tools/Logging';
 // The data format is just JSON text.
 export class BProtocolJSON extends BProtocol {
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
-        super(pXPort, CreateUniqueId('BProtocolFB'), 'org.herbal3d.b.protocol.fb');
+        super(pXPort, CreateUniqueId('BProtocolJSON'), 'org.herbal3d.b.protocol.fb');
         this._params = CombineParameters(undefined, pParams, {
         });
     };

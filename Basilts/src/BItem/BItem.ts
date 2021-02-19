@@ -135,16 +135,19 @@ export abstract class BItem {
     getState(): BItemState {
         return this.getPropValue(StateProp);
     }
-    setReady() {
+    isReady(): boolean {
+        return this.getPropValue(StateProp) === BItemState.READY;
+    }
+    setReady(): void {
         this.setProp('state', BItemState.READY)
     };
-    setFailed() {
+    setFailed(): void {
         this.setProp('state', BItemState.FAILED)
     };
-    setLoading() {
+    setLoading(): void {
         this.setProp('state', BItemState.LOADING)
     };
-    setShutdown() {
+    setShutdown(): void {
         this.setProp('state', BItemState.SHUTDOWN)
     };
     // Return a Promise that is resolved when item status is READY.
