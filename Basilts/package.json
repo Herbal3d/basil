@@ -24,25 +24,9 @@
         "@Eventing": "dist/Eventing",
         "@Tools": "dist/Tools"
     },
-    "eslint": {
-        "env": {
-            "browser": true,
-            "es6": true
-        },
-        "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-        "globals": {
-            "Atomics": "readonly",
-            "SharedArrayBuffer": "readonly"
-        },
-        "parserOptions": {
-            "ecmaVersion": 2018,
-            "sourceType": "module"
-        },
-        "rules": {}
-    },
     "scripts": {
         "build": "npm-run-all -s \"clean-dist\" \"build:basil\"",
-        "xxbuild": "npm-run-all -s \"clean-dist\" \"build:entry\" \"build:basil\" \"build:wwtester\" \"build:justview\"",
+        "xxbuild": "npm-run-all -s \"clean-dist\" \"build:basil\" \"build:entry\" \"build:wwtester\" \"build:justview\"",
         "clean-dist": "node build_scripts/cleanDist.js",
         "prestart": "npm run build",
         "start": "node dist/index.js",
@@ -50,16 +34,13 @@
         "copy-static": "node build_scripts/copyStatic.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "production": "npm-run-all -s \"clean:dist\" \"production:entry\" \"production:basil\" \"production:wwtester\" \"production:justview\"",
-        "prebuild:entry": "eslint --ext .js,.ts",
         "build:entry": "webpack --config webpack.entry.config.js",
         "production:entry": "webpack --mode production --config webpack.entry.config.js",
-        "prebuild:justview": "eslint -c eslint.json -p tsconfig.json --fix",
         "build:justview": "webpack --config webpack.justview.config.js",
         "production:justview": "webpack --mode production --config webpack.justview.config.js",
-        "prebuild:basil": "eslint --ext .js,.ts",
+        "prebuild:basil": "eslint . --ext .js,.ts",
         "build:basil": "webpack --config webpack.basil.config.js",
         "production:basil": "webpack --mode production --config webpack.basil.config.js",
-        "prebuild:wwtester": "eslint -c eslint.json -p tsconfig.json --fix",
         "build:wwtester": "webpack --config webpack.wwtester.config.js",
         "production:wwtester": "webpack --config webpack.wwtester.config.js"
     },

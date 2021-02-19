@@ -1,0 +1,19 @@
+# don't ever lint node_modules
+node_modules
+# don't lint build output (make sure it's set to your correct build folder name)
+dist
+# don't lint nyc coverage output
+coverage
+
+# imported libraries shouldn't be linted
+jslibs/
+# Misc files that don't need checking
+LICENSE
+THIRDPARTYLICENSES/
+docs/
+genChangelog.sh
+
+webpack.basil.config.js
+webpack.entry.config.js
+webpack.justview.config.js
+webpack.wwtester.config.js
