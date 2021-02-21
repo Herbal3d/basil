@@ -17,12 +17,12 @@ import { Logger } from '@Base/Tools/Logging';
 import { AbilityMsgStats, MessagesReceivedProp } from '@Abilities/AbilityMsgStats';
 
 // On reception, the receiver gets a binary message to deserialize
-export type BTransportReceptionCallback = (pMsg: any, pContext: any, pTransport: BTransport) => void;
+export type BTransportReceptionCallback = (pMsg: Uint8Array, pContext: any, pTransport: BTransport) => void;
 
 // Transport sends and receives buffers of bytes
 export abstract class BTransport extends BItem {
     _params: BKeyedCollection;
-    _messages: any[];
+    _messages: Uint8Array[];
     _receiveCallback: BTransportReceptionCallback;
     _receiveCallbackContext: any;
 
@@ -38,26 +38,28 @@ export abstract class BTransport extends BItem {
     abstract Close(): void;
 
     // Note that is function is not async. It can hang.
-    abstract Send(pData: any): boolean;
+    abstract Send(pData: Uint8Array): boolean;
 
     SetReceiveCallback(pCallBack: BTransportReceptionCallback, pContext?: any): void {
       this._receiveCallback = pCallBack;
       this._receiveCallbackContext = pContext;
     };
 
-    PushReception(): void {
+    // Push the reception of a message.
+    // Returns 'true' if a message was processed.
+    // TODO: should this be a Promise or something to not tie up reception?
+    PushReception(): boolean {
         const msg = this._messages.shift();
         if (msg) {
-            this.incrementProp(MessagesReceivedProp);
-
             if (this._receiveCallback && (typeof(this._receiveCallback) === 'function')) {
                 this._receiveCallback(msg, this._receiveCallbackContext, this);
             }
             else {
                 Logger.error('BTransport.PushReception: msg received but no message processor');
             };
+            return true;
         };
-
+        return false;
     };
 
     get isDataAvailable(): boolean {

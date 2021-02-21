@@ -89,6 +89,8 @@ export const Eventing = {
     if (Config.eventing && Config.eventing.eventPollIntervalMS) {
       interval = Number(Config.eventing.eventPollIntervalMS);
     };
+    // I know this is an 'unbound function' but it doesn't use 'this'
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     setTimeout(Eventing._processTimedEvents, interval);
   },
   // ===========================================
@@ -105,7 +107,7 @@ export const Eventing = {
     };
     topicEnt.addSubscription(sub);
     Logger.debug("Eventing.subscribe: adding subscription to event " + pTopic);
-    onSubscribe.fire({ 'topic': pTopic, 'topicEntry': topicEnt });
+    void onSubscribe.fire({ 'topic': pTopic, 'topicEntry': topicEnt });
     return sub;
   },
   // Release a topic subscription.
@@ -114,7 +116,7 @@ export const Eventing = {
       const topicEnt = Eventing.FindTopic(pSubEntry.topic);
       if (topicEnt) {
         topicEnt.removeSubscription(pSubEntry);
-        onUnsubscribe.fire({ 'topic': topicEnt.topic, 'topicEntry': topicEnt });
+        void onUnsubscribe.fire({ 'topic': topicEnt.topic, 'topicEntry': topicEnt });
         if (! (topicEnt.hasSubscriptions() || topicEnt.wasRegistered()) ) {
           // Topics that are created from subscriptions can be removed
           //      when there are no more subscriptions
@@ -136,7 +138,7 @@ export const Eventing = {
       eventingTopics.set(pTopic, topicEnt);
       Logger.debug("Eventing.register: registering event " + pTopic);
       if (onRegister) {
-        onRegister.fire({ 'topic': topicEnt.topic, 'topicEntry': topicEnt });
+        void onRegister.fire({ 'topic': topicEnt.topic, 'topicEntry': topicEnt });
       };
     };
     // Remember that it was registered so this topic expects an Unregister()
@@ -144,11 +146,10 @@ export const Eventing = {
     return topicEnt;
   },
   // Unregister a topic.
-  // @ts-ignore
-  Unregister(pTopicEnt: TopicEntry, pTopic?: string) {
+  Unregister(pTopicEnt: TopicEntry, pTopic?: string): void {
     // cannot unregister a topic yet
     Logger.debug("Eventing.unregister: unregistering event " + pTopicEnt.topic);
-    onUnregister.fire({ 'topic': pTopicEnt.topic, 'topicEntry': pTopicEnt });
+    void onUnregister.fire({ 'topic': pTopicEnt.topic, 'topicEntry': pTopicEnt });
   },
   // An event happened for a topic.
   // Fire the event processors and pass 'params' to all subscribers.
@@ -160,7 +161,7 @@ export const Eventing = {
   async Fire(pTopic: TopicEntry | TopicName, params: BKeyedCollection): Promise<SubscriptionEntry[]> {
     let topicEntry: TopicEntry
     if (typeof(pTopic) === 'string') {
-      topicEntry = this.FindTopic(pTopic);
+      topicEntry = Eventing.FindTopic(pTopic);
     }
     else {
       topicEntry = pTopic;

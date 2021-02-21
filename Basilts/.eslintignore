@@ -5,6 +5,9 @@ dist
 # don't lint nyc coverage output
 coverage
 
+# Tools for building are not checked
+build_scripts
+
 # imported libraries shouldn't be linted
 jslibs/
 # Misc files that don't need checking

@@ -44,18 +44,18 @@ if (Config.Debug && Config.Debug.DebugLogInstanceName && Config.WWTester.LogToDe
     AddLogOutputter( ( pMsg:string, pClass?: string) => {
         if (_basilClient && _basilClient.isReady()) {
             if (pClass) {
-                _basilClient.UpdateProperties(Config.Debug.DebugLogInstanceName,
+                void _basilClient.UpdateProperties(Config.Debug.DebugLogInstanceName,
                         { 'ErrorMsg': pMsg } );
             }
             else {
-                _basilClient.UpdateProperties(Config.Debug.DebugLogInstanceName,
+                void _basilClient.UpdateProperties(Config.Debug.DebugLogInstanceName,
                         { 'Msg': pMsg } );
             };
         };
     });
 };
 
-let params: BKeyedCollection = {
+const params: BKeyedCollection = {
     'transport': 'WW',
     'protocol': 'Basil-JSON',
     'service': ServiceSpaceServer
@@ -84,7 +84,7 @@ Comm.TransportFactory(params)
 if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
     _basilClient.WhenReady(10000)
     .then( alive => {
-        let pollMS = Config.WWTester.AliveCheckPollMS
+        const pollMS = Config.WWTester.AliveCheckPollMS
                     ? Config.WWTester.AliveCheckPollMS : 10000;
         // Start alive polling
         _aliveIntervalID = setInterval(function() {
@@ -100,6 +100,7 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
         }, pollMS);
     })
     .catch( e => {
+        Logger.error(`AliveCheck: Basil client never became ready`);
     });
 }
 
@@ -198,5 +199,8 @@ _basilClient.WhenReady(10000)
 
     });
     */
+})
+.catch ( e => {
+    Logger.error(`WWTester: Basil client never became ready`);
 });
 

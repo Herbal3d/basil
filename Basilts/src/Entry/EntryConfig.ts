@@ -3,7 +3,7 @@
 
 'use strict';
 
-export let Config = {
+export const Config = {
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
         'transport': 'WW',

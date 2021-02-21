@@ -29,10 +29,10 @@ interface RPCInfo {
 };
 
 // The type of server that I am
-export let ServiceSpaceServer = 'SpaceServer';
-export let ServiceBasilServer = 'BasilServer';
+export const ServiceSpaceServer = 'SpaceServer';
+export const ServiceBasilServer = 'BasilServer';
 
-export let OpenBasilConnections: Map<string, BasilConnection> = new Map<string,BasilConnection>();
+export const OpenBasilConnections: Map<string, BasilConnection> = new Map<string,BasilConnection>();
 
 export class BasilConnection extends BItem {
     _params: BKeyedCollection;
@@ -51,6 +51,7 @@ export class BasilConnection extends BItem {
         this._rpcSessions = new Map<string,RPCInfo>();
     };
 
+    // This is making an RPC requests so remember info so we can match the response
     RememberRPCSession(pSessionCode: string, pRPCInfo: RPCInfo) {
         this._rpcSessions.set(pSessionCode, pRPCInfo);
     };
@@ -141,11 +142,14 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
         const session = pContext._rpcSessions.get(pMsg.RCode);
         if (session) {
             try {
+                // eslint-disable-next-line
                 session.resolve(pMsg);
             }
             catch (err) {
-                const errMsg = 'MsgProcessor.HandleResponse: exception processing msg: ' + err;
+                const errr = <Error>err;
+                const errMsg = `MsgProcessor.HandleResponse: exception processing msg: ${errr.message}`;
                 Logger.error(errMsg);
+                // eslint-disable-next-line
                 session.reject(errMsg);
             };
         }
@@ -156,7 +160,7 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
     }
     else {
         // No response code, must be an incoming request
-        switch (this._params.service) {
+        switch (pContext._params.service) {
             // Person on the other side is talking to a SpaceServer
             // In this Javascript code, this is used by the WWTester
             // Someday fixup so there can be NodeJS SpaceServers
@@ -176,7 +180,7 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
                         const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
                         msg.IProps = CreatePropertyList( {
                             'time': Date.now(),
-                            'sequenceNum': this.aliveSequenceNum++,
+                            'sequenceNum': pContext._aliveSequenceNumber++,
                             'timeReceived': pMsg.IProps??['time'],
                             'sequenceNumberReceived': pMsg.IProps??['sequenceNum']
                         });
@@ -217,7 +221,7 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
                     }
                     case BMessageOps.MakeConnectionReq: {
                         const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
-                        // I'm being asked to make a connection somewhere
+                        // I've been asked to make a connection somewhere
                         const params: BKeyedCollection = {
                             'transport':    pMsg.IProps['transport'] ?? 'WS',
                             'transportURL': pMsg.IProps['transportURL'] ?? undefined,
@@ -227,17 +231,25 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
                         };
                         Comm.MakeConnection(params)
                         .then ( bconnection => {
-                            let token = new AuthToken();
-                            let openProps: BKeyedCollection = {};
-                            for ( let prop of Object.keys(pMsg.IProps)) {
+                            const token = new AuthToken();
+                            const openProps: BKeyedCollection = {};
+                            for ( const prop of Object.keys(pMsg.IProps)) {
                                 openProps[prop] = pMsg.IProps
                             }
                             bconnection.OpenSession(token, openProps)
                             .then ( resp => {
-
+                                // Session successfully opened.
+                                // Register the connection and wait for commands
+                                const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                                pContext.Send(msg);
                             })
-                            .catch ( err => {
-
+                            .catch ( e => {
+                                // The OpenSession failed
+                                const err = <BMessage>e;    // kludge for eslint
+                                const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                                msg.Exception = err.Exception;
+                                msg.ExceptionHints = err.ExceptionHints;
+                                pContext.Send(msg);
                             });
                         })
                         .catch ( err => {
@@ -249,7 +261,7 @@ function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol)
                         const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
                         msg.IProps = CreatePropertyList( {
                             'time': Date.now(),
-                            'sequenceNum': this.aliveSequenceNum++,
+                            'sequenceNum': pContext._aliveSequenceNumber++,
                             'timeReceived': pMsg.IProps??['time'],
                             'sequenceNumberReceived': pMsg.IProps??['sequenceNum']
                         });

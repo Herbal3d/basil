@@ -11,7 +11,7 @@
 'use strict';
 
 import { BTransport, BTransportReceptionCallback } from '@Comm/BTransport';
-import { MessagesSentProp } from '@Abilities/AbilityMsgStats';
+import { MessagesReceivedProp, MessagesSentProp } from '@Abilities/AbilityMsgStats';
 
 import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -31,27 +31,31 @@ export class BTransportWW extends BTransport {
     async Start(pParams: BKeyedCollection): Promise<BTransport> {
         this.setLoading();
         return new Promise( (resolve, reject) => {
+            // For some reason the WorkerGlobalScope variable is not known by TypeScript
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            if (typeof WorkerGlobalScope === 'undefined') {
+            if (typeof(WorkerGlobalScope) === 'undefined') {
                 // We're the master
                 // this.params.transporturl is WebWorker URL to connect to
                 try {
                     this._worker = new Worker(this._params.transporturl);
                     this._isWorker = false;
-                    this._worker.onmessage = function(evnt: Event) {
-                        this.messages.push((evnt as any).data);
-                        this.stats.messagesReceived++;
-                        this.PushReception();
-                    }.bind(this);
-                    this._worker.onerror = function(err: Error) {
+                    const _this = this;
+                    this._worker.onmessage = (evnt: MessageEvent) => {
+                        _this._messages.push(evnt.data);
+                        _this.incrementProp(MessagesReceivedProp);
+                        _this.PushReception();
+                    };
+                    this._worker.onerror = (err: ErrorEvent) => {
                         Logger.error(`BTransportWW: worker error: reason: ${err.message}`);
-                        this.Close();
-                    }.bind(this);
+                        _this.Close();
+                    };
                     this.setReady();
                     resolve(this);
                 }
                 catch(e) {
-                    const emsg = `BTransportWW: exception initializing worker: ${e}`;
+                    const ee = <Error>e;
+                    const emsg = `BTransportWW: exception initializing worker: ${ee.message}`;
                     Logger.error(emsg);
                     reject(emsg);
                 }
@@ -59,10 +63,12 @@ export class BTransportWW extends BTransport {
             else {
                 // We're the worker
                 this._isWorker = true;
-                onmessage = function(evnt: Event) {
-                    this.messages.push((evnt as any).data);
-                    this.PushReception();
-                }.bind(this);
+                const _this = this;
+                onmessage = (evnt: MessageEvent) => {
+                    _this._messages.push(evnt.data);
+                    _this.incrementProp(MessagesReceivedProp);
+                    _this.PushReception();
+                };
                 this.setReady();
                 resolve(this);
             };
@@ -77,13 +83,12 @@ export class BTransportWW extends BTransport {
         };
     };
 
-    Send(pData: any): boolean {
+    Send(pData: Uint8Array): boolean {
         if (this._worker) {
             this._worker.postMessage(pData);
         }
         else {
-            // @ts-ignore
-            postMessage(pData);
+            postMessage(pData, '*');
         };
         this.incrementProp(MessagesSentProp);
         return true;

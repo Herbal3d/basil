@@ -15,7 +15,7 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { BItem } from '@BItem/BItem';
 
 // Global debugging parameters and variables. "GP.variable"
-export let GP: {
+export const GP: {
     Ready: boolean;
     Config: BKeyedCollection;
 } = {
@@ -28,7 +28,7 @@ export let UniqueIdCount: number = 1;
 export function GetNextUniqueNum():number {
     return UniqueIdCount++;
 }
-export let UniqueIdBasename = '.b.basil.org';
+export const UniqueIdBasename = '.b.basil.org';
 // Note that basename begins with a dot
 
 /*

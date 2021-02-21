@@ -62,7 +62,7 @@ export function ConfigGetQueryVariable(pVariable: string): string {
 };
 // Take apart an URL query string and return an object of key/value pairs
 export function ParseQueryString(pQuery: string): Map<string,string> {
-  const ret = new Map();
+  const ret = new Map<string,string>();
   const args = decodeURI(pQuery).split('&');
   args.forEach( arg => {
     const argPieces = arg.split('=');

@@ -16,24 +16,21 @@ import { Config } from '@Entry/EntryConfig';
 import { ClickOpLoginOpenSim } from '@Entry/LoginOpenSim';
 
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
-import { ParseOSDXML } from '@Tools/llsd.js';
-import { LoginResponse_XML } from '@Tools/llsdTest.js';
+import { BKeyedCollection } from '@Base/Tools/bTypes.js';
+import { Logger } from '@Tools/Logging';
 
 import { Base64 } from 'js-base64';
 
 // Force the processing of the css format file
 import './Entry.less';
-import { BKeyedCollection } from '@Base/Tools/bTypes.js';
-import { Logger } from '@Tools/Logging';
-
 
 type ClickOperation = ( pTarget: EventTarget ) => void;
-let ClickableOps: { [key: string]: ClickOperation } = {};
+const ClickableOps: { [key: string]: ClickOperation } = {};
 
 // Make all 'class=clickable' page items create events
-for (let nn of Array.from(document.getElementsByClassName('clickable'))) {
+for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
     nn.addEventListener('click', (evnt: Event) => {
-        var buttonOp = (evnt.target as HTMLElement).getAttribute('op');
+        const buttonOp = (evnt.target as HTMLElement).getAttribute('op');
         if (buttonOp && typeof(ClickableOps[buttonOp]) === 'function') {
             ClickableOps[buttonOp](evnt.target);
         };
@@ -45,8 +42,8 @@ LoadTestURLs();
 LoadBasilTestURLs();
 
 ClickableOps['testBasil'] = function() {
-    let basilTestURL = GetSelectedValue('test-basilURL');
-    let testConfigParams = {
+    const basilTestURL = GetSelectedValue('test-basilURL');
+    const testConfigParams = {
         'Init': {
             'Transport': 'WW',
             'TransportURL': './WWTester.js',
@@ -61,29 +58,29 @@ ClickableOps['testBasil'] = function() {
     };
     console.log('testConfigParams=' + JSONstringify(testConfigParams));
 
-    let configParams = Base64.encode(JSONstringify(testConfigParams));
+    const configParams = Base64.encode(JSONstringify(testConfigParams));
 
     window.location.assign('Basil.html?c=' + configParams);
 };
 
-let SentLoginMessage = false;
-let SuccessfulLogin = false;
-let FailedLogin = false;
+const SentLoginMessage = false;
+const SuccessfulLogin = false;
+const FailedLogin = false;
 ClickableOps['gridLogin'] = ClickOpLoginOpenSim;
 
 // Load the grid name selection box with the names from the configuration file.
 // Uses the information in Config.Grids.
 function LoadGridSelection() {
     if (Config.Grids) {
-        let selectNode = document.getElementById('gridLogin-gridName');
-        for (let grid of Config.Grids) {
-            let opt = document.createElement('option');
+        const selectNode = document.getElementById('gridLogin-gridName');
+        for (const grid of Config.Grids) {
+            const opt = document.createElement('option');
             opt.setAttribute('value', grid.LoginURL);
             opt.appendChild(document.createTextNode(grid.Name));
             if (grid.Selected) {
                 opt.setAttribute('selected', '');
                 // Put the value of the selected item into the URL text field
-                let textField = document.getElementById('gridLogin-gridURL');
+                const textField = document.getElementById('gridLogin-gridURL');
                 textField.setAttribute('value', grid.LoginURL);
             }
             selectNode.appendChild(opt);
@@ -94,17 +91,17 @@ function LoadGridSelection() {
 
 // The grid name field was changed. Update the login URL.
 function GridSelectionChanged(evt: Event): void {
-    let selectedGridURL = GetSelectedValue('gridLogin-gridName');
-    let gridURLNode = document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement;
+    const selectedGridURL = GetSelectedValue('gridLogin-gridName');
+    const gridURLNode = document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement;
     gridURLNode.value = selectedGridURL;
 }
 
 // Load the test URLs from Config.TestGLTFFiles
 function LoadTestURLs(): void {
     if (Config.TestGLTFFiles) {
-        let selectNode = document.getElementById('test-sceneURL');
-        for (let testURL of Config.TestGLTFFiles) {
-            let opt = document.createElement('option');
+        const selectNode = document.getElementById('test-sceneURL');
+        for (const testURL of Config.TestGLTFFiles) {
+            const opt = document.createElement('option');
             opt.setAttribute('value', testURL.URL);
             opt.appendChild(document.createTextNode(testURL.Description));
             selectNode.appendChild(opt);
@@ -118,9 +115,9 @@ function LoadTestURLs(): void {
 // Load the possible BasilTest URLs
 function LoadBasilTestURLs(): void {
     if (Config.BasilTestURLs) {
-        let selectNode = document.getElementById('test-basilURL') as HTMLSelectElement;
-        for (let testURL of Config.BasilTestURLs) {
-            let opt = document.createElement('option');
+        const selectNode = document.getElementById('test-basilURL') as HTMLSelectElement;
+        for (const testURL of Config.BasilTestURLs) {
+            const opt = document.createElement('option');
             opt.setAttribute('value', testURL.URL);
             opt.appendChild(document.createTextNode(testURL.Description));
             selectNode.appendChild(opt);
@@ -135,8 +132,8 @@ function LoadBasilTestURLs(): void {
 // ======================================================
 // Given the ID name of an index HTML element, return the currently selected value
 function GetSelectedValue(optionID: string): string {
-    let selection = document.getElementById(optionID) as HTMLSelectElement;
-    let selectionValue = selection.options[selection.selectedIndex].value;
+    const selection = document.getElementById(optionID) as HTMLSelectElement;
+    const selectionValue = selection.options[selection.selectedIndex].value;
     return selectionValue;
 }
 

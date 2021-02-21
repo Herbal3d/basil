@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
 From WebToolkit: http://www.webtoolkit.info/javascript-md5.html
 

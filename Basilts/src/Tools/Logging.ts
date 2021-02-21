@@ -15,6 +15,7 @@
 'use strict'
 
 import { Config } from '@Base/Config';
+import { BKeyedCollection } from '@Tools/bTypes';
 
 interface ALogger {
     info(pMsg: string ): void,
@@ -26,7 +27,7 @@ interface ALogger {
 };
 
 export type LogIt = (pMsg:string, pClass?: string) => void;
-let LogOutputters: LogIt[] = [];
+const LogOutputters: LogIt[] = [];
 
 // This is an initial logger that exists before configuration is complete.
 // The later 'initializeLogger' will reset the logger to be to files or whatever.
@@ -93,7 +94,7 @@ export const Logger : ALogger = {
     // Conditional debug. Looks for "Config.Debug.flag" in configuration.
     cdebug: (pFlag: string, pMsg: string) => {
         if (_logLevel === 'debug') {
-            if ((Config.Debug as any)[pFlag]) {
+            if ((Config.Debug as BKeyedCollection)[pFlag]) {
                 DoLog(pMsg);
             };
         };

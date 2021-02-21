@@ -89,8 +89,8 @@ export function CombineParameters(configParams: BKeyedCollection,
         if (parms[key] !== parms[key.toLowerCase()]) {
             Logger.error('CombineParameters: sanity check bad match:'
                 + ' key=' + key
-                + ', val=' + parms[key]
-                + ', valLC=' + parms[key.toLowerCase()]
+                + ', val=' + <string>parms[key]
+                + ', valLC=' + <string>parms[key.toLowerCase()]
             );
         };
     });
@@ -106,7 +106,9 @@ export function CombineParameters(configParams: BKeyedCollection,
 // So, note that this DOES NOT RETURN A LEGAL JSON STRING.
 //    USE THIS FUNCTION FOR DEBUG OUTPUT ONLY!
 export function JSONstringify(obj: any): string {
-    return JSON.stringify(obj, (k,v) => { return typeof(v) === 'undefined' ? 'undefined' : v; })
+    // eslint complains about the 'return v' which is an 'any' in this usage
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return JSON.stringify(obj, (k,v) => { return v ?? 'undefined' });
 };
 
 // Parse and return three-tuple.
@@ -124,7 +126,8 @@ export function ParseThreeTuple(tuple: string | number[] | BVector3): number[] {
             val = JSON.parse(tuple);
         }
         catch (e) {
-            Logger.debug("Utility.ParseThreeTuple: JSON parse failure on '" + tuple + "', e=" + e);
+            const err = <Error>e;   // kludge for eslint
+            Logger.debug(`Utility.ParseThreeTuple: JSON parse failure on '${tuple}', e=${err.message}`);
             val = null;
         };
     };

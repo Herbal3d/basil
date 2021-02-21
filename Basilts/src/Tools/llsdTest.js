@@ -1,3 +1,4 @@
+/* eslint-disable */
 
 // Response from a successful login using OpenSimulator XMLRPC interface.
 // Used for testing LLSD parser

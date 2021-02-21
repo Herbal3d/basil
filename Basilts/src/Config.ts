@@ -7,9 +7,12 @@
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
 //     supplied configuration file contents.
-export let Config = {
+export const Config = {
     // Various overall Basil viewer parameters
     'basil': {
+        // The invocation of Basil can pass sections to add to configuration
+        //      Comma separated list of section names
+        'KnownConfigurationSections': 'OpenSimulator',
         // ms before removing deleted BItem
         'BItemDeleteInterval': 60000
      },

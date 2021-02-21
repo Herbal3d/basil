@@ -11,18 +11,16 @@
 
 'use strict';
 
-import { Config } from '@Base/Config';
-
 import { Ability } from '@Abilities/Ability';
 import { CreateUniqueId } from '@Base/Tools/Utilities';
-import { BItem, PropEntry } from '@BItem/BItem';
+import { BItem } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
 
-export let IdProp: string = 'bitem.id';
-export let LayerProp: string = 'bitem.layer';
-export let StateProp: string = 'bitem.state';
-export let AuthTokenProp: string = 'bitem.authToken';
+export const IdProp: string = 'bitem.id';
+export const LayerProp: string = 'bitem.layer';
+export const StateProp: string = 'bitem.state';
+export const AuthTokenProp: string = 'bitem.authToken';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -43,7 +41,7 @@ export class AbilityBItem extends Ability {
         this._layer = pLayer;
     };
 
-    addProperties(pBItem: BItem) {
+    addProperties(pBItem: BItem): void {
         pBItem.addProperty({
             name: IdProp,
             value: this._id ?? CreateUniqueId('remote'),

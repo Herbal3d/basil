@@ -8,7 +8,10 @@
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
-    "plugins": [ "@typescript-eslint" ],
+    "plugins": [
+        "@typescript-eslint",
+        "promise"
+    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
@@ -17,9 +20,38 @@
         "project": [ "./tsconfig.json" ]
     },
     "extends": [
-        "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
-    "rules": {}
+    "rules": {
+        // I like to have unused vars around for later development
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        // I like to terminate if's and functions so the developer knows it's the end
+        "@typescript-eslint/no-extra-semi": "off",
+        // The standards seem to prefer await over .then. I use what's most useful.
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        // Sometimes you just need an 'any'
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        // Haven't found how to do bound functions without this. Anyone know better?
+        "@typescript-eslint/no-this-alias": "off",
+        // This is very restrictive in template strings when objects can have toString functions
+        "@typescript-eslint/restrict-template-expressions": "off",
+
+        "promise/always-return": "off",
+        "promise/no-return-wrap": "error",
+        "promise/param-names": "error",
+        "promise/catch-or-return": "error",
+        "promise/no-native": "off",
+        "promise/no-nesting": "off",
+        "promise/no-promise-in-callback": "warn",
+        "promise/no-callback-in-promise": "warn",
+        "promise/avoid-new": "off",
+        "promise/no-new-statics": "error",
+        "promise/no-return-in-finally": "warn",
+        "promise/valid-params": "warn"
+    }
 }

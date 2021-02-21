@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
     This is an extremely modified version of a Javascript LLSD parser
     taken from https://github.com/CasperTech/llsd which was derived from

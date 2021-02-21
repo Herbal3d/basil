@@ -10,22 +10,22 @@
 // limitations under the License.
 'use strict';
 
-import { BTransport, BTransportReceptionCallback } from '@Comm/BTransport';
+import { BTransport } from '@Comm/BTransport';
 import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
-import { MessagesSentProp } from '@Abilities/AbilityMsgStats';
+import { MessagesSentProp, MessagesReceivedProp } from '@Abilities/AbilityMsgStats';
 
 import { Logger } from '@Tools/Logging';
 
 export class BTransportWS extends BTransport {
   _socket: WebSocket;
 
-  constructor(pParams: BKeyedCollection) {
-    super(CreateUniqueId('BTransportWS'), 'org.herbal3d.b.transport.ws');
-    this._params = CombineParameters(undefined, pParams, {
-      'transportURL': undefined   // name of Worker to connect to
-    });
-  };
+    constructor(pParams: BKeyedCollection) {
+        super(CreateUniqueId('BTransportWS'), 'org.herbal3d.b.transport.ws');
+        this._params = CombineParameters(undefined, pParams, {
+            'transportURL': undefined   // name of Worker to connect to
+        });
+    };
     async Start(pParams: BKeyedCollection): Promise<BTransport> {
         this.setLoading();
         return new Promise( (resolve, reject) => {
@@ -33,24 +33,27 @@ export class BTransportWS extends BTransport {
                 this._socket = new WebSocket(this._params.transporturl);
                 if (this._socket) {
                     this._socket.binaryType = 'arraybuffer';
-                    this._socket.addEventListener('message', function(event: Event) {
-                        this.messages.push(new Uint8Array((event as any).data));
-                        this.stats.messagesReceived++;
-                        this.PushReception();
-                    }.bind(this));
-                        this._socket.addEventListener('open', function(event: Event) {
-                        this.SetReady();
-                    }.bind(this));
+                    const _this = this;
+                    this._socket.onmessage = (event: MessageEvent) => {
+                        _this._messages.push(new Uint8Array(event.data));
+                        _this.incrementProp(MessagesReceivedProp);
+                        _this.PushReception();
+                    };
+                    this._socket.onopen = (event: Event) => {
+                        _this.setReady();
+                    };
                     resolve(this);
                 }
                 else {
-                    const errMsg = 'BTransportWS: could not open websocket: ' + this._params.transportURL;
+                    const errMsg = `BTransportWS: could not open websocket: ${this._params['transporturl']}`;
                     this.setFailed();
                     Logger.error(errMsg);
+                    reject(errMsg);
                 };
             }
             catch(err) {
-                const errMsg = 'BTransportWS: exception opening websocket: ' + err.message;
+                const errr = <SyntaxError>err;
+                const errMsg = `BTransportWS: exception opening websocket: ${errr.message}`;
                 this.setFailed();
                 Logger.error(errMsg);
                 reject(errMsg);
@@ -66,7 +69,7 @@ export class BTransportWS extends BTransport {
         };
     };
 
-    Send(pData: any): boolean {
+    Send(pData: Uint8Array): boolean {
         if (this._socket) {
             this._socket.send(pData);
             this.incrementProp(MessagesSentProp);

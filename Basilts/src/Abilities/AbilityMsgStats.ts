@@ -11,13 +11,11 @@
 
 'use strict';
 
-import { Config } from '@Base/Config';
-
 import { Ability } from '@Abilities/Ability';
-import { BItem, PropEntry } from '@BItem/BItem';
+import { BItem } from '@BItem/BItem';
 
-export let MessagesReceivedProp: string = 'messagesReceived';
-export let MessagesSentProp: string = 'messagesSent';
+export const MessagesReceivedProp: string = 'messagesReceived';
+export const MessagesSentProp: string = 'messagesSent';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -32,7 +30,7 @@ export class AbilityMsgStats extends Ability {
         super('AbilityMsgStats');
     };
 
-    addProperties(pBItem: BItem) {
+    addProperties(pBItem: BItem): void {
         pBItem.addProperty({
             name: MessagesReceivedProp,
             value: 0,

@@ -17,14 +17,14 @@ import { BMessage } from '@Comm/BMessage';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 // On reception, the receiver gets a binary message to deserialize
-export type BProtocolReceptionCallback = (pMsg: BMessage, pContext: any, pProto: BProtocol) => void;
+export type BProtocolReceptionCallback = (pMsg: BMessage, pContext: BItem, pProto: BProtocol) => void;
 
 // Protocol sends and receives BMessages.
 export abstract class BProtocol extends BItem {
     _xport: BTransport;
     _params: BKeyedCollection;
     _receiveCallback: BProtocolReceptionCallback;
-    _receiveCallbackContext: any;
+    _receiveCallbackContext: BItem;
 
     constructor(pTransport: BTransport, pId: string, pLayer: string) {
         super(pId, undefined, pLayer);
@@ -37,7 +37,7 @@ export abstract class BProtocol extends BItem {
 
     abstract Send(pData: BMessage): boolean;
 
-    SetReceiveCallback(pCallBack: BProtocolReceptionCallback, pContext?: any): void {
+    SetReceiveCallback(pCallBack: BProtocolReceptionCallback, pContext?: BItem): void {
       this._receiveCallback = pCallBack;
       this._receiveCallbackContext = pContext;
     };

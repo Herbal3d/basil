@@ -17,31 +17,33 @@ import { Ability } from '@Abilities/Ability';
 import { AbilityBItem, BItemState, StateProp } from '@Abilities/AbilityBItem';
 
 import { AuthToken } from '@Tools/Auth';
+import { Logger } from '@Base/Tools/Logging';
 
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
 //    is defined for that property.
-export type getterFunction = (pDfd: PropEntry, pD: BItem) => Promise<any>;
-export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: any) => Promise<void>;
+export type PropValue = number | string | AuthToken;
+export type getterFunction = (pDfd: PropEntry, pD: BItem) => PropValue;
+export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: PropValue) => void;
 export interface PropEntry {
     name: string,
-    value?: any,
+    value?: PropValue,
     getter?: getterFunction,
     setter?: setterFunction,
     ability: Ability
 };
 
 // All the BItems that have been created
-export let BItemCollection: Map<string, BItem> = new Map<string,BItem>();
+export const BItemCollection: Map<string, BItem> = new Map<string,BItem>();
 
-export let BItems = {
+export const BItems = {
     // Add BItem to the collection of BItems
     add: (pId: string, pBItem: BItem): BItem => {
         BItemCollection.set(pId, pBItem);
         return pBItem;
     },
     remove: async (pBItem: BItem): Promise<void> => {
-        let id = await pBItem.getProp('id');
+        const id = (pBItem.getProp('id') as string);
         BItemCollection.delete(id);
     },
     removeById: (pId: string): void => {
@@ -71,7 +73,7 @@ export abstract class BItem {
         // As a side effect, add this BItem to the collection of BItems
         BItems.add(pId, this);
     };
-    async getProp(pPropName: string): Promise<any> {
+    getProp(pPropName: string): PropValue {
         const prop = this._props.get(pPropName);
         if (prop) {
             if (prop.getter) {
@@ -83,21 +85,7 @@ export abstract class BItem {
         };
         return undefined;
     };
-    // If the caller knows the property is only a value, it
-    //    can be fetched without doing the await.
-    getPropValue(pPropName: string): any {
-        const prop = this._props.get(pPropName);
-        if (prop) {
-            if (prop.getter) {
-                return undefined;
-            }
-            else {
-                return prop.value;
-            };
-        };
-        return undefined;
-    };
-    async setProp(pPropName: string, pVal: any): Promise<void> {
+    setProp(pPropName: string, pVal: PropValue): void {
         const prop = this._props.get(pPropName);
         if (prop) {
             if (prop.setter) {
@@ -109,46 +97,49 @@ export abstract class BItem {
         };
         return;
     };
-    async incrementProp(pPropName: string) : Promise<number> {
-        const prop = this._props.get(pPropName);
-        if (prop && prop.getter && prop.setter) {
-            const val = await prop.getter(prop, this) + 1;
-            await prop.setter(prop, this, val);
-            return val;
+    incrementProp(pPropName: string) : PropValue {
+        let val = this.getProp(pPropName);
+        if (val) {
+            if (typeof(val) === 'string') {
+                val = parseInt(val) + 1;
+            }
+            else {
+                (val as number)++;
+            }
+            this.setProp(pPropName, val);
         };
-        prop.value += 1;
-        return prop.value;
+        return val;
     };
-    addProperty(pPropEntry: PropEntry) {
+    addProperty(pPropEntry: PropEntry): void {
         this._props.set(pPropEntry.name, pPropEntry);
     };
-    removeProperty(pPropEntry: PropEntry) {
+    removeProperty(pPropEntry: PropEntry): void {
         this._props.delete(pPropEntry.name);
     };
-    addAbility(pAbility: Ability) {
+    addAbility(pAbility: Ability): void {
         this._abilities.set(pAbility.name, pAbility);
         pAbility.addProperties(this);
     };
-    removeAbility(pAbility: Ability) {
+    removeAbility(pAbility: Ability): void {
         this._abilities.delete(pAbility.name);
     };
     getState(): BItemState {
-        return this.getPropValue(StateProp);
+        return (this.getProp(StateProp) as BItemState);
     }
     isReady(): boolean {
-        return this.getPropValue(StateProp) === BItemState.READY;
+        return this.getProp(StateProp) === BItemState.READY;
     }
     setReady(): void {
-        this.setProp('state', BItemState.READY)
+        void this.setProp('state', BItemState.READY)
     };
     setFailed(): void {
-        this.setProp('state', BItemState.FAILED)
+        void this.setProp('state', BItemState.FAILED)
     };
     setLoading(): void {
-        this.setProp('state', BItemState.LOADING)
+        void this.setProp('state', BItemState.LOADING)
     };
     setShutdown(): void {
-        this.setProp('state', BItemState.SHUTDOWN)
+        void this.setProp('state', BItemState.SHUTDOWN)
     };
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.
@@ -160,7 +151,7 @@ export abstract class BItem {
     //    Would make a useful display when things are slow/hung.
     async WhenReady(timeoutMS: number): Promise<BItem> {
         return new Promise( (resolve, reject) => {
-            if ((this.getState() === BItemState.READY) {
+            if (this.getState() === BItemState.READY) {
                 // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
                 resolve(this);
             }
@@ -193,8 +184,8 @@ export abstract class BItem {
                         // GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
                         //             + ' with timeout ' + timeout
                         //             + ', id=' + this.id);
-                        BItem.WaitABit(checkInterval, this)
-                        .then( xitem => {
+                        const xitem = this.WaitABit(checkInterval, this)
+                        .then (xitem => {
                             checkInterval += checkInterval;
                             if (checkInterval > maxCheckInterval) checkInterval = maxCheckInterval;
                             timeout = timeout - checkInterval;
@@ -202,10 +193,11 @@ export abstract class BItem {
                             .then( yitem => {
                                 // GP.DebugLog('BItem.WhenReady: READY. id=' + yitem.id);
                                 resolve(yitem);
+                                return 0;
                             })
-                            .catch( zitem => {
+                            .catch( yerr => {
                                 // GP.DebugLog('BItem.WhenReady: NOT READY. id=' + zitem.id);
-                                reject(zitem);
+                                reject(yerr);
                             });
                         });
                     };
@@ -214,12 +206,12 @@ export abstract class BItem {
         } );
     };
     // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
-    static async WaitABit(ms: number, pParam: BItem): Promise<BItem> {
-        return new Promise( resolver => { setTimeout(resolver, ms, pParam); } );
+    async WaitABit(ms: number, pParam: BItem): Promise<BItem> {
+        return new Promise( (resolve) => { setTimeout(resolve, ms, pParam); } );
     };
     // Return 'true' if something is wrong with this BItem and it will never go READY.
     NeverGonnaBeReady(): boolean {
-        let currentState = this.getState();
+        const currentState = this.getState();
         return this._deleteInProgress
                 || currentState == BItemState.FAILED
                 || currentState == BItemState.SHUTDOWN;

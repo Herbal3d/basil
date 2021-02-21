@@ -37,7 +37,7 @@ export class SubscriptionEntry {
   // Returns a promise for when event has been processed
   async fire(params: BKeyedCollection): Promise<SubscriptionEntry> {
     this.numSubscriptionFired++;
-    return new Promise(async (resolve, reject) => {
+    return new Promise( (resolve, reject) => {
       this.processor(params, this.topic)
       resolve(this);
     } );

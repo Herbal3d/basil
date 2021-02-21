@@ -15,11 +15,10 @@
 import { GP } from '@Base/Globals';
 import { Config } from '@Base/Config';
 
-const GGP = GP;   // easy linkage to global context for debugging
-
 GP.Config = Config;
 
 import { Comm } from '@Comm/Comm';
+import { IdProp } from '@Abilities/AbilityBItem';
 
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
@@ -68,17 +67,31 @@ if (IsNullOrEmpty(configParams)) {
 if (IsNotNullOrEmpty(configParams)) {
     try {
         const unpacked = Base64.decode(configParams);
-        const newParams = JSON.parse(unpacked);
+        const newParams = (JSON.parse(unpacked) as BKeyedCollection);
         Logger.debug(`Basiljs: newParams: ${unpacked}`);
         if (IsNotNullOrEmpty(newParams)) {
             // Could do this assign but then the caller could change any configuration param.
             // Only the 'initialMakeConnection' parameter is passed in for more security.
             // deepmerge(Config, newParams);    // property merge of unpacked into Config
-            Config.initialMakeConnection = newParams.Init;
+            Config.initialMakeConnection = newParams['Init'];
+            for (const section of Config.basil.KnownConfigurationSections.split(',')) {
+                if (newParams.hasOwnProperty(section)) {
+                    if (!Config.hasOwnProperty(section)) {
+                        (Config as BKeyedCollection)[section] = newParams[section];
+                    }
+                    else {
+                        Logger.error(`Basilts: Cannot assign existing section with passed invocation parameters`);
+                    };
+                }
+                else {
+                    Logger.error(`Basilts: Not adding section "${section}" to Config because not known section`);
+                };
+            };
         };
     }
     catch(e) {
-        Logger.debug('Basiljs: failed parsing option config: ' + e);
+        const se = <SyntaxError>e;
+        Logger.debug(`Basiljs: failed parsing option config: ${se.message}`);
     };
 };
 
@@ -93,9 +106,10 @@ if (Config.initialMakeConnection) {
     Logger.debug('Basiljs: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
     Comm.MakeConnection(Config.initialMakeConnection)
     .then( conn => {
-        Logger.debug('Basiljs: initial make connection successful. Id=' + conn.getProp('id'));
+        return Logger.debug(`Basiljs: initial make connection successful. Id=${conn.getProp(IdProp)}`);
     })
     .catch( e => {
-        Logger.error('Basiljs: failed connecting initial SpaceServer: ' + e.message);
+        const err = <string>e;  // Kludge for eslint
+        return Logger.error(`Basiljs: failed connecting initial SpaceServer: ${e}`);
     });
 };

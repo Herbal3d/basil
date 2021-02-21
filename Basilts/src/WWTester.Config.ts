@@ -4,7 +4,7 @@
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
 //     supplied configuration file contents.
-export let Config = {
+export const Config = {
     // Various overall Basil viewer parameters
     'basil': {
         // ms before removing deleted BItem
