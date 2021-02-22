@@ -44,7 +44,7 @@ if (IsNullOrEmpty(configParams)) {
     let testConfigParams: BKeyedCollection = {};
     // If there are parameters for testing, use them
     if (Config.WWTester && Config.WWTester.initialMakeConnection) {
-        testConfigParams.initialMakeConnection = Config.WWTester.initialMakeConnection;
+        testConfigParams.Init = Config.WWTester.initialMakeConnection;
     }
     else {
         testConfigParams = {
@@ -52,7 +52,7 @@ if (IsNullOrEmpty(configParams)) {
                 'Transport': 'WW',
                 'TransportURL': './wwtester.js',
                 'Protocol': 'Basil-JSON',
-                'Service': undefined,
+                'Service': 'SpaceServer',
                 'ServiceAuth': undefined,
                 'OpenParams': {
                     'testAssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
@@ -80,11 +80,9 @@ if (IsNotNullOrEmpty(configParams)) {
                         (Config as BKeyedCollection)[section] = newParams[section];
                     }
                     else {
-                        Logger.error(`Basilts: Cannot assign existing section with passed invocation parameters`);
+                        Logger.error(`Basilts: Cannot assign existing section with passed invocation parameters.`);
+                        Logger.error(`Basilts:  Attempted section = ${section}`);
                     };
-                }
-                else {
-                    Logger.error(`Basilts: Not adding section "${section}" to Config because not known section`);
                 };
             };
         };

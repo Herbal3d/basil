@@ -23,10 +23,9 @@ export class BTransportWW extends BTransport {
 
     constructor(pParams: BKeyedCollection) {
         super(CreateUniqueId('BTransportWW'), 'org.herbal3d.b.transport.ww');
-        const params = CombineParameters(undefined, pParams, {
+        this._params = CombineParameters(undefined, pParams, {
             'transportURL': undefined   // name of Worker to connect to
         });
-
     };
     async Start(pParams: BKeyedCollection): Promise<BTransport> {
         this.setLoading();

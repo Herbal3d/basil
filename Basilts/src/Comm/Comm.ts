@@ -20,8 +20,9 @@ import { BProtocolJSON } from '@Comm/BProtocolJSON';
 import { BProtocolFB } from '@Comm/BProtocolFB';
 import { BProtocolPB } from '@Comm/BProtocolPB';
 
-import { CombineParameters } from "@Tools/Utilities";
+import { CombineParameters, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
+import { Logger } from '@Tools/Logging';
 
 export const Comm = {
     async MakeConnection(pParams: BKeyedCollection): Promise<BasilConnection> {
@@ -70,6 +71,7 @@ export const Comm = {
                 xport = new BTransportWS(params);
                 break;
             default:
+                Logger.error(`Comm.TransportFactory: unknown transport "${params.transport}"`);
                 break;
         };
         if (xport) {
@@ -82,7 +84,7 @@ export const Comm = {
             'protocol': 'Basil-JSON',          // type of protocol processor
         });
         let proto: BProtocol;
-        switch (params.transport) {
+        switch (params.protocol) {
             case 'Basil-JSON':
                 proto = new BProtocolJSON(params, pXPort);
                 break;
@@ -93,6 +95,7 @@ export const Comm = {
                 proto = new BProtocolFB(params, pXPort);
                 break;
             default:
+                Logger.error(`Comm.ProtocolFactory: unknown protocol "${params.protocol}"`);
                 break;
         };
         if (proto) {

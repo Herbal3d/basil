@@ -62,6 +62,7 @@ export function RandomIdentifier(): string {
 export function CombineParameters(configParams: BKeyedCollection,
                                     passedParams: BKeyedCollection,
                                     requiredParams: BKeyedCollection): BKeyedCollection {
+    // Make a copy of the parameters that will be added to
     const parms = configParams ? Object.assign({}, configParams) : {};
     // Make sure there is a canonical lower case version of configParams
     Object.keys(parms).forEach( key => {

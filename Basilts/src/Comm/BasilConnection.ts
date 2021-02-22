@@ -10,6 +10,9 @@
 // limitations under the License.
 'use strict';
 
+import { Config } from '@Base/Config';
+
+import { Comm } from '@Comm/Comm';
 import { BProtocol, BProtocolReceptionCallback } from '@Comm/BProtocol';
 import { BItem } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
@@ -18,8 +21,6 @@ import { BMessage, BMessageOps, PositionBlock, CoordSystem, RotationSystem } fro
 import { CombineParameters, CreateUniqueId, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
-import { Config } from '@Base/Config';
-import { Comm } from './Comm';
 
 // When an RPC operation is done, this remembers the send so we can process the response
 interface RPCInfo {
@@ -47,6 +48,7 @@ export class BasilConnection extends BItem {
         this._params = CombineParameters(undefined, pParams, {
             'service': ServiceSpaceServer
         });
+        this._proto = pProtocol;
         this._proto.SetReceiveCallback(Processor, this);
         this._rpcSessions = new Map<string,RPCInfo>();
     };

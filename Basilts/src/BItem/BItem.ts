@@ -62,6 +62,7 @@ export abstract class BItem {
 
     constructor(pId: string, pAuth: AuthToken, pLayer: string) {
         this._props = new Map<string,PropEntry>();
+        this._abilities = new Map<string,Ability>();
 
         // Add the base properties to this BItem
         this.addAbility(new AbilityBItem(pId, pAuth, pLayer));
