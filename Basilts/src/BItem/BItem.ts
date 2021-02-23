@@ -151,60 +151,51 @@ export abstract class BItem {
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
     async WhenReady(timeoutMS: number): Promise<BItem> {
-        return new Promise( (resolve, reject) => {
-            if (this.getState() === BItemState.READY) {
-                // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
-                resolve(this);
+        if (this.getState() === BItemState.READY) {
+            // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
+            return this;
+        }
+        else {
+            if (this.NeverGonnaBeReady()) {
+                throw this;
             }
             else {
-                if (this.NeverGonnaBeReady()) {
-                    reject(this);
+                let checkInterval = 200;
+                if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
+                    checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
+                };
+                let maxCheckInterval = 1000;
+                if (Config.assets && Config.assets.assetFetchCheckIntervalMaxMS) {
+                    maxCheckInterval = Number(Config.assets.assetFetchCheckIntervalMaxMS);
+                };
+                let timeout = 5000;
+                if (Config.assets && Config.assets.assetFetchTimeoutMS) {
+                    timeout = Number(Config.assets.assetFetchTimeoutMS);
+                };
+                if (timeoutMS) {  // use the passed timeout if specified
+                    timeout = timeoutMS;
+                };
+                if (timeout <= 0) {
+                    // GP.DebugLog('BItem.WhenReady: reject timeout. id=' + this.id);
+                    throw this;
                 }
                 else {
-                    let checkInterval = 200;
-                    if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
-                        checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
-                    };
-                    let maxCheckInterval = 1000;
-                    if (Config.assets && Config.assets.assetFetchCheckIntervalMaxMS) {
-                        maxCheckInterval = Number(Config.assets.assetFetchCheckIntervalMaxMS);
-                    };
-                    let timeout = 5000;
-                    if (Config.assets && Config.assets.assetFetchTimeoutMS) {
-                        timeout = Number(Config.assets.assetFetchTimeoutMS);
-                    };
-                    if (timeoutMS) {  // use the passed timeout if specified
-                        timeout = timeoutMS;
-                    };
-                    if (timeout <= 0) {
-                        // GP.DebugLog('BItem.WhenReady: reject timeout. id=' + this.id);
-                        reject(this);
-                    }
-                    else {
-                        // Wait for 'checkInterval' and test again for 'READY'.
-                        // GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
-                        //             + ' with timeout ' + timeout
-                        //             + ', id=' + this.id);
-                        const xitem = this.WaitABit(checkInterval, this)
-                        .then (xitem => {
-                            checkInterval += checkInterval;
-                            if (checkInterval > maxCheckInterval) checkInterval = maxCheckInterval;
-                            timeout = timeout - checkInterval;
-                            xitem.WhenReady(timeout)
-                            .then( yitem => {
-                                // GP.DebugLog('BItem.WhenReady: READY. id=' + yitem.id);
-                                resolve(yitem);
-                                return 0;
-                            })
-                            .catch( yerr => {
-                                // GP.DebugLog('BItem.WhenReady: NOT READY. id=' + zitem.id);
-                                reject(yerr);
-                            });
+                    // Wait for 'checkInterval' and test again for 'READY'.
+                    // GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
+                    //             + ' with timeout ' + timeout
+                    //             + ', id=' + this.id);
+                    const xitem = await this.WaitABit(checkInterval, this);
+                    checkInterval += checkInterval;
+                    if (checkInterval > maxCheckInterval) checkInterval = maxCheckInterval;
+                    timeout = timeout - checkInterval;
+                    const yitem = await xitem.WhenReady(timeout)
+                        .catch( err => {
+                            throw err;
                         });
-                    };
+                    return yitem;
                 };
             };
-        } );
+        };
     };
     // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
     async WaitABit(ms: number, pParam: BItem): Promise<BItem> {

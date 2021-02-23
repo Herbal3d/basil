@@ -29,49 +29,48 @@ export class BTransportWW extends BTransport {
     };
     async Start(pParams: BKeyedCollection): Promise<BTransport> {
         this.setLoading();
-        return new Promise( (resolve, reject) => {
-            // For some reason the WorkerGlobalScope variable is not known by TypeScript
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            if (typeof(WorkerGlobalScope) === 'undefined') {
-                // We're the master
-                // this.params.transporturl is WebWorker URL to connect to
-                try {
-                    this._worker = new Worker(this._params.transporturl);
-                    this._isWorker = false;
-                    const _this = this;
-                    this._worker.onmessage = (evnt: MessageEvent) => {
-                        _this._messages.push(evnt.data);
-                        _this.incrementProp(MessagesReceivedProp);
-                        _this.PushReception();
-                    };
-                    this._worker.onerror = (err: ErrorEvent) => {
-                        Logger.error(`BTransportWW: worker error: reason: ${err.message}`);
-                        _this.Close();
-                    };
-                    this.setReady();
-                    resolve(this);
-                }
-                catch(e) {
-                    const ee = <Error>e;
-                    const emsg = `BTransportWW: exception initializing worker: ${ee.message}`;
-                    Logger.error(emsg);
-                    reject(emsg);
-                }
-            }
-            else {
-                // We're the worker
-                this._isWorker = true;
+
+        // For some reason the WorkerGlobalScope variable is not known by TypeScript
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (typeof(WorkerGlobalScope) === 'undefined') {
+            // We're the master
+            // this.params.transporturl is WebWorker URL to connect to
+            try {
+                this._worker = new Worker(this._params.transporturl);
+                this._isWorker = false;
                 const _this = this;
-                onmessage = (evnt: MessageEvent) => {
+                this._worker.onmessage = (evnt: MessageEvent) => {
                     _this._messages.push(evnt.data);
                     _this.incrementProp(MessagesReceivedProp);
                     _this.PushReception();
                 };
+                this._worker.onerror = (err: ErrorEvent) => {
+                    Logger.error(`BTransportWW: worker error: reason: ${err.message}`);
+                    _this.Close();
+                };
                 this.setReady();
-                resolve(this);
+                return this;
+            }
+            catch(e) {
+                const ee = <Error>e;
+                const emsg = `BTransportWW: exception initializing worker: ${ee.message}`;
+                Logger.error(emsg);
+                throw emsg;
+            }
+        }
+        else {
+            // We're the worker
+            this._isWorker = true;
+            const _this = this;
+            onmessage = (evnt: MessageEvent) => {
+                _this._messages.push(evnt.data);
+                _this.incrementProp(MessagesReceivedProp);
+                _this.PushReception();
             };
-        });
+            this.setReady();
+            return this;
+        };
     };
 
     Close(): void {

@@ -17,7 +17,7 @@ import { BMessage } from '@Comm/BMessage';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 // On reception, the receiver gets a binary message to deserialize
-export type BProtocolReceptionCallback = (pMsg: BMessage, pContext: BItem, pProto: BProtocol) => void;
+export type BProtocolReceptionCallback = (pMsg: BMessage, pContext: BItem, pProto: BProtocol) => Promise<void>;
 
 // Protocol sends and receives BMessages.
 export abstract class BProtocol extends BItem {

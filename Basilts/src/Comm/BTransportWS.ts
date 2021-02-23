@@ -28,37 +28,35 @@ export class BTransportWS extends BTransport {
     };
     async Start(pParams: BKeyedCollection): Promise<BTransport> {
         this.setLoading();
-        return new Promise( (resolve, reject) => {
-            try {
-                this._socket = new WebSocket(this._params.transporturl);
-                if (this._socket) {
-                    this._socket.binaryType = 'arraybuffer';
-                    const _this = this;
-                    this._socket.onmessage = (event: MessageEvent) => {
-                        _this._messages.push(new Uint8Array(event.data));
-                        _this.incrementProp(MessagesReceivedProp);
-                        _this.PushReception();
-                    };
-                    this._socket.onopen = (event: Event) => {
-                        _this.setReady();
-                    };
-                    resolve(this);
-                }
-                else {
-                    const errMsg = `BTransportWS: could not open websocket: ${this._params['transporturl']}`;
-                    this.setFailed();
-                    Logger.error(errMsg);
-                    reject(errMsg);
+        try {
+            this._socket = new WebSocket(this._params.transporturl);
+            if (this._socket) {
+                this._socket.binaryType = 'arraybuffer';
+                const _this = this;
+                this._socket.onmessage = (event: MessageEvent) => {
+                    _this._messages.push(new Uint8Array(event.data));
+                    _this.incrementProp(MessagesReceivedProp);
+                    _this.PushReception();
                 };
+                this._socket.onopen = (event: Event) => {
+                    _this.setReady();
+                };
+                return this;
             }
-            catch(err) {
-                const errr = <SyntaxError>err;
-                const errMsg = `BTransportWS: exception opening websocket: ${errr.message}`;
+            else {
+                const errMsg = `BTransportWS: could not open websocket: ${this._params['transporturl']}`;
                 this.setFailed();
                 Logger.error(errMsg);
-                reject(errMsg);
+                throw errMsg;
             };
-        });
+        }
+        catch (err) {
+            const errr = <SyntaxError>err;
+            const errMsg = `BTransportWS: exception opening websocket: ${errr.message}`;
+            this.setFailed();
+            Logger.error(errMsg);
+            throw errMsg;
+        };
     };
 
     Close(): void {
