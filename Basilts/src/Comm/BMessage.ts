@@ -10,83 +10,112 @@
 // limitations under the License.
 'use strict';
 
+import { BKeyedCollection } from "@Base/Tools/bTypes";
+
 export enum BMessageOps {
-  UnknownReq                  = 0,
-  CreateItemReq               = 101,
-  CreateItemResp              = 102,
-  DeleteItemReq               = 103,
-  DeleteItemResp              = 104,
-  AddAbilityReq               = 105,
-  AddAbilityResp              = 106,
-  RemoveAbilityReq            = 107,
-  RemoveAbilityResp           = 108,
-  RequestPropertiesReq        = 109,
-  RequestPropertiesResp       = 110,
-  UpdatePropertiesReq         = 111,
-  UpdatePropertiesResp        = 112,
+    UnknownReq                  = 0,
+    CreateItemReq               = 101,
+    CreateItemResp              = 102,
+    DeleteItemReq               = 103,
+    DeleteItemResp              = 104,
+    AddAbilityReq               = 105,
+    AddAbilityResp              = 106,
+    RemoveAbilityReq            = 107,
+    RemoveAbilityResp           = 108,
+    RequestPropertiesReq        = 109,
+    RequestPropertiesResp       = 110,
+    UpdatePropertiesReq         = 111,
+    UpdatePropertiesResp        = 112,
 
-  OpenSessionReq              = 201,
-  OpenSessionResp             = 202,
-  CloseSessionReq             = 203,
-  CloseSessionResp            = 204,
-  MakeConnectionReq           = 205,
-  MakeConnectionResp          = 206,
+    OpenSessionReq              = 201,
+    OpenSessionResp             = 202,
+    CloseSessionReq             = 203,
+    CloseSessionResp            = 204,
+    MakeConnectionReq           = 205,
+    MakeConnectionResp          = 206,
 
-  AliveCheckReq               = 301,
-  AliveCheckResp              = 302,
+    AliveCheckReq               = 301,
+    AliveCheckResp              = 302,
+};
+
+// Every request can include a list of key/value properties
+// This defines the expected properties with each of the requests
+export interface MakeConnectionReqProps {
+    Transport: string;        // transport type: 'WW'|'WS'
+    TransportURL: string;   // URL to connect transport to
+    Protocol: string;       // message encoding: 'Basil-JSON'|...
+    Service: string;        // service connecting too (usually 'SpaceServer')
+    ClientAuth: string;     // authorization token to use when connecting
+    OpenParams: BKeyedCollection; // parameters to send when doing OpenConnection
+};
+export interface MakeConnectionRespProps {
+    none: string;           // place holder REPLACE ME
+};
+export interface OpenSessionReqProps {
+    BasilVersion: string;   // version string for Basil
+    // The Test* props are for WWTester and causes it to create the specified asset.
+    //    These are not use for normal SpaceServer operation.
+    //    They usually come from the OpenParams prop in the MakeConnectionReq
+    //       so passing the test asset through Entry => Basil => WWTester => Basil works
+    TestAssetURL?: string;  // URL of test asset to load
+    TestAssetLoader?: string;   // loader to use for test asset
+};
+export interface OpenSessionRespProps {
+    ServerVersion: string;  // server version string
+    ServerAuth:string;      // token to use talking to this server
 };
 
 export enum CoordSystem {
-  WGS86     = 0,    // WGS84 earth coordinates
-  CAMERA    = 1,    // Coordinates relative to camera position (-1..1 range, zero center)
-  CAMERAABS = 2,    // Absolute coordinates relative to the camera position (zero center)
-  VIRTUAL   = 3,    // Zero based un-rooted coordinates
-  MOON      = 4,    // Earth-moon coordinates
-  MARS      = 5,    // Mars coordinates
-  REL1      = 6,    // Mutually agreed base coordinates
-  REL2      = 7,
-  REL3      = 8
+    WGS86     = 0,    // WGS84 earth coordinates
+    CAMERA    = 1,    // Coordinates relative to camera position (-1..1 range, zero center)
+    CAMERAABS = 2,    // Absolute coordinates relative to the camera position (zero center)
+    VIRTUAL   = 3,    // Zero based un-rooted coordinates
+    MOON      = 4,    // Earth-moon coordinates
+    MARS      = 5,    // Mars coordinates
+    REL1      = 6,    // Mutually agreed base coordinates
+    REL2      = 7,
+    REL3      = 8
 };
 export enum RotationSystem {
-  WORLDR    = 0,    // world relative
-  LOCALR    = 1,    // local relative
-  FORR      = 2,    // frame of reference relative
-  CAMERAR   = 3     // camera relative
+    WORLDR    = 0,    // world relative
+    LOCALR    = 1,    // local relative
+    FORR      = 2,    // frame of reference relative
+    CAMERAR   = 3     // camera relative
 };
 export interface PositionBlock {
-  Pos: number[];
-  Rot: number[];
-  CS: CoordSystem,
-  RS: RotationSystem,
-  Vel: number[];
-  Path: number[];
-  // Sometimes PostionBlock is repeated to apply to many Items/Components
-  IId: string;          // BItem being operated on
-  Auth: string;         // Auth for the session
-  IAuth: string;        // Auth for accessing the BItem
+    Pos: number[];
+    Rot: number[];
+    CS: CoordSystem,
+    RS: RotationSystem,
+    Vel: number[];
+    Path: number[];
+    // Sometimes PostionBlock is repeated to apply to many Items/Components
+    IId: string;          // BItem being operated on
+    Auth: string;         // Auth for the session
+    IAuth: string;        // Auth for accessing the BItem
 };
 
 export interface BMessage {
-  RCode?: string;         // unique code returned in response for RPC'ish calls
-  ResponseKey?: string;
-  StreamId?: number;
-  ProtocolVersion?: number
+    RCode?: string;         // unique code returned in response for RPC'ish calls
+    ResponseKey?: string;
+    StreamId?: number;
+    ProtocolVersion?: number
 
-  // Fields for protocol tracking and analysis
-  QueueTime?: number;
-  SendTime?: number;
-  TransportClass?: number;
+    // Fields for protocol tracking and analysis
+    QueueTime?: number;
+    SendTime?: number;
+    TransportClass?: number;
 
-  Op: number;
-  Auth?: string;
-  IId?: string;        // BItem id being referenced
-  IAuth?: string;      // Any authentication necessary for access BItem
-  IProps?: { [ key: string ]: string };   // Properties to apply
+    Op: number;
+    Auth?: string;
+    IId?: string;        // BItem id being referenced
+    IAuth?: string;      // Any authentication necessary for access BItem
+    IProps?: { [ key: string ]: string };   // Properties to apply
 
-  Pos?: PositionBlock[];  // If a multi-position update, new positions for items
+    Pos?: PositionBlock[];  // If a multi-position update, new positions for items
 
-  // Responses can report errors
-  Exception?: string;
-  ExceptionHints?: { [ key: string ]: string }
+    // Responses can report errors
+    Exception?: string;
+    ExceptionHints?: { [ key: string ]: string }
 };
 

@@ -49,10 +49,9 @@ export const Config = {
     // Parameters for the simple eventing system
     'eventing': {
         'eventPollIntervalMS': 500
-    },
-    // Connection and debug information when running the WebWorker test
+    }, // Connection and debug information when running the WebWorker test
     'WWTester': {
-        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
+        'LogToConsole': true,        // Log to console. Otherwise, use msg to debug BItem
         'LogToDebugInstance': false, // Log to the remote debug instance
         'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
@@ -60,10 +59,11 @@ export const Config = {
     },
     // Various flags that turn on/off debug logging, etc
     'Debug': {
-        'EnableLogging': true,                // whether to output any logging
-        'LogLevel': 'info',                   // output log level (error, warn, info, debug)
-        'SendAndPromisePrintMsg': false,        // optionally print response message
-        'DebugLogToConsole': false,           // output debug message to console rather than debug window
-        'DebugLogInstanceName': 'bitem.debug.b.basil.org' // Name of debug logging instance
+        'EnableLogging': true,          // whether to output any logging
+        'DebugLogToConsole': true,      // output debug message to console rather than debug window
+        'LogLevel': 'info',             // output log level (error, warn, info, debug)
+        'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance,
+        'RPCSent': true,                // print sent RPC message
+        'RPCResponse': true             // print RPC response message
     }
 }

@@ -11,7 +11,7 @@
 'use strict';
 
 import { BMessage } from '@Comm/BMessage';
-import { BProtocol, BProtocolReceptionCallback } from '@Comm/BProtocol';
+import { BProtocol } from '@Comm/BProtocol';
 import { BTransport } from '@Comm/BTransport';
 
 import { CombineParameters, CreateUniqueId, JSONstringify } from "@Tools/Utilities";
@@ -59,11 +59,11 @@ function Processor(pMsg: Uint8Array, pContext: BProtocolJSON, pXPort: BTransport
     try {
         const parsedMessage = JSON.parse(_decoder.decode(pMsg));
         if (pContext._receiveCallback) {
-            pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
+            void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
         };
     }
     catch ( err ) {
-        const serror = err as SyntaxError;
+        const serror = <SyntaxError>err;        // Kludge for eslint
         const errMsg = `BProtocolJSON: error parsing JSON message: ${serror.message}`;
         Logger.error(errMsg);
     };

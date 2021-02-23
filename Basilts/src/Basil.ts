@@ -18,20 +18,22 @@ import { Config } from '@Base/Config';
 GP.Config = Config;
 
 import { Comm } from '@Comm/Comm';
-import { IdProp } from '@Abilities/AbilityBItem';
+import { OpenSessionReqProps } from '@Comm/BMessage';
+import { Eventing } from '@Eventing/Eventing';
 
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
 
 import { Base64 } from 'js-base64';
 
-import { JSONstringify } from '@Tools/Utilities';
-import { IsNullOrEmpty, IsNotNullOrEmpty, ConfigGetQueryVariable } from './Tools/Misc';
-import { BKeyedCollection } from './Tools/bTypes';
+import { IsNullOrEmpty, IsNotNullOrEmpty, ConfigGetQueryVariable } from '@Tools/Misc';
+import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
+import { BKeyedCollection } from '@Tools/bTypes';
 import { initLogging, Logger } from '@Tools/Logging';
 
 // Setup logging so progress and errors will be seen
 initLogging();
+Eventing.init();
 
 // Called with communication configuration parameters in the URL.
 // The 'c' parameter is Base64 encoded JSON data which is merged into
@@ -53,7 +55,7 @@ if (IsNullOrEmpty(configParams)) {
                 'TransportURL': './wwtester.js',
                 'Protocol': 'Basil-JSON',
                 'Service': 'SpaceServer',
-                'ServiceAuth': undefined,
+                'ClientAuth': undefined,
                 'OpenParams': {
                     'testAssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
                     'loaderType': 'GLTF'
@@ -102,12 +104,27 @@ GP.Ready = true;
 // If there are connection parameters, start the first connection
 if (Config.initialMakeConnection) {
     Logger.debug('Basiljs: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
-    Comm.MakeConnection(Config.initialMakeConnection)
-    .then( conn => {
-        return Logger.debug(`Basiljs: initial make connection successful. Id=${conn.getProp(IdProp)}`);
-    })
-    .catch( e => {
-        const err = <string>e;  // Kludge for eslint
-        return Logger.error(`Basiljs: failed connecting initial SpaceServer: ${e}`);
-    });
+    try {
+        Comm.MakeConnection(Config.initialMakeConnection)
+        .then( conn => {
+            const sessionParams: OpenSessionReqProps = {
+                BasilVersion: "I don't know"
+            };
+            Logger.debug(`Before CreateConnection`);
+            conn.CreateSession(sessionParams) 
+            .then ( conn2 => {
+                Logger.debug(`Basiljs: session is opened`);
+            })
+            .catch( e => {
+                Logger.error(`CreateSession exception: ${ExtractStringError(e)}`);
+            });
+        })
+        .catch( e => {
+            Logger.error(`MakeConnection exception: ${ExtractStringError(e)}`);
+        });
+    }
+    catch ( e ) {
+        const err = ExtractStringError(e);
+        Logger.debug(`Basiljs: OpenSession failed: ${err}`);
+    };
 };

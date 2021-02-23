@@ -148,11 +148,12 @@ export const Config = {
     },
     // Various flags that turn on/off debug logging, etc
     'Debug': {
-        'EnableLogging': true,                // whether to output any logging
-        'LogLevel': 'debug',                  // output log level (error, warn, info, debug)
-        'SendAndPromisePrintMsg': false,      // optionally print response message
-        'DebugLogToConsole': true,            // output debug message to console rather than debug window
-        'DebugLogInstanceName': 'bitem.debug.b.basil.org' // Name of debug logging instance
+        'EnableLogging': true,          // whether to output any logging
+        'DebugLogToConsole': true,      // output debug message to console rather than debug window
+        'LogLevel': 'debug',            // output log level (error, warn, info, debug)
+        'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
+        'RPCSent': true,                // print sent RPC message
+        'RPCResponse': true             // print RPC response message
     },
     // Used by Entry.js/Entry.html to specify BasilTest URLs
     'BasilTestURLs': [

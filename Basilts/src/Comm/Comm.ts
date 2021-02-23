@@ -24,9 +24,19 @@ import { CombineParameters, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
 
+export interface MakeConnectionParams extends BKeyedCollection {
+    transport: string,            // type of the transport
+    transporturl: string,         // link to service to connect to
+    protocol: string,             // format of the messages on the transport
+    service: string,              // type of service connecting to
+    receiveauth?: string,         // authentication expected on reception (created by BasilConnection if not specified)
+    serviceauth?: string,         // authentication for sent messages
+    openParams?: BKeyedCollection // parameters to send on the open connection message
+};
+
 export const Comm = {
     async MakeConnection(pParams: BKeyedCollection): Promise<BasilConnection> {
-        const params = CombineParameters(undefined, pParams, {
+        const params= <MakeConnectionParams>CombineParameters(undefined, pParams, {
             'transport': 'WS',          // type of the transport
             'transporturl': undefined,  // link to service to connect to
             'protocol': 'Basil-JSON',   // format of the messages on the transport
@@ -35,28 +45,12 @@ export const Comm = {
             'serviceauth': undefined,   // authentication for sent messages
             'openParams': undefined     // parameters to send on the open connection message
         });
-        return new Promise( (resolve,reject) => {
-            Comm.TransportFactory(params)
-            .then( xport => {
-                Comm.ProtocolFactory(params, xport)
-                .then( proto => {
-                    Comm.BasilConnectionFactory(params, proto)
-                    .then( conn => {
-                        resolve(conn);
-                    })
-                    .catch( err => {
-                        reject(err);
-                    });
-                })
-                .catch( err => {
-                    reject(err);
-                });
-            })
-            .catch( err => {
-                reject(err);
-            });
-        });
+        const xport = await Comm.TransportFactory(params);
+        const proto = await Comm.ProtocolFactory(params, xport);
+        const conn = await Comm.BasilConnectionFactory(params, proto);
+        return conn;
     },
+
     async TransportFactory(pParams: BKeyedCollection): Promise<BTransport> {
         const params = CombineParameters(undefined, pParams, {
             'transport': 'WS',          // type of transport
@@ -77,8 +71,9 @@ export const Comm = {
         if (xport) {
             return xport.Start(params);
         }
-        return undefined;
+        throw 'Creation of transport failed';
     },
+
     async ProtocolFactory(pParams: BKeyedCollection, pXPort: BTransport): Promise<BProtocol> {
         const params = CombineParameters(undefined, pParams, {
             'protocol': 'Basil-JSON',          // type of protocol processor
@@ -100,9 +95,10 @@ export const Comm = {
         };
         if (proto) {
             return proto.Start(params);
-        }
-        return undefined;
+        };
+        throw 'Creation of protocol failed';
     },
+
     async BasilConnectionFactory(pParams: BKeyedCollection, pProto: BProtocol): Promise<BasilConnection> {
         const connection = new BasilConnection(pParams, pProto);
         return connection;

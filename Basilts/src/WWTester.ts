@@ -14,12 +14,13 @@
 import { GP } from '@Base/Globals';
 
 import { Config } from '@Base/WWTester.Config.ts';
-import { Comm } from '@Comm/Comm';
+import { Comm, MakeConnectionParams } from '@Comm/Comm';
+import { Eventing } from '@Eventing/Eventing';
+import { BasilConnection, ServiceSpaceServer, BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
 
-import { JSONstringify } from '@Tools/Utilities';
-import { Logger, initLogging, AddLogOutputter } from '@Tools/Logging';
+import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from './Tools/bTypes';
-import { BasilConnection, ServiceSpaceServer } from './Comm/BasilConnection';
+import { Logger, AddLogOutputter } from '@Tools/Logging';
 
 GP.Ready = false;
 
@@ -54,31 +55,46 @@ if (Config.Debug && Config.Debug.DebugLogInstanceName && Config.WWTester.LogToDe
         };
     });
 };
+Eventing.init();
 
-const params: BKeyedCollection = {
-    'transport': 'WW',
-    'protocol': 'Basil-JSON',
-    'service': ServiceSpaceServer
-};
-Comm.TransportFactory(params)
-.then( xport => {
-    Comm.ProtocolFactory(params, xport)
-    .then( proto => {
-        Comm.BasilConnectionFactory(params, proto)
-        .then( conn => {
-            _basilClient = conn;
-        })
-        .catch( err => {
-            Logger.error(err);
+// Startup the testing and wait for the OpenSession
+try {
+    const params: MakeConnectionParams = {
+        'transport': 'WW',
+        'transporturl': undefined,
+        'protocol': 'Basil-JSON',
+        'service': ServiceBasilServer
+    };
+    Comm.MakeConnection(params)
+    .then ( conn => {
+        Logger.debug(`MakeConnection complete`);
+        conn.SubscribeToMessageOp('OpenSession', ( pProps: BasilConnectionEventParams, pTopic: string) => {
+            Logger.debug(`OpenSession received`);
+            if (pProps.request.IProps.TestAssetURL) {
+                const assetURL = pProps.request.IProps['TestAssetURL'];
+                const assetLoader = pProps.request.IProps['TestAssetLoader'];
+                Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
+                LoadTestAsset(conn, assetURL, assetLoader)
+                .then( () => {
+                    Logger.debug(`Load test asset complete`);
+                })
+                .catch (e => {
+                    Logger.error(`MakeConnection exception: ${ExtractStringError(e)}`);
+                });
+            }
+            else {
+                Logger.error(`OpenSession did not have a test URL: ${JSONstringify(pProps.request.IProps)}`);
+            };
         });
     })
-    .catch( err => {
-        Logger.error(err);
+    .catch (e => {
+        Logger.error(`MakeConnection exception: ${ExtractStringError(e)}`);
     });
-})
-.catch( err => {
-    Logger.error(err);
-});
+}
+catch (e) {
+    const err = ExtractStringError(e);
+    Logger.error(`MakeConnection exception: ${err}`);
+};
 
 // Start AliveCheck polling if configured
 if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
@@ -102,14 +118,10 @@ if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
     .catch( e => {
         Logger.error(`AliveCheck: Basil client never became ready`);
     });
-}
+};
 
-// Wait for the SpaceServer to come ready (OpenSession from client)
-//    then send test data to the viewer.
-Logger.debug('Starting SpaceServer');
-_basilClient.WhenReady(10000)
-.then( sServer => {
-    Logger.debug('OpenSession completed');
+async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTestAssetLoader: string): Promise<void> {
+    Logger.debug(`LoadTestAsset`);
     /*
     let displayableProps = {
         'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
@@ -199,8 +211,4 @@ _basilClient.WhenReady(10000)
 
     });
     */
-})
-.catch ( e => {
-    Logger.error(`WWTester: Basil client never became ready`);
-});
-
+};

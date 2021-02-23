@@ -17,6 +17,22 @@ import { GetNextUniqueNum, UniqueIdBasename } from '@Base/Globals';
 import { BKeyedCollection, BVector3, BVector4 } from '@Tools/bTypes';
 import { Logger } from './Logging';
 
+// Who knows what things throw. This tries to figure out the error string
+// from the item passed
+export function ExtractStringError(pErr: unknown): string {
+    if (typeof(pErr) === 'string') {
+        return pErr;
+    }
+    else {
+        for (const field of [ 'message', 'Exception' ]) {
+            if (pErr.hasOwnProperty(field)) {
+                return <string>(pErr as BKeyedCollection)[field];
+            };
+        };
+    };
+    return 'Unknown error';
+};
+
 // Create a globally unique Id based on the service and type passed.
 // If 'type' is undefined, it is not included in the name.
 export function CreateUniqueId(pService: string, pType?: string): string {
