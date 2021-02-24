@@ -16,13 +16,14 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 import { AbilityMsgStats, MessagesReceivedProp } from '@Abilities/AbilityMsgStats';
 
-// On reception, the receiver gets a binary message to deserialize
-export type BTransportReceptionCallback = (pMsg: Uint8Array, pContext: any, pTransport: BTransport) => void;
+export type BTransportMsg = Uint8Array | string;
+// On reception, the receiver gets a raw message to deserialize
+export type BTransportReceptionCallback = (pMsg: BTransportMsg, pContext: any, pTransport: BTransport) => void;
 
 // Transport sends and receives buffers of bytes
 export abstract class BTransport extends BItem {
     _params: BKeyedCollection;
-    _messages: Uint8Array[];
+    _messages: BTransportMsg[];
     _receiveCallback: BTransportReceptionCallback;
     _receiveCallbackContext: any;
 
@@ -38,7 +39,7 @@ export abstract class BTransport extends BItem {
     abstract Close(): void;
 
     // Note that is function is not async. It can hang.
-    abstract Send(pData: Uint8Array): boolean;
+    abstract Send(pData: BTransportMsg): boolean;
 
     SetReceiveCallback(pCallBack: BTransportReceptionCallback, pContext?: any): void {
       this._receiveCallback = pCallBack;

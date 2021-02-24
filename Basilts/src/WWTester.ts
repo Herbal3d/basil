@@ -74,16 +74,23 @@ try {
                 const assetURL = pProps.request.IProps['TestAssetURL'];
                 const assetLoader = pProps.request.IProps['TestAssetLoader'];
                 Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
+
+                pProps.connection.Send(pProps.response);
+
                 LoadTestAsset(conn, assetURL, assetLoader)
                 .then( () => {
                     Logger.debug(`Load test asset complete`);
                 })
                 .catch (e => {
-                    Logger.error(`MakeConnection exception: ${ExtractStringError(e)}`);
+                    const errMsg = `MakeConnection exception: ${ExtractStringError(e)}`;
+                    Logger.error(errMsg);
                 });
             }
             else {
-                Logger.error(`OpenSession did not have a test URL: ${JSONstringify(pProps.request.IProps)}`);
+                const errMsg = `OpenSession did not have a test URL: ${JSONstringify(pProps.request.IProps)}`;
+                Logger.error(errMsg);
+                pProps.response.Exception = errMsg;
+                pProps.connection.Send(pProps.response);
             };
         });
     })

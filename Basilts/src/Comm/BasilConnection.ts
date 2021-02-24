@@ -230,96 +230,88 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
         // No response code, must be an incoming request
         switch (pMsg.Op) {
             case BMessageOps.CreateItemReq: {
-                const msg: BMessage = { 'Op': BMessageOps.CreateItemResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.CreateItemResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('CreateItem'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.DeleteItemReq: {
-                const msg: BMessage = { 'Op': BMessageOps.DeleteItemResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.DeleteItemResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('DeleteItem'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.AddAbilityReq: {
-                const msg: BMessage = { 'Op': BMessageOps.AddAbilityResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.AddAbilityResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('AddAbility'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.RemoveAbilityReq: {
-                const msg: BMessage = { 'Op': BMessageOps.RemoveAbilityResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.RemoveAbilityResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('RemoveAbility'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.RequestPropertiesReq: {
-                const msg: BMessage = { 'Op': BMessageOps.RequestPropertiesResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.RequestPropertiesResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('RequestProperties'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.UpdatePropertiesReq: {
-                const msg: BMessage = { 'Op': BMessageOps.UpdatePropertiesResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.UpdatePropertiesResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('UpdateProperties'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.OpenSessionReq: {
-                const msg: BMessage = { 'Op': BMessageOps.OpenSessionResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.OpenSessionResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('OpenSession'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 break;
             }
             case BMessageOps.CloseSessionReq: {
-                const msg: BMessage = { 'Op': BMessageOps.CloseSessionResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.CloseSessionResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('CloseSession'), {
                     request: pMsg,
                     response: msg,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
                 pContext.setShutdown();
                 break;
             }
             case BMessageOps.AliveCheckReq: {
-                const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.AliveCheckResp);
                 msg.IProps = CreatePropertyList( {
                     'time': Date.now(),
                     'sequenceNum': pContext._aliveSequenceNumber++,
@@ -330,7 +322,7 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
                 break;
             }
             case BMessageOps.MakeConnectionReq: {
-                const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.MakeConnectionResp);
                 // I've been asked to make a connection somewhere
                 const params: MakeConnectionParams = {
                     'transport':    pMsg.IProps['Transport'] ?? 'WS',
@@ -368,7 +360,7 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
                 break;
             }
             case BMessageOps.AliveCheckReq: {
-                const msg: BMessage = { 'Op': BMessageOps.AliveCheckResp};
+                const msg: BMessage = MakeResponse(pMsg, BMessageOps.AliveCheckResp);
                 msg.IProps = CreatePropertyList( {
                     'time': Date.now(),
                     'sequenceNum': pContext._aliveSequenceNumber++,
@@ -391,6 +383,15 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
     };
 };
 
+// Add the proper thing to a response to make it a response
+function MakeResponse(pMsg: BMessage, pOp: number): BMessage {
+    const resp: BMessage = { 'Op': pOp };
+    if (pMsg.SCode) {
+        resp.RCode = pMsg.SCode;
+    }
+    return resp;
+};
+
 function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
     const list: BKeyedCollection = {};
     Object.keys(pProps).forEach(prop => {
@@ -410,7 +411,7 @@ function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
 function SendAndPromiseResponse(pMsg: BMessage, pContext: BasilConnection): Promise<BMessage> {
     Logger.debug('BasilConnection.SendAndPromiseResponse: entry');
     const responseSession = RandomIdentifier();
-    pMsg.RCode = responseSession;
+    pMsg.SCode = responseSession;
     if (Config.Debug && Config.Debug.RPCSent) {
         Logger.debug('BasilConnection.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
     }

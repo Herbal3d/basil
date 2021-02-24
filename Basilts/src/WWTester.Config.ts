@@ -55,13 +55,13 @@ export const Config = {
         'LogToDebugInstance': false, // Log to the remote debug instance
         'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
-        'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
+        'PrintDebugOnAliveResponse': false  // print message on AliveCheck response
     },
     // Various flags that turn on/off debug logging, etc
     'Debug': {
         'EnableLogging': true,          // whether to output any logging
         'DebugLogToConsole': true,      // output debug message to console rather than debug window
-        'LogLevel': 'info',             // output log level (error, warn, info, debug)
+        'LogLevel': 'debug',            // output log level (error, warn, info, debug)
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance,
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true             // print RPC response message

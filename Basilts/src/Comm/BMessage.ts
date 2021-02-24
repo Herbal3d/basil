@@ -96,7 +96,8 @@ export interface PositionBlock {
 };
 
 export interface BMessage {
-    RCode?: string;         // unique code returned in response for RPC'ish calls
+    SCode?: string;         // unique code sent with message expecting response
+    RCode?: string;         // return of the unique code in the response
     ResponseKey?: string;
     StreamId?: number;
     ProtocolVersion?: number

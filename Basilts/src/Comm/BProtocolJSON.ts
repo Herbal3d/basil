@@ -14,7 +14,7 @@ import { BMessage } from '@Comm/BMessage';
 import { BProtocol } from '@Comm/BProtocol';
 import { BTransport } from '@Comm/BTransport';
 
-import { CombineParameters, CreateUniqueId, JSONstringify } from "@Tools/Utilities";
+import { CombineParameters, CreateUniqueId, ExtractStringError, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
@@ -24,6 +24,7 @@ export class BProtocolJSON extends BProtocol {
 
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
         super(pXPort, CreateUniqueId('BProtocolJSON'), 'org.herbal3d.b.protocol.fb');
+        Logger.debug(`BProtocolJSON: setting up JSON protocol`);
         this._params = CombineParameters(undefined, pParams, {
         });
     };
@@ -39,7 +40,8 @@ export class BProtocolJSON extends BProtocol {
     };
     Send(pData: BMessage): boolean {
         if (this._xport) {
-            this._xport.Send(this._encoder.encode(JSONstringify(pData)));
+            // this._xport.Send(this._encoder.encode(JSONstringify(pData)));
+            this._xport.Send(JSONstringify(pData));
             return true;
         };
         return false;
@@ -54,17 +56,24 @@ export class BProtocolJSON extends BProtocol {
 
 // Process the incoming message
 const _decoder = new TextDecoder();
-function Processor(pMsg: Uint8Array, pContext: BProtocolJSON, pXPort: BTransport) {
-    // Unpack the message into a BMessage
-    try {
-        const parsedMessage = JSON.parse(_decoder.decode(pMsg));
-        if (pContext._receiveCallback) {
-            void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
+function Processor(pMsg: Uint8Array, pContext: BProtocolJSON, pXPort: BTransport): void {
+    // Unpack the message into a BMessage and call the message processor
+    if (pContext._receiveCallback) {
+        try {
+            // const parsedMessage = JSON.parse(_decoder.decode(pMsg));
+            if (typeof(pMsg) === 'string') {
+                const parsedMessage = JSON.parse(pMsg);
+                void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
+            }
+            else {
+                const parsedMessage = JSON.parse(_decoder.decode(pMsg));
+                void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
+            };
+        }
+        catch ( err ) {
+            const serror = ExtractStringError(err);        // Kludge for eslint
+            const errMsg = `BProtocolJSON: error parsing JSON message: ${serror}`;
+            Logger.error(errMsg);
         };
-    }
-    catch ( err ) {
-        const serror = <SyntaxError>err;        // Kludge for eslint
-        const errMsg = `BProtocolJSON: error parsing JSON message: ${serror.message}`;
-        Logger.error(errMsg);
     };
 };

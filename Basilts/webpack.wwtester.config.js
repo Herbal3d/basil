@@ -38,13 +38,12 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/
       },
-        {
-            // move image files to the dist directory
-            //    ref: https://webpack.js.org/loaders/file-loader/
-            test: /\.(png|svg|jpg|gif)$/,
-            use: [ 'file-loader' ]
-        }
-
+      {
+          // move image files to the dist directory
+          //    ref: https://webpack.js.org/loaders/file-loader/
+          test: /\.(png|svg|jpg|gif)$/,
+          use: [ 'file-loader' ]
+      }
     ]
   }
 

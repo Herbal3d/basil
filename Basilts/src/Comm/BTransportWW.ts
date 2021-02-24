@@ -10,10 +10,10 @@
 // limitations under the License.
 'use strict';
 
-import { BTransport, BTransportReceptionCallback } from '@Comm/BTransport';
+import { BTransport, BTransportMsg } from '@Comm/BTransport';
 import { MessagesReceivedProp, MessagesSentProp } from '@Abilities/AbilityMsgStats';
 
-import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
+import { CombineParameters, CreateUniqueId, ExtractStringError } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
@@ -23,6 +23,7 @@ export class BTransportWW extends BTransport {
 
     constructor(pParams: BKeyedCollection) {
         super(CreateUniqueId('BTransportWW'), 'org.herbal3d.b.transport.ww');
+        Logger.debug(`BTransportWW: setting up WebWorker transport`);
         this._params = CombineParameters(undefined, pParams, {
             'transportURL': undefined   // name of Worker to connect to
         });
@@ -38,26 +39,31 @@ export class BTransportWW extends BTransport {
             // this.params.transporturl is WebWorker URL to connect to
             try {
                 this._worker = new Worker(this._params.transporturl);
-                this._isWorker = false;
-                const _this = this;
-                this._worker.onmessage = (evnt: MessageEvent) => {
-                    _this._messages.push(evnt.data);
-                    _this.incrementProp(MessagesReceivedProp);
-                    _this.PushReception();
-                };
-                this._worker.onerror = (err: ErrorEvent) => {
-                    Logger.error(`BTransportWW: worker error: reason: ${err.message}`);
-                    _this.Close();
-                };
-                this.setReady();
-                return this;
+                if (this._worker) {
+                    this._isWorker = false;
+                    const _this = this;
+                    this._worker.onmessage = (evnt: MessageEvent) => {
+                        _this._messages.push(evnt.data);
+                        _this.incrementProp(MessagesReceivedProp);
+                        _this.PushReception();
+                    };
+                    this._worker.onerror = (err: ErrorEvent) => {
+                        Logger.error(`BTransportWW: worker error: reason: ${err.message}`);
+                        _this.Close();
+                    };
+                    this.setReady();
+                    return this;
+                }
+                else {
+                    throw `BTransportWW: unable to open WebWorker at ${this._params.transporturl}`;
+                }
             }
             catch(e) {
-                const ee = <Error>e;
-                const emsg = `BTransportWW: exception initializing worker: ${ee.message}`;
+                const ee = ExtractStringError(e);
+                const emsg = `BTransportWW: exception initializing worker: ${ee}`;
                 Logger.error(emsg);
                 throw emsg;
-            }
+            };
         }
         else {
             // We're the worker
@@ -81,12 +87,12 @@ export class BTransportWW extends BTransport {
         };
     };
 
-    Send(pData: Uint8Array): boolean {
+    Send(pData: BTransportMsg): boolean {
         if (this._worker) {
             this._worker.postMessage(pData);
         }
         else {
-            postMessage(pData, '*');
+            (self as unknown as Worker).postMessage(pData);
         };
         this.incrementProp(MessagesSentProp);
         return true;

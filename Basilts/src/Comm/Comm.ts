@@ -20,7 +20,7 @@ import { BProtocolJSON } from '@Comm/BProtocolJSON';
 import { BProtocolFB } from '@Comm/BProtocolFB';
 import { BProtocolPB } from '@Comm/BProtocolPB';
 
-import { CombineParameters, JSONstringify } from "@Tools/Utilities";
+import { CombineParameters, ExtractStringError, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
 
@@ -45,10 +45,16 @@ export const Comm = {
             'serviceauth': undefined,   // authentication for sent messages
             'openParams': undefined     // parameters to send on the open connection message
         });
-        const xport = await Comm.TransportFactory(params);
-        const proto = await Comm.ProtocolFactory(params, xport);
-        const conn = await Comm.BasilConnectionFactory(params, proto);
-        return conn;
+        try {
+            const xport = await Comm.TransportFactory(params);
+            const proto = await Comm.ProtocolFactory(params, xport);
+            const conn = await Comm.BasilConnectionFactory(params, proto);
+            return conn;
+        }
+        catch (e) {
+            const ee = ExtractStringError(e);
+            throw ee;
+        };
     },
 
     async TransportFactory(pParams: BKeyedCollection): Promise<BTransport> {
