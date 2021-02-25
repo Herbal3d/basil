@@ -4,6 +4,9 @@
 
 'use strict';
 
+import { VERSION } from '@Base/VERSION';
+import { BKeyedCollection } from '@Tools/bTypes';
+
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
 //     supplied configuration file contents.
@@ -14,7 +17,12 @@ export const Config = {
         //      Comma separated list of section names
         'KnownConfigurationSections': 'OpenSimulator',
         // ms before removing deleted BItem
-        'BItemDeleteInterval': 60000
+        'BItemDeleteInterval': 60000,
+        'Version': {
+            'npm-package-version': '0.0.1',
+            'git-commit': 'xxxxxxxx',
+            'version-tag': '0.0.1-19520712-xxxxxxxx'
+        }
      },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
@@ -238,4 +246,14 @@ export const Config = {
             'Description': 'PalmyraTemple (unoptimized)'
         }
     ]
+};
+
+// Do any initialization for the configuration file.
+export function initConfig() {
+    // Copy the version information into Config for easy reference.
+    const ver: BKeyedCollection = {};
+    for (const key of Object.keys(VERSION)) {
+        ver[key] = (VERSION as BKeyedCollection)[key];
+    };
+    Config.basil.Version = ver;
 };

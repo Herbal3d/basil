@@ -1,5 +1,7 @@
 /*
-    copyStatic.js
+    Modified version of copyStatic.js from the Vircadia project.
+
+    Original Copyright:
 
     Created by Kalila L. on Dec 20 2020.
     Copyright 2020 Vircadia contributors.
@@ -8,14 +10,14 @@
     See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 */
 
-const fse = require('fs-extra');
+const fs = require('fs');
 
 const srcDir = `./src/static`;
 const destDir = `./dist/static`;
 
 try {
-    fse.mkdirSync(destDir);
-    fse.copySync(srcDir, destDir, { overwrite: true });
+    fs.mkdirSync(destDir);
+    fs.copySync(srcDir, destDir, { overwrite: true });
     console.log(`Successfully copied ${srcDir} to ${destDir}!`);
 }
 catch (err) {

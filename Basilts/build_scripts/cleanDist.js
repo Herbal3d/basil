@@ -1,5 +1,7 @@
 /*
-    cleanDist.js
+    Modified version of cleanDist.js from the Vircadia project.
+
+    Original Copyright:
 
     Created by Kalila L. on Dec 20 2020.
     Copyright 2020 Vircadia contributors.
@@ -8,10 +10,11 @@
     See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 */
 
-const fs = require('fs').promises;
+const fs = require('fs');
 
 const directory = './dist';
 
-fs.rmdir(directory, { recursive: true, force: true })
-.then(() => console.log('Dist folder cleared!'));
+fs.rmdirSync(directory, { recursive: true, force: true });
+
+console.log('Dist folder cleared!');
   

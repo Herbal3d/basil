@@ -1,5 +1,7 @@
 /*
-    createVersion.js
+    Modified version of createVersion.js from the Vircadia project.
+
+    Original Copyright:
 
     Created by Kalila L. on Dec 20 2020.
     Copyright 2020 Vircadia contributors.
@@ -8,34 +10,35 @@
     See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 */
 
-const fse = require('fs-extra');
+const fs = require('fs');
 
-var gitVer = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
-var gitVerFull = require('child_process').execSync('git rev-parse HEAD').toString().trim();
-var packageVersion = process.env.npm_package_version;
-const filePath = './dist/VERSION.json';
+const gitVer = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
+const gitVerFull = require('child_process').execSync('git rev-parse HEAD').toString().trim();
+const packageVersion = process.env.npm_package_version;
+const filePath = './src/VERSION.ts';
 
 console.log('Found package version', packageVersion);
 console.log('Found Git commit short hash', gitVer);
 console.log('Found Git commit long hash', gitVerFull);
 
 function yyyymmdd() {
-    var x = new Date();
-    var y = x.getFullYear().toString();
-    var m = (x.getMonth() + 1).toString();
-    var d = x.getDate().toString();
-    (d.length == 1) && (d = '0' + d);
-    (m.length == 1) && (m = '0' + m);
-    var yyyymmdd = y + m + d;
+    const x = new Date();
+    const y = x.getFullYear().toString();
+    let m = (x.getMonth() + 1).toString();
+    let d = x.getDate().toString();
+    if (d.length === 1) d = '0' + d;
+    if (m.length === 1) m = '0' + m;
+    const yyyymmdd = y + m + d;
     return yyyymmdd;
+};
+
+const dateString = yyyymmdd();
+
+const tsToWrite = `export const VERSION = {
+    "npm-package-version": "${packageVersion}",
+    "git-commit": "${gitVerFull}",
+    "version-tag": "${packageVersion}-${dateString}-${gitVer}"
 }
+`;
 
-var jsonToWrite = {
-    "npm-package-version": packageVersion,
-    "git-commit": gitVerFull,
-    "version-tag": packageVersion + "-" + yyyymmdd() + "-" + gitVer
-}
-
-jsonToWrite = JSON.stringify(jsonToWrite);
-
-var attemptFileWrite = fse.outputFileSync(filePath, jsonToWrite);
+const attemptFileWrite = fs.writeFileSync(filePath, tsToWrite);
