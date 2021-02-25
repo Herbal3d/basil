@@ -22,6 +22,7 @@ module.exports = {
         '@Comm': path.resolve(__dirname, 'src/Comm'),
         '@Entry': path.resolve(__dirname, 'src/Entry'),
         '@Eventing': path.resolve(__dirname, 'src/Eventing'),
+        '@Graphics': path.resolve(__dirname, 'src/Graphics'),
         '@Tools': path.resolve(__dirname, 'src/Tools')
     },
     extensions: [ '.ts', '.js', '.jsx', '.json' ]

@@ -16,6 +16,7 @@
             "@Comm/*": ["./src/Comm/*"],
             "@Entry/*": ["./src/Entry/*"],
             "@Eventing/*": ["./src/Eventing/*"],
+            "@Graphics/*": ["./src/Graphics/*"],
             "@Tools/*": ["./src/Tools/*"],
             "*": [ "node_modules/*" ]
         }

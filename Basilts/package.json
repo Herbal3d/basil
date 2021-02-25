@@ -22,6 +22,7 @@
         "@Comm": "dist/Comm",
         "@Entry": "dist/Entry",
         "@Eventing": "dist/Eventing",
+        "@Graphics": "dist/Graphics",
         "@Tools": "dist/Tools"
     },
     "scripts": {

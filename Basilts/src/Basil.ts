@@ -13,13 +13,15 @@
 
 // Global debugging parameters and variables. "GP.variable"
 import { GP } from '@Base/Globals';
-import { Config, initConfig } from '@Base/Config';
+import { Config } from '@Base/Config';
+import { VERSION } from '@Base/VERSION';
 
 GP.Config = Config;
 
 import { Comm } from '@Comm/Comm';
 import { OpenSessionReqProps } from '@Comm/BMessage';
 import { Eventing } from '@Eventing/Eventing';
+import { Graphics } from '@Graphics/Graphics';
 
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
@@ -31,7 +33,6 @@ import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { initLogging, Logger } from '@Tools/Logging';
 
-initConfig();
 // Setup logging so progress and errors will be seen
 initLogging();
 Eventing.init();
@@ -103,7 +104,7 @@ const canvas = document.getElementById(Config.page.webGLcanvasId);
 
 GP.Ready = true;
 
-Logger.info(`Starting Basil version ${Config.basil.Version['version-tag']}`);
+Logger.info(`Starting Basil version ${VERSION['version-tag']}`);
 
 // If there are connection parameters, start the first connection
 if (Config.initialMakeConnection) {
@@ -112,7 +113,7 @@ if (Config.initialMakeConnection) {
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
             const sessionParams: OpenSessionReqProps = {
-                BasilVersion: "I don't know"
+                BasilVersion: VERSION['version-tag']
             };
             if (Config.initialMakeConnection.OpenParams) {
                 sessionParams.TestAssetURL = Config.initialMakeConnection.OpenParams.AssetURL;
@@ -120,7 +121,7 @@ if (Config.initialMakeConnection) {
             }
             conn.CreateSession(sessionParams) 
             .then ( conn2 => {
-                // Graphics.connect(conn2);
+                void Graphics.connectGraphics(conn2);
                 Logger.debug(`Basiljs: session is opened`);
             })
             .catch( e => {
