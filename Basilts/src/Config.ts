@@ -137,15 +137,15 @@ export const Config = {
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
         'initialMakeConnection': {
-            'transport': 'WW',
-            'transportURL': './wwtester.js',
-            'protocol': 'Basil-JSON',
-            'service': 'SpaceServerClient',
-            'TestAsset': {
-                // 'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-                'loaderType': 'GLTF',
-                'displayType': 'meshset'
+            'Transport': 'WW',
+            'TransportURL': './wwtester.js',
+            'Protocol': 'Basil-JSON',
+            'Service': 'SpaceServer',
+            'ServiceAuth': '',
+            'OpenParams': {
+                // 'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                'LoaderType': 'GLTF'
             }
         }
     },

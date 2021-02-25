@@ -59,8 +59,8 @@ if (IsNullOrEmpty(configParams)) {
                 'Service': 'SpaceServer',
                 'ClientAuth': undefined,
                 'OpenParams': {
-                    'testAssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
-                    'loaderType': 'GLTF'
+                    'AssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
+                    'LoaderType': 'GLTF'
                 }
             }
         };

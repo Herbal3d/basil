@@ -61,7 +61,7 @@ export interface OpenSessionReqProps {
     TestAssetLoader?: string;   // loader to use for test asset
 };
 export interface OpenSessionRespProps {
-    ServerVersion: string;  // server version string
+    ServerVersion?: string;  // server version string
     ServerAuth:string;      // token to use talking to this server
 };
 
@@ -108,10 +108,10 @@ export interface BMessage {
     TransportClass?: number;
 
     Op: number;
-    Auth?: string;
     IId?: string;        // BItem id being referenced
+    IProps: { [ key: string ]: string };   // Properties to apply
+    Auth?: string;
     IAuth?: string;      // Any authentication necessary for access BItem
-    IProps?: { [ key: string ]: string };   // Properties to apply
 
     Pos?: PositionBlock[];  // If a multi-position update, new positions for items
 

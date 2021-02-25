@@ -16,11 +16,13 @@ import { GP } from '@Base/Globals';
 import { Config } from '@Base/WWTester.Config.ts';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
-import { BasilConnection, ServiceSpaceServer, BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
+import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
+import { AuthToken } from '@Tools/Auth';
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from './Tools/bTypes';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
+import { tokenize } from 'protobufjs';
 
 GP.Ready = false;
 
@@ -74,6 +76,10 @@ try {
                 const assetURL = pProps.request.IProps['TestAssetURL'];
                 const assetLoader = pProps.request.IProps['TestAssetLoader'];
                 Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
+
+                const serverAuth = new AuthToken();
+                pProps.connection.IncomingAuth = serverAuth;
+                pProps.response.IProps['ServerAuth'] = serverAuth.token;
 
                 pProps.connection.Send(pProps.response);
 
