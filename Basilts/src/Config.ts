@@ -4,9 +4,6 @@
 
 'use strict';
 
-import { VERSION } from '@Base/VERSION';
-import { BKeyedCollection } from '@Tools/bTypes';
-
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
 //     supplied configuration file contents.
@@ -157,88 +154,19 @@ export const Config = {
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true             // print RPC response message
-    },
-    // Used by Entry.js/Entry.html to specify BasilTest URLs
-    'BasilTestURLs': [
-        {   'URL': 'ws://127.0.0.1:14690',
-            'Description': 'LocalHost',
-            'Selected': true
-        },
-        {   'URL': 'ws://regions.herbal3d.org:14690',
-            'Description': 'Region test service (region.herbal3d.org:14690)',
-        },
-        {   'URL': 'ws://basiltest.herbal3d.org:14690',
-            'Description': 'Official test service (basiltest.herbal3d.org:14690)',
-        }
-    ],
-    // Used by Entry.js/Entry.html to select grid.
-    // Specifies a grid name and the 'get_grid_info' URL for that grid.
-    'Grids': [
-        {
-            'Name': 'localhost',
-            'GridInfo': 'http://127.0.0.1:9000/get_grid_info',
-            'LoginURL': 'http://127.0.0.1:9000/',
-            'Selected': true
-        },
-        {
-            'Name': 'OSGrid.org',
-            'GridInfo': 'http://login.osgrid.org/get_grid_info',
-            'LoginURL': 'http://login.osgrid.org/'
-        },
-        {
-            'Name': 'OurGrid.life',
-            'GridInfo': 'http://ourgrid.life/get_grid_info',
-            'LoginURL': 'http://ourgrid.life:80/'
-        },
-        {
-            'Name': 'localTestGrid',
-            'GridInfo': 'http://192.168.86.56:9000/get_grid_info',
-            'LoginURL': 'http://192.168.86.56:9000/'
-        },
-        {
-            'Name': 'Herbal3dTestRegion',
-            'GridInfo': 'http://region.herbal3d.org:9000/get_grid_info',
-            'LoginURL': 'http://region.herbal3d.org:9000/'
-        }
-    ],
-    // Used by Entry.js/Entry.html to select test files to load.
-    'TestGLTFFiles': [
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
-            'Description': 'Epic Castle (mergedmaterials)',
-            'Selected': true
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-            'Description': 'Epic Castle (smallassets)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/unoptimized/epiccastle.gltf',
-            'Description': 'Epic Castle (unoptimized)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/mergedmaterials/alfea3.gltf',
-            'Description': 'Alfea3 (mergedmaterials)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/alfea3/smallassets/alfea3.gltf',
-            'Description': 'Alfea3 (smallassets)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/art_city_2025/mergedmaterials/art_city_2025.gltf',
-            'Description': 'art_city_2025 (mergedmaterials)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/art_city_2025/smallassets/art_city_2025.gltf',
-            'Description': 'art_city_2025 (smallassets)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-            'Description': 'Testtest88 (unoptimized)'
-        },
-        {
-            'URL': 'https://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
-            'Description': 'PalmyraTemple (unoptimized)'
-        }
-    ]
+    }
+};
+
+// When Basil is started, it is passed configuration parameters
+// This is the format of Config.initialMakeConnection
+export interface EntryConfigParameters {
+    'Transport': string,
+    'TransportURL': string,
+    'Protocol': string,
+    'Service': string,
+    'ServiceAuth': string,
+    'OpenParams': {
+        'AssetURL': string,
+        'LoaderType': string
+    }
 };

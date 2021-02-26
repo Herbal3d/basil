@@ -17,21 +17,26 @@ import { ClickOpLoginOpenSim } from '@Entry/LoginOpenSim';
 
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Base/Tools/bTypes.js';
-import { Logger } from '@Tools/Logging';
+import { Logger, initLogging } from '@Tools/Logging';
 
 import { Base64 } from 'js-base64';
 
 // Force the processing of the css format file
-import './Entry.less';
+import '@Entry/Entry.less';
 
 type ClickOperation = ( pTarget: EventTarget ) => void;
 const ClickableOps: { [key: string]: ClickOperation } = {};
 
+initLogging();
+
 // Make all 'class=clickable' page items create events
 for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
+    Logger.debug(`Adding clickable event listener`);
     nn.addEventListener('click', (evnt: Event) => {
         const buttonOp = (evnt.target as HTMLElement).getAttribute('op');
+        Logger.debug(`Click: ${buttonOp}`);
         if (buttonOp && typeof(ClickableOps[buttonOp]) === 'function') {
+            Logger.debug(`Click: calling listener for ${buttonOp}`);
             ClickableOps[buttonOp](evnt.target);
         };
     });
@@ -39,17 +44,17 @@ for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
 
 LoadGridSelection();
 LoadTestURLs();
-LoadBasilTestURLs();
+// LoadBasilTestURLs();
 
-ClickableOps['testBasil'] = function() {
-    const basilTestURL = GetSelectedValue('test-basilURL');
+ClickableOps['testScene'] = function() {
+    const basilTestURL = GetSelectedValue('test-sceneURL');
     const testConfigParams = {
         'Init': {
             'Transport': 'WW',
-            'TransportURL': './WWTester.js',
+            'TransportURL': './wwtester.js',
             'Protocol': 'Basil-JSON',
             'Service': 'SpaceServer',
-            'ClientAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
+            'ServiceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
             'OpenParams': {
                 'AssetURL': basilTestURL,
                 'LoaderType': 'GLTF',
@@ -63,9 +68,6 @@ ClickableOps['testBasil'] = function() {
     window.location.assign('Basil.html?c=' + configParams);
 };
 
-const SentLoginMessage = false;
-const SuccessfulLogin = false;
-const FailedLogin = false;
 ClickableOps['gridLogin'] = ClickOpLoginOpenSim;
 
 // Load the grid name selection box with the names from the configuration file.
@@ -73,58 +75,73 @@ ClickableOps['gridLogin'] = ClickOpLoginOpenSim;
 function LoadGridSelection() {
     if (Config.Grids) {
         const selectNode = document.getElementById('gridLogin-gridName');
-        for (const grid of Config.Grids) {
-            const opt = document.createElement('option');
-            opt.setAttribute('value', grid.LoginURL);
-            opt.appendChild(document.createTextNode(grid.Name));
-            if (grid.Selected) {
-                opt.setAttribute('selected', '');
-                // Put the value of the selected item into the URL text field
-                const textField = document.getElementById('gridLogin-gridURL');
-                textField.setAttribute('value', grid.LoginURL);
-            }
-            selectNode.appendChild(opt);
+        if (selectNode) {
+            for (const grid of Config.Grids) {
+                const opt = document.createElement('option');
+                opt.setAttribute('value', grid.LoginURL);
+                opt.appendChild(document.createTextNode(grid.Name));
+                if (grid.Selected) {
+                    opt.setAttribute('selected', '');
+                    // Put the value of the selected item into the URL text field
+                    const textField = document.getElementById('gridLogin-gridURL');
+                    textField.setAttribute('value', grid.LoginURL);
+                };
+                selectNode.appendChild(opt);
+            };
+            selectNode.addEventListener('change', GridSelectionChanged);
+        }
+        else {
+            Logger.error(`LoadTestURLs: could not find element id "gridLogin-gridName"`);
         };
-        selectNode.addEventListener('change', GridSelectionChanged);
-    }
-}
+    };
+};
 
 // The grid name field was changed. Update the login URL.
 function GridSelectionChanged(evt: Event): void {
     const selectedGridURL = GetSelectedValue('gridLogin-gridName');
     const gridURLNode = document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement;
     gridURLNode.value = selectedGridURL;
-}
+};
 
 // Load the test URLs from Config.TestGLTFFiles
 function LoadTestURLs(): void {
     if (Config.TestGLTFFiles) {
-        const selectNode = document.getElementById('test-sceneURL');
-        for (const testURL of Config.TestGLTFFiles) {
-            const opt = document.createElement('option');
-            opt.setAttribute('value', testURL.URL);
-            opt.appendChild(document.createTextNode(testURL.Description));
-            selectNode.appendChild(opt);
-            if (testURL.Selected) {
-                opt.setAttribute('selected', '');
-            }
-            selectNode.appendChild(opt);
+        const selectNode = document.getElementById('test-sceneURL') as HTMLSelectElement;
+        if (selectNode) {
+            for (const testURL of Config.TestGLTFFiles) {
+                const opt = document.createElement('option');
+                opt.setAttribute('value', testURL.URL);
+                opt.appendChild(document.createTextNode(testURL.Description));
+                selectNode.appendChild(opt);
+                if (testURL.Selected) {
+                    opt.setAttribute('selected', '');
+                };
+                selectNode.appendChild(opt);
+            };
+        }
+        else {
+            Logger.error(`LoadTestURLs: could not find element id "test-sceneURL"`);
         };
-    }
+    };
 };
 // Load the possible BasilTest URLs
 function LoadBasilTestURLs(): void {
     if (Config.BasilTestURLs) {
         const selectNode = document.getElementById('test-basilURL') as HTMLSelectElement;
-        for (const testURL of Config.BasilTestURLs) {
-            const opt = document.createElement('option');
-            opt.setAttribute('value', testURL.URL);
-            opt.appendChild(document.createTextNode(testURL.Description));
-            selectNode.appendChild(opt);
-            if (testURL.Selected) {
-                opt.setAttribute('selected', '');
-            }
-            selectNode.appendChild(opt);
+        if (selectNode) {
+            for (const testURL of Config.BasilTestURLs) {
+                const opt = document.createElement('option');
+                opt.setAttribute('value', testURL.URL);
+                opt.appendChild(document.createTextNode(testURL.Description));
+                selectNode.appendChild(opt);
+                if (testURL.Selected) {
+                    opt.setAttribute('selected', '');
+                }
+                selectNode.appendChild(opt);
+            };
+        }
+        else {
+            Logger.error(`LoadBasilTestURLs: could not find element id "test-basilURL"`);
         };
     };
 };
@@ -132,8 +149,14 @@ function LoadBasilTestURLs(): void {
 // ======================================================
 // Given the ID name of an index HTML element, return the currently selected value
 function GetSelectedValue(optionID: string): string {
+    let selectionValue = 'UNKNOWN';
     const selection = document.getElementById(optionID) as HTMLSelectElement;
-    const selectionValue = selection.options[selection.selectedIndex].value;
+    if (selection) {
+        selectionValue = selection.options[selection.selectedIndex].value;
+    }
+    else {
+        Logger.error(`GetSelectedValue: could not find element id ${optionID}`);
+    }
     return selectionValue;
 }
 

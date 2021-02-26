@@ -20,9 +20,9 @@ import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
 import { BKeyedCollection } from '@Tools/bTypes';
 
-let SentLoginMessage = false;
-let SuccessfulLogin = false;
-let FailedLogin = false;
+export let SentLoginMessage = false;
+export let SuccessfulLogin = false;
+export let FailedLogin = false;
 export const ClickOpLoginOpenSim = function() {
     Logger.info('Login button pressed');
     SentLoginMessage = false;

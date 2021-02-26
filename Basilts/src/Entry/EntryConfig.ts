@@ -4,6 +4,11 @@
 'use strict';
 
 export const Config = {
+    'page': {
+        'showDebug': true,
+        'debugElementId': '#DEBUG'
+
+    },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
         'transport': 'WW',
@@ -27,7 +32,7 @@ export const Config = {
     // Various flags that turn on/off debug logging, etc
     'Debug': {
         'EnableLogging': true,                // whether to output any logging
-        'LogLevel': 'info',                   // output log level (error, warn, info, debug)
+        'LogLevel': 'debug',                  // output log level (error, warn, info, debug)
         'SendAndPromisePrintMsg': false,        // optionally print response message
         'DebugLogToConsole': false,           // output debug message to console rather than debug window
         'DebugLogInstanceName': 'bitem.debug.b.basil.org' // Name of debug logging instance
@@ -80,7 +85,6 @@ export const Config = {
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/mergedmaterials/epiccastle.gltf',
             'Description': 'Epic Castle (mergedmaterials)',
-            'Selected': true
         },
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
@@ -108,7 +112,8 @@ export const Config = {
         },
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-            'Description': 'Testtest88 (unoptimized)'
+            'Description': 'Testtest88 (unoptimized)',
+            'Selected': true
         },
         {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
