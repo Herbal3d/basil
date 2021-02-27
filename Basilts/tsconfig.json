@@ -17,6 +17,7 @@
             "@Entry/*": ["./src/Entry/*"],
             "@Eventing/*": ["./src/Eventing/*"],
             "@Graphics/*": ["./src/Graphics/*"],
+            "@jslibs/*": ["./src/jslibs/*"],
             "@Tools/*": ["./src/Tools/*"],
             "*": [ "node_modules/*" ]
         }

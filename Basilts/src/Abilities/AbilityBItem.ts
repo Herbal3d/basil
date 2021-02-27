@@ -12,14 +12,15 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
+import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { CreateUniqueId } from '@Base/Tools/Utilities';
 import { BItem } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
 
 export const IdProp: string = 'bitem.id';
-export const LayerProp: string = 'bitem.layer';
-export const StateProp: string = 'bitem.state';
+export const LayerProp: string = 'Layer';
+export const StateProp: string = 'State';
 export const AuthTokenProp: string = 'bitem.authToken';
 
 export enum BItemState {
@@ -30,12 +31,18 @@ export enum BItemState {
     SHUTDOWN
 };
 
+export const BItemAbilityName = "BItem";
+
+export function AbilityBItemFromProps(pProps: BKeyedCollection): AbilityBItem {
+    return new AbilityBItem( pProps[IdProp], pProps[AuthTokenProp], pProps[LayerProp]);
+};
+
 export class AbilityBItem extends Ability {
     _id: string;
     _auth: AuthToken;
     _layer: string;
     constructor(pId: string, pAuth: AuthToken, pLayer: string) {
-        super('AbilityBItem');
+        super(BItemAbilityName);
         this._id = pId;
         this._auth = pAuth;
         this._layer = pLayer;

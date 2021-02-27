@@ -1,0 +1,40 @@
+// Copyright 2021 Robert Adams
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+'use strict';
+
+import { Ability } from '@Abilities/Ability';
+
+import { BKeyedCollection } from '@Tools/bTypes';
+
+import { Logger } from '@Tools/Logging';
+
+// Function defined by each ability to create the Ability from a property set
+export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
+
+const _registeredAbilities: Map<string, AbilityFromProps> = new Map<string, AbilityFromProps>()
+
+export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromProps): void {
+    if (_registeredAbilities.has(pAbilityName)) {
+        Logger.error(`AbilityManagement: attempt to re-register ability ${pAbilityName}`);
+    }
+    else {
+        _registeredAbilities.set(pAbilityName, pFromProps);
+    };
+};
+
+export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability {
+    if (_registeredAbilities.has(pName)) {
+        const getFrom: AbilityFromProps = _registeredAbilities.get(pName);
+        return getFrom(pProps);
+    };
+    return null;
+};

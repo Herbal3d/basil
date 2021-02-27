@@ -23,6 +23,7 @@
         "@Entry": "dist/Entry",
         "@Eventing": "dist/Eventing",
         "@Graphics": "dist/Graphics",
+        "@jslibs": "dist/jslibs",
         "@Tools": "dist/Tools"
     },
     "scripts": {

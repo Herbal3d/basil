@@ -36,6 +36,7 @@ module.exports = {
         '@Entry': path.resolve(__dirname, 'src/Entry'),
         '@Eventing': path.resolve(__dirname, 'src/Eventing'),
         '@Graphics': path.resolve(__dirname, 'src/Graphics'),
+        '@jslibs': path.resolve(__dirname, 'src/jslibs'),
         '@Tools': path.resolve(__dirname, 'src/Tools')
     },
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
@@ -70,11 +71,11 @@ module.exports = {
       chunkFilename: "[id].css"
     }),
     //     ref: https://webpack.js.org/plugins/copy-webpack-plugin/
-    new CopyWebpackPlugin([
-      {
-        from: 'src/jslibs/three.min.js'
-      }
-    ])
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: 'src/jslibs/three.min.js'
+    //   }
+    // ])
   ],
   module: {
     rules: [

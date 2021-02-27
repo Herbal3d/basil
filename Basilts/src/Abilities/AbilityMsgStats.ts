@@ -13,6 +13,7 @@
 
 import { Ability } from '@Abilities/Ability';
 import { BItem } from '@BItem/BItem';
+import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 export const MessagesReceivedProp: string = 'messagesReceived';
 export const MessagesSentProp: string = 'messagesSent';
@@ -25,9 +26,15 @@ export enum BItemState {
     SHUTDOWN
 };
 
+export const MsgStatsAbilityName = "MsgStats";
+
+export function AbilityMsgStatsFromProps(pProps: BKeyedCollection): AbilityMsgStats {
+    return new AbilityMsgStats();
+};
+
 export class AbilityMsgStats extends Ability {
     constructor() {
-        super('AbilityMsgStats');
+        super(MsgStatsAbilityName);
     };
 
     addProperties(pBItem: BItem): void {
