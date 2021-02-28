@@ -47,11 +47,10 @@
         "production:wwtester": "webpack --config webpack.wwtester.config.js"
     },
     "dependencies": {
+        "deepmerge": "^4.2.2",
         "js-base64": "^2.5.2",
         "long": "^4.0.0",
-        "npm": "^6.14.4",
-        "protobufjs": "^6.8.9",
-        "three-instanced-mesh": "^0.96.2"
+        "npm": "^6.14.4"
     },
     "devDependencies": {
         "@types/js-base64": "^3.0.0",
@@ -60,7 +59,6 @@
         "@typescript-eslint/parser": "^4.15.1",
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^1.0.1",
-        "deepmerge": "^4.2.2",
         "eslint": "^7.20.0",
         "eslint-config-airbnb-base": "^14.2.1",
         "eslint-plugin-import": "^2.22.1",
@@ -72,7 +70,7 @@
         "npm-run-all": "^4.1.5",
         "style-loader": "^0.19.1",
         "ts-loader": "^8.0.17",
-        "typescript": "^3.9.9",
+        "typescript": "^4.2.2",
         "webpack": "^4.42.1",
         "webpack-cli": "^3.3.11"
     }

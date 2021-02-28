@@ -25,10 +25,10 @@ module.exports = {
     modules: [ path.resolve(__dirname, "src/jslibs"), "node_modules" ],
     // Aliases so individual files don't reference the filenames
     alias: {
-        // 'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.min.js'),
-        'protobufjs/minimal': path.resolve(__dirname, 'src/jslibs/protobufjs/minimal/protobuf.js'),
         // The ThreeJS modules reference things in their build tree
         '../../../build': path.resolve(__dirname, 'src/jslibs'),
+
+        // Aliases so individual files don't reference the filenames
         '@Abilities': path.resolve(__dirname, 'src/Abilities'),
         '@Base': path.resolve(__dirname, 'src'),
         '@BItem': path.resolve(__dirname, 'src/BItem'),
@@ -102,7 +102,6 @@ module.exports = {
       }
     ]
   }
-
 };
 
 // vim: set tabstop=2 shiftwidth=2 expandtab autoindent :

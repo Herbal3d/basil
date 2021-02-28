@@ -104,7 +104,8 @@ export const Logger : ALogger = {
     },
     setLogLevel: (pLevel: string) => {
         const aLevel = pLevel.toLowerCase();
-        if ([ 'info', 'warn', 'debug', 'error'].includes(aLevel)) {
+        const debugLevels: string[] = [ 'info', 'warn', 'debug', 'error'];
+        if (debugLevels.indexOf(aLevel, 0) !== -1) {
             _logLevel = aLevel;
         }
         else {

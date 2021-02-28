@@ -13,24 +13,28 @@
 
 import { GP } from '@Base/Globals';
 
-import { Config } from '@Base/WWTester.Config.ts';
+import { WWConfig } from '@Base/WWTester.Config.ts';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
 import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
 import { AuthToken } from '@Tools/Auth';
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
-import { BKeyedCollection } from './Tools/bTypes';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
-import { tokenize } from 'protobufjs';
+
+// For some reason ESLint thinks WWConfig is an 'any' and thus we shouldn't be
+//    unsafely referencing it. It's exactly the same as the Config file which
+//    it doesn't complain about. Will have to be resolved someday but
+//    this is a kludge fix.
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 GP.Ready = false;
 
 let _basilClient: BasilConnection;
-let _aliveIntervalID: NodeJS.Timeout;
+let _aliveIntervalID: number;
 
 // Setup logging: Basic console output for logging
-if (Config.WWTester.LogToConsole) {
+if (WWConfig.WWTester.LogToConsole) {
     AddLogOutputter( ( pMsg:string, pClass?: string) => {
         if (pClass) {
             /* tslint:disable-next-line */
@@ -43,15 +47,15 @@ if (Config.WWTester.LogToConsole) {
     });
 };
 // Setup logging: Send log messages to Basil debug BItem
-if (Config.Debug && Config.Debug.DebugLogInstanceName && Config.WWTester.LogToDebugInstance) {
+if (WWConfig.Debug && WWConfig.Debug.DebugLogInstanceName && WWConfig.WWTester.LogToDebugInstance) {
     AddLogOutputter( ( pMsg:string, pClass?: string) => {
         if (_basilClient && _basilClient.isReady()) {
             if (pClass) {
-                void _basilClient.UpdateProperties(Config.Debug.DebugLogInstanceName,
+                void _basilClient.UpdateProperties(WWConfig.Debug.DebugLogInstanceName,
                         { 'ErrorMsg': pMsg } );
             }
             else {
-                void _basilClient.UpdateProperties(Config.Debug.DebugLogInstanceName,
+                void _basilClient.UpdateProperties(WWConfig.Debug.DebugLogInstanceName,
                         { 'Msg': pMsg } );
             };
         };
@@ -110,16 +114,16 @@ catch (e) {
 };
 
 // Start AliveCheck polling if configured
-if (Config.WWTester && Config.WWTester.GenerateAliveCheck) {
+if (WWConfig.WWTester && WWConfig.WWTester.GenerateAliveCheck) {
     _basilClient.WhenReady(10000)
     .then( alive => {
-        const pollMS = Config.WWTester.AliveCheckPollMS
-                    ? Config.WWTester.AliveCheckPollMS : 10000;
+        const pollMS = WWConfig.WWTester.AliveCheckPollMS
+                    ? WWConfig.WWTester.AliveCheckPollMS : 10000;
         // Start alive polling
         _aliveIntervalID = setInterval(function() {
             (alive as BasilConnection).AliveCheck()
             .then( resp => {
-                if (Config.WWTester.PrintDebugOnAliveResponse) {
+                if (WWConfig.WWTester.PrintDebugOnAliveResponse) {
                     Logger.debug('Keep alive response: ' + JSON.stringify(resp));
                 }
             })

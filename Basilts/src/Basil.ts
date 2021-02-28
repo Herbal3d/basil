@@ -13,7 +13,7 @@
 
 // Global debugging parameters and variables. "GP.variable"
 import { GP } from '@Base/Globals';
-import { Config, EntryConfigParameters } from '@Base/Config';
+import { Config } from '@Base/Config';
 import { VERSION } from '@Base/VERSION';
 
 GP.Config = Config;

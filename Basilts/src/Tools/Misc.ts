@@ -15,7 +15,6 @@
 'use strict'
 
 import { v4 as uuidv4 } from 'uuid';
-import crypto from 'crypto';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 
@@ -81,11 +80,3 @@ export function ParseQueryString(pQuery: string): Map<string,string> {
 export function GenUUID(): string {
   return uuidv4();
 };
-
-// Return a string of random hex numbers of the specified length
-export function genRandomString(pLen: number) : string {
-  return crypto.randomBytes(Math.ceil(pLen/2))
-    .toString('hex')
-    .slice(0, pLen);
-};
-
