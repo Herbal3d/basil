@@ -18,29 +18,6 @@ import { BasilConnection,  BasilConnectionEventParams } from '@Comm/BasilConnect
 export const Graphics = {
 
     async connectGraphics(pConn: BasilConnection): Promise<void> {
-        void pConn.SubscribeToMessageOp('CreateItem', ProcCreateItem);
-        return undefined;
-    },
-    procCreateItem(pProps: BasilConnectionEventParams, pTopic: string): void {
-        const x = 5;    // make ESLint leave use along for the moment
-    },
-    procDeleteItem(pProps: BasilConnectionEventParams, pTopic: string): void {
-        const x = 5;    // make ESLint leave use along for the moment
-    },
-    procAddAbility(pProps: BasilConnectionEventParams, pTopic: string): void {
-        const x = 5;    // make ESLint leave use along for the moment
-    },
-    procRemoveAbility(pProps: BasilConnectionEventParams, pTopic: string): void {
-        const x = 5;    // make ESLint leave use along for the moment
-    },
-    procRequestProperties(pProps: BasilConnectionEventParams, pTopic: string): void {
-        const x = 5;    // make ESLint leave use along for the moment
-    },
-    procUpdateProperties(pProps: BasilConnectionEventParams, pTopic: string): void {
         const x = 5;    // make ESLint leave use along for the moment
     }
-};
-
-function ProcCreateItem(pProps: BasilConnectionEventParams, pTopic: string): void {
-    const x = 5;    // make ESLint leave use along for the moment
 };
