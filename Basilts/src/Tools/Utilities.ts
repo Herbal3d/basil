@@ -12,10 +12,15 @@
 'use strict';
 
 import { Config } from '@Base/Config';
-import { GetNextUniqueNum, UniqueIdBasename } from '@Base/Globals';
 
 import { BKeyedCollection, BVector3, BVector4 } from '@Tools/bTypes';
 import { Logger } from './Logging';
+
+// Used to create a one-of-time number for this session
+export let UniqueIdCount: number = 1;
+export function GetNextUniqueNum():number {
+    return UniqueIdCount++;
+};
 
 // Who knows what things throw. This tries to figure out the error string
 // from the item passed
@@ -40,7 +45,7 @@ export function CreateUniqueId(pService: string, pType?: string): string {
         + (pType ? ( '.' + pType ) : '')
         + '.'
         + pService
-        + UniqueIdBasename;
+        + Config.basil.UniqueIdBase;
     /* Original form that put number at the end
     return GP.UniqueIdBasename
                 + service
@@ -119,7 +124,7 @@ export function CombineParameters(configParams: BKeyedCollection,
 // The JSON specification does not define the 'undefined' value so the
 //    JSON.stringify library operation drops them from the output. Since this
 //    operation is not being used to create a legal JSON string output
-//    but is usually used for debugging, we do the conversion.
+//    but is used for debugging.
 // So, note that this DOES NOT RETURN A LEGAL JSON STRING.
 //    USE THIS FUNCTION FOR DEBUG OUTPUT ONLY!
 export function JSONstringify(obj: any): string {
@@ -149,12 +154,12 @@ export function ParseThreeTuple(tuple: string | number[] | BVector3): number[] {
         };
     };
     if (!Array.isArray(val)) {
-        const ret = [ 0, 0, 0 ];
-        const vval = val as BVector4;
-        if (vval.x) ret[0] = vval.x;
-        if (vval.y) ret[1] = vval.y;
-        if (vval.z) ret[2] = vval.z;
-        val = ret;
+        const vvv = [ 0, 0, 0 ];
+        const vval = val as BVector3;
+        if (vval.x) vvv[0] = vval.x;
+        if (vval.y) vvv[1] = vval.y;
+        if (vval.z) vvv[2] = vval.z;
+        val = vvv;
     };
     // consider doing some validity checking (length, type, ...)
     return val;
@@ -173,13 +178,13 @@ export function ParseFourTuple(tuple: string | number[] | BVector4): number[] {
         val = JSON.parse(tuple);
     };
     if (!Array.isArray(val)) {
-        const ret = [ 0, 0, 0, 0 ];
+        const vvvv = [ 0, 0, 0, 0 ];
         const vval = val as BVector4;
-        if (vval.x) ret[0] = vval.x;
-        if (vval.y) ret[1] = vval.y;
-        if (vval.z) ret[2] = vval.z;
-        if (vval.w) ret[3] = vval.w;
-        val = ret;
+        if (vval.x) vvvv[0] = vval.x;
+        if (vval.y) vvvv[1] = vval.y;
+        if (vval.z) vvvv[2] = vval.z;
+        if (vval.w) vvvv[3] = vval.w;
+        val = vvvv;
     };
     // consider doing some validity checking (length, type, ...)
     return val;

@@ -23,14 +23,6 @@ export const GP: {
     Config: {}
 };
 
-// Counters and names used uniquely by this session
-export let UniqueIdCount: number = 1;
-export function GetNextUniqueNum():number {
-    return UniqueIdCount++;
-}
-export const UniqueIdBasename = '.b.basil.org';
-// Note that basename begins with a dot
-
 /*
 // Ability names and creating functions are kept here.
 export let AbilityCreatorsMap: Map = new Map();

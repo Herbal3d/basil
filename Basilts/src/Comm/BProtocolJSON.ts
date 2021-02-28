@@ -23,7 +23,7 @@ export class BProtocolJSON extends BProtocol {
     _encoder = new TextEncoder();
 
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
-        super(pXPort, CreateUniqueId('BProtocolJSON'), 'org.herbal3d.b.protocol.fb');
+        super(pXPort, CreateUniqueId('BProtocolJSON'));
         Logger.debug(`BProtocolJSON: setting up JSON protocol`);
         this._params = CombineParameters(undefined, pParams, {
         });

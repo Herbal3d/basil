@@ -14,7 +14,9 @@ export const Config = {
         //      Comma separated list of section names
         'KnownConfigurationSections': 'OpenSimulator',
         // ms before removing deleted BItem
-        'BItemDeleteInterval': 60000
+        'BItemDeleteInterval': 60000,
+        // Note that basename begins with a dot
+        'UniqueIdBase': '.b.basil.org'
      },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {

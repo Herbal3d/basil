@@ -21,7 +21,7 @@ export class BTransportWS extends BTransport {
   _socket: WebSocket;
 
     constructor(pParams: BKeyedCollection) {
-        super(CreateUniqueId('BTransportWS'), 'org.herbal3d.b.transport.ws');
+        super();
         this._params = CombineParameters(undefined, pParams, {
             'transportURL': undefined   // name of Worker to connect to
         });

@@ -19,7 +19,7 @@ import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 export class BProtocolFB extends BProtocol {
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
-        super(pXPort, CreateUniqueId('BProtocolFB'), 'org.herbal3d.b.protocol.fb');
+        super(pXPort, CreateUniqueId('BProtocolFB'));
         this._params = CombineParameters(undefined, pParams, {
             'transportURL': undefined   // name of Worker to connect to
         });

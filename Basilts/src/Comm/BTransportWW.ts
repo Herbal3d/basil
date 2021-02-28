@@ -22,7 +22,7 @@ export class BTransportWW extends BTransport {
     _isWorker: boolean = false;
 
     constructor(pParams: BKeyedCollection) {
-        super(CreateUniqueId('BTransportWW'), 'org.herbal3d.b.transport.ww');
+        super();
         Logger.debug(`BTransportWW: setting up WebWorker transport`);
         this._params = CombineParameters(undefined, pParams, {
             'transportURL': undefined   // name of Worker to connect to

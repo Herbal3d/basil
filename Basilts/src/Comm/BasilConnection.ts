@@ -26,6 +26,7 @@ import { CombineParameters, CreateUniqueId, ExtractStringError, JSONstringify, R
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
 import { IdProp } from '@Abilities/AbilityBItem';
+import { BItems } from '@Base/BItem/BItems';
 
 // When an RPC operation is done, this remembers the send so we can process the response
 interface RPCInfo {
@@ -60,7 +61,7 @@ export class BasilConnection extends BItem {
     ServerVersion: string;          // the version of the server we're talking to
 
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
-        super(CreateUniqueId('BasilConnection'), undefined, 'org.herbal3d.b.basilconn');
+        super(undefined, 'org.herbal3d.b.basilconn');
         this._params = CombineParameters(undefined, pParams, {
             'service': ServiceSpaceServer
         });
@@ -231,6 +232,7 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
         switch (pMsg.Op) {
             case BMessageOps.CreateItemReq: {
                 const msg: BMessage = MakeResponse(pMsg, BMessageOps.CreateItemResp);
+                const newBItem = BItems.createFromProps(pMsg.IProps);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('CreateItem'), {
                     request: pMsg,
                     response: msg,

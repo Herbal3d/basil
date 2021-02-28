@@ -26,8 +26,8 @@ export abstract class BProtocol extends BItem {
     _receiveCallback: BProtocolReceptionCallback;
     _receiveCallbackContext: BItem;
 
-    constructor(pTransport: BTransport, pId: string, pLayer: string) {
-        super(pId, undefined, pLayer);
+    constructor(pTransport: BTransport, pLayer?: string) {
+        super(undefined, pLayer);
         this._xport = pTransport;
     };
 

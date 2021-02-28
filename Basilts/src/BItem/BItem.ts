@@ -20,6 +20,7 @@ import { BItems } from '@BItem/BItems';
 import { AuthToken } from '@Tools/Auth';
 
 import { Logger } from '@Base/Tools/Logging';
+import { CreateUniqueId } from '@Base/Tools/Utilities';
 
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
@@ -41,19 +42,21 @@ export class BItem {
     _abilities: Map<string, Ability>;
     _deleteInProgress: boolean;
 
-    constructor(pId: string, pAuth: AuthToken, pLayer: string) {
+    constructor(pAuth: AuthToken, pLayer?: string) {
+        const id = CreateUniqueId('BItem');
+
         this._props = new Map<string,PropEntry>();
         this._abilities = new Map<string,Ability>();
 
         // Add the base properties to this BItem
-        this.addAbility(new AbilityBItem(pId, pAuth, pLayer));
+        this.addAbility(new AbilityBItem(id, pAuth, pLayer));
 
         this._deleteInProgress = false;
 
         this.setProp(StateProp, BItemState.UNINITIALIZED)
 
         // As a side effect, add this BItem to the collection of BItems
-        BItems.add(pId, this);
+        BItems.add(id, this);
     };
     getProp(pPropName: string): PropValue {
         const prop = this._props.get(pPropName);

@@ -27,8 +27,8 @@ export abstract class BTransport extends BItem {
     _receiveCallback: BTransportReceptionCallback;
     _receiveCallbackContext: any;
 
-    constructor(pId: string, pLayer: string) {
-        super(pId, undefined, pLayer);
+    constructor(pLayer?: string) {
+        super(undefined, pLayer);
         this._messages = [];
         this._receiveCallback = undefined;
         this.addAbility(new AbilityMsgStats());

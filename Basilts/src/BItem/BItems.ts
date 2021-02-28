@@ -19,7 +19,6 @@ import { ExtractStringError } from '@Tools/Utilities';
 
 import { Logger } from '@Base/Tools/Logging';
 
-export const BItemIdProp = 'bitem.id';
 export const BItemAuthProp = 'ItemAuthToken';
 export const BItemLayerProp = 'Layer';
 export const BItemInitialAbilityProp = 'InitialAbilties';
@@ -32,7 +31,7 @@ export const BItems = {
     // This looks for properties 'BItem*Prop' but any abilities created will look for their own.
     // Throws a string error if there are any problems.
     createFromProps: (pProps: BKeyedCollection): BItem => {
-        const newBItem = new BItem( pProps[BItemIdProp], pProps[BItemAuthProp], pProps[BItemLayerProp]);
+        const newBItem = new BItem(pProps[BItemAuthProp], pProps[BItemLayerProp]);
 
         // Add any Abilities that are asked for
         let err: string;

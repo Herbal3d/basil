@@ -61,8 +61,19 @@ export interface OpenSessionReqProps {
     TestAssetLoader?: string;   // loader to use for test asset
 };
 export interface OpenSessionRespProps {
-    ServerVersion?: string;  // server version string
+    ServerVersion?: string; // server version string
     ServerAuth:string;      // token to use talking to this server
+    Exception?: string;     // Included if there was a failure
+};
+export interface CreateItemReqProps {
+    ItemAuthToken?: string;     // token required to access item
+    Layer?: string;             // layer the BItem is associated with
+    InitialAbilities?: string;  // comma separated list of abilities to add
+    [ key: string]: string; // any parameters required or the added abilities
+
+};
+export interface CreateItemRespProps {
+    Exception?: string;     // Included if there was a failure
 };
 
 export enum CoordSystem {

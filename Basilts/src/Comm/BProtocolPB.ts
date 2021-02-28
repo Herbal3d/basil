@@ -16,10 +16,11 @@ import { BTransport } from '@Comm/BTransport';
 
 import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { Config } from '@Base/Config';
 
 export class BProtocolPB extends BProtocol {
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
-        super(pXPort, CreateUniqueId('BProtocolFB'), 'org.herbal3d.b.protocol.fb');
+        super(pXPort, CreateUniqueId('BProtocolPB'));
         this._params = CombineParameters(undefined, pParams, {
             'transportURL': undefined   // name of Worker to connect to
         });
