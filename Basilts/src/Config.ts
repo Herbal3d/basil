@@ -56,8 +56,8 @@ export const Config = {
         'graphicsId': 'org.basil.b.graphics',
         'engine': 'ThreeJS',
         'camera': {
-            'cameraId': 'org.basil.b.camera.1',
-            'cameraInstanceId': 'org.basil.b.instance.camera.1',
+            'cameraId': '1.camera.b.basil.org',
+            'cameraInstanceId': '1.camera.instance.b.basil.org',
             'name': 'camera1',
             'initialCameraPosition': [ 200, 50, 200 ],
             'initialViewDistance': 2000,
@@ -112,10 +112,10 @@ export const Config = {
     },
     // Names for predefined/service BItem layers
     'layers': {
-        'default': 'org.herbal3d.b.layers.default',
-        'comm': 'org.herbal3d.b.layers.comm',
-        'service': 'org.herbal3d.b.layers.service',
-        'eventing': 'org.herbal3d.b.layers.eventing'
+        'default': 'default.layer.b.basil.org',
+        'comm': 'comm.layer.b.basil.org',
+        'service': 'service.layer.b.basil.org',
+        'eventing': 'eventing.layer.b.basil.org',
     },
     // Flags for fetching assets.
     'assets': {

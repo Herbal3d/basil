@@ -15,18 +15,20 @@ import { Config } from '@Base/Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { BProtocol } from '@Comm/BProtocol';
 import { BItem } from '@BItem/BItem';
+import { BItemInitialAbilityProp } from '@BItem/BItems';
 import { AuthToken } from '@Tools/Auth';
-import { BMessage, BMessageOps, PositionBlock, CoordSystem, RotationSystem, OpenSessionRespProps } from '@Comm/BMessage';
+import { BMessage, BMessageOps } from '@Comm/BMessage';
 import { OpenSessionReqProps } from '@Comm/BMessage';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
+import { IdProp } from '@Abilities/AbilityBItem';
 
-import { CombineParameters, CreateUniqueId, ExtractStringError, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
+import { CombineParameters, ExtractStringError, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
-import { IdProp } from '@Abilities/AbilityBItem';
 import { BItems } from '@Base/BItem/BItems';
+import { AbilityFactory } from '@Abilities/AbilityManagement';
 
 // When an RPC operation is done, this remembers the send so we can process the response
 interface RPCInfo {
@@ -204,15 +206,15 @@ export class BasilConnection extends BItem {
 };
 
 // Process the incoming message
-async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BProtocol): Promise<void> {
-    if (pMsg.RCode) {
+async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BProtocol): Promise<void> {
+    if (pReq.RCode) {
         // Has a response code. Must be a response to an RPC
-        const session = pContext._rpcSessions.get(pMsg.RCode);
+        const session = pContext._rpcSessions.get(pReq.RCode);
         if (session) {
             try {
-                Logger.cdebug('RPCResponse', `BasilConnection.Processor: response: ${JSONstringify(pMsg)}`);
+                Logger.cdebug('RPCResponse', `BasilConnection.Processor: response: ${JSONstringify(pReq)}`);
                 // eslint-disable-next-line
-                session.resolve(pMsg);
+                session.resolve(pReq);
             }
             catch (err) {
                 const errr = ExtractStringError(err);
@@ -223,89 +225,167 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
             };
         }
         else {
-            const errMsg = `Processor.HandleResponse: received msg which is not RPC response: ${JSONstringify(pMsg)}`;
+            const errMsg = `Processor.HandleResponse: received msg which is not RPC response: ${JSONstringify(pReq)}`;
             Logger.error(errMsg);
         };
     }
     else {
         // No response code, must be an incoming request
-        switch (pMsg.Op) {
+        switch (pReq.Op) {
             case BMessageOps.CreateItemReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.CreateItemResp);
-                const newBItem = BItems.createFromProps(pMsg.IProps);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.CreateItemResp);
+                try {
+                    const newBItem = BItems.createFromProps(pReq.IProps);
+                    if (newBItem) {
+                        resp.IProps['Id'] = newBItem.id;
+                    }
+                    else {
+                        resp.Exception = 'Failed creation';
+                    };
+                }
+                catch(e) {
+                    resp.Exception = ExtractStringError(e);
+                }
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('CreateItem'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
+                pContext.Send(resp);
                 break;
             }
             case BMessageOps.DeleteItemReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.DeleteItemResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.DeleteItemResp);
+                // TODO: check auth and prevent deleting system BItems
+                BItems.removeById(pReq.IId);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('DeleteItem'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
+                pContext.Send(resp);
                 break;
             }
             case BMessageOps.AddAbilityReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.AddAbilityResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.AddAbilityResp);
+                // TODO: check auth and prevent adding abilities to system BItems
+                const bitem = BItems.get(pReq.IId);
+                const abilities = pReq.IProps['Abilities'];
+                if (bitem) {
+                    if (abilities) {
+                        const abils = abilities.split(',');
+                        for (const abil of abils) {
+                            const newAbility = AbilityFactory(abil, pReq.IProps);
+                            if (newAbility) {
+                                bitem.addAbility(newAbility);
+                            }
+                            else {
+                                resp.Exception = `Could not create Ability ${abil}`;
+                                break;
+                            };
+                        };
+                    }
+                    else {
+                        resp.Exception = 'No abilities specified';
+                    };
+                }
+                else {
+                    resp.Exception = 'BItem not found';
+                };
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('AddAbility'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
+                pContext.Send(resp);
                 break;
             }
             case BMessageOps.RemoveAbilityReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.RemoveAbilityResp);
+                // TODO: check auth and prevent removing abilities from system BItems
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.RemoveAbilityResp);
+                const bitem = BItems.get(pReq.IId);
+                const abilities = pReq.IProps['Abilities'];
+                if (bitem) {
+                    if (abilities) {
+                        const abils = abilities.split(',');
+                        for (const abil of abils) {
+                            bitem.removeAbility(abil);
+                        };
+                    }
+                    else {
+                        resp.Exception = 'No abilities specified';
+                    };
+                }
+                else {
+                    resp.Exception = 'BItem not found';
+                };
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('RemoveAbility'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
+                pContext.Send(resp);
                 break;
             }
             case BMessageOps.RequestPropertiesReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.RequestPropertiesResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.RequestPropertiesResp);
+                const bitem = BItems.get(pReq.IId);
+                const filter = pReq.IProps['Filter'];
+                if (bitem) {
+                    resp.IProps = bitem.getProperties(filter);
+                    resp.IId = bitem.id;
+                };
+
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('RequestProperties'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
+                pContext.Send(resp);
                 break;
             }
             case BMessageOps.UpdatePropertiesReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.UpdatePropertiesResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.UpdatePropertiesResp);
+                const bitem = BItems.get(pReq.IId);
+                if (bitem) {
+                    for (const prop of Object.keys(pReq.IProps)) {
+                        bitem.setProp(prop, pReq.IProps[prop]);
+                    };
+                }
+                else {
+                    resp.Exception = 'BItem not found';
+                };
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('UpdateProperties'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
+                pContext.Send(resp);
                 break;
             }
+            // This code for OpenSession and CloseSession does not send a response
+            // This is explected to be done by the event subscriber
             case BMessageOps.OpenSessionReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.OpenSessionResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.OpenSessionResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('OpenSession'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
                 break;
             }
             case BMessageOps.CloseSessionReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.CloseSessionResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.CloseSessionResp);
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('CloseSession'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
@@ -313,30 +393,30 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
                 break;
             }
             case BMessageOps.AliveCheckReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.AliveCheckResp);
-                msg.IProps = CreatePropertyList( {
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.AliveCheckResp);
+                resp.IProps = CreatePropertyList( {
                     'time': Date.now(),
                     'sequenceNum': pContext._aliveSequenceNumber++,
-                    'timeReceived': pMsg.IProps??['time'],
-                    'sequenceNumberReceived': pMsg.IProps??['sequenceNum']
+                    'timeReceived': pReq.IProps??['time'],
+                    'sequenceNumberReceived': pReq.IProps??['sequenceNum']
                 });
-                pContext.Send(msg);
+                pContext.Send(resp);
                 break;
             }
             case BMessageOps.MakeConnectionReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.MakeConnectionResp);
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.MakeConnectionResp);
                 // I've been asked to make a connection somewhere
                 const params: MakeConnectionParams = {
-                    'transport':    pMsg.IProps['Transport'] ?? 'WS',
-                    'transporturl': pMsg.IProps['TransportURL'] ?? undefined,
-                    'protocol':     pMsg.IProps['Protocol'] ?? 'Basil-JSON',
-                    'service':      pMsg.IProps['Service'] ?? 'SpaceServer',
-                    'serviceauth':  pMsg.IProps['ClientAuth'] ?? undefined,
+                    'transport':    pReq.IProps['Transport'] ?? 'WS',
+                    'transporturl': pReq.IProps['TransportURL'] ?? undefined,
+                    'protocol':     pReq.IProps['Protocol'] ?? 'Basil-JSON',
+                    'service':      pReq.IProps['Service'] ?? 'SpaceServer',
+                    'serviceauth':  pReq.IProps['ClientAuth'] ?? undefined,
                 };
                 // Just in case someone is watching and wants to record or change parameters
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('MakeConnection'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto,
                     params: params
@@ -346,37 +426,37 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
                     const openProps: OpenSessionReqProps = {
                         BasilVersion: "I dont' know"
                     };
-                    for ( const prop of Object.keys(pMsg.IProps)) {
-                        (openProps as BKeyedCollection)[prop] = pMsg.IProps
+                    for ( const prop of Object.keys(pReq.IProps)) {
+                        (openProps as BKeyedCollection)[prop] = pReq.IProps
                     }
                     await pContext.CreateSession(openProps);
-                    pContext.Send(msg);
+                    pContext.Send(resp);
                 }
                 catch (e) {
                     const err = <BMessage>e;    // kludge for eslint
-                    const msg: BMessage = { 'Op': BMessageOps.MakeConnectionResp, IProps: {}};
-                    msg.Exception = `OpenSession exception: ${err.Exception}`;
-                    msg.ExceptionHints = err.ExceptionHints;
-                    pContext.Send(msg);
+                    const resp: BMessage = { 'Op': BMessageOps.MakeConnectionResp, IProps: {}};
+                    resp.Exception = `OpenSession exception: ${err.Exception}`;
+                    resp.ExceptionHints = err.ExceptionHints;
+                    pContext.Send(resp);
                 };
                 break;
             }
             case BMessageOps.AliveCheckReq: {
-                const msg: BMessage = MakeResponse(pMsg, BMessageOps.AliveCheckResp);
-                msg.IProps = CreatePropertyList( {
+                const resp: BMessage = MakeResponse(pReq, BMessageOps.AliveCheckResp);
+                resp.IProps = CreatePropertyList( {
                     'time': Date.now(),
                     'sequenceNum': pContext._aliveSequenceNumber++,
-                    'timeReceived': pMsg.IProps??['time'],
-                    'sequenceNumberReceived': pMsg.IProps??['sequenceNum']
+                    'timeReceived': pReq.IProps??['time'],
+                    'sequenceNumberReceived': pReq.IProps??['sequenceNum']
                 });
                 // Just in case someone is watching and wants to record
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('AliveCheck'), {
-                    request: pMsg,
-                    response: msg,
+                    request: pReq,
+                    response: resp,
                     connection: pContext,
                     protocol: pProto
                 });
-                pContext.Send(msg);
+                pContext.Send(resp);
                 break;
             }
             default:
@@ -386,10 +466,10 @@ async function Processor(pMsg: BMessage, pContext: BasilConnection, pProto: BPro
 };
 
 // Add the proper thing to a response to make it a response
-function MakeResponse(pMsg: BMessage, pOp: number): BMessage {
+function MakeResponse(pReq: BMessage, pOp: number): BMessage {
     const resp: BMessage = { 'Op': pOp, IProps: {} };
-    if (pMsg.SCode) {
-        resp.RCode = pMsg.SCode;
+    if (pReq.SCode) {
+        resp.RCode = pReq.SCode;
     }
     return resp;
 };
@@ -410,12 +490,12 @@ function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
     return list;
 };
 
-function SendAndPromiseResponse(pMsg: BMessage, pContext: BasilConnection): Promise<BMessage> {
+function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Promise<BMessage> {
     Logger.debug('BasilConnection.SendAndPromiseResponse: entry');
     const responseSession = RandomIdentifier();
-    pMsg.SCode = responseSession;
+    pReq.SCode = responseSession;
     if (Config.Debug && Config.Debug.RPCSent) {
-        Logger.debug('BasilConnection.SendAndPromiseResponse: sending: ' + JSONstringify(pMsg));
+        Logger.debug('BasilConnection.SendAndPromiseResponse: sending: ' + JSONstringify(pReq));
     }
     // Return a promise and pass the 'resolve' function to the response message processor
     return new Promise( (resolve,reject) => {
@@ -424,7 +504,7 @@ function SendAndPromiseResponse(pMsg: BMessage, pContext: BasilConnection): Prom
             resolve,
             reject,
         } );
-        pContext._proto.Send(pMsg);
+        pContext._proto.Send(pReq);
     });
 };
 

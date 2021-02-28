@@ -19,6 +19,7 @@ import { ExtractStringError } from '@Tools/Utilities';
 
 import { Logger } from '@Base/Tools/Logging';
 
+export const BItemIdProp = 'Id';
 export const BItemAuthProp = 'ItemAuthToken';
 export const BItemLayerProp = 'Layer';
 export const BItemInitialAbilityProp = 'InitialAbilties';

@@ -15,12 +15,13 @@ import { Config } from '@Base/Config';
 
 import { Ability } from '@Abilities/Ability';
 import { AbilityBItem, BItemState, IdProp, StateProp } from '@Abilities/AbilityBItem';
-import { BItems } from '@BItem/BItems';
+import { BItemIdProp, BItems } from '@BItem/BItems';
 
 import { AuthToken } from '@Tools/Auth';
 
 import { Logger } from '@Base/Tools/Logging';
 import { CreateUniqueId } from '@Base/Tools/Utilities';
+import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
@@ -41,6 +42,11 @@ export class BItem {
     _props: Map<string, PropEntry>;
     _abilities: Map<string, Ability>;
     _deleteInProgress: boolean;
+
+    // A utility variable since lots of people do this
+    get id(): string {
+        return <string>this.getProp(BItemIdProp);
+    };
 
     constructor(pAuth: AuthToken, pLayer?: string) {
         const id = CreateUniqueId('BItem');
@@ -108,12 +114,20 @@ export class BItem {
     removeProperty(pPropEntry: PropEntry): void {
         this._props.delete(pPropEntry.name);
     };
+    getProperties(pFilter: string): BKeyedCollection {
+        const ret: BKeyedCollection = {};
+        this._props.forEach( (val, key) => {
+            // TODO: check if key matches the filter
+            ret[key] = val.getter(val, this);
+        })
+        return ret;
+    };
     addAbility(pAbility: Ability): void {
         this._abilities.set(pAbility.name, pAbility);
         pAbility.addProperties(this);
     };
-    removeAbility(pAbility: Ability): void {
-        this._abilities.delete(pAbility.name);
+    removeAbility(pAbilityName: string): void {
+        this._abilities.delete(pAbilityName);
     };
     getState(): BItemState {
         return (this.getProp(StateProp) as BItemState);

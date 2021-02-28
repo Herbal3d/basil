@@ -69,11 +69,44 @@ export interface CreateItemReqProps {
     ItemAuthToken?: string;     // token required to access item
     Layer?: string;             // layer the BItem is associated with
     InitialAbilities?: string;  // comma separated list of abilities to add
-    [ key: string]: string; // any parameters required or the added abilities
+    [ key: string ]: string;    // any parameters required or the added abilities
 
 };
 export interface CreateItemRespProps {
-    Exception?: string;     // Included if there was a failure
+    Id: string;                 // Id of newly created item
+    Exception?: string;         // Included if there was a failure
+};
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DeleteItemReqProps {
+};
+export interface DeleteItemRespProps {
+    Exception?: string;         // Included if there was a failure
+};
+export interface AddAbilityReqProps {
+    Abilities: string           // comma separated list of abilities to add
+    [ key: string ]: string;    // any parameters required or the added abilities
+};
+export interface AddAbilityRespProps {
+    Exception?: string;         // Included if there was a failure
+};
+export interface RemoveAbilityReqProps {
+    Abilities: string;          // comma separated list of abilities to remove
+};
+export interface RemoveAbilityRespProps {
+    Exception?: string;         // Included if there was a failure
+};
+export interface RequestPropertiesReqProps {
+    Filter?: string;
+};
+export interface RequestPropertiesRespProps {
+    [ key: string ]: string;    // requested properties
+    Exception?: string;         // Included if there was a failure
+};
+export interface UpdatePropertiesReqProps {
+    [ key: string ]: string;    // properties to update
+};
+export interface UpdatePropertiesRespProps {
+    Exception?: string;         // Included if there was a failure
 };
 
 export enum CoordSystem {
