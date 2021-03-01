@@ -12,11 +12,11 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { BKeyedCollection } from '@Base/Tools/bTypes';
-import { CreateUniqueId } from '@Base/Tools/Utilities';
 import { BItem } from '@BItem/BItem';
-
 import { AuthToken } from '@Tools/Auth';
+
+import { CreateUniqueId } from '@Base/Tools/Utilities';
+import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 export const IdProp: string = 'bitem.id';
 export const LayerProp: string = 'Layer';
@@ -31,7 +31,7 @@ export enum BItemState {
     SHUTDOWN
 };
 
-export const BItemAbilityName = "BItem";
+export const BItemAbilityName = 'BItem';
 
 export function AbilityBItemFromProps(pProps: BKeyedCollection): AbilityBItem {
     return new AbilityBItem( pProps[IdProp], pProps[AuthTokenProp], pProps[LayerProp]);

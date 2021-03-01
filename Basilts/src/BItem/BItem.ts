@@ -30,11 +30,12 @@ export type PropValue = number | string | AuthToken;
 export type getterFunction = (pDfd: PropEntry, pD: BItem) => PropValue;
 export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: PropValue) => void;
 export interface PropEntry {
-    name: string,
-    value?: PropValue,
-    getter?: getterFunction,
-    setter?: setterFunction,
-    ability: Ability
+    name: string,               // the property name used to lookup and reference
+    value?: PropValue,          // the value for the property
+    getter?: getterFunction,    // option function to call to get value
+    setter?: setterFunction,    // option function to call to set value
+    ability: Ability,           // the ability associated with this property
+    extra?: any                 // extra value for the entity code
 };
 
 export class BItem {
@@ -108,8 +109,9 @@ export class BItem {
         };
         return val;
     };
-    addProperty(pPropEntry: PropEntry): void {
+    addProperty(pPropEntry: PropEntry): PropEntry {
         this._props.set(pPropEntry.name, pPropEntry);
+        return pPropEntry;
     };
     removeProperty(pPropEntry: PropEntry): void {
         this._props.delete(pPropEntry.name);
