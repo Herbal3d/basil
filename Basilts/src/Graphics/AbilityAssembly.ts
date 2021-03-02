@@ -16,7 +16,7 @@ import { BItem, PropEntry, PropValue } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 
-export const AssemblyAbilityName = 'Scene';
+export const AssemblyAbilityName = 'Assembly';
 
 export const AssetURLProp = 'AssetURL';
 export const AssetLoaderProp = 'AssetLoader';
