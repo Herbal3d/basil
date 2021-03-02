@@ -23,49 +23,51 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { BVHLoader } from 'three/examples/jsm/loaders/BVHLoader';
 
+import { RegisterAbility } from '@Abilities/AbilityManagement';
+import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Graphics/AbilityAssembly';
+import { InstanceAbilityName, AbilityInstanceFromProps } from '@Graphics/AbilityInstance';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 
 import { CombineParameters, ParseThreeTuple } from '@Tools/Utilities';
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
-import { Object3D } from 'three';
 
 export const Graphics = {
-    container: <HTMLElement>undefined,
-    canvas: <HTMLCanvasElement>undefined,
-    scene: <THREE.Scene>undefined,
-    renderer: <THREE.WebGLRenderer>undefined,
+    _container: <HTMLElement>undefined,
+    _canvas: <HTMLCanvasElement>undefined,
+    _scene: <THREE.Scene>undefined,
+    _renderer: <THREE.WebGLRenderer>undefined,
 
-    clock: <THREE.Clock>undefined,
+    _clock: <THREE.Clock>undefined,
     frameNum: <number>undefined,
-    fps: <number>undefined,
-    lastFrameDelta: <number>undefined,
-    throttleFPS: <number>undefined,
+    FPS: <number>undefined,
+    _lastFrameDelta: <number>undefined,
+    _throttleFPS: <number>undefined,
 
-    GroupWorldRel: <THREE.Group>undefined,
-    GroupCameraRel: <THREE.Group>undefined,
+    _groupWorldRel: <THREE.Group>undefined,
+    _groupCameraRel: <THREE.Group>undefined,
 
     _camera:  <THREE.PerspectiveCamera>undefined,
-    axesHelper: <THREE.AxesHelper>undefined,
-    cameraHelper: <THREE.CameraHelper>undefined,
-    ambientLight: <THREE.AmbientLight>undefined,
-    directionalLight: <THREE.DirectionalLight>undefined,
-    cameraControl: <OrbitControls>undefined,
-    eventEachFrame: <TopicEntry>undefined,
+    _axesHelper: <THREE.AxesHelper>undefined,
+    _cameraHelper: <THREE.CameraHelper>undefined,
+    _ambientLight: <THREE.AmbientLight>undefined,
+    _directionalLight: <THREE.DirectionalLight>undefined,
+    _cameraControl: <OrbitControls>undefined,
+    _eventEachFrame: <TopicEntry>undefined,
 
-    eventCameraInfo: <TopicEntry>undefined,
-    eventCameraInfoTimer: <string>undefined,
-    eventDisplayInfo: <TopicEntry>undefined,
-    eventDisplayInfoTimer: <string>undefined,
-    prevCamPosition: <THREE.Vector3>undefined,
+    _eventCameraInfo: <TopicEntry>undefined,
+    _eventCameraInfoTimer: <string>undefined,
+    _eventDisplayInfo: <TopicEntry>undefined,
+    _eventDisplayInfoTimer: <string>undefined,
+    _prevCamPosition: <THREE.Vector3>undefined,
 
     connectGraphics(pContainer: HTMLElement, pCanvas: HTMLCanvasElement): void {
         Logger.debug('Graphics: constructor');
-        Graphics.container = pContainer;
-        Graphics.canvas = pCanvas;
+        Graphics._container = pContainer;
+        Graphics._canvas = pCanvas;
 
-        Graphics.scene = new THREE.Scene();
+        Graphics._scene = new THREE.Scene();
 
         Graphics._initializeCamera();
         Graphics._initializeLights();
@@ -73,49 +75,52 @@ export const Graphics = {
 
         // parameters to pass to the THREE.renderer creation
         const rendererParams: THREE.WebGLRendererParameters = Config.webgl.renderer.ThreeJS;
-        rendererParams.canvas = Graphics.canvas;
-        rendererParams.context = Graphics.canvas.getContext('webgl2', { alpha: false } );
-        Graphics.renderer = new THREE.WebGLRenderer(rendererParams);
+        rendererParams.canvas = Graphics._canvas;
+        rendererParams.context = Graphics._canvas.getContext('webgl2', { alpha: false } );
+        Graphics._renderer = new THREE.WebGLRenderer(rendererParams);
 
         if (Config.webgl.renderer.clearColor) {
-            Graphics.renderer.setClearColor(Graphics._colorFromValue(Config.webgl.renderer.clearColor));
+            Graphics._renderer.setClearColor(Graphics._colorFromValue(Config.webgl.renderer.clearColor));
         }
         if (Config.webgl.renderer.gammaFactor) {
-            Graphics.renderer.gammaFactor = Config.webgl.renderer.gammaFactor;
+            Graphics._renderer.gammaFactor = Config.webgl.renderer.gammaFactor;
         }
 
         if (Config.webgl.renderer.shadows) {
-            Graphics.renderer.shadowMap.enabled = true;
-            Graphics.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            Graphics._renderer.shadowMap.enabled = true;
+            Graphics._renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         }
 
         // keep the camera and environment adjusted for the display size
         Graphics._onContainerResize();  // initial aspect ration computation
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        Graphics.container.addEventListener('resize', Graphics._onContainerResize, false);
+        Graphics._container.addEventListener('resize', Graphics._onContainerResize, false);
 
         // For the moment, camera control comes from the user
         Graphics._initializeCameraControl();
 
         // Clock used to keep track of frame time and FPS
-        Graphics.clock = new THREE.Clock();
+        Graphics._clock = new THREE.Clock();
         Graphics.frameNum = 0;    // counted once each frame time
-        Graphics.fps = 10;        // an initial value to start computation
-        Graphics.throttleFPS = 0; // if zero, no throttling
+        Graphics.FPS = 10;        // an initial value to start computation
+        Graphics._throttleFPS = 0; // if zero, no throttling
 
         // There are several top level groups for objects in different coordinate systems
-        Graphics.GroupWorldRel = new THREE.Group();
-        Graphics.GroupWorldRel.name = 'org.basil.b.GroupWorldRel';
-        Graphics.GroupCameraRel = new THREE.Group();
-        Graphics.GroupCameraRel.name = 'org.basil.b.GroupCameraRel';
-        Graphics.scene.add(Graphics.GroupWorldRel);
-        Graphics.scene.add(Graphics.GroupCameraRel);
+        Graphics._groupWorldRel = new THREE.Group();
+        Graphics._groupWorldRel.name = 'org.basil.b.GroupWorldRel';
+        Graphics._groupCameraRel = new THREE.Group();
+        Graphics._groupCameraRel.name = 'org.basil.b.GroupCameraRel';
+        Graphics._scene.add(Graphics._groupWorldRel);
+        Graphics._scene.add(Graphics._groupCameraRel);
 
         // Graphics generate a bunch of events so people can display stuff
         Graphics._generateCameraEvents();
         Graphics._generateRendererStatEvents();
         // This is disabled until someone needs it
         // Graphics.eventEachFrame = Eventing.Register('display.eachFrame', 'Graphics');
+
+        RegisterAbility(AssemblyAbilityName, AbilityAssemblyFromProps);
+        RegisterAbility(InstanceAbilityName, AbilityInstanceFromProps);
     },
     Start() {
         Graphics._startRendering();
@@ -124,7 +129,7 @@ export const Graphics = {
     ClearScene() {
         Graphics._stopRendering();
 
-        Graphics._disposeScene(Graphics.scene);
+        Graphics._disposeScene(Graphics._scene);
         Logger.debug('Graphics: cleared scene');
 
         Graphics._startRendering();
@@ -144,53 +149,53 @@ export const Graphics = {
     PointCameraAt(gPos: string | number[] ) {
         const lookArray = ParseThreeTuple(gPos);
         const look = new THREE.Vector3(lookArray[0], lookArray[1], lookArray[2]);
-        if (Graphics.cameraControl) {
-            Graphics.cameraControl.target = look;
-            Graphics.cameraControl.update();
+        if (Graphics._cameraControl) {
+            Graphics._cameraControl.target = look;
+            Graphics._cameraControl.update();
         }
         else {
             Graphics._camera.lookAt(look);
         }
         // Move axes helper to where the camera is looking
-        if (Graphics.axesHelper) {
-            Graphics.axesHelper.geometry.translate(look.x, look.y, look.z);
+        if (Graphics._axesHelper) {
+            Graphics._axesHelper.geometry.translate(look.x, look.y, look.z);
         }
 
         Logger.debug(`Graphics: camera looking at: [${look.x}, ${look.y}, ${look.z}]`);
     },
 
     _startRendering() {
-        if (Graphics.renderer) {
+        if (Graphics._renderer) {
             // eslint-disable-next-line @typescript-eslint/unbound-method
             requestAnimationFrame(Graphics._doRendering);
         }
     },
 
     _stopRendering() {
-        if (Graphics.renderer) {
-            Graphics.renderer.setAnimationLoop(undefined);
+        if (Graphics._renderer) {
+            Graphics._renderer.setAnimationLoop(undefined);
         }
     },
 
     // Do per-frame updates and then render the frame
     _doRendering() {
-        if (GlobalReady && Graphics.scene && Graphics._camera) {
+        if (GlobalReady && Graphics._scene && Graphics._camera) {
             Graphics.frameNum++;
-            Graphics.lastFrameDelta = Graphics.clock.getDelta();
+            Graphics._lastFrameDelta = Graphics._clock.getDelta();
             // compute a running average of FPS
-            Graphics.fps = Math.min((0.25 * (1 / Graphics.lastFrameDelta)) + (0.75 * Graphics.fps), 300);
+            Graphics.FPS = Math.min((0.25 * (1 / Graphics._lastFrameDelta)) + (0.75 * Graphics.FPS), 300);
 
-            if (Graphics.cameraControl) {
-                Graphics.cameraControl.update();
+            if (Graphics._cameraControl) {
+                Graphics._cameraControl.update();
             };
-            if (Graphics.eventEachFrame) {
-                void Graphics.eventEachFrame.fire({});
+            if (Graphics._eventEachFrame) {
+                void Graphics._eventEachFrame.fire({});
             };
-            Graphics._doAnimation(Graphics.lastFrameDelta);
-            if (Graphics.throttleFPS != 0) {
+            Graphics._doAnimation(Graphics._lastFrameDelta);
+            if (Graphics._throttleFPS != 0) {
                 // Do some computation to skip frames to approx the throttle frame rate
             };
-            Graphics.renderer.render(Graphics.scene, Graphics._camera);
+            Graphics._renderer.render(Graphics._scene, Graphics._camera);
         };
     },
 
@@ -200,11 +205,11 @@ export const Graphics = {
 
     // Adjust the camera and environment when display size changes
     _onContainerResize() {
-        Logger.debug(`Graphics._onContainerResize: width=${Graphics.canvas.clientWidth}, height=${Graphics.canvas.clientHeight}`);
-        Graphics.renderer.setSize(Graphics.canvas.clientWidth, Graphics.canvas.clientHeight);
-        Graphics._camera.aspect = Graphics.canvas.clientWidth / Graphics.canvas.clientHeight;
+        Logger.debug(`Graphics._onContainerResize: width=${Graphics._canvas.clientWidth}, height=${Graphics._canvas.clientHeight}`);
+        Graphics._renderer.setSize(Graphics._canvas.clientWidth, Graphics._canvas.clientHeight);
+        Graphics._camera.aspect = Graphics._canvas.clientWidth / Graphics._canvas.clientHeight;
         Graphics._camera.updateProjectionMatrix();
-        Graphics.renderer.setPixelRatio(window.devicePixelRatio);
+        Graphics._renderer.setPixelRatio(window.devicePixelRatio);
     },
 
     _initializeCamera(passedParms?: BKeyedCollection) {
@@ -223,22 +228,22 @@ export const Graphics = {
         });
 
         Graphics._camera = new THREE.PerspectiveCamera( 75,
-                        Graphics.canvas.clientWidth / Graphics.canvas.clientHeight,
+                        Graphics._canvas.clientWidth / Graphics._canvas.clientHeight,
                         1, parms.initialViewDistance );
         // camera.up = new THREE.Vector3(0, 1, 0);
-        Graphics.scene.add(Graphics._camera);
+        Graphics._scene.add(Graphics._camera);
 
         Graphics.SetCameraPosition(parms.initialCameraPosition);
         Graphics.PointCameraAt(parms.initialCameraLookAt);
 
         if (parms.addCameraHelper) {
-            Graphics.cameraHelper = new THREE.CameraHelper(Graphics._camera);
-            Graphics.scene.add(Graphics.cameraHelper);
+            Graphics._cameraHelper = new THREE.CameraHelper(Graphics._camera);
+            Graphics._scene.add(Graphics._cameraHelper);
         }
         if (parms.addAxesHelper) {
             const helperSize = parms.axesHelperSize || 5;
-            Graphics.axesHelper = new THREE.AxesHelper(Number(helperSize));
-            Graphics.scene.add(Graphics.axesHelper);
+            Graphics._axesHelper = new THREE.AxesHelper(Number(helperSize));
+            Graphics._scene.add(Graphics._axesHelper);
         }
     },
 
@@ -248,21 +253,21 @@ export const Graphics = {
         if (parms.ambient) {
             const ambient = new THREE.AmbientLight(Graphics._colorFromValue(parms.ambient.color),
                                                 Number(parms.ambient.intensity));
-            Graphics.ambientLight = ambient;
-            Graphics.scene.add(ambient);
+            Graphics._ambientLight = ambient;
+            Graphics._scene.add(ambient);
         }
         if (parms.directional) {
             const directionalLight = new THREE.DirectionalLight(Graphics._colorFromValue(parms.directional.color),
                                                 Number(parms.directional.intensity));
             directionalLight.position.fromArray(parms.directional.direction).normalize();
-            Graphics.directionalLight = directionalLight;
+            Graphics._directionalLight = directionalLight;
             if (parms.directional.shadows) {
-                Graphics.directionalLight.castShadow = true;
-                Graphics.directionalLight.shadow.bias = parms.directional.shadows.bias;
-                Graphics.directionalLight.shadow.mapSize.width = parms.directional.shadows.mapWidth;
-                Graphics.directionalLight.shadow.mapSize.height = parms.directional.shadows.mapHeight;
+                Graphics._directionalLight.castShadow = true;
+                Graphics._directionalLight.shadow.bias = parms.directional.shadows.bias;
+                Graphics._directionalLight.shadow.mapSize.width = parms.directional.shadows.mapWidth;
+                Graphics._directionalLight.shadow.mapSize.height = parms.directional.shadows.mapHeight;
             }
-            Graphics.scene.add(directionalLight);
+            Graphics._scene.add(directionalLight);
         }
     },
 
@@ -306,13 +311,13 @@ export const Graphics = {
     */
     // For initial debugging, camera is controlled by the console
     _initializeCameraControl() {
-        const cameraControl = new OrbitControls(Graphics._camera, Graphics.renderer.domElement);
+        const cameraControl = new OrbitControls(Graphics._camera, Graphics._renderer.domElement);
         cameraControl.enableDamping = true;
         cameraControl.dampingFactor = 0.25;
         cameraControl.screenSpacePanning = true;
         cameraControl.minDistance = 50;
         cameraControl.maxDistance = Graphics._camera.far;
-        Graphics.cameraControl = cameraControl;
+        Graphics._cameraControl = cameraControl;
     },
     // Return a ThreeJS color number from an array of color values
     _colorFromValue(pColorValue: number[] | string ): THREE.Color {
@@ -326,14 +331,14 @@ export const Graphics = {
 
     // Generate subscribable periodic when camera info (position) changes
     _generateCameraEvents() {
-        Graphics.eventCameraInfo = Eventing.Register('display.cameraInfo', 'Graphics');
-        Graphics.eventCameraInfoTimer = Eventing.CreateTimedEventProcessor( Graphics.eventCameraInfo,
+        Graphics._eventCameraInfo = Eventing.Register('display.cameraInfo', 'Graphics');
+        Graphics._eventCameraInfoTimer = Eventing.CreateTimedEventProcessor( Graphics._eventCameraInfo,
             (topic) => {
-                if (Graphics.eventCameraInfo.hasSubscriptions) {
-                    if (Graphics.prevCamPosition == undefined) {
-                        Graphics.prevCamPosition = new THREE.Vector3(0,0,0);
+                if (Graphics._eventCameraInfo.hasSubscriptions) {
+                    if (Graphics._prevCamPosition == undefined) {
+                        Graphics._prevCamPosition = new THREE.Vector3(0,0,0);
                     }
-                    const oldPos = Graphics.prevCamPosition;
+                    const oldPos = Graphics._prevCamPosition;
                     // must clone or 'newPos' will be just a reference to the old value.
                     const newPos = Graphics._camera.position.clone();
                     if (!newPos.equals(oldPos)) {
@@ -341,8 +346,8 @@ export const Graphics = {
                             'position': Graphics._camera.position.clone(),
                             'rotation': Graphics._camera.rotation.clone()
                         };
-                        void Graphics.eventCameraInfo.fire(camInfo);
-                        Graphics.prevCamPosition = newPos;
+                        void Graphics._eventCameraInfo.fire(camInfo);
+                        Graphics._prevCamPosition = newPos;
                     };
                 };
             }
@@ -352,14 +357,14 @@ export const Graphics = {
     // Start the generation of renderer statistic events
     _generateRendererStatEvents() {
         // Generate subscribable periodic events when display info changes
-        Graphics.eventDisplayInfo = Eventing.Register('display.info', 'Graphics');
-        Graphics.eventDisplayInfoTimer = Eventing.CreateTimedEventProcessor(Graphics.eventDisplayInfo,
+        Graphics._eventDisplayInfo = Eventing.Register('display.info', 'Graphics');
+        Graphics._eventDisplayInfoTimer = Eventing.CreateTimedEventProcessor(Graphics._eventDisplayInfo,
             (topic) => {
-                if (Graphics.eventDisplayInfo.hasSubscriptions) {
+                if (Graphics._eventDisplayInfo.hasSubscriptions) {
                     // not general, but, for the moment, just return the WebGL info
-                    const dispInfo = Graphics.renderer.info;
-                    (dispInfo as BKeyedCollection).fps = Graphics.fps;
-                    void Graphics.eventDisplayInfo.fire(dispInfo);
+                    const dispInfo = Graphics._renderer.info;
+                    (dispInfo as BKeyedCollection).fps = Graphics.FPS;
+                    void Graphics._eventDisplayInfo.fire(dispInfo);
                 };
             }
         );
