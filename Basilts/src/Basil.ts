@@ -17,7 +17,7 @@ import { Config } from '@Base/Config';
 import { VERSION } from '@Base/VERSION';
 
 import { Comm } from '@Comm/Comm';
-import { OpenSessionReqProps } from '@Comm/BMessage';
+import { OpenSessionReqProps } from '@Comm/BMessageProps';
 import { Eventing } from '@Eventing/Eventing';
 import { Graphics } from '@Graphics/Graphics';
 
