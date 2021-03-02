@@ -11,23 +11,7 @@
 
 'use strict';
 
-import { BKeyedCollection } from '@Tools/bTypes';
-import { BItem } from '@BItem/BItem';
+export let GlobalReady: boolean = false;
 
-// Global debugging parameters and variables. "GP.variable"
-export const GP: {
-    Ready: boolean;
-    Config: BKeyedCollection;
-} = {
-    Ready: false,
-    Config: {}
-};
+GlobalReady = false;    // Makes eslint happy
 
-/*
-// Ability names and creating functions are kept here.
-export let AbilityCreatorsMap: Map = new Map();
-// Returns the map since exporting functions works better than exporting properties
-export function AbilityCreators(): Map {
-    return AbilityCreatorsMap;
-};
-*/

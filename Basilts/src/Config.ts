@@ -67,9 +67,10 @@ export const Config = {
             'axesHelperSize': 20
         },
         'lights': {
+            // Change interface LightingParameters if any thing is changed here
             'ambient': {
                 'name': 'ambient1',
-                'color': 0x222222,
+                'color': '0x222222',
                 'intensity': 0.9,
                 'specular': 0x505050,
                 'diffuse': 0x505050,
@@ -78,7 +79,7 @@ export const Config = {
             // placeholder for the eventual sun system
             'directional': {
                 'name': 'directional1',
-                'color': 0xEEEEEE,
+                'color': '0xEEEEEE',
                 'direction': [ 1000, 1000, 1000 ],
                 'intensity': 1,
                 'shadows': {
@@ -88,7 +89,8 @@ export const Config = {
                 }
             }
         },
-        'fog-disabled': { // change to 'fog' to enable
+        'fog': {
+            'enabled': false,
             'type': 'linear',   // 'linear' or 'exponential'
             'color': 0xE6E6E6,
             'density': 0.00025,
@@ -97,11 +99,19 @@ export const Config = {
         },
         'renderer': {
             'ThreeJS': {
-                'useWebGL2': true,
                 // Parameters passed to the renderer when created.
                 //   see https://threejs.org/docs/index.html#api/renderers/WebGLRenderer
-                'antialias': true,
-                'alpha': true,      // there are alpha textures in the scene
+                // 'canvas': null,         // value set by code before passing to ThreeJS
+                // 'context': null,        // value set by code before passing to ThreeJS
+                'precision': 'lowp',    // 'highp', 'mediump', lowp' (default is 'highp')
+                'alpha': true,          // there are alpha textures in the scene
+                'premultipliedAlpha': true, // renderer assumes colors have premultipled alphs
+                'antialias': false,     // enable anti-aliasing
+                'stencil': true,        // drawing buffer has stencil buffer of at least 8 bits
+                'preserveDrawingBuffer': false, // preserve until manually removed
+                'powerPreference': 'default',   // 'high-performace', 'low-power', 'default'
+                'failIfMajorPerformanceCaveat': false,  // see WebGL spec
+                'depth': true,          // depth buffer of greater than 16 bits
                 'logarithmicDepthBuffer': false
             },
             'clearColor': [ 0.1, 0.1, 0.1 ],
@@ -130,21 +140,21 @@ export const Config = {
         'eventPollIntervalMS': 500
     },
     // Connection and debug information when running the WebWorker test
-    'WWTester': {
-        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
-        'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
-        'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
-        'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
-        'initialMakeConnection': {
-            'Transport': 'WW',
-            'TransportURL': './wwtester.js',
-            'Protocol': 'Basil-JSON',
-            'Service': 'SpaceServer',
-            'ServiceAuth': '',
-            'OpenParams': {
+    WWTester: {
+        LogToConsole: false,       // Log to console. Otherwise, use msg to debug BItem
+        GenerateAliveCheck: false, // whether to generate AlvieCheck messages
+        AliveCheckPollMS: 10000,   // ms interval to generate AliveCheck's
+        PrintDebugOnAliveResponse: false, // print message on AliveCheck response
+        initialMakeConnection: {
+            Transport: 'WW',
+            TransportURL: './wwtester.js',
+            Protocol: 'Basil-JSON',
+            Service: 'SpaceServer',
+            ServiceAuth: '',
+            OpenParams: {
                 // 'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-                'LoaderType': 'GLTF'
+                AssetURL: 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                LoaderType: 'GLTF'
             }
         }
     },
@@ -156,6 +166,29 @@ export const Config = {
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true             // print RPC response message
+    }
+};
+
+export interface LightingParameters {
+    ambient: {
+        name: string;
+        color: string;
+        intensity: number;
+        specular: number;
+        diffuse: number;
+        groundColor: number;
+    },
+    // placeholder for the eventual sun system
+    directional: {
+        name: string;
+        color: string;
+        direction: number[];
+        intensity: number;
+        shadows: {
+            bias: number;
+            mapWidth: number;
+            mapHeight: number;
+        }
     }
 };
 

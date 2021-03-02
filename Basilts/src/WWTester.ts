@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { GP } from '@Base/Globals';
+import { GlobalReady } from '@Base/Globals';
 
 import { WWConfig } from '@Base/WWTester.Config.ts';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
@@ -28,7 +28,9 @@ import { Logger, AddLogOutputter } from '@Tools/Logging';
 //    this is a kludge fix.
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-GP.Ready = false;
+// TypeScript issue https://github.com/microsoft/TypeScript/issues/41628
+// @ts-ignore
+GlobalReady = false;
 
 let _basilClient: BasilConnection;
 let _aliveIntervalID: number;

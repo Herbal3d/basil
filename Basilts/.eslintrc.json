@@ -26,6 +26,7 @@
     "rules": {
         // I like to have unused vars around for later development
         "no-unused-vars": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-inferrable-types": "off",
         // I like to terminate if's and functions so the developer knows it's the end
         "@typescript-eslint/no-extra-semi": "off",

@@ -47,10 +47,12 @@
         "production:wwtester": "webpack --config webpack.wwtester.config.js"
     },
     "dependencies": {
+        "@types/three": "^0.125.3",
         "deepmerge": "^4.2.2",
         "js-base64": "^2.5.2",
         "long": "^4.0.0",
-        "npm": "^6.14.4"
+        "npm": "^6.14.4",
+        "three": "^0.126.0"
     },
     "devDependencies": {
         "@types/js-base64": "^3.0.0",

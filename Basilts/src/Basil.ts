@@ -12,11 +12,9 @@
 'use strict';
 
 // Global debugging parameters and variables. "GP.variable"
-import { GP } from '@Base/Globals';
+import { GlobalReady } from '@Base/Globals';
 import { Config } from '@Base/Config';
 import { VERSION } from '@Base/VERSION';
-
-GP.Config = Config;
 
 import { Comm } from '@Comm/Comm';
 import { OpenSessionReqProps } from '@Comm/BMessage';
@@ -100,9 +98,11 @@ if (IsNotNullOrEmpty(configParams)) {
 
 // Names of display regions on web page.
 const container = document.getElementById(Config.page.webGLcontainerId);
-const canvas = document.getElementById(Config.page.webGLcanvasId);
+const canvas = document.getElementById(Config.page.webGLcanvasId) as HTMLCanvasElement;
 
-GP.Ready = true;
+// TypeScript issue https://github.com/microsoft/TypeScript/issues/41628
+// @ts-ignore
+GlobalReady = true;
 
 Logger.info(`Starting Basil version ${VERSION['version-tag']}`);
 
@@ -121,7 +121,7 @@ if (Config.initialMakeConnection) {
             }
             conn.CreateSession(sessionParams) 
             .then ( conn2 => {
-                void Graphics.connectGraphics(conn2);
+                void Graphics.connectGraphics(container, canvas);
                 Logger.debug(`Basiljs: session is opened`);
             })
             .catch( e => {
