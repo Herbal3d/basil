@@ -16,32 +16,44 @@ import { BItem, PropEntry, PropValue } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 
-export const SceneAbilityName = 'Scene';
+export const AssemblyAbilityName = 'Scene';
 
 export const AssetURLProp = 'AssetURL';
 export const AssetLoaderProp = 'AssetLoader';
 
-export function AbilitySceneFromProps(pProps: BKeyedCollection): AbilityScene {
-    return new AbilityScene();
+export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssembly {
+    return new AbilityAssembly(pProps[AssetURLProp], pProps[AssetLoaderProp]);
 };
-export class AbilityScene extends Ability {
-    constructor() {
-        super(SceneAbilityName);
+export class AbilityAssembly extends Ability {
+    _assetURL: PropValue;
+    _assetLoader: PropValue;
+
+    constructor(pAssetURL: string, pAssetLoader: string) {
+        super(AssemblyAbilityName);
+        this._assetURL = pAssetURL;
+        this._assetLoader = pAssetLoader;
     };
 
     addProperties(pBItem: BItem): void {
         pBItem.addProperty({
             name: AssetURLProp,
-            value: 'xx',
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityAssembly)._assetURL;
+            },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                const xx = 5;   // make eslint happy in the short term
+                (pPE.ability as AbilityAssembly)._assetURL = pVal;
             }
         });
         pBItem.addProperty({
             name: AssetLoaderProp,
-            value: 'xx',
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityAssembly)._assetLoader;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                (pPE.ability as AbilityAssembly)._assetLoader = pVal;
+            }
         });
     };
 };
