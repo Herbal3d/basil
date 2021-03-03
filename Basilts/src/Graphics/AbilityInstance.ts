@@ -21,6 +21,8 @@ export const InstanceAbilityName = 'Instance';
 export const InstanceRefItem = 'RefItem'; // either 'SELF' or id of BItem with the geometry
 export const InstancePosProp = 'Pos';
 export const InstanceRotProp = 'Rot';
+export const InstancePosRefProp = 'PosRef';
+export const InstanceRotRefProp = 'RotRef';
 
 export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInstance {
     const newAbil = new AbilityInstance(pProps[InstanceRefItem], pProps[InstancePosProp], pProps[InstanceRotProp] );
@@ -30,12 +32,15 @@ export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInsta
 export class AbilityInstance extends Ability {
     _refItem: PropValue = 'SELF';
     _pos: PropValue = '[0,0,0]';
-    _posCoord: PropValue = 0;
+    _posRef: PropValue = 0;
     _rot: PropValue = '[0,0,0,1]';
-    _rotCoord: PropValue = 0;
+    _rotRef: PropValue = 0;
     
     constructor(pRefItem: string, pPos: string | number[], pRot: string | number[] ) {
         super(InstanceAbilityName);
+        this._refItem = pRefItem;
+        this._pos = <PropValue>(pPos ?? '[0,0,0]');
+        this._rot = <PropValue>(pRot ?? '[0,0,0,1]');
     };
 
     addProperties(pBItem: BItem): void {

@@ -232,10 +232,13 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
         // No response code, must be an incoming request
         switch (pReq.Op) {
             case BMessageOps.CreateItemReq: {
+                Logger.debug(`CreateItem: entry`);
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.CreateItemResp);
                 try {
                     const newBItem = BItems.createFromProps(pReq.IProps);
+                    Logger.debug(`CreateItem: return from createFromProps`);
                     if (newBItem) {
+                        Logger.debug(`CreateItem: have new BItem ${newBItem.id}`);
                         resp.IProps['Id'] = newBItem.id;
                     }
                     else {
@@ -490,7 +493,6 @@ function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
 };
 
 function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Promise<BMessage> {
-    Logger.debug('BasilConnection.SendAndPromiseResponse: entry');
     const responseSession = RandomIdentifier();
     pReq.SCode = responseSession;
     if (Config.Debug && Config.Debug.RPCSent) {

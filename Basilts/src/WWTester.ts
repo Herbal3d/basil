@@ -141,12 +141,46 @@ if (WWConfig.WWTester && WWConfig.WWTester.GenerateAliveCheck) {
 
 async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTestAssetLoader: string): Promise<void> {
     Logger.debug(`LoadTestAsset`);
-    /*
-    let displayableProps = {
-        'displayableurl': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-        'loaderType': 'GLTF',
-        'displayableType': 'meshset'
+    let createdItemId: string;
+    const createItemProps = {
+        InitialAbilities: 'Assembly,Instance',
+        AssetURL: pTestAssetURL,
+        AssetLoader: pTestAssetLoader,
+        RefItem: 'SELF',
+        Pos: '[10, 11, 12]'
     };
+    Logger.debug(`Before CreateItem`);
+    pBasil.CreateItem(createItemProps)
+    .then ( resp => {
+        Logger.debug(`Response from CreateItem`);
+        if (typeof(resp.Exception) === 'undefined') {
+            createdItemId = resp.IProps.Id;
+
+            Logger.debug(`Before RequestProperties`);
+            pBasil.RequestProperties(createdItemId, '')
+            .then ( resp2 => {
+                if (resp2.Exception) {
+                    Logger.debug(`RequestProperties returned error: ${resp.Exception}`);
+                }
+                else {
+                    Logger.debug(`Properties received for item ${createdItemId}`);
+                    Object.keys(resp2.IProps).forEach( key => {
+                        Logger.debug(`   ${key}: ${resp2.IProps[key]}`);
+                    });
+                };
+            })
+            .catch ( e => {
+                Logger.debug(`Exception from RequestProperties: ${ExtractStringError(e)}`);
+            });
+        }
+        else {
+            Logger.debug(`CreateItem returned error: ${resp.Exception}`);
+        };
+    })
+    .catch ( e => {
+        Logger.debug(`Exception from CreateItem: ${ExtractStringError(e)}`);
+    });
+    /*
     let openSessionProps = _basilClient.openSessionProperties;
     // Parameters could have been passed from the invoker (test info in OpenSession req)
     if (openSessionProps) {

@@ -12,13 +12,13 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem } from '@BItem/BItem';
+import { BItem, PropEntry, PropValue } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
 
-import { CreateUniqueId } from '@Base/Tools/Utilities';
-import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { CreateUniqueId } from '@Tools/Utilities';
+import { BKeyedCollection } from '@Tools/bTypes';
 
-export const IdProp: string = 'bitem.id';
+export const IdProp: string = 'Id';
 export const LayerProp: string = 'Layer';
 export const StateProp: string = 'State';
 export const AuthTokenProp: string = 'bitem.authToken';
@@ -41,34 +41,59 @@ export class AbilityBItem extends Ability {
     _id: string;
     _auth: AuthToken;
     _layer: string;
+    _state: BItemState;
+
     constructor(pId: string, pAuth: AuthToken, pLayer: string) {
         super(BItemAbilityName);
-        this._id = pId;
-        this._auth = pAuth;
-        this._layer = pLayer;
+        this._id = pId ?? CreateUniqueId('BItemConstruct');
+        this._auth = pAuth ?? undefined;
+        this._layer = pLayer ?? 'unknown.b.herbal3d.org';
     };
 
     addProperties(pBItem: BItem): void {
         pBItem.addProperty({
             name: IdProp,
-            value: this._id ?? CreateUniqueId('remote'),
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityBItem)._id;
+            },
             setter: undefined
         });
         pBItem.addProperty({
             name: LayerProp,
-            value: this._layer ?? 'org.herbal3d.b.unknown',
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityBItem)._layer;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                (pPE.ability as AbilityBItem)._layer = <string>pVal;
+            }
         });
         pBItem.addProperty({
             name: AuthTokenProp,
-            value: this._auth,
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityBItem)._auth;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                if (pVal instanceof AuthToken) {
+                    (pPE.ability as AbilityBItem)._auth = pVal;
+                }
+                else {
+                    (pPE.ability as AbilityBItem)._auth = new AuthToken(<string>pVal);
+                };
+            },
+            public: false
         });
         pBItem.addProperty({
             name: StateProp,
-            value: BItemState.UNINITIALIZED,
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityBItem)._state;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                (pPE.ability as AbilityBItem)._state = <number>pVal;
+            }
         });
     };
 };

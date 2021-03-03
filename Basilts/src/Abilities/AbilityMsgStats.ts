@@ -12,7 +12,7 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem } from '@BItem/BItem';
+import { BItem, PropValue, PropEntry } from '@BItem/BItem';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 
 export const MessagesReceivedProp: string = 'messagesReceived';
@@ -33,6 +33,10 @@ export function AbilityMsgStatsFromProps(pProps: BKeyedCollection): AbilityMsgSt
 };
 
 export class AbilityMsgStats extends Ability {
+
+    _messagesSent: number = 0;
+    _messagesReceived: number = 0;
+
     constructor() {
         super(MsgStatsAbilityName);
     };
@@ -40,13 +44,23 @@ export class AbilityMsgStats extends Ability {
     addProperties(pBItem: BItem): void {
         pBItem.addProperty({
             name: MessagesReceivedProp,
-            value: 0,
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityMsgStats)._messagesReceived;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                (pPE.ability as AbilityMsgStats)._messagesReceived = <number>pVal;
+            }
         });
         pBItem.addProperty({
             name: MessagesSentProp,
-            value: 0,
             ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityMsgStats)._messagesSent;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                (pPE.ability as AbilityMsgStats)._messagesSent = <number>pVal;
+            }
         });
     };
 };

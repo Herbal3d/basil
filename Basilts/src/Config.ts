@@ -70,16 +70,16 @@ export const Config = {
             // Change interface LightingParameters if any thing is changed here
             'ambient': {
                 'name': 'ambient1',
-                'color': '0x222222',
+                'color': '[34,34,34]',
                 'intensity': 0.9,
                 'specular': 0x505050,
                 'diffuse': 0x505050,
-                'groundColor': 0x000000      // 0x000000
+                'groundColor': '[0,0,0]'
             },
             // placeholder for the eventual sun system
             'directional': {
                 'name': 'directional1',
-                'color': '0xEEEEEE',
+                'color': '[238,238,238]',
                 'direction': [ 1000, 1000, 1000 ],
                 'intensity': 1,
                 'shadows': {
@@ -92,7 +92,7 @@ export const Config = {
         'fog': {
             'enabled': false,
             'type': 'linear',   // 'linear' or 'exponential'
-            'color': 0xE6E6E6,
+            'color': '[230,230,230]',
             'density': 0.00025,
             'near': 1,
             'far': 5000

@@ -31,11 +31,10 @@ export type getterFunction = (pDfd: PropEntry, pD: BItem) => PropValue;
 export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: PropValue) => void;
 export interface PropEntry {
     name: string,               // the property name used to lookup and reference
-    value?: PropValue,          // the value for the property
     getter?: getterFunction,    // option function to call to get value
     setter?: setterFunction,    // option function to call to set value
     ability: Ability,           // the ability associated with this property
-    extra?: any                 // extra value for the entity code
+    public?: boolean             // whether property should be returned
 };
 
 export class BItem {
@@ -46,7 +45,7 @@ export class BItem {
 
     // A utility variable since lots of people do this
     get id(): string {
-        return <string>this.getProp(BItemIdProp);
+        return <string>this.getProp(IdProp);
     };
 
     constructor(pAuth: AuthToken, pLayer?: string) {
@@ -60,6 +59,7 @@ export class BItem {
 
         this._deleteInProgress = false;
 
+        this.setProp(IdProp, id);
         this.setProp(StateProp, BItemState.UNINITIALIZED)
 
         // As a side effect, add this BItem to the collection of BItems
@@ -73,7 +73,7 @@ export class BItem {
                 propValue = prop.getter(prop, this);
             }
             else {
-                propValue = prop.value;
+                propValue = undefined;
             };
         };
         // Clean up the return value if it is not a simple value
@@ -89,9 +89,6 @@ export class BItem {
         if (prop) {
             if (prop.setter) {
                 return prop.setter(prop, this, pVal);
-            }
-            else {
-                prop.value = pVal;
             };
         };
         return;
@@ -110,6 +107,7 @@ export class BItem {
         return val;
     };
     addProperty(pPropEntry: PropEntry): PropEntry {
+        // Logger.debug(`Adding property ${pPropEntry.name} = ${pPropEntry.getter(pPropEntry, this)}`);
         this._props.set(pPropEntry.name, pPropEntry);
         return pPropEntry;
     };
@@ -120,11 +118,18 @@ export class BItem {
         const ret: BKeyedCollection = {};
         this._props.forEach( (val, key) => {
             // TODO: check if key matches the filter
-            ret[key] = val.getter(val, this);
+            let okToReturn = true;
+            if (val.hasOwnProperty('public')) {
+                okToReturn = val.public;
+            };
+            if (okToReturn) {
+                ret[key] = val.getter(val, this);
+            };
         })
         return ret;
     };
     addAbility(pAbility: Ability): void {
+        // Logger.debug(`Adding Ability ${pAbility.name} to ${this.id}`);
         this._abilities.set(pAbility.name, pAbility);
         pAbility.addProperties(this);
     };
@@ -215,5 +220,10 @@ export class BItem {
                 || currentState == BItemState.FAILED
                 || currentState == BItemState.SHUTDOWN;
     };
-
+    DumpProps(): void {
+        Logger.debug('=== Dumping Props');
+        this._props.forEach( (val, key) => {
+            Logger.debug(`     ${key}: ${val.getter(val, this)}`);
+        });
+    };
 };
