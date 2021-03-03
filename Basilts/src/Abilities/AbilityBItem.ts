@@ -89,10 +89,15 @@ export class AbilityBItem extends Ability {
             name: StateProp,
             ability: this,
             getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityBItem)._state;
+                return BItemState[(pPE.ability as AbilityBItem)._state];
             },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                (pPE.ability as AbilityBItem)._state = <number>pVal;
+                if (typeof(pVal) === 'string') {
+                    (pPE.ability as AbilityBItem)._state = BItemState[pVal.toUpperCase() as keyof typeof BItemState];
+                }
+                else {
+                    (pPE.ability as AbilityBItem)._state = <number>pVal;
+                }
             }
         });
     };

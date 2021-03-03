@@ -15,14 +15,14 @@ import { BItem } from '@BItem/BItem';
 import { AbilityFactory } from '@Abilities/AbilityManagement';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
-import { ExtractStringError } from '@Tools/Utilities';
+import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 
 import { Logger } from '@Base/Tools/Logging';
 
 export const BItemIdProp = 'Id';
 export const BItemAuthProp = 'ItemAuthToken';
 export const BItemLayerProp = 'Layer';
-export const BItemInitialAbilityProp = 'InitialAbilties';
+export const BItemInitialAbilityProp = 'InitialAbilities';
 
 // All the BItems that have been created
 export const BItemCollection: Map<string, BItem> = new Map<string,BItem>();
