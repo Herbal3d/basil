@@ -33,7 +33,7 @@ export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromPro
 
 export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability {
     if (_registeredAbilities.has(pName)) {
-        const getFrom: AbilityFromProps = _registeredAbilities.get(pName);
+        const getFrom = _registeredAbilities.get(pName);
         return getFrom(pProps);
     };
     return null;

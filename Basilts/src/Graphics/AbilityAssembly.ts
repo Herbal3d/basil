@@ -17,16 +17,20 @@ import { Ability } from '@Abilities/Ability';
 import { BItem, PropEntry, PropValue } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
-import { ScheduleAfterRequestOperation } from '@Comm/BasilConnection';
 
-import { BKeyedCollection } from '@Base/Tools/bTypes';
-import { LoadSimpleAsset } from './GraphicOps';
+import { BKeyedCollection } from '@Tools/bTypes';
+import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
 
 export const AssemblyAbilityName = 'Assembly';
 
 export const AssetURLProp = 'AssetURL';
 export const AssetLoaderProp = 'AssetLoader';
 export const AssetAuthProp = 'AssetAuth';
+
+interface AssemblyAfterRequestProps {
+    Ability: AbilityAssembly;
+    BItem: BItem;
+};
 
 export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssembly {
     return new AbilityAssembly(pProps[AssetURLProp], pProps[AssetLoaderProp]);
@@ -53,7 +57,6 @@ export class AbilityAssembly extends Ability {
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
                 (pPE.ability as AbilityAssembly)._assetURL = pVal;
                 pBItem.setLoading();
-                ScheduleAfterRequestOperation(LoadAssembly, { Ability: this, BItem: pBItem });
             }
         });
         pBItem.addProperty({
@@ -86,25 +89,22 @@ export class AbilityAssembly extends Ability {
     };
 };
 
-export async function LoadAssembly(pProps: BKeyedCollection): Promise<void> {
-    const ability = pProps['Ability'] as AbilityAssembly;
-    const bitem = pProps['BItem'] as BItem;
+export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<void> {
+    const ability = pProps.Ability;
 
-    const loaderProps: BKeyedCollection = {
-        AssetURL: ability._assetURL,
-        AssetLoader: ability._assetLoader
-    };
-    if (ability._assetAuth) {
-        loaderProps['AssetAuth'] = ability._assetAuth;
+    const loaderProps: LoadAssetParams = {
+        AssetURL: <string>ability._assetURL,
+        AssetLoader: <string>ability._assetLoader,
+        Auth: ability._assetAuth?.token
     };
 
     LoadSimpleAsset(loaderProps)
     .then ( loaded => {
-
-        bitem.setReady();
+        ability._graphicNode = loaded;
+        pProps.BItem.setReady();
     })
     .catch ( err => {
-        bitem.setFailed();
+        pProps.BItem.setFailed();
         throw err;
     });
 };

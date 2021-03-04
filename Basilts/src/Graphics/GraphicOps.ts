@@ -56,15 +56,17 @@ export function PointCameraAt(gPos: string | number[] ) {
     Logger.debug(`Graphics: camera looking at: [${look.x}, ${look.y}, ${look.z}]`);
 };
 
+// Parameter block passed to LoadSimpleAssets
+export interface LoadAssetParams {
+    AssetURL: string;       // URL to load from
+    AssetLoader: string;    // type of loader to use
+    Auth?: string;           // authorization needed to access URL
+    useDRACO?: boolean;      // whether to include DRACO compressed image loader
+    combineInstances?: boolean;  // whether to combine instances
+};
+
 export type ProgressCallback = (pState: string) => void;
 export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallback?: ProgressCallback): Promise<THREE.Object3D> {
-    interface LoadAssetParams {
-        AssetURL: string;       // URL to load from
-        AssetLoader: string;    // type of loader to use
-        Auth: string;           // authorization needed to access URL
-        useDRACO: boolean;      // whether to include DRACO compressed image loader
-        combineInstances: boolean;  // whether to combine instances
-    };
     const parms = <LoadAssetParams>CombineParameters(Config.assetLoader, pProps, {
         AssetURL: undefined,
         AssetLoader: 'gltf',

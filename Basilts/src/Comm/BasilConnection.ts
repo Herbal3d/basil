@@ -241,16 +241,12 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
     }
     else {
         // No response code, must be an incoming request
-        ClearAfterRequestOperationQueue();
         switch (pReq.Op) {
             case BMessageOps.CreateItemReq: {
-                Logger.debug(`CreateItem: entry`);
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.CreateItemResp);
                 try {
                     const newBItem = BItems.createFromProps(pReq.IProps);
-                    Logger.debug(`CreateItem: return from createFromProps`);
                     if (newBItem) {
-                        Logger.debug(`CreateItem: have new BItem ${newBItem.id}`);
                         resp.IId = newBItem.id;
                         resp.IProps['Id'] = newBItem.id;
                     }
@@ -480,7 +476,6 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
             default:
                 break;
         };
-        void DoAfterRequestOperations();
     };
 };
 
@@ -525,34 +520,3 @@ function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Prom
         pContext._proto.Send(pReq);
     });
 };
-
-// Operations can be queued up to do things after the request is complete.
-// Call ScheduleAfterRequestOperation() to schedule action to happen after.
-// The parameter collection is passed to the called action so state can
-//    be passed.
-// Note that the Promise's are not waited for so the actions will be off
-//    running after this is done.
-let _AfterRequestOperationQueue: AfterRequestOp[] = [];
-function ClearAfterRequestOperationQueue() {
-    _AfterRequestOperationQueue = [];
-};
-async function DoAfterRequestOperations(): Promise<void> {
-    if (_AfterRequestOperationQueue.length > 0) {
-        for (const op of _AfterRequestOperationQueue) {
-            void op.action(op.params);
-        };
-    };
-};
-
-interface AfterRequestOp {
-    action: AfterRequestOperation,
-    params: BKeyedCollection
-};
-
-export function ScheduleAfterRequestOperation(pFunc: AfterRequestOperation, pParams?: BKeyedCollection): void {
-    _AfterRequestOperationQueue.push({
-        action: pFunc,
-        params: pParams
-    });
-};
-

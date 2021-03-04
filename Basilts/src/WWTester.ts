@@ -89,14 +89,7 @@ try {
 
                 pProps.connection.Send(pProps.response);
 
-                LoadTestAsset(conn, assetURL, assetLoader)
-                .then( () => {
-                    Logger.debug(`Load test asset complete`);
-                })
-                .catch (e => {
-                    const errMsg = `MakeConnection exception: ${ExtractStringError(e)}`;
-                    Logger.error(errMsg);
-                });
+                void LoadTestAsset(conn, assetURL, assetLoader)
             }
             else {
                 const errMsg = `OpenSession did not have a test URL: ${JSONstringify(pProps.request.IProps)}`;

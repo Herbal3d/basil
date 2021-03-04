@@ -24,7 +24,7 @@ export const Config = {
         'TransportURL': './wwtester.js',
         'Protocol': 'Basil-JSON',
         'Service': 'SpaceServer',
-        'ServiceAuth': '',
+        'ServiceAuth': '123456789012345678901234567890',
         'OpenParams': {
             'AssetURL': '',
             'LoaderType': 'GLTF'
@@ -151,10 +151,10 @@ export const Config = {
             TransportURL: './wwtester.js',
             Protocol: 'Basil-JSON',
             Service: 'SpaceServer',
-            ServiceAuth: '',
+            ServiceAuth: '111999555222000777111222',
             OpenParams: {
-                // 'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                AssetURL: 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                AssetURL: 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                // AssetURL: 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
                 LoaderType: 'GLTF'
             }
         }

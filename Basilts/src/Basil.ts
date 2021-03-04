@@ -55,7 +55,7 @@ if (IsNullOrEmpty(configParams)) {
                 'TransportURL': './wwtester.js',
                 'Protocol': 'Basil-JSON',
                 'Service': 'SpaceServer',
-                'ClientAuth': undefined,
+                'ServiceAuth': '12345678901234567890',
                 'OpenParams': {
                     'AssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
                     'LoaderType': 'GLTF'
