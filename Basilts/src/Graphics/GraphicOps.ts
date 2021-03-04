@@ -23,7 +23,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { BVHLoader, BVH } from 'three/examples/jsm/loaders/BVHLoader';
 
-import { BKeyedCollection } from '@Tools/bTypes';
+import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 import { CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
 
@@ -146,4 +146,28 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
         throw `No loader for type ${parms.AssetLoader}`;
     };
     return asset;
+};
+
+export type DelayedGraphicsOperation = (pProp: BKeyedCollection) => Promise<void>;
+interface DelayedGraphicsEntry {
+    op: DelayedGraphicsOperation,
+    params: BKeyedCollection
+};
+
+const _DelayedGraphicsOperations: DelayedGraphicsEntry[] = [];
+
+
+export function ScheduleDelayedGraphicsOperation(pOp: DelayedGraphicsOperation, pParams: BKeyedCollection): void {
+    _DelayedGraphicsOperations.push({
+        op: pOp,
+        params: pParams
+    });
+};
+
+export async function ProcessDelayedGraphicsOperations(): Promise<void> {
+    while (_DelayedGraphicsOperations.length > 0) {
+        Logger.debug(`GraphicsOp.ProcessDelayedGraphicsOperations: doing delayed op`);
+        const opEntry = _DelayedGraphicsOperations.pop();
+        void opEntry.op(opEntry.params);
+    };
 };

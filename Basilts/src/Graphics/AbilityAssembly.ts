@@ -19,7 +19,8 @@ import { BItem, PropEntry, PropValue } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
+import { LoadSimpleAsset, LoadAssetParams, ScheduleDelayedGraphicsOperation } from '@Graphics/GraphicOps';
+import { Logger } from '@Base/Tools/Logging';
 
 export const AssemblyAbilityName = 'Assembly';
 
@@ -48,7 +49,7 @@ export class AbilityAssembly extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
-        pBItem.addProperty({
+        const AssetURLPropEntry = pBItem.addProperty({
             name: AssetURLProp,
             ability: this,
             getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
@@ -56,9 +57,17 @@ export class AbilityAssembly extends Ability {
             },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
                 (pPE.ability as AbilityAssembly)._assetURL = pVal;
+                Logger.debug(`AbilityAssembly.AssetURL.set: setting BItem to LOADING and scheduling load`);
                 pBItem.setLoading();
+                ScheduleDelayedGraphicsOperation(LoadAssembly, {
+                    Ability: this,
+                    BItem: pBItem
+                });
             }
         });
+        // Since the previous property's setter has side effects, we need to invoke it now
+        AssetURLPropEntry.setter(AssetURLPropEntry, pBItem, this._assetURL);
+
         pBItem.addProperty({
             name: AssetLoaderProp,
             ability: this,
@@ -91,6 +100,7 @@ export class AbilityAssembly extends Ability {
 
 export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<void> {
     const ability = pProps.Ability;
+    Logger.debug(`AbilityAssembly: LoadAssembly(${ability._assetURL})`);
 
     const loaderProps: LoadAssetParams = {
         AssetURL: <string>ability._assetURL,

@@ -71,7 +71,7 @@ if (IsNotNullOrEmpty(configParams)) {
     try {
         const unpacked = Base64.decode(configParams);
         const newParams = (JSON.parse(unpacked) as BKeyedCollection);
-        Logger.debug(`Basiljs: newParams: ${unpacked}`);
+        Logger.debug(`Basilts: newParams: ${unpacked}`);
         if (IsNotNullOrEmpty(newParams)) {
             // Could do this assign but then the caller could change any configuration param.
             // Only the 'initialMakeConnection' parameter is passed in for more security.
@@ -92,7 +92,7 @@ if (IsNotNullOrEmpty(configParams)) {
     }
     catch(e) {
         const se = <SyntaxError>e;
-        Logger.debug(`Basiljs: failed parsing option config: ${se.message}`);
+        Logger.debug(`Basilts: failed parsing option config: ${se.message}`);
     };
 };
 
@@ -108,7 +108,7 @@ Logger.info(`Starting Basil version ${VERSION['version-tag']}`);
 
 // If there are connection parameters, start the first connection
 if (Config.initialMakeConnection) {
-    Logger.debug('Basiljs: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
+    Logger.debug('Basilts: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
     try {
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
@@ -122,7 +122,7 @@ if (Config.initialMakeConnection) {
             conn.CreateSession(sessionParams) 
             .then ( conn2 => {
                 void Graphics.connectGraphics(container, canvas);
-                Logger.debug(`Basiljs: session is opened`);
+                Logger.debug(`Basilts: session is opened`);
             })
             .catch( e => {
                 Logger.error(`CreateSession exception: ${ExtractStringError(e)}`);
@@ -134,6 +134,6 @@ if (Config.initialMakeConnection) {
     }
     catch ( e ) {
         const err = ExtractStringError(e);
-        Logger.debug(`Basiljs: OpenSession failed: ${err}`);
+        Logger.debug(`Basilts: OpenSession failed: ${err}`);
     };
 };

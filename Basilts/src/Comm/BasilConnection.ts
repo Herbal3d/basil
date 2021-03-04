@@ -22,6 +22,7 @@ import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 import { IdProp } from '@Abilities/AbilityBItem';
+import { ProcessDelayedGraphicsOperations } from '@Graphics/GraphicOps';
 
 import { CombineParameters, ExtractStringError, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
@@ -476,6 +477,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
             default:
                 break;
         };
+        void ProcessDelayedGraphicsOperations();
     };
 };
 
