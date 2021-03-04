@@ -51,6 +51,8 @@ export const ServiceBasilServer = 'BasilServer';
 
 export const OpenBasilConnections: Map<string, BasilConnection> = new Map<string,BasilConnection>();
 
+export type AfterRequestOperation = ( pProps: BKeyedCollection ) => Promise<void>;
+
 export class BasilConnection extends BItem {
     _params: BKeyedCollection;
     _proto: BProtocol;
@@ -114,6 +116,7 @@ export class BasilConnection extends BItem {
     // Send a message over this connection
     Send(pMsg: BMessage) {
         if (this._proto) {
+            pMsg.Auth = this.OutgoingAuth.token;
             this._proto.Send(pMsg);
         };
     };
@@ -206,6 +209,14 @@ export class BasilConnection extends BItem {
 
 // Process the incoming message
 async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BProtocol): Promise<void> {
+    if (Config.security.ShouldCheckBasilServerRequestAuth && ((pReq.Auth ?? 'UNKNOWN') !== pContext.IncomingAuth.token) ) {
+        // The sender is not authorized!
+        Logger.error(`BasilConnection; unauthorized. rcvd=${pReq.Auth}, shouldBe=${pContext.IncomingAuth.token}`);
+        const resp: BMessage = MakeResponse(pReq, BMessageOps.UnknownResp);
+        resp.Exception = 'Not authorized';
+        pContext.Send(resp);
+        return;
+    };
     if (pReq.RCode) {
         // Has a response code. Must be a response to an RPC
         const session = pContext._rpcSessions.get(pReq.RCode);
@@ -230,6 +241,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
     }
     else {
         // No response code, must be an incoming request
+        ClearAfterRequestOperationQueue();
         switch (pReq.Op) {
             case BMessageOps.CreateItemReq: {
                 Logger.debug(`CreateItem: entry`);
@@ -239,6 +251,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     Logger.debug(`CreateItem: return from createFromProps`);
                     if (newBItem) {
                         Logger.debug(`CreateItem: have new BItem ${newBItem.id}`);
+                        resp.IId = newBItem.id;
                         resp.IProps['Id'] = newBItem.id;
                     }
                     else {
@@ -296,6 +309,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 else {
                     resp.Exception = 'BItem not found';
                 };
+                resp.IId = pReq.IId;
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('AddAbility'), {
                     request: pReq,
                     response: resp,
@@ -324,6 +338,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 else {
                     resp.Exception = 'BItem not found';
                 };
+                resp.IId = pReq.IId;
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('RemoveAbility'), {
                     request: pReq,
                     response: resp,
@@ -341,7 +356,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     resp.IProps = bitem.getProperties(filter);
                     resp.IId = bitem.id;
                 };
-
+                resp.IId = pReq.IId;
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('RequestProperties'), {
                     request: pReq,
                     response: resp,
@@ -362,6 +377,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 else {
                     resp.Exception = 'BItem not found';
                 };
+                resp.IId = pReq.IId;
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('UpdateProperties'), {
                     request: pReq,
                     response: resp,
@@ -464,6 +480,7 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
             default:
                 break;
         };
+        void DoAfterRequestOperations();
     };
 };
 
@@ -506,6 +523,36 @@ function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Prom
             reject,
         } );
         pContext._proto.Send(pReq);
+    });
+};
+
+// Operations can be queued up to do things after the request is complete.
+// Call ScheduleAfterRequestOperation() to schedule action to happen after.
+// The parameter collection is passed to the called action so state can
+//    be passed.
+// Note that the Promise's are not waited for so the actions will be off
+//    running after this is done.
+let _AfterRequestOperationQueue: AfterRequestOp[] = [];
+function ClearAfterRequestOperationQueue() {
+    _AfterRequestOperationQueue = [];
+};
+async function DoAfterRequestOperations(): Promise<void> {
+    if (_AfterRequestOperationQueue.length > 0) {
+        for (const op of _AfterRequestOperationQueue) {
+            void op.action(op.params);
+        };
+    };
+};
+
+interface AfterRequestOp {
+    action: AfterRequestOperation,
+    params: BKeyedCollection
+};
+
+export function ScheduleAfterRequestOperation(pFunc: AfterRequestOperation, pParams?: BKeyedCollection): void {
+    _AfterRequestOperationQueue.push({
+        action: pFunc,
+        params: pParams
     });
 };
 

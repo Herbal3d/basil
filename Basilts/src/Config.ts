@@ -35,7 +35,7 @@ export const Config = {
         'protocols': [ 'Basil-JSON', 'Basil-FB', 'Basil-PB' ],
     },
     'security': {
-        'ShouldCheckBasilServerRequestAuth': true,
+        'ShouldCheckBasilServerRequestAuth': false,
     },
     // Parameters for the main display page
     'page': {
@@ -56,6 +56,7 @@ export const Config = {
         'graphicsId': 'org.basil.b.graphics',
         'engine': 'ThreeJS',
         'camera': {
+            // Change interface CameraParameters if any thing is changed here
             'cameraId': '1.camera.b.basil.org',
             'cameraInstanceId': '1.camera.instance.b.basil.org',
             'name': 'camera1',
@@ -169,6 +170,17 @@ export const Config = {
     }
 };
 
+export interface CameraParameters {
+    cameraId: string,
+    cameraInstanceId: string,
+    name: string,
+    initialCameraPosition: number[],
+    initialViewDistance: number,
+    initialCameraLookAt: number[],
+    addCameraHelper: boolean,
+    addAxesHelper: boolean,
+    axesHelperSize: number
+};
 export interface LightingParameters {
     ambient: {
         name: string;

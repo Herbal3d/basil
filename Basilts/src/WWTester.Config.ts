@@ -15,7 +15,7 @@ export const WWConfig = {
         'protocols': [ 'Basil-JSON', 'Basil-FB', 'Basil-PB' ],
     },
     'security': {
-        'ShouldCheckBasilServerRequestAuth': true,
+        'ShouldCheckBasilServerRequestAuth': false,
     },
     // Parameters for the main display page
     'page': {

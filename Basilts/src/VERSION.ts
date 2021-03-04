@@ -1,5 +1,5 @@
 export const VERSION = {
     "npm-package-version": "2.1.0",
-    "git-commit": "e7e3314b3020b26aa79b7b14e8f23207d65a051a",
-    "version-tag": "2.1.0-20210303-e7e3314"
+    "git-commit": "a1d9c8109cffaada88aa2c215b18a0fb4a659ab1",
+    "version-tag": "2.1.0-20210304-a1d9c81"
 }

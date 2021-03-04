@@ -11,15 +11,22 @@
 
 'use strict';
 
+import { Object3D } from 'three';
+
 import { Ability } from '@Abilities/Ability';
 import { BItem, PropEntry, PropValue } from '@BItem/BItem';
 
+import { AuthToken } from '@Tools/Auth';
+import { ScheduleAfterRequestOperation } from '@Comm/BasilConnection';
+
 import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { LoadSimpleAsset } from './GraphicOps';
 
 export const AssemblyAbilityName = 'Assembly';
 
 export const AssetURLProp = 'AssetURL';
 export const AssetLoaderProp = 'AssetLoader';
+export const AssetAuthProp = 'AssetAuth';
 
 export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssembly {
     return new AbilityAssembly(pProps[AssetURLProp], pProps[AssetLoaderProp]);
@@ -27,6 +34,8 @@ export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssem
 export class AbilityAssembly extends Ability {
     _assetURL: PropValue;
     _assetLoader: PropValue;
+    _assetAuth: AuthToken;
+    _graphicNode: Object3D;
 
     constructor(pAssetURL: string, pAssetLoader: string) {
         super(AssemblyAbilityName);
@@ -43,6 +52,8 @@ export class AbilityAssembly extends Ability {
             },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
                 (pPE.ability as AbilityAssembly)._assetURL = pVal;
+                pBItem.setLoading();
+                ScheduleAfterRequestOperation(LoadAssembly, { Ability: this, BItem: pBItem });
             }
         });
         pBItem.addProperty({
@@ -55,6 +66,45 @@ export class AbilityAssembly extends Ability {
                 (pPE.ability as AbilityAssembly)._assetLoader = pVal;
             }
         });
+        pBItem.addProperty({
+            name: AssetAuthProp,
+            ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityAssembly)._assetAuth?.token;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                if (typeof(pVal) === 'string') {
+                    (pPE.ability as AbilityAssembly)._assetAuth = new AuthToken(pVal);
+                }
+                else {
+                    if (pVal instanceof AuthToken) {
+                        (pPE.ability as AbilityAssembly)._assetAuth = pVal;
+                    };
+                };
+            }
+        });
     };
 };
 
+export async function LoadAssembly(pProps: BKeyedCollection): Promise<void> {
+    const ability = pProps['Ability'] as AbilityAssembly;
+    const bitem = pProps['BItem'] as BItem;
+
+    const loaderProps: BKeyedCollection = {
+        AssetURL: ability._assetURL,
+        AssetLoader: ability._assetLoader
+    };
+    if (ability._assetAuth) {
+        loaderProps['AssetAuth'] = ability._assetAuth;
+    };
+
+    LoadSimpleAsset(loaderProps)
+    .then ( loaded => {
+
+        bitem.setReady();
+    })
+    .catch ( err => {
+        bitem.setFailed();
+        throw err;
+    });
+};

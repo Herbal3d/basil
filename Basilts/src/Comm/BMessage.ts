@@ -12,6 +12,7 @@
 
 export enum BMessageOps {
     UnknownReq                  = 0,
+    UnknownResp                 = 1,
     CreateItemReq               = 101,
     CreateItemResp              = 102,
     DeleteItemReq               = 103,

@@ -11,18 +11,13 @@
 
 'use static';
 
-import { Config, LightingParameters } from '@Base/Config';
+import { Config, LightingParameters, CameraParameters } from '@Base/Config';
 import { GlobalReady } from '@Base/Globals';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { BVHLoader } from 'three/examples/jsm/loaders/BVHLoader';
 
+import { PointCameraAt, SetCameraPosition } from '@Graphics/GraphicOps';
 import { RegisterAbility } from '@Abilities/AbilityManagement';
 import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Graphics/AbilityAssembly';
 import { InstanceAbilityName, AbilityInstanceFromProps } from '@Graphics/AbilityInstance';
@@ -135,35 +130,6 @@ export const Graphics = {
         Graphics._startRendering();
     },
 
-    // Function to move the camera from where it is to a new place.
-    // This is movement from external source which could conflict with AR
-    //     and VR camera control.
-    SetCameraPosition(gPos: string | number[]) {
-        // TODO: conversion of gPos to lPos
-        const pos = ParseThreeTuple(gPos);
-        Graphics._camera.position.fromArray(pos);
-        Logger.debug(`Graphics: camera position: [${pos[0]}, ${pos[1]}, ${pos[2]}]`);
-    },
-
-    // Pass position as either THREE.Vector3 or array of three numbers
-    PointCameraAt(gPos: string | number[] ) {
-        const lookArray = ParseThreeTuple(gPos);
-        const look = new THREE.Vector3(lookArray[0], lookArray[1], lookArray[2]);
-        if (Graphics._cameraControl) {
-            Graphics._cameraControl.target = look;
-            Graphics._cameraControl.update();
-        }
-        else {
-            Graphics._camera.lookAt(look);
-        }
-        // Move axes helper to where the camera is looking
-        if (Graphics._axesHelper) {
-            Graphics._axesHelper.geometry.translate(look.x, look.y, look.z);
-        }
-
-        Logger.debug(`Graphics: camera looking at: [${look.x}, ${look.y}, ${look.z}]`);
-    },
-
     _startRendering() {
         if (Graphics._renderer) {
             // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -218,13 +184,13 @@ export const Graphics = {
         }
 
         // Set the parameter default values if not specified in the config file
-        const parms = CombineParameters(Config.webgl.camera, passedParms, {
-            'name': 'cameraX',
-            'initialViewDistance': 1000,
-            'initialCameraPosition': [200, 50, 200],
-            'initialCameraLookAt': [ 0, 0, 0],
-            'addCameraHelper': false,
-            'addAxesHelper': false
+        const parms = <CameraParameters>CombineParameters(Config.webgl.camera, passedParms, {
+            name: 'cameraX',
+            initialViewDistance: 1000,
+            initialCameraPosition: [200, 50, 200],
+            initialCameraLookAt: [ 0, 0, 0],
+            addCameraHelper: false,
+            addAxesHelper: false
         });
 
         Graphics._camera = new THREE.PerspectiveCamera( 75,
@@ -233,8 +199,8 @@ export const Graphics = {
         // camera.up = new THREE.Vector3(0, 1, 0);
         Graphics._scene.add(Graphics._camera);
 
-        Graphics.SetCameraPosition(parms.initialCameraPosition);
-        Graphics.PointCameraAt(parms.initialCameraLookAt);
+        SetCameraPosition(parms.initialCameraPosition);
+        PointCameraAt(parms.initialCameraLookAt);
 
         if (parms.addCameraHelper) {
             Graphics._cameraHelper = new THREE.CameraHelper(Graphics._camera);
