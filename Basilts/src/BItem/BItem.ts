@@ -15,13 +15,13 @@ import { Config } from '@Base/Config';
 
 import { Ability } from '@Abilities/Ability';
 import { AbilityBItem, BItemState, IdProp, StateProp } from '@Abilities/AbilityBItem';
-import { BItemIdProp, BItems } from '@BItem/BItems';
+import { BItems } from '@BItem/BItems';
 
 import { AuthToken } from '@Tools/Auth';
 
-import { Logger } from '@Base/Tools/Logging';
 import { CreateUniqueId } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { Logger } from '@Base/Tools/Logging';
 
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
@@ -143,16 +143,16 @@ export class BItem {
         return this.getProp(StateProp) === BItemState.READY;
     }
     setReady(): void {
-        void this.setProp('state', BItemState.READY)
+        void this.setProp(StateProp, BItemState.READY)
     };
     setFailed(): void {
-        void this.setProp('state', BItemState.FAILED)
+        void this.setProp(StateProp, BItemState.FAILED)
     };
     setLoading(): void {
-        void this.setProp('state', BItemState.LOADING)
+        void this.setProp(StateProp, BItemState.LOADING)
     };
     setShutdown(): void {
-        void this.setProp('state', BItemState.SHUTDOWN)
+        void this.setProp(StateProp, BItemState.SHUTDOWN)
     };
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.

@@ -29,6 +29,7 @@ export interface MakeConnectionRespProps {
 };
 export interface OpenSessionReqProps {
     BasilVersion: string;   // version string for Basil
+    ClientAuth: string      // token to use when talking back to me
     // The Test* props are for WWTester and causes it to create the specified asset.
     //    These are not use for normal SpaceServer operation.
     //    They usually come from the OpenParams prop in the MakeConnectionReq

@@ -113,7 +113,8 @@ if (Config.initialMakeConnection) {
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
             const sessionParams: OpenSessionReqProps = {
-                BasilVersion: VERSION['version-tag']
+                BasilVersion: VERSION['version-tag'],
+                ClientAuth: conn.IncomingAuth.token
             };
             if (Config.initialMakeConnection.OpenParams) {
                 sessionParams.TestAssetURL = Config.initialMakeConnection.OpenParams.AssetURL;

@@ -1,4 +1,4 @@
-// Copyright 2021 Robert Adams
+// Copyright 2021 Robert Adams.ClientAuth
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -23,6 +23,7 @@ import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 import { IdProp } from '@Abilities/AbilityBItem';
 import { ProcessDelayedGraphicsOperations } from '@Graphics/GraphicOps';
+import { VERSION } from '@Base/VERSION';
 
 import { CombineParameters, ExtractStringError, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
@@ -388,6 +389,9 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
             // This is explected to be done by the event subscriber
             case BMessageOps.OpenSessionReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.OpenSessionResp);
+                if (pReq.IProps?.hasOwnProperty('ClientAuth')) {
+                    pContext.OutgoingAuth = new AuthToken(pReq.IProps['ClientAuth']);
+                };
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('OpenSession'), {
                     request: pReq,
                     response: resp,
@@ -439,7 +443,8 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 try {
                     const bconnection = await Comm.MakeConnection(params);
                     const openProps: OpenSessionReqProps = {
-                        BasilVersion: "I dont' know"
+                        BasilVersion: VERSION['version-tag'],
+                        ClientAuth: pContext.IncomingAuth.token
                     };
                     for ( const prop of Object.keys(pReq.IProps)) {
                         (openProps as BKeyedCollection)[prop] = pReq.IProps

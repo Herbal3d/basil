@@ -16,7 +16,6 @@ import { Config } from '@Entry/EntryConfig';
 import { ClickOpLoginOpenSim } from '@Entry/LoginOpenSim';
 
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
-import { BKeyedCollection } from '@Base/Tools/bTypes.js';
 import { Logger, initLogging } from '@Tools/Logging';
 
 import { Base64 } from 'js-base64';
