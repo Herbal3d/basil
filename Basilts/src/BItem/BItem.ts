@@ -13,6 +13,8 @@
 
 import { Config } from '@Base/Config';
 
+import { Object3D } from 'three';
+
 import { Ability } from '@Abilities/Ability';
 import { AbilityBItem, BItemState, IdProp, StateProp } from '@Abilities/AbilityBItem';
 import { BItems } from '@BItem/BItems';
@@ -26,7 +28,7 @@ import { Logger } from '@Base/Tools/Logging';
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
 //    is defined for that property.
-export type PropValue = number | string | AuthToken;
+export type PropValue = number | string | AuthToken | Object3D;
 export type getterFunction = (pDfd: PropEntry, pD: BItem) => PropValue;
 export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: PropValue) => void;
 export interface PropEntry {
@@ -137,8 +139,13 @@ export class BItem {
     };
     addAbility(pAbility: Ability): void {
         // Logger.debug(`Adding Ability ${pAbility.name} to ${this.id}`);
-        this._abilities.set(pAbility.name, pAbility);
-        pAbility.addProperties(this);
+        if (!this._abilities.has(pAbility.name)) {
+            this._abilities.set(pAbility.name, pAbility);
+            pAbility.addProperties(this);
+        }
+        else {
+            Logger.error(`BItem.addAbility: adding two of same type: ${pAbility.name}, BItem=${this.id}`);
+        };
     };
     removeAbility(pAbilityName: string): void {
         this._abilities.delete(pAbilityName);
@@ -169,7 +176,7 @@ export class BItem {
     //    events when they existw
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
-    async WhenReady(timeoutMS: number): Promise<BItem> {
+    async WhenReady(timeoutMS?: number): Promise<BItem> {
         if (this.getState() === BItemState.READY) {
             // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
             return this;

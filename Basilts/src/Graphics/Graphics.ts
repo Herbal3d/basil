@@ -27,6 +27,7 @@ import { TopicEntry } from '@Eventing/TopicEntry';
 import { CombineParameters, ParseThreeTuple } from '@Tools/Utilities';
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
+import { Object3D } from 'three';
 
 export const Graphics = {
     _container: <HTMLElement>undefined,
@@ -146,6 +147,7 @@ export const Graphics = {
     // Do per-frame updates and then render the frame
     _doRendering() {
         if (GlobalReady && Graphics._scene && Graphics._camera) {
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             requestAnimationFrame(Graphics._doRendering);
 
             Graphics.frameNum++;
@@ -370,7 +372,7 @@ export const Graphics = {
     },
 
     // disposeHierarchy (YOUR_OBJECT3D, disposeNode);
-    _disposeHierarchy(node: THREE.Object3D) {
+    _disposeHierarchy(node: THREE.Object3D): void {
         for (let i = node.children.length - 1; i >= 0; i--) {
             const child = node.children[i];
             Graphics._disposeHierarchy(child);
@@ -379,10 +381,17 @@ export const Graphics = {
         Graphics._disposeNode(node);
     },
 
-    _disposeScene(scene: THREE.Scene) {
+    _disposeScene(scene: THREE.Scene): void {
         for (let ii = scene.children.length - 1; ii >= 0; ii--) {
             Graphics._disposeHierarchy(scene.children[ii]);
         }
+    },
+
+    addNodeToWorldView(pNode: Object3D): void {
+        Graphics._groupWorldRel.add(pNode);
+    },
+    addNodeToCameraView(pNode: Object3D): void {
+        Graphics._groupCameraRel.add(pNode);
     }
 
 };

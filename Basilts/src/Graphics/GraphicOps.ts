@@ -26,8 +26,9 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { BVHLoader, BVH } from 'three/examples/jsm/loaders/BVHLoader';
 
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
-import { CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
+import { JSONstringify, CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
+import { Object3D } from 'three';
 
 // Function to move the camera from where it is to a new place.
 // This is movement from external source which could conflict with AR
@@ -108,6 +109,7 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
         // To complicate things, ThreeJS loaders return different things
         loader.load(requestURL, (loaded: GLTF | THREE.Group | BVH | Collada) => {
             // Successful load
+            Logger.debug(`Graphics.LoadSimpleAsset: loaded`);
             if (loaded instanceof THREE.Group) {
                 asset = loaded;
             }
@@ -169,17 +171,44 @@ export function ScheduleDelayedGraphicsOperation(pOp: DelayedGraphicsOperation, 
 export async function ProcessDelayedGraphicsOperations(): Promise<void> {
     while (_DelayedGraphicsOperations.length > 0) {
         Logger.debug(`GraphicsOp.ProcessDelayedGraphicsOperations: doing delayed op`);
-        const opEntry = _DelayedGraphicsOperations.pop();
+        const opEntry = _DelayedGraphicsOperations.shift();
         void opEntry.op(opEntry.params);
     };
 };
 
 export interface PlaceInWorldProps {
+    Name: string,
     Pos: number[];
     PosCoord: CoordSystem;
     Rot: number[];
     RosCoord: number;
+    Object: Object3D;
 };
-export function PlaceInWorld(pParams: PlaceInWorldProps): void {
-    const x=5;  // pacify ESLint for the moment
+export function PlaceInWorld(pParams: PlaceInWorldProps): Object3D {
+    try {
+        const worldNode = new THREE.Group();
+        worldNode.position.fromArray(pParams.Pos);
+        worldNode.quaternion.fromArray(pParams.Rot);
+        worldNode.name = pParams.Name;  // usually the holding BItem name
+        if (Array.isArray(pParams.Object)) {
+            for (const piece of (pParams.Object as Object3D[])) {
+                worldNode.add(piece.clone())
+            };
+        }
+        else {
+            worldNode.add(pParams.Object.clone());
+        };
+        if (pParams.PosCoord == CoordSystem.CAMERA) {
+            // item is camera relative
+            Graphics.addNodeToCameraView(worldNode);
+        }
+        else {
+            // item is world coordinate relative
+            Graphics.addNodeToWorldView(worldNode);
+        };
+        return worldNode;
+    }
+    catch (e) {
+        Logger.error(`Graphics.PlaceInWorld: Exception adding. e=${ExtractStringError(e)}`);
+    };
 };

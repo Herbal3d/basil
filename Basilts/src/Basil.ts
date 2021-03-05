@@ -100,6 +100,10 @@ if (IsNotNullOrEmpty(configParams)) {
 const container = document.getElementById(Config.page.webGLcontainerId);
 const canvas = document.getElementById(Config.page.webGLcanvasId) as HTMLCanvasElement;
 
+// Get the graphics syste running
+Graphics.connectGraphics(container, canvas);
+Graphics.Start();
+
 // TypeScript issue https://github.com/microsoft/TypeScript/issues/41628
 // @ts-ignore
 GlobalReady = true;
@@ -122,7 +126,6 @@ if (Config.initialMakeConnection) {
             }
             conn.CreateSession(sessionParams) 
             .then ( conn2 => {
-                void Graphics.connectGraphics(container, canvas);
                 Logger.debug(`Basilts: session is opened`);
             })
             .catch( e => {

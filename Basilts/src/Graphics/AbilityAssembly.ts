@@ -27,6 +27,7 @@ export const AssemblyAbilityName = 'Assembly';
 export const AssetURLProp = 'AssetURL';
 export const AssetLoaderProp = 'AssetLoader';
 export const AssetAuthProp = 'AssetAuth';
+export const AssetRepresentationProp = 'AssetRepresentation';
 
 interface AssemblyAfterRequestProps {
     Ability: AbilityAssembly;
@@ -95,6 +96,18 @@ export class AbilityAssembly extends Ability {
                 };
             }
         });
+        // All abilities that create in-world representations present this property
+        pBItem.addProperty({
+            name: AssetRepresentationProp,
+            ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                return (pPE.ability as AbilityAssembly)._graphicNode;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                Logger.error(`AbilityAssembly.set.AssetRepresentation: attempt to set value`);
+            },
+            public: false       // the outside world can't see this one
+        });
     };
 };
 
@@ -110,10 +123,12 @@ export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<v
 
     LoadSimpleAsset(loaderProps)
     .then ( loaded => {
+        Logger.debug(`AbilityAssembly: LoadAssembly: successful load`);
         ability._graphicNode = loaded;
         pProps.BItem.setReady();
     })
     .catch ( err => {
+        Logger.debug(`AbilityAssembly: LoadAssembly: failed load`);
         pProps.BItem.setFailed();
         throw err;
     });

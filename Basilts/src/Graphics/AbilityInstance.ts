@@ -11,12 +11,18 @@
 
 'use strict';
 
+import { Object3D } from 'three';
+
 import { Ability } from '@Abilities/Ability';
 import { BItem, PropEntry, PropValue } from '@BItem/BItem';
+import { BItems } from '@BItem/BItems';
 import { CoordSystem } from '@Comm/BMessage';
 
+import { ParseThreeTuple, ParseFourTuple, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
-import { PropertyBinding } from 'three';
+import { PlaceInWorld, PlaceInWorldProps, ScheduleDelayedGraphicsOperation } from './GraphicOps';
+import { AssetRepresentationProp } from './AbilityAssembly';
+import { Logger } from '@Base/Tools/Logging';
 
 export const InstanceAbilityName = 'Instance';
 
@@ -31,12 +37,22 @@ export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInsta
     return newAbil;
 };
 
+export interface InstanceAfterRequestProps {
+    Ability: AbilityInstance;
+    RefItem: string;
+    Name: string;
+};
+
+
 export class AbilityInstance extends Ability {
     _refItem: PropValue = 'SELF';
     _pos: PropValue = '[0,0,0]';
+    _posArray: number[] = [0,0,0];      // value of POS that is a number array
     _posRef: PropValue = 0;
     _rot: PropValue = '[0,0,0,1]';
+    _rotArray: number[] = [0,0,0,1];    // value of ROT that is a number array
     _rotRef: PropValue = 0;
+    _worldObject: Object3D;
     
     constructor(pRefItem: string, pPos: string | number[], pRot: string | number[] ) {
         super(InstanceAbilityName);
@@ -58,17 +74,55 @@ export class AbilityInstance extends Ability {
                 }
                 (pPE.ability as AbilityInstance)._refItem = pVal;
                 // TODO: get pointer to graphics item for quick access
+                ScheduleDelayedGraphicsOperation(InstanceIntoWorld, {
+                    Ability: this,
+                    Name: pBItem.id
+                })
             }
         });
         // Since the above property has a computed value, set the balue so it get updated
         propEntry.setter(propEntry, pBItem, this._refItem);
 
-        pBItem.addProperty({
+        pBItem.addProperty({            // POS
             name: InstancePosProp,
             ability: this,
             getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
                 // TODO: fetch value from graphics engine
                 return (pPE.ability as AbilityInstance)._pos;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                const ability = pPE.ability as AbilityInstance;
+                ability._pos = pVal;
+                ability._posArray = ParseThreeTuple(pVal as string | number[])
+                if (ability._worldObject) {
+                    ability._worldObject.position.fromArray(ability._posArray);
+                };
+                // TODO: push value into graphics engine
+            }
+        });
+        pBItem.addProperty({            // ROT
+            name: InstanceRotProp,
+            ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                // TODO: fetch value from graphics engine
+                return (pPE.ability as AbilityInstance)._rot;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                const ability = pPE.ability as AbilityInstance;
+                ability._rot = pVal;
+                ability._rotArray = ParseFourTuple(pVal as string | number[]);
+                if (ability._worldObject) {
+                    ability._worldObject.rotation.fromArray(ability._rotArray);
+                };
+                // TODO: push value into graphics engine
+            }
+        });
+        pBItem.addProperty({            // POSREF
+            name: InstancePosRefProp,
+            ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                // TODO: fetch value from graphics engine
+                return (pPE.ability as AbilityInstance)._posRef;
             },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
                 if (typeof(pVal) === 'string') {
@@ -78,23 +132,9 @@ export class AbilityInstance extends Ability {
                     (pPE.ability as AbilityInstance)._posRef = Number(pVal);
                 };
                 // TODO: push value into graphics engine
-                (pPE.ability as AbilityInstance)._pos = pVal;
-                // TODO: push value into graphics engine
             }
         });
-        pBItem.addProperty({
-            name: InstanceRotProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                // TODO: fetch value from graphics engine
-                return (pPE.ability as AbilityInstance)._rot;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                (pPE.ability as AbilityInstance)._rot = pVal;
-                // TODO: push value into graphics engine
-            }
-        });
-        pBItem.addProperty({
+        pBItem.addProperty({            // ROTREF
             name: InstanceRotRefProp,
             ability: this,
             getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
@@ -111,6 +151,48 @@ export class AbilityInstance extends Ability {
                 // TODO: push value into graphics engine
             }
         });
+    };
+};
+
+async function InstanceIntoWorld(pProps: InstanceAfterRequestProps): Promise<void> {
+    Logger.debug(`AbilityInstance.InstanceIntoWorld: entry`);
+    const ability = pProps.Ability;
+    if (typeof(ability._worldObject) === 'undefined') {
+        if (typeof(ability._refItem) === 'string') {
+            const bitem = BItems.get(ability._refItem);
+            if (bitem) {
+                bitem.WhenReady()
+                .then ( bb => {
+                    Logger.debug(`AbilityInstance.InstanceIntoWorld: READY BItem. Doing PlaceInWorld`);
+                    const representation = bitem.getProp(AssetRepresentationProp);
+                    if (representation) {
+                        const inWorldParams: PlaceInWorldProps = {
+                            Name: pProps.Name,
+                            Pos: ability._posArray,
+                            PosCoord: (ability._posRef as CoordSystem),
+                            Rot: ability._rotArray,
+                            RosCoord: (ability._rotRef as CoordSystem),
+                            Object: representation as Object3D
+                        };
+                        ability._worldObject = PlaceInWorld(inWorldParams);
+                        Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);
+                    }
+                    else {
+                        Logger.error(`AbilityInstance.InstanceIntoWorld: READY bitem does not have represenation`);
+                    };
+                })
+                .catch ( err => {
+                    Logger.error(`AbilityInstance.InstanceIntoWorld: exception ${ExtractStringError(err)}`);
+                });
+            }
+            else {
+                Logger.error(`AbilityInstance.InstanceIntoWorld: ItemRef not found: ${ability._refItem}`);
+
+            };
+        }
+        else {
+            Logger.error(`AbilityInstance.InstanceIntoWorld: ItemRef if an odd type: ${typeof(ability._refItem)}`);
+        };
     };
 };
 

@@ -41,7 +41,7 @@ export const Config = {
     'page': {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
-        'showDebug': true,
+        'showDebug': false,
         'debugElementId': '#DEBUGG',
         'debugErrorClass': 'errorMsg',
         'debugLogLines': 30
