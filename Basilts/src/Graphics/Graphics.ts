@@ -133,19 +133,21 @@ export const Graphics = {
     _startRendering() {
         if (Graphics._renderer) {
             // eslint-disable-next-line @typescript-eslint/unbound-method
-            requestAnimationFrame(Graphics._doRendering);
+            Graphics._doRendering();
         }
     },
 
     _stopRendering() {
         if (Graphics._renderer) {
-            Graphics._renderer.setAnimationLoop(undefined);
+            requestAnimationFrame(undefined);
         }
     },
 
     // Do per-frame updates and then render the frame
     _doRendering() {
         if (GlobalReady && Graphics._scene && Graphics._camera) {
+            requestAnimationFrame(Graphics._doRendering);
+
             Graphics.frameNum++;
             Graphics._lastFrameDelta = Graphics._clock.getDelta();
             // compute a running average of FPS
