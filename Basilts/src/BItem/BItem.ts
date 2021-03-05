@@ -19,7 +19,7 @@ import { BItems } from '@BItem/BItems';
 
 import { AuthToken } from '@Tools/Auth';
 
-import { CreateUniqueId } from '@Base/Tools/Utilities';
+import { CreateUniqueId, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
@@ -84,14 +84,21 @@ export class BItem {
         };
         return propValue;
     };
-    setProp(pPropName: string, pVal: PropValue): void {
+    setProp(pPropName: string, pVal: PropValue): boolean {  // 'true' if the set worked
+        let ret = false;
         const prop = this._props.get(pPropName);
         if (prop) {
             if (prop.setter) {
-                return prop.setter(prop, this, pVal);
+                try {
+                    prop.setter(prop, this, pVal);
+                    ret = true;
+                }
+                catch ( e ) {
+                    Logger.error(`BItem.setProp: exception setting ${prop.name}=${pVal}: ${ExtractStringError(e)}`);
+                };
             };
         };
-        return;
+        return ret;
     };
     incrementProp(pPropName: string) : PropValue {
         let val = this.getProp(pPropName);

@@ -13,8 +13,10 @@
 
 import { Ability } from '@Abilities/Ability';
 import { BItem, PropEntry, PropValue } from '@BItem/BItem';
+import { CoordSystem } from '@Comm/BMessage';
 
-import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { BKeyedCollection } from '@Tools/bTypes';
+import { PropertyBinding } from 'three';
 
 export const InstanceAbilityName = 'Instance';
 
@@ -44,7 +46,7 @@ export class AbilityInstance extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
-        pBItem.addProperty({
+        const propEntry = pBItem.addProperty({
             name: InstanceRefItem,
             ability: this,
             getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
@@ -58,6 +60,9 @@ export class AbilityInstance extends Ability {
                 // TODO: get pointer to graphics item for quick access
             }
         });
+        // Since the above property has a computed value, set the balue so it get updated
+        propEntry.setter(propEntry, pBItem, this._refItem);
+
         pBItem.addProperty({
             name: InstancePosProp,
             ability: this,
@@ -66,6 +71,13 @@ export class AbilityInstance extends Ability {
                 return (pPE.ability as AbilityInstance)._pos;
             },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                if (typeof(pVal) === 'string') {
+                    (pPE.ability as AbilityInstance)._posRef = CoordSystem[pVal.toUpperCase() as keyof typeof CoordSystem];
+                }
+                else {
+                    (pPE.ability as AbilityInstance)._posRef = Number(pVal);
+                };
+                // TODO: push value into graphics engine
                 (pPE.ability as AbilityInstance)._pos = pVal;
                 // TODO: push value into graphics engine
             }
@@ -79,6 +91,23 @@ export class AbilityInstance extends Ability {
             },
             setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
                 (pPE.ability as AbilityInstance)._rot = pVal;
+                // TODO: push value into graphics engine
+            }
+        });
+        pBItem.addProperty({
+            name: InstanceRotRefProp,
+            ability: this,
+            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
+                // TODO: fetch value from graphics engine
+                return (pPE.ability as AbilityInstance)._rotRef;
+            },
+            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
+                if (typeof(pVal) === 'string') {
+                    (pPE.ability as AbilityInstance)._rotRef = CoordSystem[pVal.toUpperCase() as keyof typeof CoordSystem];
+                }
+                else {
+                    (pPE.ability as AbilityInstance)._rotRef = Number(pVal);
+                };
                 // TODO: push value into graphics engine
             }
         });

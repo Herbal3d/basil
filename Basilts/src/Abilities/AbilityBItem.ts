@@ -96,8 +96,8 @@ export class AbilityBItem extends Ability {
                     (pPE.ability as AbilityBItem)._state = BItemState[pVal.toUpperCase() as keyof typeof BItemState];
                 }
                 else {
-                    (pPE.ability as AbilityBItem)._state = <number>pVal;
-                }
+                    (pPE.ability as AbilityBItem)._state = Number(pVal);
+                };
             }
         });
     };

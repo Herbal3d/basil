@@ -15,7 +15,9 @@ import { Config, LightingParameters } from '@Base/Config';
 
 import * as THREE from 'three';
 
+import { CoordSystem } from '@Comm/BMessage';
 import { Graphics } from '@Graphics/Graphics';
+
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ColladaLoader, Collada } from 'three/examples/jsm/loaders/ColladaLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
@@ -170,4 +172,14 @@ export async function ProcessDelayedGraphicsOperations(): Promise<void> {
         const opEntry = _DelayedGraphicsOperations.pop();
         void opEntry.op(opEntry.params);
     };
+};
+
+export interface PlaceInWorldProps {
+    Pos: number[];
+    PosCoord: CoordSystem;
+    Rot: number[];
+    RosCoord: number;
+};
+export function PlaceInWorld(pParams: PlaceInWorldProps): void {
+    const x=5;  // pacify ESLint for the moment
 };
