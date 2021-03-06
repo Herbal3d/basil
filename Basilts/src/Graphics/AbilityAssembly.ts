@@ -124,6 +124,7 @@ export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<v
     LoadSimpleAsset(loaderProps)
     .then ( loaded => {
         Logger.debug(`AbilityAssembly: LoadAssembly: successful load`);
+        if (typeof(loaded) === 'undefined') { Logger.error(`AbilityAssembly: LoadAssembly: loaded object is null`); };
         ability._graphicNode = loaded;
         pProps.BItem.setReady();
     })

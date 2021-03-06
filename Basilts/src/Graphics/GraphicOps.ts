@@ -80,76 +80,79 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
 
     let asset: THREE.Object3D = undefined;
 
-    let loader = undefined;
-    switch (parms.AssetLoader.toLowerCase()) {
-        case 'gltf':    loader = new GLTFLoader();
-                        if (parms.useDRACO) {
-                            loader.setDRACOLoader( new DRACOLoader() );
-                            // THREE.DRACOLoader.getDecoderModule();
-                        }
-                        break;
-        case 'collada': loader = new ColladaLoader(); break;
-        case 'fbx':     loader = new FBXLoader(); break;
-        case 'obj':     loader = new OBJLoader(); break;
-        case 'bvh':     loader = new BVHLoader(); break;
-    };
-    if (loader) {
-        let requestURL = parms.AssetURL;
-        // If auth info is in parameters, add a "bearer-*" item into the access URL
-        //     so the receiver can verify the request.
-        if (parms.Auth) {
-            // Authorization code is packed into the URL
-            const urlPieces = parms.AssetURL.split('/');
-            const lastIndex = urlPieces.length - 1;
-            urlPieces.push(urlPieces[lastIndex]);
-            urlPieces[lastIndex] = 'bearer-' + parms.Auth;
-            requestURL = urlPieces.join('/');
-        }
-        Logger.debug(`Graphics.LoadSimpleAsset: loading from: ${requestURL}`);
-        // To complicate things, ThreeJS loaders return different things
-        loader.load(requestURL, (loaded: GLTF | THREE.Group | BVH | Collada) => {
-            // Successful load
-            Logger.debug(`Graphics.LoadSimpleAsset: loaded`);
-            if (loaded instanceof THREE.Group) {
-                asset = loaded;
-            }
-            else if (loaded.hasOwnProperty('scene') || loaded.hasOwnProperty('scenes')) {
-                const gltf: GLTF = loaded as GLTF;
-                if (gltf.scene) {
-                    asset = gltf.scene;
-                };
-                if (gltf.scenes) {
-                    asset = gltf.scenes[0];
-                };
-            }
-            else if (loaded) {
-                const errMsg = `LoadSimpleAsset: return type not implemented`;
-                Logger.error(errMsg);
-                throw errMsg;
-            };
+    return new Promise<THREE.Object3D>( (resolve, reject) => {
 
-            if (typeof(asset) === 'undefined') {
-                const err = `Graphics.LoadSimpleAsset: Could not understand loaded contents. type=${parms.AssetLoader},url=${parms.AssetURL}`;
-                throw err;
-            };
-        },
-        // loading progress
-        function(xhr) {
-            if (typeof(pProgressCallback) !== 'undefined') {
-                pProgressCallback('Working');
+        let loader = undefined;
+        switch (parms.AssetLoader.toLowerCase()) {
+            case 'gltf':    loader = new GLTFLoader();
+                            if (parms.useDRACO) {
+                                loader.setDRACOLoader( new DRACOLoader() );
+                                // THREE.DRACOLoader.getDecoderModule();
+                            }
+                            break;
+            case 'collada': loader = new ColladaLoader(); break;
+            case 'fbx':     loader = new FBXLoader(); break;
+            case 'obj':     loader = new OBJLoader(); break;
+            case 'bvh':     loader = new BVHLoader(); break;
+        };
+        if (loader) {
+            let requestURL = parms.AssetURL;
+            // If auth info is in parameters, add a "bearer-*" item into the access URL
+            //     so the receiver can verify the request.
+            if (parms.Auth) {
+                // Authorization code is packed into the URL
+                const urlPieces = parms.AssetURL.split('/');
+                const lastIndex = urlPieces.length - 1;
+                urlPieces.push(urlPieces[lastIndex]);
+                urlPieces[lastIndex] = 'bearer-' + parms.Auth;
+                requestURL = urlPieces.join('/');
             }
-        },
-        // Failed load
-        function(e) {
-            const errMsg = `Graphics.LoadSimpleAsset: loading failed: ${ExtractStringError(e)}`;
-            Logger.debug(errMsg);
-            throw errMsg;
-        });
-    }
-    else {
-        throw `No loader for type ${parms.AssetLoader}`;
-    };
-    return asset;
+            Logger.debug(`Graphics.LoadSimpleAsset: loading from: ${requestURL}`);
+            // To complicate things, ThreeJS loaders return different things
+            loader.load(requestURL, (loaded: GLTF | THREE.Group | BVH | Collada) => {
+                // Successful load
+                Logger.debug(`Graphics.LoadSimpleAsset: loaded`);
+                if (loaded instanceof THREE.Group) {
+                    asset = loaded;
+                }
+                else if (loaded.hasOwnProperty('scene') || loaded.hasOwnProperty('scenes')) {
+                    const gltf: GLTF = loaded as GLTF;
+                    if (gltf.scene) {
+                        asset = gltf.scene;
+                    };
+                    if (gltf.scenes) {
+                        asset = gltf.scenes[0];
+                    };
+                }
+                else if (loaded) {
+                    const errMsg = `LoadSimpleAsset: return type not implemented`;
+                    Logger.error(errMsg);
+                    reject(errMsg);
+                };
+
+                if (typeof(asset) === 'undefined') {
+                    const err = `Graphics.LoadSimpleAsset: Could not understand loaded contents. type=${parms.AssetLoader},url=${parms.AssetURL}`;
+                    reject(err);
+                };
+                resolve(asset);
+            },
+            // loading progress
+            function(xhr) {
+                if (typeof(pProgressCallback) !== 'undefined') {
+                    pProgressCallback('Working');
+                }
+            },
+            // Failed load
+            function(e) {
+                const errMsg = `Graphics.LoadSimpleAsset: loading failed: ${ExtractStringError(e)}`;
+                Logger.debug(errMsg);
+                reject(errMsg);
+            });
+        }
+        else {
+            reject(`No loader for type ${parms.AssetLoader}`);
+        };
+    });
 };
 
 export type DelayedGraphicsOperation = (pProp: BKeyedCollection) => Promise<void>;
