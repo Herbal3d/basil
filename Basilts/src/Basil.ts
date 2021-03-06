@@ -20,6 +20,7 @@ import { Comm } from '@Comm/Comm';
 import { OpenSessionReqProps } from '@Comm/BMessageProps';
 import { Eventing } from '@Eventing/Eventing';
 import { Graphics } from '@Graphics/Graphics';
+import { UI } from '@Tools/UI';
 
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
@@ -34,6 +35,7 @@ import { initLogging, Logger } from '@Tools/Logging';
 // Setup logging so progress and errors will be seen
 initLogging();
 Eventing.init();
+UI.init();
 
 // Called with communication configuration parameters in the URL.
 // The 'c' parameter is Base64 encoded JSON data which is merged into

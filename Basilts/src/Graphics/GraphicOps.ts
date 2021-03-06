@@ -212,3 +212,13 @@ export function PlaceInWorld(pParams: PlaceInWorldProps): Object3D {
         Logger.error(`Graphics.PlaceInWorld: Exception adding. e=${ExtractStringError(e)}`);
     };
 };
+
+// Add a test object to the scene
+export function AddTestObject() {
+    const geometry = new THREE.BoxGeometry( 1, 2, 3);
+    const material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
+    Graphics.addNodeToWorldView(cube);
+    Logger.debug(`Graphics: added test cube at ${Config.webgl.camera.initialCameraLookAt}`);
+};

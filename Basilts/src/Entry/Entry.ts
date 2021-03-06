@@ -35,7 +35,6 @@ for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
         const buttonOp = (evnt.target as HTMLElement).getAttribute('op');
         Logger.debug(`Click: ${buttonOp}`);
         if (buttonOp && typeof(ClickableOps[buttonOp]) === 'function') {
-            Logger.debug(`Click: calling listener for ${buttonOp}`);
             ClickableOps[buttonOp](evnt.target);
         };
     });

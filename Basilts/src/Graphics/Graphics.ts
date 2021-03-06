@@ -24,10 +24,29 @@ import { InstanceAbilityName, AbilityInstanceFromProps } from '@Graphics/Ability
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 
-import { CombineParameters, ParseThreeTuple } from '@Tools/Utilities';
+import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilities';
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
 import { Object3D } from 'three';
+
+export interface CameraInfoEventProps {
+    position: number[];
+    rotation: number[];
+};
+export interface RenderInfoEventProps {
+    fps: number;
+    render: {
+        calls: number;
+        triangles: number;
+        points: number;
+        lines: number;
+        frame: number;
+    };
+    memory: {
+        geometries: number;
+        textures: number;
+    };
+};
 
 export const Graphics = {
     _container: <HTMLElement>undefined,
@@ -90,7 +109,7 @@ export const Graphics = {
         // keep the camera and environment adjusted for the display size
         Graphics._onContainerResize();  // initial aspect ration computation
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        Graphics._container.addEventListener('resize', Graphics._onContainerResize, false);
+        window.addEventListener('resize', Graphics._onContainerResize);
 
         // For the moment, camera control comes from the user
         Graphics._initializeCameraControl();
@@ -119,6 +138,7 @@ export const Graphics = {
         RegisterAbility(InstanceAbilityName, AbilityInstanceFromProps);
     },
     Start() {
+        Logger.debug(`Graphics.Start: Start`);
         Graphics._startRendering();
     },
     // Remove everything from the scene
@@ -194,7 +214,8 @@ export const Graphics = {
             initialCameraPosition: [200, 50, 200],
             initialCameraLookAt: [ 0, 0, 0],
             addCameraHelper: false,
-            addAxesHelper: false
+            addAxesHelper: false,
+            axesHelperSize: 5
         });
 
         Graphics._camera = new THREE.PerspectiveCamera( 75,
@@ -203,14 +224,17 @@ export const Graphics = {
         // camera.up = new THREE.Vector3(0, 1, 0);
         Graphics._scene.add(Graphics._camera);
 
+        Logger.debug(`Graphics._initializeCamera: camera at ${JSONstringify(parms.initialCameraPosition)} pointing at ${JSONstringify(parms.initialCameraLookAt)}`);
         SetCameraPosition(parms.initialCameraPosition);
         PointCameraAt(parms.initialCameraLookAt);
 
         if (parms.addCameraHelper) {
+            Logger.debug(`Graphics._initializeCamera: adding camera helper`);
             Graphics._cameraHelper = new THREE.CameraHelper(Graphics._camera);
             Graphics._scene.add(Graphics._cameraHelper);
         }
         if (parms.addAxesHelper) {
+            Logger.debug(`Graphics._initializeCamera: adding axes helper`);
             const helperSize = parms.axesHelperSize || 5;
             Graphics._axesHelper = new THREE.AxesHelper(Number(helperSize));
             Graphics._scene.add(Graphics._axesHelper);
@@ -312,9 +336,13 @@ export const Graphics = {
                     // must clone or 'newPos' will be just a reference to the old value.
                     const newPos = Graphics._camera.position.clone();
                     if (!newPos.equals(oldPos)) {
-                        const camInfo = {
-                            'position': Graphics._camera.position.clone(),
-                            'rotation': Graphics._camera.rotation.clone()
+                        const pos = [0,0,0];
+                        Graphics._camera.position.toArray(pos, 0);
+                        const rot = [0,0,0,0];
+                        Graphics._camera.rotation.toArray(rot, 0);
+                        const camInfo: CameraInfoEventProps = {
+                            'position': pos,
+                            'rotation': rot 
                         };
                         void Graphics._eventCameraInfo.fire(camInfo);
                         Graphics._prevCamPosition = newPos;
