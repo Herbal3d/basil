@@ -12,7 +12,6 @@
 'use static';
 
 import { Config, LightingParameters, CameraParameters } from '@Base/Config';
-import { GlobalReady } from '@Base/Globals';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -83,6 +82,10 @@ export const Graphics = {
         Graphics._canvas = pCanvas;
 
         Graphics._scene = new THREE.Scene();
+        // DEBUG DEBUG DEBUG
+        // @ts-ignore
+        window._scene = Graphics._scene;
+        // END DEBUG DEBUG DEBUG
 
         Graphics._initializeCamera();
         Graphics._initializeLights();
@@ -91,7 +94,7 @@ export const Graphics = {
         // parameters to pass to the THREE.renderer creation
         const rendererParams: THREE.WebGLRendererParameters = Config.webgl.renderer.ThreeJS;
         rendererParams.canvas = Graphics._canvas;
-        rendererParams.context = Graphics._canvas.getContext('webgl2', { alpha: false } );
+        // rendererParams.context = Graphics._canvas.getContext('webgl2', { alpha: false } );
         Graphics._renderer = new THREE.WebGLRenderer(rendererParams);
 
         if (Config.webgl.renderer.clearColor) {
@@ -122,9 +125,9 @@ export const Graphics = {
 
         // There are several top level groups for objects in different coordinate systems
         Graphics._groupWorldRel = new THREE.Group();
-        Graphics._groupWorldRel.name = 'org.basil.b.GroupWorldRel';
+        Graphics._groupWorldRel.name = 'GroupWorldRel.b.basil.org';
         Graphics._groupCameraRel = new THREE.Group();
-        Graphics._groupCameraRel.name = 'org.basil.b.GroupCameraRel';
+        Graphics._groupCameraRel.name = 'GroupCameraRel.b.basil.org';
         Graphics._scene.add(Graphics._groupWorldRel);
         Graphics._scene.add(Graphics._groupCameraRel);
 
@@ -166,7 +169,7 @@ export const Graphics = {
 
     // Do per-frame updates and then render the frame
     _doRendering() {
-        if (GlobalReady && Graphics._scene && Graphics._camera) {
+        if (Graphics._scene && Graphics._camera) {
             // eslint-disable-next-line @typescript-eslint/unbound-method
             requestAnimationFrame(Graphics._doRendering);
 

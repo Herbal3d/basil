@@ -177,8 +177,9 @@ export class BItem {
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
     async WhenReady(timeoutMS?: number): Promise<BItem> {
+        // Logger.debug(`BItem.WhenReady: Entry. Current state=${this.getState()}. id=${this.id}`);
         if (this.getState() === BItemState.READY) {
-            // GP.DebugLog('BItem.WhenReady: READY.id=' + this.id);
+            // Logger.debug(`BItem.WhenReady: READY.id=${this.id}`);
             return this;
         }
         else {
@@ -198,18 +199,16 @@ export class BItem {
                 if (Config.assets && Config.assets.assetFetchTimeoutMS) {
                     timeout = Number(Config.assets.assetFetchTimeoutMS);
                 };
-                if (timeoutMS) {  // use the passed timeout if specified
+                if (typeof(timeoutMS) !== 'undefined') {  // use the passed timeout if specified
                     timeout = timeoutMS;
                 };
                 if (timeout <= 0) {
-                    // GP.DebugLog('BItem.WhenReady: reject timeout. id=' + this.id);
+                    Logger.error(`BItem.WhenReady: Reject timeout. id=${this.id}`);
                     throw this;
                 }
                 else {
                     // Wait for 'checkInterval' and test again for 'READY'.
-                    // GP.DebugLog('BItem.WhenReady: not ready. Waiting ' + checkInterval
-                    //             + ' with timeout ' + timeout
-                    //             + ', id=' + this.id);
+                    // Logger.debug(`BItem.WhenReady: not ready. Waiting ${checkInterval} with timeout ${timeout}. id=${this.id}`);
                     const xitem = await this.WaitABit(checkInterval, this);
                     checkInterval += checkInterval;
                     if (checkInterval > maxCheckInterval) checkInterval = maxCheckInterval;
