@@ -27,8 +27,7 @@
         "@Tools": "dist/Tools"
     },
     "scripts": {
-        "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\"",
-        "xxbuild": "npm-run-all -s \"clean-dist\" \"build:basil\" \"build:entry\" \"build:wwtester\" \"build:justview\"",
+        "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\" \"build:justview\"",
         "clean-dist": "node build_scripts/cleanDist.js",
         "prestart": "npm run build",
         "start": "node dist/index.js",
