@@ -18,8 +18,6 @@ import { ClickOpLoginOpenSim } from '@Entry/LoginOpenSim';
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { Logger, initLogging } from '@Tools/Logging';
 
-import { Base64 } from 'js-base64';
-
 // Force the processing of the css format file
 import '@Entry/Entry.less';
 
@@ -61,7 +59,7 @@ ClickableOps['testScene'] = function() {
     };
     console.log('testConfigParams=' + JSONstringify(testConfigParams));
 
-    const configParams = Base64.encode(JSONstringify(testConfigParams));
+    const configParams = btoa(JSONstringify(testConfigParams));
 
     window.location.assign('Basil.html?c=' + configParams);
 };

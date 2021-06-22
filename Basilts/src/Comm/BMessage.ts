@@ -71,8 +71,8 @@ export interface BMessage {
     SCode?: string;         // unique code sent with message expecting response
     RCode?: string;         // return of the unique code in the response
     ResponseKey?: string;
-    StreamId?: number;
-    ProtocolVersion?: number
+    sId?: number;
+    pVer?: number
 
     // Fields for protocol tracking and analysis
     QueueTime?: number;

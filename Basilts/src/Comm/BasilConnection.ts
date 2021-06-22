@@ -511,6 +511,9 @@ function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
     return list;
 };
 
+// Send the message and return a Promise that is completed when the message
+//    response is received. The Promise returns the response message.
+//    Additionally, the Promise is rejected if there are errors (timeout, ...).
 function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Promise<BMessage> {
     const responseSession = RandomIdentifier();
     pReq.SCode = responseSession;

@@ -23,8 +23,6 @@
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { ConfigGetQueryVariable } from '@Tools/Misc';
 
-import { Base64 } from 'js-base64';
-
 window.onload = (ev: Event) => {
   CallBasilWithTheFile();
 }
@@ -60,7 +58,7 @@ function CallBasilWithTheFile(): void {
 
     // console.log('testConfigParams=' + JSONstringify(testConfigParams));
 
-    const configParams = Base64.encode(JSONstringify(testConfigParams));
+    const configParams = btoa(JSONstringify(testConfigParams));
 
     window.location.assign('Basil.html?c=' + configParams);
 }

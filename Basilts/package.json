@@ -1,6 +1,6 @@
 {
     "name": "basilviewer",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Browser based virtual world viewer. Part of Herbal3D.",
     "keywords": [],
     "author": {
@@ -46,17 +46,17 @@
         "production:wwtester": "webpack --config webpack.wwtester.config.js"
     },
     "dependencies": {
+        "@types/js-base64": "^3.3.1",
         "@types/three": "^0.125.3",
         "deepmerge": "^4.2.2",
         "js-base64": "^2.5.2",
         "long": "^4.0.0",
-        "npm": "^6.14.4",
+        "npm": "^6.14.13",
         "three": "^0.126.0"
     },
     "devDependencies": {
-        "@types/js-base64": "^3.0.0",
         "@types/uuid": "^8.3.0",
-        "@typescript-eslint/eslint-plugin": "^4.15.1",
+        "@typescript-eslint/eslint-plugin": "^4.28.0",
         "@typescript-eslint/parser": "^4.15.1",
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^1.0.1",
@@ -70,7 +70,7 @@
         "mini-css-extract-plugin": "^0.4.5",
         "npm-run-all": "^4.1.5",
         "style-loader": "^0.19.1",
-        "ts-loader": "^8.0.17",
+        "ts-loader": "^8.3.0",
         "typescript": "^4.2.2",
         "webpack": "^4.42.1",
         "webpack-cli": "^3.3.11"

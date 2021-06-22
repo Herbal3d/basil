@@ -14,11 +14,9 @@
 import { ParseOSDXML } from '@Tools/llsd.js';
 import { MD5 } from '@Tools/MD5.js';
 
-import { Base64 } from 'js-base64';
-
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
-import { BKeyedCollection } from '@Tools/bTypes';
+import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 
 export let SentLoginMessage = false;
 export let SuccessfulLogin = false;
@@ -74,7 +72,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
     Logger.info('Login success');
     // console.log('Login response = ' + JSONstringify(resp));
     try {
-        const OSregion: BKeyedCollection = {};
+        const OSregion: BKeyValue = {};
         // resp.look_at = looking at location (as string of LLSD numbers ("[r-0.681,r-0.732,r0]"))
         OSregion['firstName'] = resp.first_name;
         OSregion['lastName'] = resp.last_name;
@@ -115,11 +113,11 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
 
         const regionConfigParams = {
             'Init': {
-                'Transport': 'WW',
-                'TransportURL': './wwtester.js',
+                'Transport': 'WS',
+                'TransportURL': 'ws://' + OSregion['simIP'] + ':11440/',
                 'Protocol': 'Basil-JSON',
                 'Service': 'SpaceServer',
-                'ServiceAuth': Base64.encode(JSON.stringify(userAuthInfo))
+                'ServiceAuth': btoa(JSON.stringify(userAuthInfo))
             },
             // Extra information added for OpenSimulator login.
             // This passes information to Basil that it can use or not
@@ -138,7 +136,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         Logger.info(`gridLogin. URL=${regionConfigParams.Init.TransportURL}`);
 
         // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
-        const configParams = Base64.encode(JSON.stringify(regionConfigParams));
+        const configParams = btoa(JSON.stringify(regionConfigParams));
         SuccessfulLogin = true;
 
         window.location.assign('Basil.html?c=' + configParams);

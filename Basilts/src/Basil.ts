@@ -25,8 +25,6 @@ import { UI } from '@Tools/UI';
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
 
-import { Base64 } from 'js-base64';
-
 import { IsNullOrEmpty, IsNotNullOrEmpty, ConfigGetQueryVariable } from '@Tools/Misc';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -65,13 +63,13 @@ if (IsNullOrEmpty(configParams)) {
             }
         };
     };
-    configParams = Base64.encode(JSON.stringify(testConfigParams));
+    configParams = btoa(JSON.stringify(testConfigParams));
 };
 
 // Parse the passed configuration parameters and add to Config
 if (IsNotNullOrEmpty(configParams)) {
     try {
-        const unpacked = Base64.decode(configParams);
+        const unpacked = atob(configParams);
         const newParams = (JSON.parse(unpacked) as BKeyedCollection);
         Logger.debug(`Basilts: newParams: ${unpacked}`);
         if (IsNotNullOrEmpty(newParams)) {
@@ -116,19 +114,23 @@ Logger.info(`Starting Basil version ${VERSION['version-tag']}`);
 if (Config.initialMakeConnection) {
     Logger.debug('Basilts: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
     try {
+        // Connect to the server
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
             const sessionParams: OpenSessionReqProps = {
                 BasilVersion: VERSION['version-tag'],
                 ClientAuth: conn.IncomingAuth.token
             };
+            // The original caller can pass test URL and Loader parameters that
+            //      this passed to the session. This is for testing using the WebWorker
             if (Config.initialMakeConnection.OpenParams) {
                 sessionParams.TestAssetURL = Config.initialMakeConnection.OpenParams.AssetURL;
                 sessionParams.TestAssetLoader = Config.initialMakeConnection.OpenParams.LoaderType;
             }
+            // Start the displayed session
             conn.CreateSession(sessionParams) 
             .then ( conn2 => {
-                Logger.debug(`Basilts: session is opened`);
+                Logger.debug(`Basiljs: session is opened`);
             })
             .catch( e => {
                 Logger.error(`CreateSession exception: ${ExtractStringError(e)}`);
