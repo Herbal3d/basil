@@ -50,6 +50,8 @@ export class AbilityAssembly extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
+        // Get and Set the Assembly's URL
+        // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
         const AssetURLPropEntry = pBItem.addProperty({
             name: AssetURLProp,
             ability: this,
@@ -69,6 +71,7 @@ export class AbilityAssembly extends Ability {
         // Since the previous property's setter has side effects, we need to invoke it now
         AssetURLPropEntry.setter(AssetURLPropEntry, pBItem, this._assetURL);
 
+        // Get and Set the AssetLoader needed for the asset
         pBItem.addProperty({
             name: AssetLoaderProp,
             ability: this,
@@ -79,6 +82,8 @@ export class AbilityAssembly extends Ability {
                 (pPE.ability as AbilityAssembly)._assetLoader = pVal;
             }
         });
+        // Get and Set the Asset's access token
+        // Set value can be either an AuthToken or a string (which is wrapped in an AuthToken)
         pBItem.addProperty({
             name: AssetAuthProp,
             ability: this,
@@ -96,6 +101,8 @@ export class AbilityAssembly extends Ability {
                 };
             }
         });
+        // Get the Assembly's graphical representation.
+        // Very dependent on the underlying implementation. This is a ThreeJS Object3D
         // All abilities that create in-world representations present this property
         pBItem.addProperty({
             name: AssetRepresentationProp,
@@ -111,6 +118,9 @@ export class AbilityAssembly extends Ability {
     };
 };
 
+// Returns a Promise that loads an assembly given the URL and asset type properties.
+// Will load the asset and set the BItem's state to READY.
+// Promise fails of the asset can't be loaded and the BItem's state is set to FAILED
 export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<void> {
     const ability = pProps.Ability;
     Logger.debug(`AbilityAssembly: LoadAssembly(${ability._assetURL})`);

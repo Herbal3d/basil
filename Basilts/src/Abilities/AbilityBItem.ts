@@ -51,6 +51,7 @@ export class AbilityBItem extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
+        // Return BItem's ID
         pBItem.addProperty({
             name: IdProp,
             ability: this,
@@ -59,6 +60,7 @@ export class AbilityBItem extends Ability {
             },
             setter: undefined
         });
+        // Get or Set BItem's 'Layer" value
         pBItem.addProperty({
             name: LayerProp,
             ability: this,
@@ -69,6 +71,8 @@ export class AbilityBItem extends Ability {
                 (pPE.ability as AbilityBItem)._layer = <string>pVal;
             }
         });
+        // Get or Set BItmem's AuthToken
+        //   Set value an be either an AuthToken or a string which is wrapped in an AuthToken
         pBItem.addProperty({
             name: AuthTokenProp,
             ability: this,
@@ -85,6 +89,8 @@ export class AbilityBItem extends Ability {
             },
             public: false
         });
+        // Get or Set BItem's state
+        //     Set value can be either a string (which is converted to a BItemState) or a numeric BItemState value
         pBItem.addProperty({
             name: StateProp,
             ability: this,

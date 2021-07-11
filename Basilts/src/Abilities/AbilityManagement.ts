@@ -17,11 +17,14 @@ import { BKeyedCollection } from '@Tools/bTypes';
 
 import { Logger } from '@Tools/Logging';
 
+// Management functions for Abilities.
+
 // Function defined by each ability to create the Ability from a property set
 export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
 
 const _registeredAbilities: Map<string, AbilityFromProps> = new Map<string, AbilityFromProps>()
 
+// The abilities are registered so they can be created dynamically by name
 export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromProps): void {
     if (_registeredAbilities.has(pAbilityName)) {
         Logger.error(`AbilityManagement: attempt to re-register ability ${pAbilityName}`);
@@ -31,6 +34,7 @@ export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromPro
     };
 };
 
+// Given an Ability name and a set of properties, create an Ability instance initialized with the properties
 export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability {
     if (_registeredAbilities.has(pName)) {
         const getFrom = _registeredAbilities.get(pName);

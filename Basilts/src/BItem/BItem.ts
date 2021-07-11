@@ -25,6 +25,12 @@ import { CreateUniqueId, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
+// BItem class is the base of all the items in the system.
+// A BItem get ALL it's functionality fron the Abilities that are added to it.
+// This base class is mostly concerned with presenting a common interface
+//     to anyone accessing the BItem: common access to Abilities and their named
+//     properties.
+
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
 //    is defined for that property.
@@ -67,6 +73,7 @@ export class BItem {
         // As a side effect, add this BItem to the collection of BItems
         BItems.add(id, this);
     };
+    // Common interface for getting the value of any property an Ability has added to the BItem
     getProp(pPropName: string): PropValue {
         const prop = this._props.get(pPropName);
         let propValue: PropValue;
@@ -86,6 +93,7 @@ export class BItem {
         };
         return propValue;
     };
+    // Common interface for setting the value of any property an Ability has added to the BItem
     setProp(pPropName: string, pVal: PropValue): boolean {  // 'true' if the set worked
         let ret = false;
         const prop = this._props.get(pPropName);
@@ -102,6 +110,7 @@ export class BItem {
         };
         return ret;
     };
+    // Increment the value of a named property
     incrementProp(pPropName: string) : PropValue {
         let val = this.getProp(pPropName);
         if (val) {
@@ -115,14 +124,19 @@ export class BItem {
         };
         return val;
     };
+    // Add a named property to the BItem.
+    // Used by Abilities added to the BItem to make their properties visible
     addProperty(pPropEntry: PropEntry): PropEntry {
         // Logger.debug(`Adding property ${pPropEntry.name} = ${pPropEntry.getter(pPropEntry, this)}`);
         this._props.set(pPropEntry.name, pPropEntry);
         return pPropEntry;
     };
+    // Remove a property that was added to the BItem
     removeProperty(pPropEntry: PropEntry): void {
         this._props.delete(pPropEntry.name);
     };
+    // Return a collection of the public properties of the BItem
+    // Returned is of the form: { name: value, ... }
     getProperties(pFilter: string): BKeyedCollection {
         const ret: BKeyedCollection = {};
         this._props.forEach( (val, key) => {
@@ -137,6 +151,9 @@ export class BItem {
         })
         return ret;
     };
+    // Add an Ability to this BItem
+    // This adds the Ability to the Ability collection and calls the Abilitie's
+    //      "addProperties" function to add it's properties to this BItem
     addAbility(pAbility: Ability): void {
         // Logger.debug(`Adding Ability ${pAbility.name} to ${this.id}`);
         if (!this._abilities.has(pAbility.name)) {
@@ -147,24 +164,31 @@ export class BItem {
             Logger.error(`BItem.addAbility: adding two of same type: ${pAbility.name}, BItem=${this.id}`);
         };
     };
+    // Remove the named ability
     removeAbility(pAbilityName: string): void {
         this._abilities.delete(pAbilityName);
     };
+    // Return the current state of the BItem
     getState(): BItemState {
         return (this.getProp(StateProp) as BItemState);
     }
+    // Return TRUE if the BItem state is READY
     isReady(): boolean {
         return this.getProp(StateProp) === BItemState.READY;
     }
+    // Set the BItem state to READY
     setReady(): void {
         void this.setProp(StateProp, BItemState.READY)
     };
+    // Set the BItem state to FAILED
     setFailed(): void {
         void this.setProp(StateProp, BItemState.FAILED)
     };
+    // Set the BItem state to LOADING
     setLoading(): void {
         void this.setProp(StateProp, BItemState.LOADING)
     };
+    // Set the BItem state to SHUTDOWN
     setShutdown(): void {
         void this.setProp(StateProp, BItemState.SHUTDOWN)
     };
@@ -223,16 +247,19 @@ export class BItem {
         };
     };
     // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
+    // Only used locally for WhenReady()
     async WaitABit(ms: number, pParam: BItem): Promise<BItem> {
         return new Promise( (resolve) => { setTimeout(resolve, ms, pParam); } );
     };
     // Return 'true' if something is wrong with this BItem and it will never go READY.
+    // Only used locally for WhenReady()
     NeverGonnaBeReady(): boolean {
         const currentState = this.getState();
         return this._deleteInProgress
                 || currentState == BItemState.FAILED
                 || currentState == BItemState.SHUTDOWN;
     };
+    // Debug function to list all of the BItem's properties in the log output
     DumpProps(): void {
         Logger.debug('=== Dumping Props');
         this._props.forEach( (val, key) => {

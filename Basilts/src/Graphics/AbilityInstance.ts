@@ -24,6 +24,10 @@ import { PlaceInWorld, PlaceInWorldProps, ScheduleDelayedGraphicsOperation } fro
 import { AssetRepresentationProp } from './AbilityAssembly';
 import { Logger } from '@Base/Tools/Logging';
 
+// Some BItems are Assemblys (3d represntations) and other BItems are instances of the
+//     3d representations. This Ability is the Intance.
+// There are fixes so a single BItem can include both the Assembly and Instance Abilities.
+
 export const InstanceAbilityName = 'Instance';
 
 export const InstanceRefItem = 'RefItem'; // either 'SELF' or id of BItem with the geometry
@@ -62,6 +66,9 @@ export class AbilityInstance extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
+        // Get and Set the BItem that holds the 3d representation of this instance.
+        // The reference can be to "SELF" to point to same BItem.
+        // As a side effect, the placement if the Assembly in the 3d world is initiated.
         const propEntry = pBItem.addProperty({
             name: InstanceRefItem,
             ability: this,
@@ -83,6 +90,8 @@ export class AbilityInstance extends Ability {
         // Since the above property has a computed value, set the balue so it get updated
         propEntry.setter(propEntry, pBItem, this._refItem);
 
+        // Get and Set the instance's position in the 3d world.
+        // Passed position is normalized into a number array.
         pBItem.addProperty({            // POS
             name: InstancePosProp,
             ability: this,
@@ -100,6 +109,8 @@ export class AbilityInstance extends Ability {
                 // TODO: push value into graphics engine
             }
         });
+        // Get and Set the instances' rotation in the 3d world.
+        // Passed rotation is normalized into a number array.
         pBItem.addProperty({            // ROT
             name: InstanceRotProp,
             ability: this,
@@ -117,6 +128,7 @@ export class AbilityInstance extends Ability {
                 // TODO: push value into graphics engine
             }
         });
+        // Get and Set the Instance's position reference
         pBItem.addProperty({            // POSREF
             name: InstancePosRefProp,
             ability: this,
@@ -134,6 +146,7 @@ export class AbilityInstance extends Ability {
                 // TODO: push value into graphics engine
             }
         });
+        // Get and Set the instance's rotation reference
         pBItem.addProperty({            // ROTREF
             name: InstanceRotRefProp,
             ability: this,
@@ -154,6 +167,8 @@ export class AbilityInstance extends Ability {
     };
 };
 
+// Place the Instance into the 3d world.
+// Returns a Promise that is resolved when loaded or rejected if the are problems.
 async function InstanceIntoWorld(pProps: InstanceAfterRequestProps): Promise<void> {
     Logger.debug(`AbilityInstance.InstanceIntoWorld: entry`);
     const ability = pProps.Ability;

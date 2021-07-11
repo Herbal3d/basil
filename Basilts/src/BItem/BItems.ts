@@ -24,6 +24,9 @@ export const BItemAuthProp = 'ItemAuthToken';
 export const BItemLayerProp = 'Layer';
 export const BItemInitialAbilityProp = 'InitialAbilities';
 
+// Management routines for BItems.
+//    Functions for the creation, storage, and manipulation of BItems
+
 // All the BItems that have been created
 export const BItemCollection: Map<string, BItem> = new Map<string,BItem>();
 
@@ -42,12 +45,18 @@ export const BItems = {
                 if (typeof(initialAbils) === 'string') {
                     const abils = initialAbils.split(',');
                     for (const abil of abils) {
-                        const newAbility = AbilityFactory(abil, pProps);
-                        if (newAbility) {
-                            newBItem.addAbility(newAbility);
+                        try {
+                            const newAbility = AbilityFactory(abil, pProps);
+                            if (newAbility) {
+                                newBItem.addAbility(newAbility);
+                            }
+                            else {
+                                err = `BItems.createFromProps: could not create ability ${abil}`;
+                            };
                         }
-                        else {
-                            err = `BItems.createFromProps: could not create ability ${abil}`;
+                        catch (e) {
+                            err = `BItems.createFromProps: exception adding ability to BItem: ${ExtractStringError(e)}`;
+                            break;
                         };
                     };
                 };
@@ -66,13 +75,16 @@ export const BItems = {
         BItemCollection.set(pId, pBItem);
         return pBItem;
     },
+    // Remove a BItem from the collecion of BItems
     remove: async (pBItem: BItem): Promise<void> => {
         const id = (pBItem.getProp('id') as string);
         BItemCollection.delete(id);
     },
+    // Remove BItem based on it's id
     removeById: (pId: string): void => {
         BItemCollection.delete(pId);
     },
+    // Get a BItem by it's ID
     get: (pId: string): BItem => {
         return BItemCollection.get(pId);
     }

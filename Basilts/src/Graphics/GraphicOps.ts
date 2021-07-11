@@ -30,6 +30,10 @@ import { JSONstringify, CombineParameters, ExtractStringError, ParseThreeTuple }
 import { Logger } from '@Tools/Logging';
 import { Object3D } from 'three';
 
+// Collection of graphical operations.
+// Externally, code doesn't know how graphics is implemented and this presents the functions
+//    that the rest of the code operates on the graphical system.
+
 // Function to move the camera from where it is to a new place.
 // This is movement from external source which could conflict with AR
 //     and VR camera control.
@@ -68,6 +72,9 @@ export interface LoadAssetParams {
     combineInstances?: boolean;  // whether to combine instances
 };
 
+// Return a Promise that wraps the loading of an asset.
+// Load an asset that is 'simple": represented by an URL to a displayable item
+// The Promise resolves to the underlying graphical object representation.
 export type ProgressCallback = (pState: string) => void;
 export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallback?: ProgressCallback): Promise<THREE.Object3D> {
     const parms = <LoadAssetParams>CombineParameters(Config.assetLoader, pProps, {
@@ -99,12 +106,14 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
             let requestURL = parms.AssetURL;
             // If auth info is in parameters, add a "bearer-*" item into the access URL
             //     so the receiver can verify the request.
+            //     This converts the asset URL from ".../XXX" to ".../bearer-AUTH/XXX"
+            // Note that the auth string is URL encoded to prevent someone passing in foolishness
             if (parms.Auth) {
                 // Authorization code is packed into the URL
                 const urlPieces = parms.AssetURL.split('/');
                 const lastIndex = urlPieces.length - 1;
                 urlPieces.push(urlPieces[lastIndex]);
-                urlPieces[lastIndex] = 'bearer-' + parms.Auth;
+                urlPieces[lastIndex] = 'bearer-' + encodeURI(parms.Auth);
                 requestURL = urlPieces.join('/');
             }
             Logger.debug(`Graphics.LoadSimpleAsset: loading from: ${requestURL}`);
@@ -163,7 +172,7 @@ interface DelayedGraphicsEntry {
 
 const _DelayedGraphicsOperations: DelayedGraphicsEntry[] = [];
 
-
+// Queue an operation that is performed in a group
 export function ScheduleDelayedGraphicsOperation(pOp: DelayedGraphicsOperation, pParams: BKeyedCollection): void {
     _DelayedGraphicsOperations.push({
         op: pOp,
@@ -171,6 +180,7 @@ export function ScheduleDelayedGraphicsOperation(pOp: DelayedGraphicsOperation, 
     });
 };
 
+// Process all the queued graphical operations
 export async function ProcessDelayedGraphicsOperations(): Promise<void> {
     while (_DelayedGraphicsOperations.length > 0) {
         Logger.debug(`GraphicsOp.ProcessDelayedGraphicsOperations: doing delayed op`);
@@ -187,6 +197,9 @@ export interface PlaceInWorldProps {
     RosCoord: number;
     Object: Object3D;
 };
+// Do the graphics libaray stuff to place an instance of an Object3D into
+//     a position in the visible world.
+// The parameters are passed in the block defined above.
 export function PlaceInWorld(pParams: PlaceInWorldProps): Object3D {
     try {
         const worldNode = new THREE.Group();

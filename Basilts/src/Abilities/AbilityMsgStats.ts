@@ -32,6 +32,7 @@ export function AbilityMsgStatsFromProps(pProps: BKeyedCollection): AbilityMsgSt
     return new AbilityMsgStats();
 };
 
+// Ability that holds messages received and sent count
 export class AbilityMsgStats extends Ability {
 
     _messagesSent: number = 0;
@@ -42,6 +43,7 @@ export class AbilityMsgStats extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
+        // Get and Set the number of received messages
         pBItem.addProperty({
             name: MessagesReceivedProp,
             ability: this,
@@ -52,6 +54,7 @@ export class AbilityMsgStats extends Ability {
                 (pPE.ability as AbilityMsgStats)._messagesReceived = <number>pVal;
             }
         });
+        // Get and Set the number of sent messages
         pBItem.addProperty({
             name: MessagesSentProp,
             ability: this,
