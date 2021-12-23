@@ -123,15 +123,15 @@ if (Config.initialMakeConnection) {
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
             const sessionParams: OpenSessionReqProps = {
-                BasilVersion: VERSION['version-tag'],
-                ClientAuth: conn.OutgoingAuth.token,
-                ServiceAuth: Config.initialMakeConnection.serviceAuth,
+                basilVersion: VERSION['version-tag'],
+                clientAuth: conn.OutgoingAuth.token,
+                serviceAuth: Config.initialMakeConnection.serviceAuth,
             };
             // The original caller can pass test URL and Loader parameters that
             //      this passed to the session. This is for testing using the WebWorker
             if (Config.initialMakeConnection.openParams) {
-                sessionParams.TestAssetURL = Config.initialMakeConnection.openParams.assetURL;
-                sessionParams.TestAssetLoader = Config.initialMakeConnection.openParams.loaderType;
+                sessionParams.testAssetURL = Config.initialMakeConnection.openParams.assetURL;
+                sessionParams.testAssetLoader = Config.initialMakeConnection.openParams.loaderType;
             }
             // Start the displayed session
             conn.CreateSession(sessionParams, new AuthToken(Config.initialMakeConnection.clientAuth))
