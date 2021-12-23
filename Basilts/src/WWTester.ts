@@ -80,9 +80,9 @@ try {
         Logger.debug(`MakeConnection complete`);
         conn.SubscribeToMessageOp('OpenSession', ( pProps: BasilConnectionEventParams, pTopic: string) => {
             Logger.debug(`OpenSession received`);
-            if (pProps.request.IProps.TestAssetURL) {
-                const assetURL = pProps.request.IProps['TestAssetURL'];
-                const assetLoader = pProps.request.IProps['TestAssetLoader'];
+            if (pProps.request.IProps.testAssetURL) {
+                const assetURL = pProps.request.IProps['testAssetURL'];
+                const assetLoader = pProps.request.IProps['testAssetLoader'];
                 Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
 
                 // The client tells me what token to send with requests
