@@ -58,8 +58,8 @@ function CallBasilWithTheFile(): void {
 
     // console.log('testConfigParams=' + JSONstringify(testConfigParams));
 
-    const configParams = btoa(JSONstringify(testConfigParams));
+    const configParams = Buffer.from(JSONstringify(testConfigParams));
 
-    window.location.assign('Basil.html?c=' + configParams);
+    window.location.assign('Basil.html?c=' + configParams.toString('base64'));
 }
 
