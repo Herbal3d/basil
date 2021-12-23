@@ -47,8 +47,11 @@ export interface PropEntry {
 
 export class BItem {
 
+    // The properties that are added by the Abilities
     _props: Map<string, PropEntry>;
+    // The abilities that are active on this BItem
     _abilities: Map<string, Ability>;
+    // Flag 'true' when the BItem is being deleted
     _deleteInProgress: boolean;
 
     // A utility variable since lots of people do this
@@ -85,10 +88,11 @@ export class BItem {
                 propValue = undefined;
             };
         };
-        // Clean up the return value if it is not a simple value
+        // If the property is returning a BItem, actually return the ID of the BItem
+        // This is used ?? TODO
         if (typeof(propValue) === 'object') {
             if (propValue instanceof BItem) {
-                propValue = propValue.getProp(IdProp);
+                propValue = propValue.id;
             };
         };
         return propValue;
@@ -139,18 +143,14 @@ export class BItem {
     // Returned is of the form: { name: value, ... }
     getProperties(pFilter: string): BKeyedCollection {
         const ret: BKeyedCollection = {};
-        this._props.forEach( (val, key) => {
-            // TODO: check if key matches the filter
-            let okToReturn = true;
-            if (val.hasOwnProperty('public')) {
-                okToReturn = val.public;
-            };
-            if (okToReturn) {
-                ret[key] = val.getter(val, this);
-            };
-        })
+        this._props.forEach( (pPropEntry: PropEntry) => {
+            if (pPropEntry.public) {
+                ret[pPropEntry.name] = pPropEntry.getter ? pPropEntry.getter(pPropEntry, this) : undefined;
+            }
+        });
         return ret;
     };
+
     // Add an Ability to this BItem
     // This adds the Ability to the Ability collection and calls the Abilitie's
     //      "addProperties" function to add it's properties to this BItem
@@ -197,10 +197,10 @@ export class BItem {
     // If the item is deleted while waiting, this Promise is rejected.
     // Note that this promise returns this item for both the resolve and reject
     // TODO: this is a kludge routine using polling. Use state change
-    //    events when they existw
+    //    events when they exist.
     // TODO: a debug option that keeps a list of what is being waited for.
     //    Would make a useful display when things are slow/hung.
-    async WhenReady(timeoutMS?: number): Promise<BItem> {
+    async WhenReady(pTimeoutMS?: number): Promise<BItem> {
         // Logger.debug(`BItem.WhenReady: Entry. Current state=${this.getState()}. id=${this.id}`);
         if (this.getState() === BItemState.READY) {
             // Logger.debug(`BItem.WhenReady: READY.id=${this.id}`);
@@ -211,21 +211,8 @@ export class BItem {
                 throw this;
             }
             else {
-                let checkInterval = 200;
-                if (Config.assets && Config.assets.assetFetchCheckIntervalMS) {
-                    checkInterval = Number(Config.assets.assetFetchCheckIntervalMS);
-                };
-                let maxCheckInterval = 1000;
-                if (Config.assets && Config.assets.assetFetchCheckIntervalMaxMS) {
-                    maxCheckInterval = Number(Config.assets.assetFetchCheckIntervalMaxMS);
-                };
-                let timeout = 5000;
-                if (Config.assets && Config.assets.assetFetchTimeoutMS) {
-                    timeout = Number(Config.assets.assetFetchTimeoutMS);
-                };
-                if (typeof(timeoutMS) !== 'undefined') {  // use the passed timeout if specified
-                    timeout = timeoutMS;
-                };
+                const checkInterval = Config.assets?.assetFetchCheckIntervalMS ?? 200;
+                const timeout = pTimeoutMS ?? Config.assets?.assetFetchTimeoutMS ?? 5000;
                 if (timeout <= 0) {
                     Logger.error(`BItem.WhenReady: Reject timeout. id=${this.id}`);
                     throw this;
@@ -234,10 +221,8 @@ export class BItem {
                     // Wait for 'checkInterval' and test again for 'READY'.
                     // Logger.debug(`BItem.WhenReady: not ready. Waiting ${checkInterval} with timeout ${timeout}. id=${this.id}`);
                     const xitem = await this.WaitABit(checkInterval, this);
-                    checkInterval += checkInterval;
-                    if (checkInterval > maxCheckInterval) checkInterval = maxCheckInterval;
-                    timeout = timeout - checkInterval;
-                    const yitem = await xitem.WhenReady(timeout)
+                    // After waiting, recursively call WhenReady to either keep waiting or return success
+                    const yitem = await xitem.WhenReady(timeout - checkInterval)
                         .catch( err => {
                             throw err;
                         });

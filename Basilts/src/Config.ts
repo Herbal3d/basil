@@ -134,7 +134,6 @@ export const Config = {
         'gltfURLBase': '/basil/',
         'assetFetchTimeoutMS': 20000,       // MS timeout for an asset to load
         'assetFetchCheckIntervalMS': 200,   // MS between checks for asset loaded
-        'assetFetchCheckIntervalMaxMS': 1000,   // MS for max interval to check for asset loaded
         'instanceAssetWaitTimeoutMS': 20000 // MS for instance to wait for its displayable to load
     },
     // Parameters for the simple eventing system

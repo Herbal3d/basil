@@ -62,28 +62,27 @@ export interface PositionBlock {
     Vel: number[];
     Path: number[];
     // Sometimes PostionBlock is repeated to apply to many Items/Components
-    IId: string;          // BItem being operated on
-    Auth: string;         // Auth for the session
-    IAuth: string;        // Auth for accessing the BItem
+    IId: string;        // BItem being operated on
+    Auth: string;       // Auth for the session
+    IAuth: string;      // Auth for accessing the BItem
 };
 
 export interface BMessage {
-    SCode?: string;         // unique code sent with message expecting response
-    RCode?: string;         // return of the unique code in the response
-    ResponseKey?: string;
-    sId?: number;
-    pVer?: number
+    SCode?: string;     // unique code sent with message expecting response
+    RCode?: string;     // return of the unique code in the response
+    sId?: number;       // session id
+    pVer?: number;      // protocol version
 
     // Fields for protocol tracking and analysis
     QueueTime?: number;
     SendTime?: number;
     TransportClass?: number;
 
-    Op: number;
-    IId?: string;        // BItem id being referenced
+    Op: number;         // code specifying the operation
+    IId?: string;       // BItem id being referenced
     IProps: { [ key: string ]: string };   // Properties to apply
-    Auth?: string;
-    IAuth?: string;      // Any authentication necessary for access BItem
+    Auth?: string;      // Auth for the session
+    IAuth?: string;     // Any authentication necessary for access BItem
 
     Pos?: PositionBlock[];  // If a multi-position update, new positions for items
 
