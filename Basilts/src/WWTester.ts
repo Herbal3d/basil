@@ -13,7 +13,7 @@
 
 import { GlobalReady } from '@Base/Globals';
 
-import { WWConfig } from '@Base/WWTester.Config.ts';
+import { WWConfig } from '@Base/WWTester.Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
 import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
@@ -33,7 +33,7 @@ import { Logger, AddLogOutputter } from '@Tools/Logging';
 GlobalReady = false;
 
 let _basilClient: BasilConnection;
-let _aliveIntervalID: number;
+let _aliveIntervalID: NodeJS.Timer;
 
 // Setup logging: Basic console output for logging
 if (WWConfig.WWTester.LogToConsole) {
@@ -71,7 +71,9 @@ try {
         'transport': 'WW',
         'transporturl': undefined,
         'protocol': 'Basil-JSON',
-        'service': ServiceBasilServer
+        'service': ServiceBasilServer,
+        'clientAuth': 'xxxx',
+        'serviceAuth': 'yyyy'
     };
     Comm.MakeConnection(params)
     .then ( conn => {
@@ -83,9 +85,12 @@ try {
                 const assetLoader = pProps.request.IProps['TestAssetLoader'];
                 Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
 
+                // The client tells me what token to send with requests
+                pProps.connection.OutgoingAuth = new AuthToken(pProps.request.IProps['clientAuth']);
+                // I respond with the token I want to receive for requests
                 const serverAuth = new AuthToken();
                 pProps.connection.IncomingAuth = serverAuth;
-                pProps.response.IProps['ServerAuth'] = serverAuth.token;
+                pProps.response.IProps['serverAuth'] = serverAuth.token;
 
                 pProps.connection.Send(pProps.response);
 

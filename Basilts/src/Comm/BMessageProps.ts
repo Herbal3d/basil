@@ -17,39 +17,40 @@ import { BKeyedCollection } from "@Base/Tools/bTypes";
 // This defines the expected properties for each of the requests
 
 export interface MakeConnectionReqProps {
-    Transport: string;        // transport type: 'WW'|'WS'
-    TransportURL: string;   // URL to connect transport to
-    Protocol: string;       // message encoding: 'Basil-JSON'|...
-    Service: string;        // service connecting too (usually 'SpaceServer')
-    ClientAuth: string;     // authorization token to use when connecting
-    OpenParams: BKeyedCollection; // parameters to send when doing OpenConnection
+    transport: string;        // transport type: 'WW'|'WS'
+    transportURL: string;   // URL to connect transport to
+    protocol: string;       // message encoding: 'Basil-JSON'|...
+    service: string;        // service connecting too (usually 'SpaceServer')
+    clientAuth: string;     // authorization token to use when connecting
+    openParams: BKeyedCollection; // parameters to send when doing OpenConnection
 };
 export interface MakeConnectionRespProps {
     none: string;           // place holder REPLACE ME
 };
 export interface OpenSessionReqProps {
-    BasilVersion: string;   // version string for Basil
-    ClientAuth: string      // token to use when talking back to me
+    basilVersion: string;   // version string for Basil
+    clientAuth: string      // token to use when talking back to me
+    serviceAuth: string;    // Authorization info needed for the service
     // The Test* props are for WWTester and causes it to create the specified asset.
     //    These are not use for normal SpaceServer operation.
     //    They usually come from the OpenParams prop in the MakeConnectionReq
     //       so passing the test asset through Entry => Basil => WWTester => Basil works
-    TestAssetURL?: string;  // URL of test asset to load
-    TestAssetLoader?: string;   // loader to use for test asset
+    testAssetURL?: string;  // URL of test asset to load
+    testAssetLoader?: string;   // loader to use for test asset
 };
 export interface OpenSessionRespProps {
-    ServerVersion?: string; // server version string
-    ServerAuth:string;      // token to use talking to this server
+    serverVersion?: string; // server version string
+    serverAuth:string;      // token to use talking to this server
 };
 export interface CreateItemReqProps {
-    ItemAuthToken?: string;     // token required to access item
-    Layer?: string;             // layer the BItem is associated with
-    InitialAbilities?: string;  // comma separated list of abilities to add
+    itemAuthToken?: string;     // token required to access item
+    layer?: string;             // layer the BItem is associated with
+    initialAbilities?: string;  // comma separated list of abilities to add
     [ key: string ]: string;    // any parameters required or the added abilities
 
 };
 export interface CreateItemRespProps {
-    Id: string;                 // Id of newly created item
+    id: string;                 // Id of newly created item
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DeleteItemReqProps {
@@ -58,20 +59,20 @@ export interface DeleteItemReqProps {
 export interface DeleteItemRespProps {
 };
 export interface AddAbilityReqProps {
-    Abilities: string           // comma separated list of abilities to add
+    abilities: string           // comma separated list of abilities to add
     [ key: string ]: string;    // any parameters required or the added abilities
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AddAbilityRespProps {
 };
 export interface RemoveAbilityReqProps {
-    Abilities: string;          // comma separated list of abilities to remove
+    abilities: string;          // comma separated list of abilities to remove
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RemoveAbilityRespProps {
 };
 export interface RequestPropertiesReqProps {
-    Filter?: string;
+    filter?: string;
 };
 export interface RequestPropertiesRespProps {
     [ key: string ]: string;    // requested properties

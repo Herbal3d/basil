@@ -113,11 +113,12 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
 
         const regionConfigParams = {
             'Init': {
-                'Transport': 'WS',
-                'TransportURL': 'ws://' + OSregion['simIP'] + ':11440/',
-                'Protocol': 'Basil-JSON',
-                'Service': 'SpaceServer',
-                'ServiceAuth': btoa(JSON.stringify(userAuthInfo))
+                'transport': 'WS',
+                'transportURL': 'ws://' + OSregion['simIP'] + ':11440/',
+                'protocol': 'Basil-JSON',
+                'service': 'SpaceServer',
+                'clientAuth': OSregion.sessionID,
+                'serviceAuth': Buffer.from(JSON.stringify(userAuthInfo)).toString('base64')
             },
             // Extra information added for OpenSimulator login.
             // This passes information to Basil that it can use or not
@@ -133,13 +134,13 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
             }
         };
         // Logger.info('gridLoginParams=' + JSONstringify(regionConfigParams));
-        Logger.info(`gridLogin. URL=${regionConfigParams.Init.TransportURL}`);
+        Logger.info(`gridLogin. URL=${regionConfigParams.Init.transportURL}`);
 
-        // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
-        const configParams = btoa(JSON.stringify(regionConfigParams));
         SuccessfulLogin = true;
 
-        window.location.assign('Basil.html?c=' + configParams);
+        // NOTE: not using Utilities:JSONstringify because need to create a legal JSON string
+        const configParams = Buffer.from(JSON.stringify(regionConfigParams));
+        window.location.assign('Basil.html?c=' + configParams.toString('base64'));
     }
     catch (e) {
         const err = <Error>e;

@@ -46,20 +46,20 @@ ClickableOps['testScene'] = function() {
     const basilTestURL = GetSelectedValue('test-sceneURL');
     const testConfigParams = {
         'Init': {
-            'Transport': 'WW',
-            'TransportURL': './wwtester.js',
-            'Protocol': 'Basil-JSON',
-            'Service': 'SpaceServer',
-            'ServiceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
-            'OpenParams': {
-                'AssetURL': basilTestURL,
-                'LoaderType': 'GLTF',
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            'protocol': 'Basil-JSON',
+            'service': 'SpaceServer',
+            'serviceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
+            'openParams': {
+                'assetURL': basilTestURL,
+                'loaderType': 'GLTF',
             }
         }
     };
     console.log('testConfigParams=' + JSONstringify(testConfigParams));
 
-    const configParams = btoa(JSONstringify(testConfigParams));
+    const configParams = Buffer.from(JSONstringify(testConfigParams)).toString('base64');
 
     window.location.assign('Basil.html?c=' + configParams);
 };

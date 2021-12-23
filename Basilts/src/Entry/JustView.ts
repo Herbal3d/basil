@@ -44,14 +44,14 @@ function CallBasilWithTheFile(): void {
 
     const testConfigParams = {
         'Init': {
-            'Transport': 'WW',
-            'TransportURL': './wwtester.js',
-            'Protocol': 'Basil-JSON',
-            'Service': 'SpaceServer',
-            'ServiceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
-            'OpenParams': {
-                'AssetURL': GLTFTOLOAD,
-                'LoaderType': 'GLTF',
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            'protocol': 'Basil-JSON',
+            'service': 'SpaceServer',
+            'serviceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
+            'openParams': {
+                'assetURL': GLTFTOLOAD,
+                'loaderType': 'GLTF',
             }
         }
     };

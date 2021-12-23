@@ -7,7 +7,10 @@ Entry => Basil
                 'transport': 'WW' | 'WS',
                 'transportURL': 'URL',
                 'protocol': 'Basil-JSON' | 'Basil-PB' | 'Basil-FB',
-                'sendAuth': 'authTokenForBasilSendingOpenConnection',
+                'service': 'SpaceServer',
+                'clientAuth': 'authToSendWithOpenSession',
+                'serviceAuth': 'authInformationForServerAccess',
+                // Following is optional and used to specify a testing asset
                 'openParams': {
                     'assetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimizes/testtest88.gltf',
                     'loaderType': 'GLTF',
@@ -15,18 +18,42 @@ Entry => Basil
                 }
             }
         }
+OR
+SpaceServer => Basil
+    Send a MakeConnection to Basil
+        {
+            'Op': BMessageOps.MakeConnection,
+            'SCode': 'uniqueCodeForResponseToThisRequest',
+            'Auth': 'authForThisSpaceServerToTalkToThisClient',
+            'iProps': {
+                'transport': 'WW' | 'WS',
+                'transportURL': 'URL',
+                'protocol': 'Basil-JSON' | 'Basil-PB' | 'Basil-FB',
+                'service': 'SpaceServer',
+                'clientAuth': 'authToSendWithOpenSession',
+                'serviceAuth': 'authInformationForServerAccess',
+            }
+        }
+
+The requestor sends to Basil:
+* which URL/transport/protocol to use
+* an auth to use in the OpenSession (clientAuth)
+* an auth the receiving service will use to authenticate the session (serviceAuth)
+
+Basil's response to the above is an OpenSession to the URL:
 
 Basil => SpaceServer (at 'transportURL' using tranport 'transport' and protocol 'protocol')
         {
             'Op': BMessageOps.OpenSessionReq,
-            'ResponseCode': 'uniqueCodeForResponseToThisRequest',
-            'Auth': 'authTokenForBasilSendingOpenSession',
-            'ItemProps': {
+            'SCode': 'uniqueCodeForResponseToThisRequest',
+            'Auth': 'authToSendWithOpenSession',
+            'IProps': {
+                'basilVersion': 'versionString',
                 'clientAuth': 'authTokenForServerSendingToBasil',
+                // optional return values used for testing
                 'assetURL': 'assetURLForTesting',
                 'loaderType': 'loaderTypeForTestAsset',
                 'assetAuth': 'authTokenForAccessingAsset'
-                
             }
         }
 
@@ -40,6 +67,8 @@ SpaceServer => Basil (response to OpenConnection)
             }
         }
 
-If test asset information was included in OpenConnection
+Once the OpenSession is complete, the client has an auth to send
+in requests to the service (IProps.serverAuth) and the service
+has an auth to send with requests to Basil (IProps.clientAuth).
 
 ```

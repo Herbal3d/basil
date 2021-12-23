@@ -29,10 +29,6 @@ export interface MakeConnectionParams extends BKeyedCollection {
     transport: string,            // type of the transport
     transporturl: string,         // link to service to connect to
     protocol: string,             // format of the messages on the transport
-    service: string,              // type of service connecting to
-    receiveauth?: string,         // authentication expected on reception (created by BasilConnection if not specified)
-    serviceauth?: string,         // authentication for sent messages
-    openParams?: BKeyedCollection // parameters to send on the open connection message
 };
 
 export const Comm = {
@@ -41,10 +37,6 @@ export const Comm = {
             'transport': 'WS',          // type of the transport
             'transporturl': undefined,  // link to service to connect to
             'protocol': 'Basil-JSON',   // format of the messages on the transport
-            'service': 'SpaceServer',   // type of service connecting to
-            'receiveauth': undefined,   // authentication expected on reception (created by BasilConnection if not specified)
-            'serviceauth': undefined,   // authentication for sent messages
-            'openParams': undefined     // parameters to send on the open connection message
         });
         try {
             const xport = await Comm.TransportFactory(params);

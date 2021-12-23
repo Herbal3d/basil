@@ -20,14 +20,15 @@ export const Config = {
      },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
-        'Transport': 'WW',
-        'TransportURL': './wwtester.js',
-        'Protocol': 'Basil-JSON',
-        'Service': 'SpaceServer',
-        'ServiceAuth': '123456789012345678901234567890',
-        'OpenParams': {
-            'AssetURL': '',
-            'LoaderType': 'GLTF'
+        'transport': 'WW',
+        'transportURL': './wwtester.js',
+        'protocol': 'Basil-JSON',
+        'service': 'SpaceServer',
+        'clientAuth': '12345678901234567890',
+        'serviceAuth': '123456789012345678901234567890',
+        'openParams': {
+            'assetURL': '',
+            'loaderType': 'GLTF'
         }
     },
     'comm': {

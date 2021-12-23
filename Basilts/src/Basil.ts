@@ -21,6 +21,7 @@ import { OpenSessionReqProps } from '@Comm/BMessageProps';
 import { Eventing } from '@Eventing/Eventing';
 import { Graphics } from '@Graphics/Graphics';
 import { UI } from '@Tools/UI';
+import { AuthToken } from '@Tools/Auth';
 
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
@@ -51,25 +52,25 @@ if (IsNullOrEmpty(configParams)) {
     else {
         testConfigParams = {
             'Init': {
-                'Transport': 'WW',
-                'TransportURL': './wwtester.js',
-                'Protocol': 'Basil-JSON',
-                'Service': 'SpaceServer',
-                'ServiceAuth': '12345678901234567890',
-                'OpenParams': {
-                    'AssetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
-                    'LoaderType': 'GLTF'
+                'transport': 'WW',
+                'transportURL': './wwtester.js',
+                'protocol': 'Basil-JSON',
+                'service': 'SpaceServer',
+                'serviceAuth': '12345678901234567890',
+                'openParams': {
+                    'assetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
+                    'loaderType': 'GLTF'
                 }
             }
         };
     };
-    configParams = btoa(JSON.stringify(testConfigParams));
+    configParams = Buffer.from(JSON.stringify(testConfigParams)).toString('base64');
 };
 
 // Parse the passed configuration parameters and add to Config
 if (IsNotNullOrEmpty(configParams)) {
     try {
-        const unpacked = atob(configParams);
+        const unpacked = Buffer.from(configParams, 'base64').toString();
         const newParams = (JSON.parse(unpacked) as BKeyedCollection);
         Logger.debug(`Basilts: newParams: ${unpacked}`);
         if (IsNotNullOrEmpty(newParams)) {
@@ -77,6 +78,10 @@ if (IsNotNullOrEmpty(configParams)) {
             // Only the 'initialMakeConnection' parameter is passed in for more security.
             // deepmerge(Config, newParams);    // property merge of unpacked into Config
             Config.initialMakeConnection = newParams['Init'];
+
+            // There are additional sections that might be passed depending on system logging in
+            //    For instance, "OpenSimulator" is passed with user info for that system.
+            // Note that this only adds new sections so existing configuration can't be overlayed.
             for (const section of Config.basil.KnownConfigurationSections.split(',')) {
                 if (newParams.hasOwnProperty(section)) {
                     if (!Config.hasOwnProperty(section)) {
@@ -119,16 +124,17 @@ if (Config.initialMakeConnection) {
         .then( conn => {
             const sessionParams: OpenSessionReqProps = {
                 BasilVersion: VERSION['version-tag'],
-                ClientAuth: conn.IncomingAuth.token
+                ClientAuth: conn.OutgoingAuth.token,
+                ServiceAuth: Config.initialMakeConnection.serviceAuth,
             };
             // The original caller can pass test URL and Loader parameters that
             //      this passed to the session. This is for testing using the WebWorker
-            if (Config.initialMakeConnection.OpenParams) {
-                sessionParams.TestAssetURL = Config.initialMakeConnection.OpenParams.AssetURL;
-                sessionParams.TestAssetLoader = Config.initialMakeConnection.OpenParams.LoaderType;
+            if (Config.initialMakeConnection.openParams) {
+                sessionParams.TestAssetURL = Config.initialMakeConnection.openParams.assetURL;
+                sessionParams.TestAssetLoader = Config.initialMakeConnection.openParams.loaderType;
             }
             // Start the displayed session
-            conn.CreateSession(sessionParams) 
+            conn.CreateSession(sessionParams, new AuthToken(Config.initialMakeConnection.clientAuth))
             .then ( conn2 => {
                 Logger.debug(`Basiljs: session is opened`);
             })

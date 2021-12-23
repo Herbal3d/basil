@@ -68,13 +68,14 @@ export class BasilConnection extends BItem {
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
         super(undefined, 'org.herbal3d.b.basilconn');
         this._params = CombineParameters(undefined, pParams, {
-            'service': ServiceSpaceServer
         });
         this._proto = pProtocol;
         this._proto.SetReceiveCallback(Processor, this);
         this._rpcSessions = new Map<string,RPCInfo>();
-        this.IncomingAuth = new AuthToken(pParams['receiveauth'] ?? undefined);
-        this.OutgoingAuth = new AuthToken(pParams['serviceauth'] ?? undefined);
+
+        // Create a client token for this connection
+        this.OutgoingAuth = new AuthToken();
+
         this.GenerateEventTopics();
     };
 
@@ -125,13 +126,17 @@ export class BasilConnection extends BItem {
 
     // Once the BasilConnection is connected, this sends an OpenConnection and
     // finalizes the session.
-    async CreateSession(pProps: OpenSessionReqProps): Promise<BasilConnection> {
+    async CreateSession(pProps: OpenSessionReqProps, pInitialAuth: AuthToken): Promise<BasilConnection> {
+        // The OpenSession has a unique auth code that is replaced when the response comes back.
+        const saveAuth = this.OutgoingAuth;
+        this.OutgoingAuth = pInitialAuth;
         const resp = await this.OpenSession(pProps);
+        this.OutgoingAuth = saveAuth;
         if (resp.Exception) {
             // The open session failed.
             throw resp;
         }
-        this.OutgoingAuth = new AuthToken(resp.IProps['ServerAuth']);
+        this.IncomingAuth = new AuthToken(resp.IProps['ServerAuth']);
         this.ServerVersion = resp.IProps['ServerVersion'];
         this.setReady();
         return this;
@@ -426,11 +431,10 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.MakeConnectionResp);
                 // I've been asked to make a connection somewhere
                 const params: MakeConnectionParams = {
-                    'transport':    pReq.IProps['Transport'] ?? 'WS',
-                    'transporturl': pReq.IProps['TransportURL'] ?? undefined,
-                    'protocol':     pReq.IProps['Protocol'] ?? 'Basil-JSON',
-                    'service':      pReq.IProps['Service'] ?? 'SpaceServer',
-                    'serviceauth':  pReq.IProps['ClientAuth'] ?? undefined,
+                    'transport':    pReq.IProps['transport'] ?? 'WS',
+                    'transporturl': pReq.IProps['transportURL'] ?? undefined,
+                    'protocol':     pReq.IProps['protocol'] ?? 'Basil-JSON',
+                    'service':      pReq.IProps['service'] ?? 'SpaceServer'
                 };
                 // Just in case someone is watching and wants to record or change parameters
                 await Eventing.Fire(pContext.GetEventTopicForMessageOp('MakeConnection'), {
@@ -443,13 +447,14 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 try {
                     const bconnection = await Comm.MakeConnection(params);
                     const openProps: OpenSessionReqProps = {
-                        BasilVersion: VERSION['version-tag'],
-                        ClientAuth: pContext.IncomingAuth.token
+                        basilVersion: VERSION['version-tag'],
+                        clientAuth: bconnection.OutgoingAuth.token,
+                        serviceAuth: pReq.IProps['serviceAuth']
                     };
                     for ( const prop of Object.keys(pReq.IProps)) {
                         (openProps as BKeyedCollection)[prop] = pReq.IProps
                     }
-                    await pContext.CreateSession(openProps);
+                    await pContext.CreateSession(openProps, new AuthToken(pReq.IProps['clientAuth']));
                     pContext.Send(resp);
                 }
                 catch (e) {
