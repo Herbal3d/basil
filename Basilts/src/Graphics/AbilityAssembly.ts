@@ -24,10 +24,10 @@ import { Logger } from '@Base/Tools/Logging';
 
 export const AssemblyAbilityName = 'Assembly';
 
-export const AssetURLProp = 'AssetURL';
-export const AssetLoaderProp = 'AssetLoader';
-export const AssetAuthProp = 'AssetAuth';
-export const AssetRepresentationProp = 'AssetRepresentation';
+const AssetURLProp = 'AssetURL';
+const AssetLoaderProp = 'AssetLoader';
+const AssetAuthProp = 'AssetAuth';
+const AssetRepresentationProp = 'AssetRepresentation';
 
 interface AssemblyAfterRequestProps {
     Ability: AbilityAssembly;
@@ -37,6 +37,23 @@ interface AssemblyAfterRequestProps {
 export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssembly {
     return new AbilityAssembly(pProps[AssetURLProp], pProps[AssetLoaderProp]);
 };
+
+// Type safe accessors for properties.
+// This exists so the properties can be accessed on the BItem that contains the ability.
+export class AbilityAssemblyProps {
+    public static getAssetURL(pBI: BItem): string { return <string>pBI.getProp(AssetURLProp); }
+    public static setAssetURL(pBI: BItem, pVal: string): void { pBI.setProp(AssetURLProp, pVal); }
+
+    public static getAssetLoader(pBI: BItem): string { return <string>pBI.getProp(AssetLoaderProp); }
+    public static setAssetLoader(pBI: BItem, pVal: string): void { pBI.setProp(AssetLoaderProp, pVal); }
+
+    public static getAssetAuth(pBI: BItem): AuthToken { return <AuthToken>pBI.getProp(AssetAuthProp); }
+    public static setAssetAuth(pBI: BItem, pVal: AuthToken): void { pBI.setProp(AssetAuthProp, pVal); }
+
+    public static getAssetRepresentation(pBI: BItem): Object3D { return <Object3D>pBI.getProp(AssetRepresentationProp); }
+    public static setAssetRepresentation(pBI: BItem, pVal: Object3D): void { pBI.setProp(AssetRepresentationProp, pVal); }
+};
+
 export class AbilityAssembly extends Ability {
     _assetURL: PropValue;
     _assetLoader: PropValue;
@@ -48,6 +65,9 @@ export class AbilityAssembly extends Ability {
         this._assetURL = pAssetURL;
         this._assetLoader = pAssetLoader;
     };
+
+    // Return a handle for typed access to my properties
+    get props(): AbilityAssemblyProps { return AbilityAssemblyProps; }
 
     addProperties(pBItem: BItem): void {
         // Get and Set the Assembly's URL

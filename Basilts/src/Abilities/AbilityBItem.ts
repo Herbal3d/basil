@@ -18,10 +18,10 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 
-export const IdProp: string = 'Id';
-export const LayerProp: string = 'Layer';
-export const StateProp: string = 'State';
-export const AuthTokenProp: string = 'bitem.authToken';
+const IdProp: string = 'Id';
+const LayerProp: string = 'Layer';
+const StateProp: string = 'State';
+const AuthTokenProp: string = 'bitem.authToken';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -37,6 +37,21 @@ export function AbilityBItemFromProps(pProps: BKeyedCollection): AbilityBItem {
     return new AbilityBItem( pProps[IdProp], pProps[AuthTokenProp], pProps[LayerProp]);
 };
 
+// A class with references to the ability properties so we have type checked gets and fetches
+export class AbilityBItemProps {
+    public static getId(pBI: BItem): string { return <string>pBI.getProp(IdProp); }
+    public static setId(pBI: BItem, pVal: string): void { pBI.setProp(IdProp, pVal); }
+
+    public static getLayer(pBI: BItem): string { return <string>pBI.getProp(LayerProp); }
+    public static setLayer(pBI: BItem, pVal: string): void { pBI.setProp(LayerProp, pVal); }
+
+    public static getState(pBI: BItem): BItemState { return <BItemState>pBI.getProp(StateProp); }
+    public static setState(pBI: BItem, pVal: BItemState): void { pBI.setProp(StateProp, pVal); }
+
+    public static getAuthToken(pBI: BItem): string { return <string>pBI.getProp(AuthTokenProp); }
+    public static setAuthToken(pBI: BItem, pVal: string): void { pBI.setProp(AuthTokenProp, pVal); }
+};
+
 export class AbilityBItem extends Ability {
     _id: string;
     _auth: AuthToken;
@@ -49,6 +64,9 @@ export class AbilityBItem extends Ability {
         this._auth = pAuth ?? undefined;
         this._layer = pLayer ?? 'unknown.b.herbal3d.org';
     };
+
+    // Return a handle for typed access to my properties
+    get props(): AbilityBItemProps { return AbilityBItemProps; }
 
     addProperties(pBItem: BItem): void {
         // Return BItem's ID

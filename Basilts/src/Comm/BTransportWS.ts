@@ -13,7 +13,7 @@
 import { BTransport } from '@Comm/BTransport';
 import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
-import { MessagesSentProp, MessagesReceivedProp } from '@Abilities/AbilityMsgStats';
+import { AbilityMsgStatsProps } from '@Abilities/AbilityMsgStats';
 
 import { Logger } from '@Tools/Logging';
 
@@ -35,7 +35,7 @@ export class BTransportWS extends BTransport {
                 const _this = this;
                 this._socket.onmessage = (event: MessageEvent) => {
                     _this._messages.push(new Uint8Array(event.data));
-                    _this.incrementProp(MessagesReceivedProp);
+                    AbilityMsgStatsProps.incrementMessagesReceived(_this);
                     _this.PushReception();
                 };
                 this._socket.onopen = (event: Event) => {
@@ -70,7 +70,7 @@ export class BTransportWS extends BTransport {
     Send(pData: Uint8Array): boolean {
         if (this._socket) {
             this._socket.send(pData);
-            this.incrementProp(MessagesSentProp);
+            AbilityMsgStatsProps.incrementMessagesSent(this);
             return true;
         };
         return false;

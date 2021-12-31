@@ -21,7 +21,7 @@ import { CoordSystem } from '@Comm/BMessage';
 import { ParseThreeTuple, ParseFourTuple, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { PlaceInWorld, PlaceInWorldProps, ScheduleDelayedGraphicsOperation } from './GraphicOps';
-import { AssetRepresentationProp } from './AbilityAssembly';
+import { AbilityAssemblyProps } from './AbilityAssembly';
 import { Logger } from '@Base/Tools/Logging';
 
 // Some BItems are Assemblys (3d represntations) and other BItems are instances of the
@@ -30,11 +30,11 @@ import { Logger } from '@Base/Tools/Logging';
 
 export const InstanceAbilityName = 'Instance';
 
-export const InstanceRefItem = 'RefItem'; // either 'SELF' or id of BItem with the geometry
-export const InstancePosProp = 'Pos';
-export const InstanceRotProp = 'Rot';
-export const InstancePosRefProp = 'PosRef';
-export const InstanceRotRefProp = 'RotRef';
+const InstanceRefItem = 'RefItem'; // either 'SELF' or id of BItem with the geometry
+const InstancePosProp = 'Pos';
+const InstanceRotProp = 'Rot';
+const InstancePosRefProp = 'PosRef';
+const InstanceRotRefProp = 'RotRef';
 
 export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInstance {
     const newAbil = new AbilityInstance(pProps[InstanceRefItem], pProps[InstancePosProp], pProps[InstanceRotProp] );
@@ -47,6 +47,21 @@ export interface InstanceAfterRequestProps {
     Name: string;
 };
 
+// A class with references to the ability properties so we have type checked gets and fetches
+export class AbilityInstanceProps {
+    public static getRefItem(pBI: BItem): string { return <string>pBI.getProp(InstanceRefItem); }
+    public static setRefItem(pBI: BItem, pVal: string): void { pBI.setProp(InstanceRefItem, pVal); }
+
+    public static getPos(pBI: BItem): PropValue { return <string>pBI.getProp(InstancePosProp); }
+    public static setPos(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstancePosProp, pVal); }
+    public static getPosRef(pBI: BItem): PropValue { return <string>pBI.getProp(InstancePosRefProp); }
+    public static setPosRef(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstancePosRefProp, pVal); }
+
+    public static getRot(pBI: BItem): PropValue { return <string>pBI.getProp(InstanceRotProp); }
+    public static setRot(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstanceRotProp, pVal); }
+    public static getRotRef(pBI: BItem): PropValue { return <string>pBI.getProp(InstanceRotRefProp); }
+    public static setRotRef(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstanceRotRefProp, pVal); }
+};
 
 export class AbilityInstance extends Ability {
     _refItem: PropValue = 'SELF';
@@ -64,6 +79,9 @@ export class AbilityInstance extends Ability {
         this._pos = <PropValue>(pPos ?? '[0,0,0]');
         this._rot = <PropValue>(pRot ?? '[0,0,0,1]');
     };
+
+    // Return a handle for typed access to my properties
+    get props(): AbilityInstanceProps { return AbilityInstanceProps; }
 
     addProperties(pBItem: BItem): void {
         // Get and Set the BItem that holds the 3d representation of this instance.
@@ -172,14 +190,16 @@ export class AbilityInstance extends Ability {
 async function InstanceIntoWorld(pProps: InstanceAfterRequestProps): Promise<void> {
     Logger.debug(`AbilityInstance.InstanceIntoWorld: entry`);
     const ability = pProps.Ability;
+    // If object is not already in-world, create it.
     if (typeof(ability._worldObject) === 'undefined') {
         if (typeof(ability._refItem) === 'string') {
+            // Get the BItem that holds the 3d representation of this instance.
             const bitem = BItems.get(ability._refItem);
             if (bitem) {
                 bitem.WhenReady()
                 .then ( bb => {
                     Logger.debug(`AbilityInstance.InstanceIntoWorld: READY BItem. Doing PlaceInWorld`);
-                    const representation = bitem.getProp(AssetRepresentationProp);
+                    const representation = AbilityAssemblyProps.getAssetRepresentation(bitem);
                     if (representation) {
                         const inWorldParams: PlaceInWorldProps = {
                             Name: pProps.Name,
@@ -187,7 +207,7 @@ async function InstanceIntoWorld(pProps: InstanceAfterRequestProps): Promise<voi
                             PosCoord: (ability._posRef as CoordSystem),
                             Rot: ability._rotArray,
                             RosCoord: (ability._rotRef as CoordSystem),
-                            Object: representation as Object3D
+                            Object: representation
                         };
                         ability._worldObject = PlaceInWorld(inWorldParams);
                         Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);

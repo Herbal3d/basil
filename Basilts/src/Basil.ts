@@ -124,8 +124,7 @@ if (Config.initialMakeConnection) {
         .then( conn => {
             const sessionParams: OpenSessionReqProps = {
                 basilVersion: VERSION['version-tag'],
-                clientAuth: conn.OutgoingAuth.token,
-                serviceAuth: Config.initialMakeConnection.serviceAuth,
+                clientAuth: conn.OutgoingAuth.token
             };
             // The original caller can pass test URL and Loader parameters that
             //      this passed to the session. This is for testing using the WebWorker

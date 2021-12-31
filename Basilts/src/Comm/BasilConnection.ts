@@ -21,7 +21,6 @@ import { OpenSessionReqProps } from '@Comm/BMessageProps';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
-import { IdProp } from '@Abilities/AbilityBItem';
 import { ProcessDelayedGraphicsOperations } from '@Graphics/GraphicOps';
 import { VERSION } from '@Base/VERSION';
 
@@ -91,7 +90,7 @@ export class BasilConnection extends BItem {
             'MakeConnection', 'AliveCheck'
         ];
         this._eventTopics = new Map<string,TopicEntry>();
-        const id = <string>this.getProp(IdProp);
+        const id = this.id;
         for (const opName of EventingMessageNames) {
             const sub = Eventing.Register(opName + '-' + id, 'BasilConnection');
             this._eventTopics.set(opName, sub);
@@ -449,7 +448,6 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     const openProps: OpenSessionReqProps = {
                         basilVersion: VERSION['version-tag'],
                         clientAuth: bconnection.OutgoingAuth.token,
-                        serviceAuth: pReq.IProps['serviceAuth']
                     };
                     for ( const prop of Object.keys(pReq.IProps)) {
                         (openProps as BKeyedCollection)[prop] = pReq.IProps

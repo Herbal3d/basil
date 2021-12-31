@@ -14,7 +14,7 @@ import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
-import { AbilityMsgStats, MessagesReceivedProp } from '@Abilities/AbilityMsgStats';
+import { AbilityMsgStats } from '@Abilities/AbilityMsgStats';
 
 export type BTransportMsg = Uint8Array | string;
 // On reception, the receiver gets a raw message to deserialize

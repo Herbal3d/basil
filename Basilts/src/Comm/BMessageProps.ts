@@ -21,8 +21,8 @@ export interface MakeConnectionReqProps {
     transportURL: string;   // URL to connect transport to
     protocol: string;       // message encoding: 'Basil-JSON'|...
     service: string;        // service connecting too (usually 'SpaceServer')
-    clientAuth: string;     // authorization token to use when connecting
-    openParams: BKeyedCollection; // parameters to send when doing OpenConnection
+    serviceAuth: string;     // authorization token to use when connecting
+    openParams?: BKeyedCollection; // optional parameters to send when doing OpenConnection
 };
 export interface MakeConnectionRespProps {
     none: string;           // place holder REPLACE ME
@@ -30,7 +30,6 @@ export interface MakeConnectionRespProps {
 export interface OpenSessionReqProps {
     basilVersion: string;   // version string for Basil
     clientAuth: string      // token to use when talking back to me
-    serviceAuth: string;    // Authorization info needed for the service
     // The Test* props are for WWTester and causes it to create the specified asset.
     //    These are not use for normal SpaceServer operation.
     //    They usually come from the OpenParams prop in the MakeConnectionReq

@@ -8,7 +8,6 @@ Entry => Basil
                 'transportURL': 'URL',
                 'protocol': 'Basil-JSON' | 'Basil-PB' | 'Basil-FB',
                 'service': 'SpaceServer',
-                'clientAuth': 'authToSendWithOpenSession',
                 'serviceAuth': 'authInformationForServerAccess',
                 // Following is optional and used to specify a testing asset
                 'openParams': {
@@ -30,15 +29,13 @@ SpaceServer => Basil
                 'transportURL': 'URL',
                 'protocol': 'Basil-JSON' | 'Basil-PB' | 'Basil-FB',
                 'service': 'SpaceServer',
-                'clientAuth': 'authToSendWithOpenSession',
                 'serviceAuth': 'authInformationForServerAccess',
             }
         }
 
 The requestor sends to Basil:
 * which URL/transport/protocol to use
-* an auth to use in the OpenSession (clientAuth)
-* an auth the receiving service will use to authenticate the session (serviceAuth)
+* an auth to use in the OpenSession (serviceAuth)
 
 Basil's response to the above is an OpenSession to the URL:
 
@@ -46,7 +43,7 @@ Basil => SpaceServer (at 'transportURL' using tranport 'transport' and protocol 
         {
             'Op': BMessageOps.OpenSessionReq,
             'SCode': 'uniqueCodeForResponseToThisRequest',
-            'Auth': 'authToSendWithOpenSession',
+            'Auth': 'authToSendWithOpenSession',    (from 'serviceAuth' in MakeConnection)
             'IProps': {
                 'basilVersion': 'versionString',
                 'clientAuth': 'authTokenForServerSendingToBasil',
@@ -60,14 +57,14 @@ Basil => SpaceServer (at 'transportURL' using tranport 'transport' and protocol 
 SpaceServer => Basil (response to OpenConnection)
         {
             'Op': BMessageOps.OpenSessionResp,
-            'ResponseCode': 'uniqueCodeForResponseToThisRequest',
+            'RCode': 'uniqueCodeForResponseToThisRequest',
             'Auth': 'authTokenForServerSendingToBasil',
             'IProps': {
                 'serverAuth': 'authTokenForBasilSendingToServer'
             }
         }
 
-Once the OpenSession is complete, the client has an auth to send
+Once the OpenSession is complete, the Basil has an auth to send
 in requests to the service (IProps.serverAuth) and the service
 has an auth to send with requests to Basil (IProps.clientAuth).
 

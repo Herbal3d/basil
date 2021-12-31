@@ -32,6 +32,16 @@ export function AbilityMsgStatsFromProps(pProps: BKeyedCollection): AbilityMsgSt
     return new AbilityMsgStats();
 };
 
+export class AbilityMsgStatsProps {
+    public static getMessagesReceived(pBI: BItem): number { return <number>pBI.getProp(MessagesReceivedProp); }
+    public static setMessagesReceived(pBI: BItem, pVal: number): void { pBI.setProp(MessagesReceivedProp, pVal); }
+    public static incrementMessagesReceived(pBI: BItem): PropValue { return pBI.incrementProp(MessagesReceivedProp); }
+
+    public static getMessagesSent(pBI: BItem): number { return <number>pBI.getProp(MessagesSentProp); }
+    public static setMessagesSent(pBI: BItem, pVal: number): void { pBI.setProp(MessagesSentProp, pVal); }
+    public static incrementMessagesSent(pBI: BItem): PropValue { return pBI.incrementProp(MessagesReceivedProp); }
+};
+
 // Ability that holds messages received and sent count
 export class AbilityMsgStats extends Ability {
 
@@ -41,6 +51,9 @@ export class AbilityMsgStats extends Ability {
     constructor() {
         super(MsgStatsAbilityName);
     };
+
+    // Return a handle for typed access to my properties
+    get props(): AbilityMsgStatsProps { return AbilityMsgStatsProps; }
 
     addProperties(pBItem: BItem): void {
         // Get and Set the number of received messages
