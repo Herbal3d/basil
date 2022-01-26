@@ -73,7 +73,7 @@ export const Config = {
             'ambient': {
                 'name': 'ambient1',
                 'color': '[34,34,34]',
-                'intensity': 0.9,
+                'intensity': 0.02,
                 'specular': 0x505050,
                 'diffuse': 0x505050,
                 'groundColor': '[0,0,0]'
@@ -83,7 +83,7 @@ export const Config = {
                 'name': 'directional1',
                 'color': '[238,238,238]',
                 'direction': [ 1000, 1000, 1000 ],
-                'intensity': 1,
+                'intensity': 0.01,
                 'shadows': {
                     'bias': 0.0001,
                     'mapWidth': 2048,
@@ -165,6 +165,7 @@ export const Config = {
         'DebugLogToConsole': true,      // output debug message to console rather than debug window
         'LogLevel': 'debug',            // output log level (error, warn, info, debug)
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
+        'MakeConnectionDetail': false,  // output detailed info when processing MakeConnection
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true             // print RPC response message
     }

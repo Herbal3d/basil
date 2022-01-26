@@ -69,7 +69,7 @@ Eventing.init();
 try {
     const params: MakeConnectionParams = {
         'transport': 'WW',
-        'transporturl': undefined,
+        'transportURL': undefined,
         'protocol': 'Basil-JSON',
         'service': ServiceBasilServer,
         'clientAuth': 'xxxx',

@@ -12,7 +12,7 @@
 
 import { BMessage } from '@Comm/BMessage';
 import { BProtocol } from '@Comm/BProtocol';
-import { BTransport } from '@Comm/BTransport';
+import { BTransport, BTransportMsg } from '@Comm/BTransport';
 
 import { CombineParameters, CreateUniqueId, ExtractStringError, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Base/Tools/bTypes';
@@ -24,12 +24,17 @@ export class BProtocolJSON extends BProtocol {
 
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
         super(pXPort, CreateUniqueId('BProtocolJSON'));
-        Logger.debug(`BProtocolJSON: setting up JSON protocol`);
         this._params = CombineParameters(undefined, pParams, {
         });
     };
     async Start(pParams: BKeyedCollection): Promise<BProtocol> {
         this._xport.SetReceiveCallback(Processor, this);
+        this._xport.WhenReady().then(() => {
+            this.setReady();
+        })
+        .catch((pErr) => {
+            Logger.error(`BProtocolJSON: WhenReady on transport failed: ${ExtractStringError(pErr)}`);
+        });
         return this;
     };
     Close(): void {
@@ -40,8 +45,8 @@ export class BProtocolJSON extends BProtocol {
     };
     Send(pData: BMessage): boolean {
         if (this._xport) {
-            // this._xport.Send(this._encoder.encode(JSONstringify(pData)));
-            this._xport.Send(JSONstringify(pData));
+            this._xport.Send(this._encoder.encode(JSONstringify(pData)).buffer);
+            // this._xport.Send(JSONstringify(pData));
             return true;
         };
         return false;
@@ -56,17 +61,18 @@ export class BProtocolJSON extends BProtocol {
 
 // Process the incoming message
 const _decoder = new TextDecoder();
-function Processor(pMsg: Uint8Array, pContext: BProtocolJSON, pXPort: BTransport): void {
+function Processor(pMsg: BTransportMsg, pContext: BProtocolJSON, pXPort: BTransport): void {
     // Unpack the message into a BMessage and call the message processor
     if (pContext._receiveCallback) {
         try {
-            // const parsedMessage = JSON.parse(_decoder.decode(pMsg));
             if (typeof(pMsg) === 'string') {
                 const parsedMessage = JSON.parse(pMsg);
+                // Logger.debug(`BProtocolJSON: received message: ${JSONstringify(parsedMessage)}`);
                 void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
             }
             else {
                 const parsedMessage = JSON.parse(_decoder.decode(pMsg));
+                // Logger.debug(`BProtocolJSON: received message: ${JSONstringify(parsedMessage)}`);
                 void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
             };
         }

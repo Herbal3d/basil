@@ -16,7 +16,7 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 import { AbilityMsgStats } from '@Abilities/AbilityMsgStats';
 
-export type BTransportMsg = Uint8Array | string;
+export type BTransportMsg = ArrayBuffer;
 // On reception, the receiver gets a raw message to deserialize
 export type BTransportReceptionCallback = (pMsg: BTransportMsg, pContext: any, pTransport: BTransport) => void;
 
@@ -41,7 +41,7 @@ export abstract class BTransport extends BItem {
     // Note that is function is not async. It can hang.
     abstract Send(pData: BTransportMsg): boolean;
 
-    SetReceiveCallback(pCallBack: BTransportReceptionCallback, pContext?: any): void {
+    SetReceiveCallback(pCallBack: BTransportReceptionCallback, pContext?: BItem): void {
       this._receiveCallback = pCallBack;
       this._receiveCallbackContext = pContext;
     };
@@ -50,6 +50,7 @@ export abstract class BTransport extends BItem {
     // Returns 'true' if a message was processed.
     // TODO: should this be a Promise or something to not tie up reception?
     PushReception(): boolean {
+        // Logger.debug(`BTransport: PushReception: ${this._messages.length} messages`);
         const msg = this._messages.shift();
         if (msg) {
             if (this._receiveCallback && (typeof(this._receiveCallback) === 'function')) {

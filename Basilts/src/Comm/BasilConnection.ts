@@ -73,6 +73,7 @@ export class BasilConnection extends BItem {
         this._rpcSessions = new Map<string,RPCInfo>();
 
         // Create a client token for this connection
+        this.IncomingAuth = new AuthToken();
         this.OutgoingAuth = new AuthToken();
 
         this.GenerateEventTopics();
@@ -121,24 +122,6 @@ export class BasilConnection extends BItem {
             pMsg.Auth = this.OutgoingAuth.token;
             this._proto.Send(pMsg);
         };
-    };
-
-    // Once the BasilConnection is connected, this sends an OpenConnection and
-    // finalizes the session.
-    async CreateSession(pProps: OpenSessionReqProps, pInitialAuth: AuthToken): Promise<BasilConnection> {
-        // The OpenSession has a unique auth code that is replaced when the response comes back.
-        const saveAuth = this.OutgoingAuth;
-        this.OutgoingAuth = pInitialAuth;
-        const resp = await this.OpenSession(pProps);
-        this.OutgoingAuth = saveAuth;
-        if (resp.Exception) {
-            // The open session failed.
-            throw resp;
-        }
-        this.IncomingAuth = new AuthToken(resp.IProps['ServerAuth']);
-        this.ServerVersion = resp.IProps['ServerVersion'];
-        this.setReady();
-        return this;
     };
 
     async CreateItem(pProps: BKeyedCollection): Promise<BMessage> {
@@ -214,21 +197,22 @@ export class BasilConnection extends BItem {
 };
 
 // Process the incoming message
-async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BProtocol): Promise<void> {
-    if (Config.security.ShouldCheckBasilServerRequestAuth && ((pReq.Auth ?? 'UNKNOWN') !== pContext.IncomingAuth.token) ) {
+async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: BProtocol): Promise<void> {
+    if (Config.security.ShouldCheckBasilServerRequestAuth && ((pReq.Auth ?? 'UNKNOWN') !== pConnection.IncomingAuth.token) ) {
         // The sender is not authorized!
-        Logger.error(`BasilConnection; unauthorized. rcvd=${pReq.Auth}, shouldBe=${pContext.IncomingAuth.token}`);
+        Logger.error(`BasilConnection; unauthorized. rcvd=${pReq.Auth}, shouldBe=${pConnection.IncomingAuth.token}`);
         const resp: BMessage = MakeResponse(pReq, BMessageOps.UnknownResp);
         resp.Exception = 'Not authorized';
-        pContext.Send(resp);
+        pConnection.Send(resp);
         return;
     };
     if (pReq.RCode) {
         // Has a response code. Must be a response to an RPC
-        const session = pContext._rpcSessions.get(pReq.RCode);
+        const session = pConnection._rpcSessions.get(pReq.RCode);
         if (session) {
             try {
                 Logger.cdebug('RPCResponse', `BasilConnection.Processor: response: ${JSONstringify(pReq)}`);
+                pConnection._rpcSessions.delete(pReq.RCode);
                 // eslint-disable-next-line
                 session.resolve(pReq);
             }
@@ -263,26 +247,26 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 catch(e) {
                     resp.Exception = ExtractStringError(e);
                 }
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('CreateItem'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('CreateItem'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             case BMessageOps.DeleteItemReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.DeleteItemResp);
                 // TODO: check auth and prevent deleting system BItems
                 BItems.removeById(pReq.IId);
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('DeleteItem'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('DeleteItem'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             case BMessageOps.AddAbilityReq: {
@@ -312,13 +296,13 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     resp.Exception = 'BItem not found';
                 };
                 resp.IId = pReq.IId;
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('AddAbility'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('AddAbility'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             case BMessageOps.RemoveAbilityReq: {
@@ -341,13 +325,13 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     resp.Exception = 'BItem not found';
                 };
                 resp.IId = pReq.IId;
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('RemoveAbility'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('RemoveAbility'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             case BMessageOps.RequestPropertiesReq: {
@@ -359,13 +343,13 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     resp.IId = bitem.id;
                 };
                 resp.IId = pReq.IId;
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('RequestProperties'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('RequestProperties'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             case BMessageOps.UpdatePropertiesReq: {
@@ -380,13 +364,13 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                     resp.Exception = 'BItem not found';
                 };
                 resp.IId = pReq.IId;
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('UpdateProperties'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('UpdateProperties'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             // This code for OpenSession and CloseSession does not send a response
@@ -394,73 +378,74 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
             case BMessageOps.OpenSessionReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.OpenSessionResp);
                 if (pReq.IProps?.hasOwnProperty('ClientAuth')) {
-                    pContext.OutgoingAuth = new AuthToken(pReq.IProps['ClientAuth']);
+                    pConnection.OutgoingAuth = new AuthToken(pReq.IProps['ClientAuth']);
                 };
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('OpenSession'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('OpenSession'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
                 break;
             }
             case BMessageOps.CloseSessionReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.CloseSessionResp);
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('CloseSession'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('CloseSession'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.setShutdown();
+                pConnection.setShutdown();
                 break;
             }
             case BMessageOps.AliveCheckReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.AliveCheckResp);
                 resp.IProps = CreatePropertyList( {
                     'time': Date.now(),
-                    'sequenceNum': pContext._aliveSequenceNumber++,
+                    'sequenceNum': pConnection._aliveSequenceNumber++,
                     'timeReceived': pReq.IProps??['time'],
                     'sequenceNumberReceived': pReq.IProps??['sequenceNum']
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             case BMessageOps.MakeConnectionReq: {
+                // Logger.debug(`MakeConnectionReq: ${pReq.IProps['transportURL']}`);
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.MakeConnectionResp);
                 // I've been asked to make a connection somewhere
                 const params: MakeConnectionParams = {
                     'transport':    pReq.IProps['transport'] ?? 'WS',
-                    'transporturl': pReq.IProps['transportURL'] ?? undefined,
+                    'transportURL': pReq.IProps['transportURL'] ?? undefined,
                     'protocol':     pReq.IProps['protocol'] ?? 'Basil-JSON',
                     'service':      pReq.IProps['service'] ?? 'SpaceServer'
                 };
                 // Just in case someone is watching and wants to record or change parameters
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('MakeConnection'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('MakeConnection'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto,
                     params: params
                 });
                 try {
-                    const bconnection = await Comm.MakeConnection(params);
+                    const newConnection = await Comm.MakeConnection(params);
+                    newConnection.OutgoingAuth = new AuthToken(pReq.IProps['serviceAuth']);
                     const openProps: OpenSessionReqProps = {
                         basilVersion: VERSION['version-tag'],
-                        clientAuth: bconnection.OutgoingAuth.token,
+                        clientAuth: newConnection.IncomingAuth.token,
                     };
-                    for ( const prop of Object.keys(pReq.IProps)) {
-                        (openProps as BKeyedCollection)[prop] = pReq.IProps
-                    }
-                    await pContext.CreateSession(openProps, new AuthToken(pReq.IProps['clientAuth']));
-                    pContext.Send(resp);
+                    await newConnection.OpenSession(openProps);
+                    pConnection.Send(resp);
                 }
                 catch (e) {
                     const err = <BMessage>e;    // kludge for eslint
                     const resp: BMessage = { 'Op': BMessageOps.MakeConnectionResp, IProps: {}};
                     resp.Exception = `OpenSession exception: ${err.Exception}`;
-                    resp.ExceptionHints = err.ExceptionHints;
-                    pContext.Send(resp);
+                    if (err.ExceptionHints) {
+                        resp.ExceptionHints = err.ExceptionHints;
+                    }
+                    pConnection.Send(resp);
                 };
                 break;
             }
@@ -468,18 +453,18 @@ async function Processor(pReq: BMessage, pContext: BasilConnection, pProto: BPro
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.AliveCheckResp);
                 resp.IProps = CreatePropertyList( {
                     'time': Date.now(),
-                    'sequenceNum': pContext._aliveSequenceNumber++,
+                    'sequenceNum': pConnection._aliveSequenceNumber++,
                     'timeReceived': pReq.IProps??['time'],
                     'sequenceNumberReceived': pReq.IProps??['sequenceNum']
                 });
                 // Just in case someone is watching and wants to record
-                await Eventing.Fire(pContext.GetEventTopicForMessageOp('AliveCheck'), {
+                await Eventing.Fire(pConnection.GetEventTopicForMessageOp('AliveCheck'), {
                     request: pReq,
                     response: resp,
-                    connection: pContext,
+                    connection: pConnection,
                     protocol: pProto
                 });
-                pContext.Send(resp);
+                pConnection.Send(resp);
                 break;
             }
             default:
@@ -530,6 +515,14 @@ function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Prom
             resolve,
             reject,
         } );
-        pContext._proto.Send(pReq);
+        pContext._proto.WhenReady()
+        .then( () => {
+            pContext._proto.Send(pReq);
+        })
+        .catch( (e) => {
+            pContext._rpcSessions.delete(responseSession);
+            Logger.error(`BasilConnection.SendAndPromiseResponse: WhenReady failed: ${ExtractStringError(e)}`);
+            reject(ExtractStringError(e));
+        });
     });
 };

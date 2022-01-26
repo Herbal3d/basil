@@ -31,14 +31,16 @@ export class BTransportWS extends BTransport {
         try {
             this._socket = new WebSocket(this._params.transporturl);
             if (this._socket) {
+                // Logger.debug(`BTransportWS: have socket for ${this._params.transporturl}`);
                 this._socket.binaryType = 'arraybuffer';
                 const _this = this;
                 this._socket.onmessage = (event: MessageEvent) => {
-                    _this._messages.push(new Uint8Array(event.data));
+                    _this._messages.push(new Uint8Array(event.data).buffer);
                     AbilityMsgStatsProps.incrementMessagesReceived(_this);
                     _this.PushReception();
                 };
                 this._socket.onopen = (event: Event) => {
+                    // Logger.debug(`BTransportWS: onopen. Setting READY`);
                     _this.setReady();
                 };
                 return this;
@@ -67,7 +69,7 @@ export class BTransportWS extends BTransport {
         };
     };
 
-    Send(pData: Uint8Array): boolean {
+    Send(pData: ArrayBuffer): boolean {
         if (this._socket) {
             this._socket.send(pData);
             AbilityMsgStatsProps.incrementMessagesSent(this);

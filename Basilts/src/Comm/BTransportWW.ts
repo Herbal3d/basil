@@ -38,7 +38,7 @@ export class BTransportWW extends BTransport {
             // We're the master
             // this.params.transporturl is WebWorker URL to connect to
             try {
-                this._worker = new Worker(this._params.transporturl);
+                this._worker = new Worker(this._params.transportURL);
                 if (this._worker) {
                     this._isWorker = false;
                     const _this = this;

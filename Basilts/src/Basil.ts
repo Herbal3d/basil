@@ -122,9 +122,10 @@ if (Config.initialMakeConnection) {
         // Connect to the server
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
+            conn.OutgoingAuth = new AuthToken(Config.initialMakeConnection.serviceAuth);
             const sessionParams: OpenSessionReqProps = {
                 basilVersion: VERSION['version-tag'],
-                clientAuth: conn.OutgoingAuth.token
+                clientAuth: conn.IncomingAuth.token
             };
             // The original caller can pass test URL and Loader parameters that
             //      this passed to the session. This is for testing using the WebWorker
@@ -133,12 +134,12 @@ if (Config.initialMakeConnection) {
                 sessionParams.testAssetLoader = Config.initialMakeConnection.openParams.loaderType;
             }
             // Start the displayed session
-            conn.CreateSession(sessionParams, new AuthToken(Config.initialMakeConnection.clientAuth))
+            conn.OpenSession(sessionParams)
             .then ( conn2 => {
                 Logger.debug(`Basiljs: session is opened`);
             })
             .catch( e => {
-                Logger.error(`CreateSession exception: ${ExtractStringError(e)}`);
+                Logger.error(`OpenSession exception: ${ExtractStringError(e)}`);
             });
         })
         .catch( e => {

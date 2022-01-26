@@ -24,20 +24,26 @@ import { BProtocolPB } from '@Comm/BProtocolPB';
 import { CombineParameters, ExtractStringError, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
+import { Config } from '@Base/Config';
 
 export interface MakeConnectionParams extends BKeyedCollection {
     transport: string,            // type of the transport
-    transporturl: string,         // link to service to connect to
+    transportURL: string,         // link to service to connect to
     protocol: string,             // format of the messages on the transport
 };
 
 export const Comm = {
+    // Process an incoming MakeConnection request
+    // This creates a new outgoing connection to the specified transport and protocol
     async MakeConnection(pParams: BKeyedCollection): Promise<BasilConnection> {
         const params= <MakeConnectionParams>CombineParameters(undefined, pParams, {
             'transport': 'WS',          // type of the transport
-            'transporturl': undefined,  // link to service to connect to
+            'transportURL': undefined,  // link to service to connect to
             'protocol': 'Basil-JSON',   // format of the messages on the transport
         });
+        if (Config.Debug.MakeConnectionDetail) {
+            Logger.debug(`MakeConnection: ${JSONstringify(params)}`);
+        }
         try {
             const xport = await Comm.TransportFactory(params);
             const proto = await Comm.ProtocolFactory(params, xport);
@@ -53,7 +59,7 @@ export const Comm = {
     async TransportFactory(pParams: BKeyedCollection): Promise<BTransport> {
         const params = CombineParameters(undefined, pParams, {
             'transport': 'WS',          // type of transport
-            'transporturl': undefined   // link to service to connect to
+            'transportURL': undefined   // link to service to connect to
         });
         let xport: BTransport;
         switch (params.transport) {

@@ -6,7 +6,7 @@
 export const Config = {
     'page': {
         'showDebug': true,
-        'debugElementId': '#DEBUG'
+        'debugElementId': '#DEBUGG'
 
     },
     // Filled by parameters passed in initial invocation
@@ -34,7 +34,7 @@ export const Config = {
         'EnableLogging': true,                // whether to output any logging
         'LogLevel': 'debug',                  // output log level (error, warn, info, debug)
         'SendAndPromisePrintMsg': false,        // optionally print response message
-        'DebugLogToConsole': false,           // output debug message to console rather than debug window
+        'DebugLogToConsole': true,           // output debug message to console rather than debug window
         'DebugLogInstanceName': 'bitem.debug.b.basil.org' // Name of debug logging instance
     },
     // Used by Entry.js/Entry.html to specify BasilTest URLs
