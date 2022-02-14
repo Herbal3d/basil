@@ -141,21 +141,21 @@ export const Config = {
         'eventPollIntervalMS': 500
     },
     // Connection and debug information when running the WebWorker test
-    WWTester: {
-        LogToConsole: false,       // Log to console. Otherwise, use msg to debug BItem
-        GenerateAliveCheck: false, // whether to generate AlvieCheck messages
-        AliveCheckPollMS: 10000,   // ms interval to generate AliveCheck's
-        PrintDebugOnAliveResponse: false, // print message on AliveCheck response
-        initialMakeConnection: {
-            Transport: 'WW',
-            TransportURL: './wwtester.js',
-            Protocol: 'Basil-JSON',
-            Service: 'SpaceServer',
-            ServiceAuth: '111999555222000777111222',
-            OpenParams: {
-                AssetURL: 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                // AssetURL: 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-                LoaderType: 'GLTF'
+    'WWTester': {
+        'LogToConsole': false,       // Log to console. Otherwise, use msg to debug BItem
+        'GenerateAliveCheck': false, // whether to generate AlvieCheck messages
+        'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
+        'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
+        'initialMakeConnection': {
+            'Transport': 'WW',
+            'TransportURL': './wwtester.js',
+            'Protocol': 'Basil-JSON',
+            'Service': 'SpaceServer',
+            'ServiceAuth': '111999555222000777111222',
+            'OpenParams': {
+                'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                // 'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
+                'LoaderType': 'GLTF'
             }
         }
     },
@@ -166,6 +166,7 @@ export const Config = {
         'LogLevel': 'debug',            // output log level (error, warn, info, debug)
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
         'MakeConnectionDetail': false,  // output detailed info when processing MakeConnection
+        'SentMsg': true,                // output detailed message when message received
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true             // print RPC response message
     }

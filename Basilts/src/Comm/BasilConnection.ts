@@ -231,6 +231,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
     }
     else {
         // No response code, must be an incoming request
+        Logger.cdebug('SentMsg', `BasilConnection.Processor: received: ${JSONstringify(pReq)}`);
         switch (pReq.Op) {
             case BMessageOps.CreateItemReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.CreateItemResp);
@@ -238,7 +239,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                     const newBItem = BItems.createFromProps(pReq.IProps);
                     if (newBItem) {
                         resp.IId = newBItem.id;
-                        resp.IProps['Id'] = newBItem.id;
+                        resp.IProps['IId'] = newBItem.id;
                     }
                     else {
                         resp.Exception = 'Failed creation';
@@ -341,8 +342,10 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 if (bitem) {
                     resp.IProps = bitem.getProperties(filter);
                     resp.IId = bitem.id;
+                }
+                else {
+                    resp.IId = pReq.IId;
                 };
-                resp.IId = pReq.IId;
                 await Eventing.Fire(pConnection.GetEventTopicForMessageOp('RequestProperties'), {
                     request: pReq,
                     response: resp,

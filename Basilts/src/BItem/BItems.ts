@@ -22,7 +22,7 @@ import { Logger } from '@Base/Tools/Logging';
 export const BItemIdProp = 'Id';
 export const BItemAuthProp = 'ItemAuthToken';
 export const BItemLayerProp = 'Layer';
-export const BItemInitialAbilityProp = 'InitialAbilities';
+export const BItemInitialAbilityProp = 'Abilities';
 
 // Management routines for BItems.
 //    Functions for the creation, storage, and manipulation of BItems
