@@ -36,7 +36,9 @@ export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromPro
 
 // Given an Ability name and a set of properties, create an Ability instance initialized with the properties
 export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability {
+    // Logger.debug(`AbilityFactory: looking for ability ${pName}`);
     if (_registeredAbilities.has(pName)) {
+        // Logger.debug(`AbilityFactory: found ${pName}`);
         const getFrom = _registeredAbilities.get(pName);
         return getFrom(pProps);
     };

@@ -79,10 +79,10 @@ export interface BMessage {
     TransportClass?: number;
 
     Op: number;         // code specifying the operation
-    IId?: string;       // BItem id being referenced
-    IProps: { [ key: string ]: string };   // Properties to apply
     Auth?: string;      // Auth for the session
+    IId?: string;       // BItem id being referenced
     IAuth?: string;     // Any authentication necessary for access BItem
+    IProps: { [ key: string ]: string };   // Properties to apply
 
     Pos?: PositionBlock[];  // If a multi-position update, new positions for items
 

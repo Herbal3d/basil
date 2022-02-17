@@ -30,11 +30,11 @@ import { Logger } from '@Base/Tools/Logging';
 
 export const InstanceAbilityName = 'Instance';
 
-const InstanceRefItem = 'RefItem'; // either 'SELF' or id of BItem with the geometry
-const InstancePosProp = 'Pos';
-const InstanceRotProp = 'Rot';
-const InstancePosRefProp = 'PosRef';
-const InstanceRotRefProp = 'RotRef';
+const InstanceRefItem = 'refItem'; // either 'SELF' or id of BItem with the geometry
+const InstancePosProp = 'pos';
+const InstanceRotProp = 'rot';
+const InstancePosRefProp = 'posRef';
+const InstanceRotRefProp = 'rotRef';
 
 export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInstance {
     const newAbil = new AbilityInstance(pProps[InstanceRefItem], pProps[InstancePosProp], pProps[InstanceRotProp] );
@@ -65,10 +65,10 @@ export class AbilityInstanceProps {
 
 export class AbilityInstance extends Ability {
     _refItem: PropValue = 'SELF';
-    _pos: PropValue = '[0,0,0]';
+    _pos: PropValue = [0,0,0];
     _posArray: number[] = [0,0,0];      // value of POS that is a number array
     _posRef: PropValue = 0;
-    _rot: PropValue = '[0,0,0,1]';
+    _rot: PropValue = [0,0,0,1];
     _rotArray: number[] = [0,0,0,1];    // value of ROT that is a number array
     _rotRef: PropValue = 0;
     _worldObject: Object3D;
@@ -76,8 +76,8 @@ export class AbilityInstance extends Ability {
     constructor(pRefItem: string, pPos: string | number[], pRot: string | number[] ) {
         super(InstanceAbilityName);
         this._refItem = pRefItem;
-        this._pos = <PropValue>(pPos ?? '[0,0,0]');
-        this._rot = <PropValue>(pRot ?? '[0,0,0,1]');
+        this._pos = <PropValue>(pPos ?? [0,0,0]);
+        this._rot = <PropValue>(pRot ?? [0,0,0,1]);
     };
 
     // Return a handle for typed access to my properties
@@ -101,11 +101,12 @@ export class AbilityInstance extends Ability {
                 // TODO: get pointer to graphics item for quick access
                 ScheduleDelayedGraphicsOperation(InstanceIntoWorld, {
                     Ability: this,
-                    Name: pBItem.id
+                    Name: pBItem.id,
+                    RefItem: pVal
                 })
             }
         });
-        // Since the above property has a computed value, set the balue so it get updated
+        // Since the above property has a computed value, set the value so it get updated
         propEntry.setter(propEntry, pBItem, this._refItem);
 
         // Get and Set the instance's position in the 3d world.
@@ -190,43 +191,38 @@ export class AbilityInstance extends Ability {
 async function InstanceIntoWorld(pProps: InstanceAfterRequestProps): Promise<void> {
     Logger.debug(`AbilityInstance.InstanceIntoWorld: entry`);
     const ability = pProps.Ability;
+    const refItem = pProps.RefItem;
     // If object is not already in-world, create it.
     if (typeof(ability._worldObject) === 'undefined') {
-        if (typeof(ability._refItem) === 'string') {
-            // Get the BItem that holds the 3d representation of this instance.
-            const bitem = BItems.get(ability._refItem);
-            if (bitem) {
-                bitem.WhenReady()
-                .then ( bb => {
-                    Logger.debug(`AbilityInstance.InstanceIntoWorld: READY BItem. Doing PlaceInWorld`);
-                    const representation = AbilityAssemblyProps.getAssetRepresentation(bitem);
-                    if (representation) {
-                        const inWorldParams: PlaceInWorldProps = {
-                            Name: pProps.Name,
-                            Pos: ability._posArray,
-                            PosCoord: (ability._posRef as CoordSystem),
-                            Rot: ability._rotArray,
-                            RosCoord: (ability._rotRef as CoordSystem),
-                            Object: representation
-                        };
-                        ability._worldObject = PlaceInWorld(inWorldParams);
-                        Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);
-                    }
-                    else {
-                        Logger.error(`AbilityInstance.InstanceIntoWorld: READY bitem does not have represenation`);
+        // Get the BItem that holds the 3d representation of this instance.
+        const bitem = BItems.get(refItem);
+        if (bitem) {
+            bitem.WhenReady()
+            .then ( bb => {
+                Logger.debug(`AbilityInstance.InstanceIntoWorld: READY BItem. Doing PlaceInWorld`);
+                const representation = AbilityAssemblyProps.getAssetRepresentation(bitem);
+                if (representation) {
+                    const inWorldParams: PlaceInWorldProps = {
+                        Name: pProps.Name,
+                        Pos: ability._posArray,
+                        PosCoord: (ability._posRef as CoordSystem),
+                        Rot: ability._rotArray,
+                        RosCoord: (ability._rotRef as CoordSystem),
+                        Object: representation
                     };
-                })
-                .catch ( err => {
-                    Logger.error(`AbilityInstance.InstanceIntoWorld: exception ${ExtractStringError(err)}`);
-                });
-            }
-            else {
-                Logger.error(`AbilityInstance.InstanceIntoWorld: ItemRef not found: ${ability._refItem}`);
-
-            };
+                    ability._worldObject = PlaceInWorld(inWorldParams);
+                    Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);
+                }
+                else {
+                    Logger.error(`AbilityInstance.InstanceIntoWorld: READY bitem does not have represenation`);
+                };
+            })
+            .catch ( err => {
+                Logger.error(`AbilityInstance.InstanceIntoWorld: exception ${ExtractStringError(err)}`);
+            });
         }
         else {
-            Logger.error(`AbilityInstance.InstanceIntoWorld: ItemRef if an odd type: ${typeof(ability._refItem)}`);
+            Logger.error(`AbilityInstance.InstanceIntoWorld: ItemRef not found: ${ability._refItem}`);
         };
     };
 };

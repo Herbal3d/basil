@@ -24,10 +24,10 @@ import { Logger } from '@Base/Tools/Logging';
 
 export const AssemblyAbilityName = 'Assembly';
 
-const AssetURLProp = 'AssetURL';
-const AssetLoaderProp = 'AssetLoader';
-const AssetAuthProp = 'AssetAuth';
-const AssetRepresentationProp = 'AssetRepresentation';
+const AssetURLProp = 'assetUrl';
+const AssetLoaderProp = 'assetLoader';
+const AssetAuthProp = 'assetAuth';
+const AssetRepresentationProp = 'assetRepresentation';
 
 interface AssemblyAfterRequestProps {
     Ability: AbilityAssembly;
@@ -154,9 +154,14 @@ export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<v
     LoadSimpleAsset(loaderProps)
     .then ( loaded => {
         Logger.debug(`AbilityAssembly: LoadAssembly: successful load`);
-        if (typeof(loaded) === 'undefined') { Logger.error(`AbilityAssembly: LoadAssembly: loaded object is null`); };
-        ability._graphicNode = loaded;
-        pProps.BItem.setReady();
+        if (typeof(loaded) === 'undefined') {
+            Logger.error(`AbilityAssembly: LoadAssembly: loaded object is null`);
+            pProps.BItem.setFailed();
+        }
+        else {
+            ability._graphicNode = loaded;
+            pProps.BItem.setReady();
+        }
     })
     .catch ( err => {
         Logger.debug(`AbilityAssembly: LoadAssembly: failed load`);

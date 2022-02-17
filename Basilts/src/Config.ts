@@ -16,7 +16,7 @@ export const Config = {
         // ms before removing deleted BItem
         'BItemDeleteInterval': 60000,
         // Note that basename begins with a dot
-        'UniqueIdBase': '.b.basil.org'
+        'UniqueIdBase': '.b.herbal3d.org'
      },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
@@ -124,10 +124,10 @@ export const Config = {
     },
     // Names for predefined/service BItem layers
     'layers': {
-        'default': 'default.layer.b.basil.org',
-        'comm': 'comm.layer.b.basil.org',
-        'service': 'service.layer.b.basil.org',
-        'eventing': 'eventing.layer.b.basil.org',
+        'default': 'default.layer.b.herbal3d.org',
+        'comm': 'comm.layer.b.herbal3d.org',
+        'service': 'service.layer.b.herbal3d.org',
+        'eventing': 'eventing.layer.b.herbal3d.org',
     },
     // Flags for fetching assets.
     'assets': {

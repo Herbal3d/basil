@@ -34,7 +34,7 @@ import { Logger } from '@Base/Tools/Logging';
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
 //    is defined for that property.
-export type PropValue = number | string | AuthToken | Object3D;
+export type PropValue = number | number[] | string | AuthToken | Object3D;
 export type getterFunction = (pDfd: PropEntry, pD: BItem) => PropValue;
 export type setterFunction = (pDfd: PropEntry, pD: BItem, pV: PropValue) => void;
 export interface PropEntry {
@@ -78,14 +78,17 @@ export class BItem {
     };
     // Common interface for getting the value of any property an Ability has added to the BItem
     getProp(pPropName: string): PropValue {
+        // Logger.debug(`Getting property ${pPropName}`);
         const prop = this._props.get(pPropName);
         let propValue: PropValue;
-        if (prop) {
+        if (typeof(prop) != 'undefined') {
             if (prop.getter) {
                 propValue = prop.getter(prop, this);
+                // Logger.debug(`getProp: returning ${pPropName}=${propValue}`);
             }
             else {
                 propValue = undefined;
+                // Logger.debug(`getProp: returning ${pPropName}=undefined`);
             };
         };
         // If the property is returning a BItem, actually return the ID of the BItem
@@ -93,15 +96,17 @@ export class BItem {
         if (typeof(propValue) === 'object') {
             if (propValue instanceof BItem) {
                 propValue = propValue.id;
+                // Logger.debug(`getProp: returning BItem so returning id=${propValue}`);
             };
         };
         return propValue;
     };
     // Common interface for setting the value of any property an Ability has added to the BItem
     setProp(pPropName: string, pVal: PropValue): boolean {  // 'true' if the set worked
+        // Logger.debug(`Setting property ${pPropName} = ${pVal}`);
         let ret = false;
         const prop = this._props.get(pPropName);
-        if (prop) {
+        if (typeof(prop) != 'undefined') {
             if (prop.setter) {
                 try {
                     prop.setter(prop, this, pVal);
@@ -116,13 +121,16 @@ export class BItem {
     };
     // Increment the value of a named property
     incrementProp(pPropName: string) : PropValue {
+        // Logger.debug(`incrementProp ${pPropName}`);
         let val = this.getProp(pPropName);
-        if (val) {
+        if (typeof(val) != 'undefined') {
             if (typeof(val) === 'string') {
                 val = parseInt(val) + 1;
+                // Logger.debug(`incrementProp: increment string ${pPropName}=${val}`);
             }
             else {
                 (val as number)++;
+                // Logger.debug(`incrementProp: increment number ${pPropName}=${val}`);
             }
             this.setProp(pPropName, val);
         };
@@ -155,10 +163,10 @@ export class BItem {
     // This adds the Ability to the Ability collection and calls the Abilitie's
     //      "addProperties" function to add it's properties to this BItem
     addAbility(pAbility: Ability): void {
-        // Logger.debug(`Adding Ability ${pAbility.name} to ${this.id}`);
         if (!this._abilities.has(pAbility.name)) {
             this._abilities.set(pAbility.name, pAbility);
             pAbility.addProperties(this);
+            // Logger.debug(`Adding Ability ${pAbility.name} to ${this.id}`);
         }
         else {
             Logger.error(`BItem.addAbility: adding two of same type: ${pAbility.name}, BItem=${this.id}`);

@@ -13,16 +13,13 @@
 
 import { BItem } from '@BItem/BItem';
 import { AbilityFactory } from '@Abilities/AbilityManagement';
+import { AbilityBItem } from '@Abilities/AbilityBItem';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 
 import { Logger } from '@Base/Tools/Logging';
-
-export const BItemIdProp = 'Id';
-export const BItemAuthProp = 'ItemAuthToken';
-export const BItemLayerProp = 'Layer';
-export const BItemInitialAbilityProp = 'Abilities';
+import { AuthToken } from '@Base/Tools/Auth';
 
 // Management routines for BItems.
 //    Functions for the creation, storage, and manipulation of BItems
@@ -35,13 +32,19 @@ export const BItems = {
     // This looks for properties 'BItem*Prop' but any abilities created will look for their own.
     // Throws a string error if there are any problems.
     createFromProps: (pProps: BKeyedCollection): BItem => {
-        const newBItem = new BItem(pProps[BItemAuthProp], pProps[BItemLayerProp]);
+        Logger.debug(`BItems.createFromProps: ${JSONstringify(pProps)}`);
+        const authTokenString = pProps[AbilityBItem.AuthTokenProp] as string;
+        const authToken = authTokenString ? new AuthToken(authTokenString) : null;
+        const layer = pProps[AbilityBItem.LayerProp] as string;
+        const newBItem = new BItem(authToken, layer);
 
         // Add any Abilities that are asked for
         let err: string;
         try {
-            if (pProps.hasOwnProperty(BItemInitialAbilityProp)) {
-                const initialAbils = pProps[BItemInitialAbilityProp];
+            Logger.debug(`BItems.createFromProps: checking for abilities`);
+            if (pProps.hasOwnProperty(AbilityBItem.AbilityProp)) {
+                const initialAbils = pProps[AbilityBItem.AbilityProp];
+                Logger.debug('BItems.createFromProps: initialAbils=' + JSONstringify(initialAbils));
                 if (typeof(initialAbils) === 'string') {
                     const abils = initialAbils.split(',');
                     for (const abil of abils) {
@@ -77,7 +80,7 @@ export const BItems = {
     },
     // Remove a BItem from the collecion of BItems
     remove: async (pBItem: BItem): Promise<void> => {
-        const id = (pBItem.getProp('id') as string);
+        const id = (pBItem.getProp(AbilityBItem.IdProp) as string);
         BItemCollection.delete(id);
     },
     // Remove BItem based on it's id

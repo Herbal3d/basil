@@ -136,7 +136,7 @@ if (Config.initialMakeConnection) {
             // Start the displayed session
             conn.OpenSession(sessionParams)
             .then ( conn2 => {
-                Logger.debug(`Basiljs: session is opened`);
+                Logger.debug(`Basilts: session is opened`);
             })
             .catch( e => {
                 Logger.error(`OpenSession exception: ${ExtractStringError(e)}`);

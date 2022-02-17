@@ -15,6 +15,7 @@ import { BItem } from '@BItem/BItem';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 import { AbilityMsgStats } from '@Abilities/AbilityMsgStats';
+import { Config } from '@Base/Config';
 
 export type BTransportMsg = ArrayBuffer;
 // On reception, the receiver gets a raw message to deserialize
@@ -28,7 +29,7 @@ export abstract class BTransport extends BItem {
     _receiveCallbackContext: any;
 
     constructor(pLayer?: string) {
-        super(undefined, pLayer);
+        super(undefined, pLayer ?? Config.layers.comm);
         this._messages = [];
         this._receiveCallback = undefined;
         this.addAbility(new AbilityMsgStats());

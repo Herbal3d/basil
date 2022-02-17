@@ -16,6 +16,7 @@ import { BTransport, BTransportMsg } from '@Comm/BTransport';
 
 import { CombineParameters, CreateUniqueId, ExtractStringError, JSONstringify } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Base/Tools/bTypes';
+import { Config } from '@Base/Config';
 import { Logger } from '@Base/Tools/Logging';
 
 // The data format is just JSON text.
@@ -23,7 +24,7 @@ export class BProtocolJSON extends BProtocol {
     _encoder = new TextEncoder();
 
     constructor(pParams: BKeyedCollection, pXPort: BTransport) {
-        super(pXPort, CreateUniqueId('BProtocolJSON'));
+        super(pXPort, Config.layers.comm);
         this._params = CombineParameters(undefined, pParams, {
         });
     };

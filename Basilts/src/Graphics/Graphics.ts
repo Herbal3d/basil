@@ -83,6 +83,7 @@ export const Graphics = {
 
         Graphics._scene = new THREE.Scene();
         // DEBUG DEBUG DEBUG
+        // This puts the scene in the external environment so it is easy to find when debugging.
         // @ts-ignore
         window._scene = Graphics._scene;
         // END DEBUG DEBUG DEBUG

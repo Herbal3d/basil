@@ -65,7 +65,7 @@ export class BasilConnection extends BItem {
     ServerVersion: string;          // the version of the server we're talking to
 
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
-        super(undefined, 'org.herbal3d.b.basilconn');
+        super(undefined, Config.layers.comm);
         this._params = CombineParameters(undefined, pParams, {
         });
         this._proto = pProtocol;
@@ -485,6 +485,11 @@ function MakeResponse(pReq: BMessage, pOp: number): BMessage {
     }
     return resp;
 };
+
+function SendResponse(pComm: BasilConnection, pResp: BMessage): void {
+    // Logger.debug(`SendResponse: ${JSON.stringify(pResp)}`);
+    pComm.Send(pResp);
+}
 
 function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
     const list: BKeyedCollection = {};
