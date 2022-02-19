@@ -79,6 +79,7 @@ export interface BMessage {
     TransportClass?: number;
 
     Op: number;         // code specifying the operation
+    Addr?: string;      // routing address for the destination
     Auth?: string;      // Auth for the session
     IId?: string;       // BItem id being referenced
     IAuth?: string;     // Any authentication necessary for access BItem

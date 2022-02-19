@@ -57,6 +57,7 @@ if (IsNullOrEmpty(configParams)) {
                 'protocol': 'Basil-JSON',
                 'service': 'SpaceServer',
                 'serviceAuth': '12345678901234567890',
+                'serviceAddr': '1234567890',
                 'openParams': {
                     'assetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
                     'loaderType': 'GLTF'
@@ -123,9 +124,15 @@ if (Config.initialMakeConnection) {
         Comm.MakeConnection(Config.initialMakeConnection)
         .then( conn => {
             conn.OutgoingAuth = new AuthToken(Config.initialMakeConnection.serviceAuth);
+            conn.OutgoingAddr = Config.initialMakeConnection.serviceAddr;
             const sessionParams: OpenSessionReqProps = {
                 basilVersion: VERSION['version-tag'],
                 clientAuth: conn.IncomingAuth.token
+            };
+            // Optionally add routing address for the client if transport needs it
+            const clientAddr = conn.GetMyRoutingAddress();
+            if (clientAddr) {
+                sessionParams.clientAddr = clientAddr;
             };
             // The original caller can pass test URL and Loader parameters that
             //      this passed to the session. This is for testing using the WebWorker

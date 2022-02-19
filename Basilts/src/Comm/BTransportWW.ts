@@ -98,6 +98,11 @@ export class BTransportWW extends BTransport {
         return true;
     };
 
+    // WebWorker doesn't have a routing address
+    RoutingAddress(): string | undefined {
+        return undefined;
+    }
+
     get isConnected(): boolean {
         return false;
     };

@@ -39,6 +39,11 @@ export abstract class BTransport extends BItem {
 
     abstract Close(): void;
 
+    // If the underlying transport requires a destination address (like
+    //    for some P2P transports), then this is the address to use.
+    // Will return 'undefined' if the transport does not require routing.
+    abstract RoutingAddress(): string | undefined;
+
     // Note that is function is not async. It can hang.
     abstract Send(pData: BTransportMsg): boolean;
 

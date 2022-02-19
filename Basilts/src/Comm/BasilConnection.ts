@@ -17,7 +17,7 @@ import { BProtocol } from '@Comm/BProtocol';
 import { BItem } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
 import { BMessage, BMessageOps } from '@Comm/BMessage';
-import { OpenSessionReqProps } from '@Comm/BMessageProps';
+import { OpenSessionReqProps, MakeConnectionReqProps } from '@Comm/BMessageProps';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
@@ -61,7 +61,9 @@ export class BasilConnection extends BItem {
     _aliveSequenceNumber: number = 22;
     _eventTopics: Map<string,TopicEntry>;
     OutgoingAuth: AuthToken;
+    OutgoingAddr: string;
     IncomingAuth: AuthToken;
+    IncomingAddr: string;
     ServerVersion: string;          // the version of the server we're talking to
 
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
@@ -111,6 +113,13 @@ export class BasilConnection extends BItem {
         return undefined;
     };
 
+    // Return the routing address for sending messages to me. This is passed
+    //     to the other side so they can send messages back. This is needed
+    //     for peer-to-peer connections. Can be returned 'undefined' if not
+    //     required for this transport.
+    GetMyRoutingAddress() : string | undefined {
+        return this._proto._xport.RoutingAddress();
+    }
     // This is making an RPC requests so remember info so we can match the response
     RememberRPCSession(pSessionCode: string, pRPCInfo: RPCInfo) {
         this._rpcSessions.set(pSessionCode, pRPCInfo);
@@ -127,12 +136,14 @@ export class BasilConnection extends BItem {
     async CreateItem(pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.CreateItemReq, IProps: {} };
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async DeleteItem(pId: string, pItemAuth?: AuthToken): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.DeleteItemReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
         if (pItemAuth) bmsg.IAuth = pItemAuth.token;
         return SendAndPromiseResponse(bmsg, this);
@@ -140,6 +151,7 @@ export class BasilConnection extends BItem {
     async AddAbility(pId: string, pAbilities: any): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.AddAbilityReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
         // TODO:
         return SendAndPromiseResponse(bmsg, this);
@@ -147,6 +159,7 @@ export class BasilConnection extends BItem {
     async RemoveAbility(pId: string, pAbilities: any): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.RemoveAbilityReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
         // TODO:
         return SendAndPromiseResponse(bmsg, this);
@@ -154,6 +167,7 @@ export class BasilConnection extends BItem {
     async RequestProperties(pId: string, filter: string): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.RequestPropertiesReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
         if (filter) bmsg.IProps = CreatePropertyList({ 'filter': filter });
         return SendAndPromiseResponse(bmsg, this);
@@ -161,6 +175,7 @@ export class BasilConnection extends BItem {
     async UpdateProperties(pId: string, pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.UpdatePropertiesReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
         if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
@@ -170,24 +185,28 @@ export class BasilConnection extends BItem {
     async OpenSession(pProps: OpenSessionReqProps): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.OpenSessionReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async CloseSession(reason: string): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.CloseSessionReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (reason) bmsg.IProps = CreatePropertyList({ 'reason': reason } );
         return SendAndPromiseResponse(bmsg, this);
     };
     async MakeConnection(pProps: BKeyedCollection): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.MakeConnectionReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pProps) bmsg.IProps = CreatePropertyList(pProps);
         return SendAndPromiseResponse(bmsg, this);
     };
     async AliveCheck(): Promise<BMessage> {
         const bmsg: BMessage = { 'Op': BMessageOps.AliveCheckReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
+        if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         bmsg.IProps = CreatePropertyList( {
             'time': Date.now(),
             'sequenceNum': this._aliveSequenceNumber++
@@ -417,12 +436,14 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 // Logger.debug(`MakeConnectionReq: ${pReq.IProps['transportURL']}`);
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.MakeConnectionResp);
                 // I've been asked to make a connection somewhere
+                const props = pReq.IProps as unknown as MakeConnectionReqProps;
                 const params: MakeConnectionParams = {
-                    'transport':    pReq.IProps['transport'] ?? 'WS',
-                    'transportURL': pReq.IProps['transportURL'] ?? undefined,
-                    'protocol':     pReq.IProps['protocol'] ?? 'Basil-JSON',
-                    'service':      pReq.IProps['service'] ?? 'SpaceServer'
+                    'transport':    props.transport ?? 'WS',
+                    'transportURL': props.transportURL ?? undefined,
+                    'protocol':     props.protocol ?? 'Basil-JSON',
+                    'service':      props.service ?? 'SpaceServer'
                 };
+
                 // Just in case someone is watching and wants to record or change parameters
                 await Eventing.Fire(pConnection.GetEventTopicForMessageOp('MakeConnection'), {
                     request: pReq,
@@ -431,14 +452,21 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                     protocol: pProto,
                     params: params
                 });
+
                 try {
                     const newConnection = await Comm.MakeConnection(params);
-                    newConnection.OutgoingAuth = new AuthToken(pReq.IProps['serviceAuth']);
+                    newConnection.OutgoingAuth = new AuthToken(props.serviceAuth);
+                    newConnection.OutgoingAddr = props.serviceAddr;
                     const openProps: OpenSessionReqProps = {
                         basilVersion: VERSION['version-tag'],
                         clientAuth: newConnection.IncomingAuth.token,
                     };
+                    const routingAddr = newConnection.GetMyRoutingAddress();
+                    if (routingAddr) {
+                        openProps.clientAddr = routingAddr;
+                    };
                     await newConnection.OpenSession(openProps);
+                    // The caller gets a response after a successful connection
                     pConnection.Send(resp);
                 }
                 catch (e) {

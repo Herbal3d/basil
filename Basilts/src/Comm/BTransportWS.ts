@@ -78,6 +78,11 @@ export class BTransportWS extends BTransport {
         return false;
     };
 
+    // WebSocket doesn't have a routing address
+    RoutingAddress(): string | undefined {
+        return undefined;
+    }
+
     get isConnected(): boolean {
         return this._socket.readyState === WebSocket.OPEN;
     };

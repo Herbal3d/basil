@@ -26,6 +26,7 @@ export const Config = {
         'service': 'SpaceServer',
         'clientAuth': '12345678901234567890',
         'serviceAuth': '123456789012345678901234567890',
+        'serviceAddr': '1234567890',
         'openParams': {
             'assetURL': '',
             'loaderType': 'GLTF'

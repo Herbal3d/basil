@@ -141,18 +141,18 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     Logger.debug(`LoadTestAsset`);
     let createdItemId: string;
     const createItemProps = {
-        InitialAbilities: 'Assembly,Instance',
-        AssetURL: pTestAssetURL,
-        AssetLoader: pTestAssetLoader,
-        RefItem: 'SELF',
-        Pos: '[10, 11, 12]'
+        abilities: 'Assembly,Instance',
+        assetUrl: pTestAssetURL,
+        assetLoader: pTestAssetLoader,
+        refItem: 'SELF',
+        pos: [10, 11, 12]
     };
     Logger.debug(`Before CreateItem`);
     pBasil.CreateItem(createItemProps)
     .then ( resp => {
         Logger.debug(`Response from CreateItem`);
         if (typeof(resp.Exception) === 'undefined') {
-            createdItemId = resp.IProps.Id;
+            createdItemId = resp.IProps.IId;
 
             Logger.debug(`Before RequestProperties`);
             pBasil.RequestProperties(createdItemId, '')

@@ -22,6 +22,7 @@ export interface MakeConnectionReqProps {
     protocol: string;       // message encoding: 'Basil-JSON'|...
     service: string;        // service connecting too (usually 'SpaceServer')
     serviceAuth: string;     // authorization token to use when connecting
+    serviceAddr?: string;    // routing address of service
     openParams?: BKeyedCollection; // optional parameters to send when doing OpenConnection
 };
 export interface MakeConnectionRespProps {
@@ -30,6 +31,7 @@ export interface MakeConnectionRespProps {
 export interface OpenSessionReqProps {
     basilVersion: string;   // version string for Basil
     clientAuth: string      // token to use when talking back to me
+    clientAddr?: string      // routing address to client
     // The Test* props are for WWTester and causes it to create the specified asset.
     //    These are not use for normal SpaceServer operation.
     //    They usually come from the OpenParams prop in the MakeConnectionReq
@@ -40,11 +42,12 @@ export interface OpenSessionReqProps {
 export interface OpenSessionRespProps {
     serverVersion?: string; // server version string
     serverAuth:string;      // token to use talking to this server
+    serverAddr:string;      // routing address of server
 };
 export interface CreateItemReqProps {
     itemAuthToken?: string;     // token required to access item
     layer?: string;             // layer the BItem is associated with
-    initialAbilities?: string;  // comma separated list of abilities to add
+    abilities?: string;  // comma separated list of abilities to add
     [ key: string ]: string;    // any parameters required or the added abilities
 
 };
