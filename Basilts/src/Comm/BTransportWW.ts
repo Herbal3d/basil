@@ -11,7 +11,7 @@
 'use strict';
 
 import { BTransport, BTransportMsg } from '@Comm/BTransport';
-import { AbilityMsgStats, AbilityMsgStatsProps } from '@Abilities/AbilityMsgStats';
+import { AbilityMsgStats } from '@Abilities/AbilityMsgStats';
 
 import { CombineParameters, ExtractStringError } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -44,7 +44,7 @@ export class BTransportWW extends BTransport {
                     const _this = this;
                     this._worker.onmessage = (evnt: MessageEvent) => {
                         _this._messages.push(evnt.data);
-                        AbilityMsgStatsProps.incrementMessagesReceived(_this);
+                        this.incrementProp(AbilityMsgStats.MessagesReceivedProp);
                         _this.PushReception();
                     };
                     this._worker.onerror = (err: ErrorEvent) => {
@@ -71,7 +71,7 @@ export class BTransportWW extends BTransport {
             const _this = this;
             onmessage = (evnt: MessageEvent) => {
                 _this._messages.push(evnt.data);
-                AbilityMsgStatsProps.incrementMessagesReceived(_this);
+                _this.incrementProp(AbilityMsgStats.MessagesReceivedProp);
                 _this.PushReception();
             };
             this.setReady();
@@ -94,7 +94,7 @@ export class BTransportWW extends BTransport {
         else {
             (self as unknown as Worker).postMessage(pData);
         };
-        AbilityMsgStatsProps.incrementMessagesSent(this);
+        this.incrementProp(AbilityMsgStats.MessagesSentProp);
         return true;
     };
 

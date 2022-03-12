@@ -30,6 +30,7 @@ export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromPro
         Logger.error(`AbilityManagement: attempt to re-register ability ${pAbilityName}`);
     }
     else {
+        Logger.debug(`AbilityManagement: registering ability ${pAbilityName}`);
         _registeredAbilities.set(pAbilityName, pFromProps);
     };
 };
@@ -42,5 +43,6 @@ export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability
         const getFrom = _registeredAbilities.get(pName);
         return getFrom(pProps);
     };
+    Logger.error(`AbilityFactory: could not find ability ${pName}`);
     return null;
 };

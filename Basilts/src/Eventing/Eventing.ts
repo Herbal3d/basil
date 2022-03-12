@@ -60,7 +60,7 @@ let onSubscribe: TopicEntry;
 let onUnsubscribe: TopicEntry;
 export const Eventing = {
     init(): void {
-        eventingDefaultLayer = Config.layers ? Config.layers.eventing : 'org.basil.b.layer.eventing';
+        eventingDefaultLayer = Config.layers?.eventing ?? 'eventing.layer.b.herbal3d.org',
         eventingTopics = new Map<TopicName, TopicEntry>();
         eventingTimedProcessors = new Map<TopicName, EventProcessor>();
         eventingEventsFired = 0;
@@ -80,7 +80,7 @@ export const Eventing = {
         if (eventingTimedProcessors) {
             eventingTimedProcessors.forEach( (proc, topic) =>{
                 // GP.DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
-                proc(undefined, topic);
+                proc(undefined, topic, undefined);
             });
         };
         let interval = 500;
@@ -94,8 +94,8 @@ export const Eventing = {
     // ===========================================
     // Register to receive events for a topic.
     // Returns a handle to control the subscription.
-    Subscribe(pTopic: TopicName, pProcessor: EventProcessor, pLimits?: number): SubscriptionEntry{
-        const sub = new SubscriptionEntry(pTopic, pProcessor, RandomIdentifier(), pLimits);
+    Subscribe(pTopic: TopicName, pProcessor: EventProcessor, pExtraParams?: any, pLimits?: number): SubscriptionEntry{
+        const sub = new SubscriptionEntry(pTopic, pProcessor, RandomIdentifier(), pExtraParams, pLimits);
         let topicEnt = Eventing.FindTopic(pTopic);
         if (IsNullOrEmpty(topicEnt)) {
             // 'creator' is 'subscribe' so we can tell the topic was initially

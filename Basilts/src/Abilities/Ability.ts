@@ -11,19 +11,27 @@
 
 'use strict';
 
-import { Logger } from "@Base/Tools/Logging";
-import { BItem } from "@BItem/BItem";
+import { BItem, PropValue } from "@BItem/BItem";
 
-export abstract class Ability {
+export interface AbilityPropertyValues {
+  [ key: string]: PropValue
+};
 
-    name: string;
+// export abstract class Ability implements AbilityPropertyValues {
+export abstract class Ability  {
+
+    abilityName: string;
 
     // Creating an ability automatically adds it to it's BItem
     constructor(pName: string) {
-        this.name = pName;
+        this.abilityName = pName;
         // Logger.debug(`Ability: ${this.name} created`);
     }
+
     // Add this ability's properties to the BItem
     // This happens when the ability is added to the BItem
     abstract addProperties(pBItem: BItem): void;
+
+    // called when a property is about to be removed from its containing BItem
+    abstract propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void;
 }

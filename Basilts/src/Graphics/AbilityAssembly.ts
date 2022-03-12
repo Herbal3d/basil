@@ -14,20 +14,18 @@
 import { Object3D } from 'three';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem, PropEntry, PropValue } from '@BItem/BItem';
+import { BItem, PropValue } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { LoadSimpleAsset, LoadAssetParams, ScheduleDelayedGraphicsOperation } from '@Graphics/GraphicOps';
 import { Logger } from '@Base/Tools/Logging';
+import { Eventing } from '@Base/Eventing/Eventing';
+import { TopicEntry } from '@Base/Eventing/TopicEntry';
 
 export const AssemblyAbilityName = 'Assembly';
 
-const AssetURLProp = 'assetUrl';
-const AssetLoaderProp = 'assetLoader';
-const AssetAuthProp = 'assetAuth';
-const AssetRepresentationProp = 'assetRepresentation';
 
 interface AssemblyAfterRequestProps {
     Ability: AbilityAssembly;
@@ -35,120 +33,89 @@ interface AssemblyAfterRequestProps {
 };
 
 export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssembly {
-    return new AbilityAssembly(pProps[AssetURLProp], pProps[AssetLoaderProp]);
-};
-
-// Type safe accessors for properties.
-// This exists so the properties can be accessed on the BItem that contains the ability.
-export class AbilityAssemblyProps {
-    public static getAssetURL(pBI: BItem): string { return <string>pBI.getProp(AssetURLProp); }
-    public static setAssetURL(pBI: BItem, pVal: string): void { pBI.setProp(AssetURLProp, pVal); }
-
-    public static getAssetLoader(pBI: BItem): string { return <string>pBI.getProp(AssetLoaderProp); }
-    public static setAssetLoader(pBI: BItem, pVal: string): void { pBI.setProp(AssetLoaderProp, pVal); }
-
-    public static getAssetAuth(pBI: BItem): AuthToken { return <AuthToken>pBI.getProp(AssetAuthProp); }
-    public static setAssetAuth(pBI: BItem, pVal: AuthToken): void { pBI.setProp(AssetAuthProp, pVal); }
-
-    public static getAssetRepresentation(pBI: BItem): Object3D { return <Object3D>pBI.getProp(AssetRepresentationProp); }
-    public static setAssetRepresentation(pBI: BItem, pVal: Object3D): void { pBI.setProp(AssetRepresentationProp, pVal); }
+    return new AbilityAssembly(pProps[AbilityAssembly.AssetUrlProp], pProps[AbilityAssembly.AssetLoaderProp]);
 };
 
 export class AbilityAssembly extends Ability {
-    _assetURL: PropValue;
-    _assetLoader: PropValue;
-    _assetAuth: AuthToken;
-    _graphicNode: Object3D;
+    static AssetUrlProp = 'assetUrl';
+    static AssetLoaderProp = 'assetLoader';
+    static AssetAuthProp = 'assetAuth';
+    static AssetRepresentationProp = 'assetRepresentation';
 
-    constructor(pAssetURL: string, pAssetLoader: string) {
+    _assetUrl: PropValue;
+    public get assetUrl(): PropValue { return this._assetUrl; }
+    public set assetUrl(pVal: PropValue) {
+        this._assetUrl = pVal;
+        Logger.debug(`AbilityAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
+        this._containingBItem.setLoading();
+        void LoadAssembly(this, this._containingBItem);
+    } 
+
+    public assetLoader: PropValue;
+
+    _assetAuth: AuthToken;
+    public get assetAuth(): PropValue { return this._assetAuth; }
+    public set assetAuth(pVal: PropValue) {
+        if (typeof(pVal) === 'string') {
+            this._assetAuth = new AuthToken(pVal);
+        }
+        else {
+            if (pVal instanceof AuthToken) {
+                this._assetAuth = pVal;
+            };
+        };
+    }
+
+    public assetRepresenation: Object3D;
+
+    // The BItem that this ability instance is associated with
+    _containingBItem: BItem;
+
+    constructor(pAssetUrl: string, pAssetLoader: string) {
         super(AssemblyAbilityName);
-        this._assetURL = pAssetURL;
-        this._assetLoader = pAssetLoader;
+        this._assetUrl = pAssetUrl;
+        this.assetLoader = pAssetLoader;
     };
 
-    // Return a handle for typed access to my properties
-    get props(): AbilityAssemblyProps { return AbilityAssemblyProps; }
-
     addProperties(pBItem: BItem): void {
+        this._containingBItem = pBItem;
+
         // Get and Set the Assembly's URL
         // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
-        const AssetURLPropEntry = pBItem.addProperty({
-            name: AssetURLProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityAssembly)._assetURL;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                (pPE.ability as AbilityAssembly)._assetURL = pVal;
-                Logger.debug(`AbilityAssembly.AssetURL.set: setting BItem to LOADING and scheduling load`);
-                pBItem.setLoading();
-                ScheduleDelayedGraphicsOperation(LoadAssembly, {
-                    Ability: this,
-                    BItem: pBItem
-                });
-            }
-        });
-        // Since the previous property's setter has side effects, we need to invoke it now
-        AssetURLPropEntry.setter(AssetURLPropEntry, pBItem, this._assetURL);
+        pBItem.addProperty(AbilityAssembly.AssetUrlProp, this);
+        pBItem.setProp(AbilityAssembly.AssetUrlProp, this._assetUrl);
 
         // Get and Set the AssetLoader needed for the asset
-        pBItem.addProperty({
-            name: AssetLoaderProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityAssembly)._assetLoader;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                (pPE.ability as AbilityAssembly)._assetLoader = pVal;
-            }
-        });
+        pBItem.addProperty(AbilityAssembly.AssetLoaderProp, this);
         // Get and Set the Asset's access token
         // Set value can be either an AuthToken or a string (which is wrapped in an AuthToken)
-        pBItem.addProperty({
-            name: AssetAuthProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityAssembly)._assetAuth?.token;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                if (typeof(pVal) === 'string') {
-                    (pPE.ability as AbilityAssembly)._assetAuth = new AuthToken(pVal);
-                }
-                else {
-                    if (pVal instanceof AuthToken) {
-                        (pPE.ability as AbilityAssembly)._assetAuth = pVal;
-                    };
-                };
-            }
-        });
+        pBItem.addProperty(AbilityAssembly.AssetAuthProp, this);
         // Get the Assembly's graphical representation.
         // Very dependent on the underlying implementation. This is a ThreeJS Object3D
         // All abilities that create in-world representations present this property
-        pBItem.addProperty({
-            name: AssetRepresentationProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityAssembly)._graphicNode;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                Logger.error(`AbilityAssembly.set.AssetRepresentation: attempt to set value`);
-            },
-            public: false       // the outside world can't see this one
-        });
+        pBItem.addProperty(AbilityAssembly.AssetRepresentationProp, this, { private: true });
+    };
+
+    // When a property is removed from the BItem, this is called
+    propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        return;
     };
 };
 
 // Returns a Promise that loads an assembly given the URL and asset type properties.
 // Will load the asset and set the BItem's state to READY.
 // Promise fails of the asset can't be loaded and the BItem's state is set to FAILED
-export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<void> {
-    const ability = pProps.Ability;
-    Logger.debug(`AbilityAssembly: LoadAssembly(${ability._assetURL})`);
+export async function LoadAssemblyDelayed(pProps: AssemblyAfterRequestProps): Promise<void> {
+    return LoadAssembly(pProps.Ability, pProps.BItem);
+}
+
+export async function LoadAssembly(pAbil: AbilityAssembly, pBItem: BItem): Promise<void> {
+    Logger.debug(`AbilityAssembly: LoadAssembly(${pAbil._assetUrl})`);
 
     const loaderProps: LoadAssetParams = {
-        AssetURL: <string>ability._assetURL,
-        AssetLoader: <string>ability._assetLoader,
-        Auth: ability._assetAuth?.token
+        AssetURL: <string>pAbil._assetUrl,
+        AssetLoader: <string>pAbil.assetLoader,
+        Auth: pAbil._assetAuth?.token
     };
 
     LoadSimpleAsset(loaderProps)
@@ -156,16 +123,16 @@ export async function LoadAssembly(pProps: AssemblyAfterRequestProps): Promise<v
         Logger.debug(`AbilityAssembly: LoadAssembly: successful load`);
         if (typeof(loaded) === 'undefined') {
             Logger.error(`AbilityAssembly: LoadAssembly: loaded object is null`);
-            pProps.BItem.setFailed();
+            pBItem.setFailed();
         }
         else {
-            ability._graphicNode = loaded;
-            pProps.BItem.setReady();
+            pAbil._containingBItem.setProp(AbilityAssembly.AssetRepresentationProp, loaded);
+            pBItem.setReady();
         }
     })
     .catch ( err => {
         Logger.debug(`AbilityAssembly: LoadAssembly: failed load`);
-        pProps.BItem.setFailed();
+        pBItem.setFailed();
         throw err;
     });
 };

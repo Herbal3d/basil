@@ -14,7 +14,7 @@
 import { BKeyedCollection } from '@Tools/bTypes';
 
 export type TopicName = string;
-export type EventProcessor = (pParams: BKeyedCollection, pTopic: TopicName) => void;
+export type EventProcessor = (pParams: BKeyedCollection, pTopic: TopicName, pExtraParams: any) => void;
 // ===========================================
 // One subscription
 // Subscriptions are created with a unique ID so individual subscriptions can be
@@ -26,18 +26,20 @@ export class SubscriptionEntry {
   public id: string;               // Unique ID for this subscription
   public limits: number;           // Rate limit
   public numSubscriptionFired: number; // Count of times fired
+  public extraParams: any;
 
-  constructor(pTopic: string, pProcessor: EventProcessor, pId: string, pLimits: number) {
+  constructor(pTopic: string, pProcessor: EventProcessor, pId: string, pExtraParams?: any, pLimits?: number) {
     this.topic = pTopic;
     this.processor = pProcessor;
     this.id = pId;
     this.limits = pLimits;
+    this.extraParams = pExtraParams;
     this.numSubscriptionFired = 0;
   };
   // Returns a promise for when event has been processed
   async fire(params: BKeyedCollection): Promise<SubscriptionEntry> {
     this.numSubscriptionFired++;
-    this.processor(params, this.topic)
+    this.processor(params, this.topic, this.extraParams);
     return this;
   };
 };

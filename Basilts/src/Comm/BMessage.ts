@@ -67,6 +67,8 @@ export interface PositionBlock {
     IAuth: string;      // Auth for accessing the BItem
 };
 
+export type BMessagePropValue = number | number[] | string | string[];
+export type BMessageIProps = { [key: string]: BMessagePropValue };
 export interface BMessage {
     SCode?: string;     // unique code sent with message expecting response
     RCode?: string;     // return of the unique code in the response
@@ -83,7 +85,7 @@ export interface BMessage {
     Auth?: string;      // Auth for the session
     IId?: string;       // BItem id being referenced
     IAuth?: string;     // Any authentication necessary for access BItem
-    IProps: { [ key: string ]: string };   // Properties to apply
+    IProps: BMessageIProps;   // Properties to apply
 
     Pos?: PositionBlock[];  // If a multi-position update, new positions for items
 

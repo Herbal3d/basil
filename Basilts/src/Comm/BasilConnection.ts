@@ -16,7 +16,7 @@ import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { BProtocol } from '@Comm/BProtocol';
 import { BItem } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
-import { BMessage, BMessageOps } from '@Comm/BMessage';
+import { BMessage, BMessageOps, BMessageIProps } from '@Comm/BMessage';
 import { OpenSessionReqProps, MakeConnectionReqProps } from '@Comm/BMessageProps';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
@@ -137,7 +137,7 @@ export class BasilConnection extends BItem {
         const bmsg: BMessage = { 'Op': BMessageOps.CreateItemReq, IProps: {} };
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
-        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
+        if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
     async DeleteItem(pId: string, pItemAuth?: AuthToken): Promise<BMessage> {
@@ -177,7 +177,7 @@ export class BasilConnection extends BItem {
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
-        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
+        if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
     // OpenSession has an 'extended' authorization as it contains the new sessionkey
@@ -200,7 +200,7 @@ export class BasilConnection extends BItem {
         const bmsg: BMessage = { 'Op': BMessageOps.MakeConnectionReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
-        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
+        if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
     async AliveCheck(): Promise<BMessage> {
@@ -293,23 +293,17 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.AddAbilityResp);
                 // TODO: check auth and prevent adding abilities to system BItems
                 const bitem = BItems.get(pReq.IId);
-                const abilities = pReq.IProps['Abilities'];
+                const abils = pReq.IProps['Abilities'] as string[];
                 if (bitem) {
-                    if (abilities) {
-                        const abils = abilities.split(',');
-                        for (const abil of abils) {
-                            const newAbility = AbilityFactory(abil, pReq.IProps);
-                            if (newAbility) {
-                                bitem.addAbility(newAbility);
-                            }
-                            else {
-                                resp.Exception = `Could not create Ability ${abil}`;
-                                break;
-                            };
+                    for (const abil of abils) {
+                        const newAbility = AbilityFactory(abil, pReq.IProps);
+                        if (newAbility) {
+                            bitem.addAbility(newAbility);
+                        }
+                        else {
+                            resp.Exception = `Could not create Ability ${abil}`;
+                            break;
                         };
-                    }
-                    else {
-                        resp.Exception = 'No abilities specified';
                     };
                 }
                 else {
@@ -329,16 +323,10 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 // TODO: check auth and prevent removing abilities from system BItems
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.RemoveAbilityResp);
                 const bitem = BItems.get(pReq.IId);
-                const abilities = pReq.IProps['Abilities'];
+                const abils = pReq.IProps['Abilities'] as string[];
                 if (bitem) {
-                    if (abilities) {
-                        const abils = abilities.split(',');
-                        for (const abil of abils) {
-                            bitem.removeAbility(abil);
-                        };
-                    }
-                    else {
-                        resp.Exception = 'No abilities specified';
+                    for (const abil of abils) {
+                        bitem.removeAbility(abil);
                     };
                 }
                 else {
@@ -357,7 +345,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
             case BMessageOps.RequestPropertiesReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.RequestPropertiesResp);
                 const bitem = BItems.get(pReq.IId);
-                const filter = pReq.IProps['Filter'];
+                const filter = pReq.IProps['filter'] as string;
                 if (bitem) {
                     resp.IProps = bitem.getProperties(filter);
                     resp.IId = bitem.id;
@@ -400,7 +388,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
             case BMessageOps.OpenSessionReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.OpenSessionResp);
                 if (pReq.IProps?.hasOwnProperty('ClientAuth')) {
-                    pConnection.OutgoingAuth = new AuthToken(pReq.IProps['ClientAuth']);
+                    pConnection.OutgoingAuth = new AuthToken(pReq.IProps['ClientAuth'] as string);
                 };
                 await Eventing.Fire(pConnection.GetEventTopicForMessageOp('OpenSession'), {
                     request: pReq,
@@ -519,18 +507,10 @@ function SendResponse(pComm: BasilConnection, pResp: BMessage): void {
     pComm.Send(pResp);
 }
 
-function CreatePropertyList(pProps: BKeyedCollection): BKeyedCollection {
-    const list: BKeyedCollection = {};
+function CreatePropertyList(pProps: BKeyedCollection): BMessageIProps {
+    const list: BMessageIProps = {};
     Object.keys(pProps).forEach(prop => {
-        const val = pProps[prop];
-        if (typeof(val) !== 'undefined') {
-            if (typeof(val) === 'string' ) {
-                list[prop] = val;
-            }
-            else {
-                list[prop] = JSON.stringify(val);
-            };
-        };
+        list[prop] = pProps[prop];
     });
     return list;
 };

@@ -81,12 +81,12 @@ try {
         conn.SubscribeToMessageOp('OpenSession', ( pProps: BasilConnectionEventParams, pTopic: string) => {
             Logger.debug(`OpenSession received`);
             if (pProps.request.IProps.testAssetURL) {
-                const assetURL = pProps.request.IProps['testAssetURL'];
-                const assetLoader = pProps.request.IProps['testAssetLoader'];
+                const assetURL = pProps.request.IProps['testAssetURL'] as string;
+                const assetLoader = pProps.request.IProps['testAssetLoader'] as string;
                 Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
 
                 // The client tells me what token to send with requests
-                pProps.connection.OutgoingAuth = new AuthToken(pProps.request.IProps['clientAuth']);
+                pProps.connection.OutgoingAuth = new AuthToken(pProps.request.IProps['clientAuth'] as string);
                 // I respond with the token I want to receive for requests
                 const serverAuth = new AuthToken();
                 pProps.connection.IncomingAuth = serverAuth;
@@ -141,7 +141,7 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     Logger.debug(`LoadTestAsset`);
     let createdItemId: string;
     const createItemProps = {
-        abilities: 'Assembly,Instance',
+        abilities: [ 'Assembly' ,'Instance' ],
         assetUrl: pTestAssetURL,
         assetLoader: pTestAssetLoader,
         refItem: 'SELF',
@@ -152,7 +152,7 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     .then ( resp => {
         Logger.debug(`Response from CreateItem`);
         if (typeof(resp.Exception) === 'undefined') {
-            createdItemId = resp.IProps.IId;
+            createdItemId = resp.IProps.IId as string;
 
             Logger.debug(`Before RequestProperties`);
             pBasil.RequestProperties(createdItemId, '')

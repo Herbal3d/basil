@@ -47,7 +47,8 @@ export interface OpenSessionRespProps {
 export interface CreateItemReqProps {
     itemAuthToken?: string;     // token required to access item
     layer?: string;             // layer the BItem is associated with
-    abilities?: string;  // comma separated list of abilities to add
+    // @ts-ignore
+    abilities?: string[];       // comma separated list of abilities to add
     [ key: string ]: string;    // any parameters required or the added abilities
 
 };
@@ -61,14 +62,15 @@ export interface DeleteItemReqProps {
 export interface DeleteItemRespProps {
 };
 export interface AddAbilityReqProps {
-    abilities: string           // comma separated list of abilities to add
+    // @ts-ignore
+    abilities: string[],        // array of ability names to add
     [ key: string ]: string;    // any parameters required or the added abilities
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AddAbilityRespProps {
 };
 export interface RemoveAbilityReqProps {
-    abilities: string;          // comma separated list of abilities to remove
+    abilities: string[];         // array of ability names to remove
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RemoveAbilityRespProps {

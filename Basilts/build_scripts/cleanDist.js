@@ -14,7 +14,8 @@ const fs = require('fs');
 
 const directory = './dist';
 
-fs.rmdirSync(directory, { recursive: true, force: true });
+// fs.rmdirSync(directory, { recursive: true, force: true });
+fs.rm(directory, { recursive: true, force: true }, () => { return; });
 
 console.log('Dist folder cleared!');
   

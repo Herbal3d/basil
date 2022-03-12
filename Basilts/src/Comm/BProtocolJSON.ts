@@ -14,7 +14,7 @@ import { BMessage } from '@Comm/BMessage';
 import { BProtocol } from '@Comm/BProtocol';
 import { BTransport, BTransportMsg } from '@Comm/BTransport';
 
-import { CombineParameters, CreateUniqueId, ExtractStringError, JSONstringify } from "@Tools/Utilities";
+import { CombineParameters, CreateUniqueId, ExtractStringError } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { Config } from '@Base/Config';
 import { Logger } from '@Base/Tools/Logging';
@@ -46,7 +46,7 @@ export class BProtocolJSON extends BProtocol {
     };
     Send(pData: BMessage): boolean {
         if (this._xport) {
-            this._xport.Send(this._encoder.encode(JSONstringify(pData)).buffer);
+            this._xport.Send(this._encoder.encode(JSON.stringify(pData)).buffer);
             // this._xport.Send(JSONstringify(pData));
             return true;
         };

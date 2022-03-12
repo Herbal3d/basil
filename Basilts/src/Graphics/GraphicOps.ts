@@ -229,6 +229,12 @@ export function PlaceInWorld(pParams: PlaceInWorldProps): Object3D {
     };
 };
 
+export function RemoveFromWorld(pNode: Object3D): void {
+    if (pNode.parent) {
+        pNode.parent.remove(pNode);
+    };
+};
+
 // Add a test object to the scene
 export function AddTestObject() {
     const geometry = new THREE.BoxGeometry( 1, 2, 3);

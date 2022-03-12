@@ -14,15 +14,17 @@
 import { Object3D } from 'three';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem, PropEntry, PropValue } from '@BItem/BItem';
+import { AbilityAssembly } from '@Graphics/AbilityAssembly';
+import { BItem,  PropValue, setPropEventParams } from '@BItem/BItem';
 import { BItems } from '@BItem/BItems';
 import { CoordSystem } from '@Comm/BMessage';
 
 import { ParseThreeTuple, ParseFourTuple, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
-import { PlaceInWorld, PlaceInWorldProps, ScheduleDelayedGraphicsOperation } from './GraphicOps';
-import { AbilityAssemblyProps } from './AbilityAssembly';
+import { PlaceInWorld, PlaceInWorldProps, RemoveFromWorld, ScheduleDelayedGraphicsOperation } from './GraphicOps';
 import { Logger } from '@Base/Tools/Logging';
+import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
+import { Eventing } from '@Base/Eventing/Eventing';
 
 // Some BItems are Assemblys (3d represntations) and other BItems are instances of the
 //     3d representations. This Ability is the Intance.
@@ -30,14 +32,10 @@ import { Logger } from '@Base/Tools/Logging';
 
 export const InstanceAbilityName = 'Instance';
 
-const InstanceRefItem = 'refItem'; // either 'SELF' or id of BItem with the geometry
-const InstancePosProp = 'pos';
-const InstanceRotProp = 'rot';
-const InstancePosRefProp = 'posRef';
-const InstanceRotRefProp = 'rotRef';
-
 export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInstance {
-    const newAbil = new AbilityInstance(pProps[InstanceRefItem], pProps[InstancePosProp], pProps[InstanceRotProp] );
+    const newAbil = new AbilityInstance(pProps[AbilityInstance.InstanceRefItemProp],
+                                        pProps[AbilityInstance.InstancePosProp],
+                                        pProps[AbilityInstance.InstanceRotProp] );
     return newAbil;
 };
 
@@ -47,183 +45,164 @@ export interface InstanceAfterRequestProps {
     Name: string;
 };
 
-// A class with references to the ability properties so we have type checked gets and fetches
-export class AbilityInstanceProps {
-    public static getRefItem(pBI: BItem): string { return <string>pBI.getProp(InstanceRefItem); }
-    public static setRefItem(pBI: BItem, pVal: string): void { pBI.setProp(InstanceRefItem, pVal); }
-
-    public static getPos(pBI: BItem): PropValue { return <string>pBI.getProp(InstancePosProp); }
-    public static setPos(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstancePosProp, pVal); }
-    public static getPosRef(pBI: BItem): PropValue { return <string>pBI.getProp(InstancePosRefProp); }
-    public static setPosRef(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstancePosRefProp, pVal); }
-
-    public static getRot(pBI: BItem): PropValue { return <string>pBI.getProp(InstanceRotProp); }
-    public static setRot(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstanceRotProp, pVal); }
-    public static getRotRef(pBI: BItem): PropValue { return <string>pBI.getProp(InstanceRotRefProp); }
-    public static setRotRef(pBI: BItem, pVal: PropValue): void { pBI.setProp(InstanceRotRefProp, pVal); }
-};
-
 export class AbilityInstance extends Ability {
-    _refItem: PropValue = 'SELF';
-    _pos: PropValue = [0,0,0];
-    _posArray: number[] = [0,0,0];      // value of POS that is a number array
-    _posRef: PropValue = 0;
-    _rot: PropValue = [0,0,0,1];
-    _rotArray: number[] = [0,0,0,1];    // value of ROT that is a number array
-    _rotRef: PropValue = 0;
+    static InstanceRefItemProp = 'refItem'; // either 'SELF' or id of BItem with the geometry
+    static InstanceRefItemSelf = 'SELF';
+    static InstancePosProp = 'pos';
+    static InstanceRotProp = 'rot';
+    static InstancePosRefProp = 'posRef';
+    static InstanceRotRefProp = 'rotRef';
+
+    // This watches the 'assetUrl' on the refItem so we know when to place the instance in the world
+    _assetRepresentationWatchTopic: SubscriptionEntry;
+    _previousRefItem: PropValue;
+
+    // 'refItem' is the ID of the BItem that contains the geometry
+    _refItem: PropValue = AbilityInstance.InstanceRefItemSelf;
+    public get refItem(): PropValue { return this._refItem; }
+    public set refItem(pVal: PropValue) {
+        if (pVal === AbilityInstance.InstanceRefItemSelf) {
+            if (this._containingBItem) {
+                pVal = this._containingBItem.id;
+            }
+        }
+        this._refItem = pVal;
+        if (this._refItem !== this._previousRefItem) {
+            if (this._assetRepresentationWatchTopic) {
+                Eventing.Unsubscribe(this._assetRepresentationWatchTopic);
+                this._assetRepresentationWatchTopic = null;
+            }
+            this._previousRefItem = this._refItem;
+            const referedItem = BItems.get(this._refItem as string);
+            if (referedItem) {
+                this._assetRepresentationWatchTopic = Eventing.Subscribe(
+                        referedItem.setPropEventTopicName(AbilityAssembly.AssetRepresentationProp),
+                        ProcessChangedAssetRepresentation,
+                        this);
+            }
+            else {
+                Logger.error(`AbilityInstance: refItem ${this._refItem} not found`);
+            }
+        }
+    };
+
+    _pos: number[] = [0,0,0];
+    public get pos(): number[] { return this._pos; }
+    public set pos(pVal: string | number[]) {
+        this._pos = ParseThreeTuple(pVal);
+        if (this._worldObject) {
+            this._worldObject.position.fromArray(this._pos);
+            // TODO: push value into graphics engine
+        };
+    }
+    _posRef: number = 0;
+    public get posRef(): number { return this._posRef; }
+    public set posRef(pVal: string | number) {
+        if (typeof(pVal) === 'string') {
+            this._posRef = CoordSystem[pVal.toUpperCase() as keyof typeof CoordSystem];
+        }
+        else {
+            this._posRef = Number(pVal);
+        };
+        // TODO: push value into graphics engine
+    }
+
+    _rot: number[] = [0,0,0,1];
+    public get rot(): number[] { return this._rot; }
+    public set rot(pVal: string | number[]) {
+        this._rot = ParseFourTuple(pVal);
+        if (this._worldObject) {
+            this._worldObject.rotation.fromArray(this._rot);
+            // TODO: push value into graphics engine
+        };
+    }
+    _rotRef: number = 0;
+    public get rotRef(): number { return this._rotRef; }
+    public set rotRef(pVal: string | number) {
+        if (typeof(pVal) === 'string') {
+            this._rotRef = CoordSystem[pVal.toUpperCase() as keyof typeof CoordSystem];
+        }
+        else {
+            this._rotRef = Number(pVal);
+        };
+        // TODO: push value into graphics engine
+    }
+
     _worldObject: Object3D;
+
+    _containingBItem: BItem;
     
     constructor(pRefItem: string, pPos: string | number[], pRot: string | number[] ) {
         super(InstanceAbilityName);
         this._refItem = pRefItem;
-        this._pos = <PropValue>(pPos ?? [0,0,0]);
-        this._rot = <PropValue>(pRot ?? [0,0,0,1]);
+        this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
+        this._rot = pRot ? ParseFourTuple(pRot) :  [0,0,0,1];
     };
 
-    // Return a handle for typed access to my properties
-    get props(): AbilityInstanceProps { return AbilityInstanceProps; }
-
     addProperties(pBItem: BItem): void {
+        this._containingBItem = pBItem;
+
         // Get and Set the BItem that holds the 3d representation of this instance.
         // The reference can be to "SELF" to point to same BItem.
         // As a side effect, the placement if the Assembly in the 3d world is initiated.
-        const propEntry = pBItem.addProperty({
-            name: InstanceRefItem,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityInstance)._refItem;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                if (pVal === 'SELF') {
-                    pVal = pBItem.id;
-                }
-                (pPE.ability as AbilityInstance)._refItem = pVal;
-                // TODO: get pointer to graphics item for quick access
-                ScheduleDelayedGraphicsOperation(InstanceIntoWorld, {
-                    Ability: this,
-                    Name: pBItem.id,
-                    RefItem: pVal
-                })
-            }
-        });
+        const propEntry = pBItem.addProperty(AbilityInstance.InstanceRefItemProp, this);
         // Since the above property has a computed value, set the value so it get updated
-        propEntry.setter(propEntry, pBItem, this._refItem);
+        this.refItem = this._refItem;
 
         // Get and Set the instance's position in the 3d world.
         // Passed position is normalized into a number array.
-        pBItem.addProperty({            // POS
-            name: InstancePosProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                // TODO: fetch value from graphics engine
-                return (pPE.ability as AbilityInstance)._pos;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                const ability = pPE.ability as AbilityInstance;
-                ability._pos = pVal;
-                ability._posArray = ParseThreeTuple(pVal as string | number[])
-                if (ability._worldObject) {
-                    ability._worldObject.position.fromArray(ability._posArray);
-                };
-                // TODO: push value into graphics engine
-            }
-        });
+        pBItem.addProperty(AbilityInstance.InstancePosProp, this);
         // Get and Set the instances' rotation in the 3d world.
         // Passed rotation is normalized into a number array.
-        pBItem.addProperty({            // ROT
-            name: InstanceRotProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                // TODO: fetch value from graphics engine
-                return (pPE.ability as AbilityInstance)._rot;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                const ability = pPE.ability as AbilityInstance;
-                ability._rot = pVal;
-                ability._rotArray = ParseFourTuple(pVal as string | number[]);
-                if (ability._worldObject) {
-                    ability._worldObject.rotation.fromArray(ability._rotArray);
-                };
-                // TODO: push value into graphics engine
-            }
-        });
+        pBItem.addProperty(AbilityInstance.InstanceRotProp, this);
         // Get and Set the Instance's position reference
-        pBItem.addProperty({            // POSREF
-            name: InstancePosRefProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                // TODO: fetch value from graphics engine
-                return (pPE.ability as AbilityInstance)._posRef;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                if (typeof(pVal) === 'string') {
-                    (pPE.ability as AbilityInstance)._posRef = CoordSystem[pVal.toUpperCase() as keyof typeof CoordSystem];
-                }
-                else {
-                    (pPE.ability as AbilityInstance)._posRef = Number(pVal);
-                };
-                // TODO: push value into graphics engine
-            }
-        });
+        pBItem.addProperty(AbilityInstance.InstancePosRefProp, this);
         // Get and Set the instance's rotation reference
-        pBItem.addProperty({            // ROTREF
-            name: InstanceRotRefProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                // TODO: fetch value from graphics engine
-                return (pPE.ability as AbilityInstance)._rotRef;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                if (typeof(pVal) === 'string') {
-                    (pPE.ability as AbilityInstance)._rotRef = CoordSystem[pVal.toUpperCase() as keyof typeof CoordSystem];
-                }
-                else {
-                    (pPE.ability as AbilityInstance)._rotRef = Number(pVal);
-                };
-                // TODO: push value into graphics engine
-            }
-        });
+        pBItem.addProperty(AbilityInstance.InstanceRotRefProp, this);
+    };
+
+    // When a property is removed from the BItem, this is called
+    propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        return;
     };
 };
 
+// When the refItem's representation changes, we get this event
+// Any existing in-world instance needs to be removed and the new representation placed in the world
+function ProcessChangedAssetRepresentation(pParams: setPropEventParams, pTopic: string, pOtherParam: any): void {
+    const tthis = pOtherParam as AbilityInstance;
+    if (tthis._worldObject) {
+        // Remove the instance from the world
+        RemoveFromWorld(tthis._worldObject);
+        tthis._worldObject = null;
+    };
+    InstanceIntoWorld(tthis, pParams.NewValue as Object3D);
+}
+
 // Place the Instance into the 3d world.
 // Returns a Promise that is resolved when loaded or rejected if the are problems.
-async function InstanceIntoWorld(pProps: InstanceAfterRequestProps): Promise<void> {
+function InstanceIntoWorld(pAbil: AbilityInstance, pRepresent: Object3D): void {
     Logger.debug(`AbilityInstance.InstanceIntoWorld: entry`);
-    const ability = pProps.Ability;
-    const refItem = pProps.RefItem;
-    // If object is not already in-world, create it.
-    if (typeof(ability._worldObject) === 'undefined') {
-        // Get the BItem that holds the 3d representation of this instance.
-        const bitem = BItems.get(refItem);
-        if (bitem) {
-            bitem.WhenReady()
-            .then ( bb => {
-                Logger.debug(`AbilityInstance.InstanceIntoWorld: READY BItem. Doing PlaceInWorld`);
-                const representation = AbilityAssemblyProps.getAssetRepresentation(bitem);
-                if (representation) {
-                    const inWorldParams: PlaceInWorldProps = {
-                        Name: pProps.Name,
-                        Pos: ability._posArray,
-                        PosCoord: (ability._posRef as CoordSystem),
-                        Rot: ability._rotArray,
-                        RosCoord: (ability._rotRef as CoordSystem),
-                        Object: representation
-                    };
-                    ability._worldObject = PlaceInWorld(inWorldParams);
-                    Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);
-                }
-                else {
-                    Logger.error(`AbilityInstance.InstanceIntoWorld: READY bitem does not have represenation`);
-                };
-            })
-            .catch ( err => {
-                Logger.error(`AbilityInstance.InstanceIntoWorld: exception ${ExtractStringError(err)}`);
-            });
+    try {
+        if (pRepresent) {
+            const inWorldParams: PlaceInWorldProps = {
+                Name: pAbil._containingBItem.id,
+                Pos: pAbil._pos,
+                PosCoord: (pAbil._posRef as CoordSystem),
+                Rot: pAbil._rot,
+                RosCoord: (pAbil._rotRef as CoordSystem),
+                Object: pRepresent
+            };
+            pAbil._worldObject =  PlaceInWorld(inWorldParams);
+            pAbil._containingBItem.setReady();
+            Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);
         }
         else {
-            Logger.error(`AbilityInstance.InstanceIntoWorld: ItemRef not found: ${ability._refItem}`);
+            Logger.error(`AbilityInstance.InstanceIntoWorld: READY bitem does not have represenation`);
         };
+    }
+    catch (err) {
+        Logger.error(`AbilityInstance.InstanceIntoWorld: exception ${ExtractStringError(err)}`);
     };
 };
 

@@ -43,24 +43,20 @@ export const BItems = {
         try {
             Logger.debug(`BItems.createFromProps: checking for abilities`);
             if (pProps.hasOwnProperty(AbilityBItem.AbilityProp)) {
-                const initialAbils = pProps[AbilityBItem.AbilityProp];
-                Logger.debug('BItems.createFromProps: initialAbils=' + JSONstringify(initialAbils));
-                if (typeof(initialAbils) === 'string') {
-                    const abils = initialAbils.split(',');
-                    for (const abil of abils) {
-                        try {
-                            const newAbility = AbilityFactory(abil, pProps);
-                            if (newAbility) {
-                                newBItem.addAbility(newAbility);
-                            }
-                            else {
-                                err = `BItems.createFromProps: could not create ability ${abil}`;
-                            };
+                const abils = pProps[AbilityBItem.AbilityProp];
+                for (const abil of abils) {
+                    try {
+                        const newAbility = AbilityFactory(abil, pProps);
+                        if (newAbility) {
+                            newBItem.addAbility(newAbility);
                         }
-                        catch (e) {
-                            err = `BItems.createFromProps: exception adding ability to BItem: ${ExtractStringError(e)}`;
-                            break;
+                        else {
+                            err = `BItems.createFromProps: could not create ability ${abil}`;
                         };
+                    }
+                    catch (e) {
+                        err = `BItems.createFromProps: exception adding ability to BItem: ${ExtractStringError(e)}`;
+                        break;
                     };
                 };
             };

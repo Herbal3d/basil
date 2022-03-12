@@ -12,7 +12,7 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem, PropEntry, PropValue } from '@BItem/BItem';
+import { BItem, PropValue } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
 
 import { CreateUniqueId } from '@Tools/Utilities';
@@ -32,99 +32,57 @@ export function AbilityBItemFromProps(pProps: BKeyedCollection): AbilityBItem {
     return new AbilityBItem( pProps[AbilityBItem.IdProp], pProps[AbilityBItem.AuthTokenProp], pProps[AbilityBItem.LayerProp]);
 };
 
-// A class with references to the ability properties so we have type checked gets and fetches
-export class AbilityBItemProps {
-    public static getId(pBI: BItem): string { return <string>pBI.getProp(AbilityBItem.IdProp); }
-    public static setId(pBI: BItem, pVal: string): void { pBI.setProp(AbilityBItem.IdProp, pVal); }
-
-    public static getLayer(pBI: BItem): string { return <string>pBI.getProp(AbilityBItem.LayerProp); }
-    public static setLayer(pBI: BItem, pVal: string): void { pBI.setProp(AbilityBItem.LayerProp, pVal); }
-
-    public static getState(pBI: BItem): BItemState { return <BItemState>pBI.getProp(AbilityBItem.StateProp); }
-    public static setState(pBI: BItem, pVal: BItemState): void { pBI.setProp(AbilityBItem.StateProp, pVal); }
-
-    public static getAuthToken(pBI: BItem): string { return <string>pBI.getProp(AbilityBItem.AuthTokenProp); }
-    public static setAuthToken(pBI: BItem, pVal: string): void { pBI.setProp(AbilityBItem.AuthTokenProp, pVal); }
-};
-
 export class AbilityBItem extends Ability {
     public static IdProp: string = 'id';
     public static LayerProp: string = 'layer';
     public static StateProp: string = 'state';
-    public static AuthTokenProp: string = 'bitem.authToken';
+    public static AuthTokenProp: string = 'bitemAuthToken';
     public static AbilityProp: string = 'abilities';
 
-    _id: string;
+    public id: string;
+    public layer: string;
     _auth: AuthToken;
-    _layer: string;
+    public get bitemAuthToken(): AuthToken {
+        return this._auth;
+    };
+    public set bitemAuthToken(pVal: PropValue) {
+        if (pVal instanceof AuthToken) {
+            this._auth = pVal;
+        }
+        else {
+            this._auth = new AuthToken(<string>pVal);
+        };
+    };
     _state: BItemState;
+    public get state(): BItemState {
+        return this._state;
+    }
+    public set state(pVal: PropValue) {
+        if (typeof(pVal) === 'string') {
+            this._state = BItemState[pVal.toUpperCase() as keyof typeof BItemState];
+        }
+        else {
+            this._state = Number(pVal);
+        };
+    };
 
     constructor(pId: string, pAuth: AuthToken, pLayer: string) {
         super(BItemAbilityName);
-        this._id = pId ?? CreateUniqueId('BItemConstruct');
+        this.id = pId ?? CreateUniqueId('BItemConstruct');
         this._auth = pAuth ?? undefined;
-        this._layer = pLayer ?? 'unknown.b.herbal3d.org';
+        this.layer = pLayer ?? 'unknown.b.herbal3d.org';
         this._state = BItemState.UNINITIALIZED;
     };
 
-    // Return a handle for typed access to my properties
-    get props(): AbilityBItemProps { return AbilityBItemProps; }
-
     addProperties(pBItem: BItem): void {
-        // Return BItem's ID
-        pBItem.addProperty({
-            name: AbilityBItem.IdProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityBItem)._id;
-            },
-            setter: undefined
-        });
-        // Get or Set BItem's 'Layer" value
-        pBItem.addProperty({
-            name: AbilityBItem.LayerProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityBItem)._layer;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                (pPE.ability as AbilityBItem)._layer = <string>pVal;
-            }
-        });
-        // Get or Set BItmem's AuthToken
-        //   Set value an be either an AuthToken or a string which is wrapped in an AuthToken
-        pBItem.addProperty({
-            name: AbilityBItem.AuthTokenProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityBItem)._auth;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                if (pVal instanceof AuthToken) {
-                    (pPE.ability as AbilityBItem)._auth = pVal;
-                }
-                else {
-                    (pPE.ability as AbilityBItem)._auth = new AuthToken(<string>pVal);
-                };
-            },
-            public: false
-        });
-        // Get or Set BItem's state
-        //     Set value can be either a string (which is converted to a BItemState) or a numeric BItemState value
-        pBItem.addProperty({
-            name: AbilityBItem.StateProp,
-            ability: this,
-            getter: (pPE: PropEntry, pBItem: BItem): PropValue => {
-                return (pPE.ability as AbilityBItem)._state;
-            },
-            setter: (pPE: PropEntry, pBItem: BItem, pVal: PropValue): void => {
-                if (typeof(pVal) === 'string') {
-                    (pPE.ability as AbilityBItem)._state = BItemState[pVal.toUpperCase() as keyof typeof BItemState];
-                }
-                else {
-                    (pPE.ability as AbilityBItem)._state = Number(pVal);
-                };
-            }
-        });
+        pBItem.addProperty(AbilityBItem.IdProp, this);
+        pBItem.addProperty(AbilityBItem.LayerProp, this);
+        pBItem.addProperty(AbilityBItem.AuthTokenProp, this, { private: true });
+        pBItem.addProperty(AbilityBItem.StateProp, this);
+    };
+
+    // When a property is removed from the BItem, this is called
+    propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        return;
     };
 };
