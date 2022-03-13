@@ -102,13 +102,13 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         // Build the encoded auth string that is sent through Basil to the service.
         // Someday this will be a JWT token that comes from the login server.
         const userAuthInfo = {
-            'AgentId': OSregion.agentId,
-            'SessionID': OSregion.sessionID,
+            'aId': OSregion['agentId'],
+            'sID': OSregion['sessionID'],
             // Extra stuff added to accomodate OpenSim login
-            'SSID': OSregion.secureSessionId,
-            'CC': OSregion.circuitCode,
-            'FN': OSregion.firstName,
-            'LN': OSregion.lastName
+            'SSID': OSregion['secureSessionId'],
+            'CC': OSregion['circuitCode'],
+            'FN': OSregion['firstName'],
+            'LN': OSregion['lastName']
         };
 
         const regionConfigParams = {
@@ -117,19 +117,19 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
                 'transportURL': 'ws://' + OSregion['simIP'] + ':11440/',
                 'protocol': 'Basil-JSON',
                 'service': 'SpaceServer',
-                'clientAuth': OSregion.sessionID,
+                'clientAuth': OSregion['sessionID'],
                 'serviceAuth': Buffer.from(JSON.stringify(userAuthInfo)).toString('base64')
             },
             // Extra information added for OpenSimulator login.
-            // This passes information to Basil that it can use or not
+            // This passes information to Basil who can use or not
             'OpenSimulator': {
-                'FN': OSregion.firstName,
-                'LN': OSregion.lastname,
-                'aID': OSregion.agentId,
-                'WM': OSregion.welcomeMessage,
-                'rX': OSregion.regionX,
-                'rY': OSregion.regionY,
-                'MSU': OSregion.mapServerUrl
+                'FN': OSregion['firstName'],
+                'LN': OSregion['lastName'],
+                'aID': OSregion['agentId'],
+                'WM': OSregion['welcomeMessage'],
+                'rX': OSregion['regionX'],
+                'rY': OSregion['regionY'],
+                'MSU': OSregion['mapServerUrl']
 
             }
         };
