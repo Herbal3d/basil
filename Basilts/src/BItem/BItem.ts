@@ -116,12 +116,12 @@ export class BItem {
         return pPropName + '.' + this.id;
     };
     // Increment the value of a named property
-    incrementProp(pPropName: string) : PropValue {
+    incrementProp(pPropName: string) : number {
         // Logger.debug(`incrementProp ${pPropName}`);
         if (this._props.has(pPropName)) {
             const abil = this._props.get(pPropName);
             // @ts-ignore
-            let val = (abil[pPropName] as number) + 1;
+            const val = (abil[pPropName] as number) + 1;
             // @ts-ignore
             abil[pPropName] = val;
             void Eventing.Fire(this.setPropEventTopicName(pPropName), {
@@ -130,7 +130,7 @@ export class BItem {
                 PropName: pPropName,
                 NewValue: val
             });
-            return val as PropValue;
+            return val;
         };
         return 0;
     };
