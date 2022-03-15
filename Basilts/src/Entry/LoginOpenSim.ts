@@ -72,6 +72,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
     Logger.info('Login success');
     // console.log('Login response = ' + JSONstringify(resp));
     try {
+        /*
         const OSregion: BKeyValue = {};
         // resp.look_at = looking at location (as string of LLSD numbers ("[r-0.681,r-0.732,r0]"))
         OSregion['firstName'] = resp.first_name;
@@ -98,38 +99,39 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         OSregion['seconds_since_epoch'] = resp.seconds_since_epoch; // integer region time
         OSregion['mapServerUrl'] = resp['map-server-url'];     // URL to map server
         Logger.info('regionResponse=' + JSONstringify(OSregion));
+        */
 
         // Build the encoded auth string that is sent through Basil to the service.
         // Someday this will be a JWT token that comes from the login server.
         const userAuthInfo = {
-            'aId': OSregion['agentId'],
-            'sID': OSregion['sessionID'],
+            'aId': resp.agent_id,
+            'sId': resp.session_id,
             // Extra stuff added to accomodate OpenSim login
-            'SSID': OSregion['secureSessionId'],
-            'CC': OSregion['circuitCode'],
-            'FN': OSregion['firstName'],
-            'LN': OSregion['lastName']
+            'SSID': resp.secure_session_id,
+            'CC': resp.circuit_code,
+            'FN': resp.first_name,
+            'LN': resp.last_name
         };
 
         const regionConfigParams = {
             'Init': {
                 'transport': 'WS',
-                'transportURL': 'ws://' + OSregion['simIP'] + ':11440/',
+                'transportURL': 'ws://' + (resp.sim_ip as string) + ':11440/',
                 'protocol': 'Basil-JSON',
                 'service': 'SpaceServer',
-                'clientAuth': OSregion['sessionID'],
+                'clientAuth': resp.secure_session_id,
                 'serviceAuth': Buffer.from(JSON.stringify(userAuthInfo)).toString('base64')
             },
             // Extra information added for OpenSimulator login.
             // This passes information to Basil who can use or not
             'OpenSimulator': {
-                'FN': OSregion['firstName'],
-                'LN': OSregion['lastName'],
-                'aID': OSregion['agentId'],
-                'WM': OSregion['welcomeMessage'],
-                'rX': OSregion['regionX'],
-                'rY': OSregion['regionY'],
-                'MSU': OSregion['mapServerUrl']
+                'FN': resp.first_name,
+                'LN': resp.last_name,
+                'aID': resp.agent_id,
+                'WM': resp.message,
+                'rX': resp.region_x,
+                'rY': resp.region_y,
+                'MSU': resp.mapServerUrl
 
             }
         };
