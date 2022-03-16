@@ -91,8 +91,8 @@ export class AbilityInstance extends Ability {
     public set pos(pVal: string | number[]) {
         this._pos = ParseThreeTuple(pVal);
         if (this._worldObject) {
+            // handle frame-of-reference computation
             this._worldObject.position.fromArray(this._pos);
-            // TODO: push value into graphics engine
         };
     }
     _posRef: number = 0;
@@ -104,7 +104,6 @@ export class AbilityInstance extends Ability {
         else {
             this._posRef = Number(pVal);
         };
-        // TODO: push value into graphics engine
     }
 
     _rot: number[] = [0,0,0,1];
@@ -112,8 +111,8 @@ export class AbilityInstance extends Ability {
     public set rot(pVal: string | number[]) {
         this._rot = ParseFourTuple(pVal);
         if (this._worldObject) {
-            this._worldObject.rotation.fromArray(this._rot);
-            // TODO: push value into graphics engine
+            // handle frame-of-reference computation
+            this._worldObject.quaternion.fromArray(this._rot);
         };
     }
     _rotRef: number = 0;
@@ -125,7 +124,6 @@ export class AbilityInstance extends Ability {
         else {
             this._rotRef = Number(pVal);
         };
-        // TODO: push value into graphics engine
     }
 
     _worldObject: Object3D;
