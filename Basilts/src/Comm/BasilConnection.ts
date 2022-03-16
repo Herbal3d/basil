@@ -258,7 +258,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                     const newBItem = BItems.createFromProps(pReq.IProps);
                     if (newBItem) {
                         resp.IId = newBItem.id;
-                        resp.IProps['IId'] = newBItem.id;
+                        resp.IProps['id'] = newBItem.id;
                     }
                     else {
                         resp.Exception = 'Failed creation';
@@ -293,8 +293,8 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.AddAbilityResp);
                 // TODO: check auth and prevent adding abilities to system BItems
                 const bitem = BItems.get(pReq.IId);
-                const abils = pReq.IProps['Abilities'] as string[];
-                if (bitem) {
+                const abils = pReq.IProps['abilities'] as string[];
+                if (bitem && abils) {
                     for (const abil of abils) {
                         const newAbility = AbilityFactory(abil, pReq.IProps);
                         if (newAbility) {
@@ -323,7 +323,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 // TODO: check auth and prevent removing abilities from system BItems
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.RemoveAbilityResp);
                 const bitem = BItems.get(pReq.IId);
-                const abils = pReq.IProps['Abilities'] as string[];
+                const abils = pReq.IProps['abilities'] as string[];
                 if (bitem) {
                     for (const abil of abils) {
                         bitem.removeAbility(abil);
