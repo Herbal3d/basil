@@ -159,8 +159,15 @@ export class AbilityInstance extends Ability {
         pBItem.addProperty(AbilityInstance.InstanceRotRefProp, this);
     };
 
-    // When a property is removed from the BItem, this is called
+    // If any of my properties are removed, that means I'm being removed.
+    // Disconnect this instance from the world.
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        if (pPropertyName === AbilityInstance.InstanceRefItemProp) {
+            if (this._worldObject) {
+                RemoveFromWorld(this._worldObject);
+                this._worldObject = null;
+            };
+        };
         return;
     };
 };

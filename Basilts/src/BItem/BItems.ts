@@ -74,14 +74,15 @@ export const BItems = {
         BItemCollection.set(pId, pBItem);
         return pBItem;
     },
-    // Remove a BItem from the collecion of BItems
-    remove: async (pBItem: BItem): Promise<void> => {
-        const id = (pBItem.getProp(AbilityBItem.IdProp) as string);
+    // Remove a BItem from the collecion of BItems and release all resources it may have
+    remove: (pBItem: BItem, pId?: string): void => {
+        const id = pId ?? pBItem.id;
         BItemCollection.delete(id);
+        pBItem.releaseBItem();
     },
     // Remove BItem based on it's id
     removeById: (pId: string): void => {
-        BItemCollection.delete(pId);
+        BItems.remove(BItems.get(pId), pId);
     },
     // Get a BItem by it's ID
     get: (pId: string): BItem => {

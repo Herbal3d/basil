@@ -181,14 +181,25 @@ export class BItem {
             };
         });
     };
+    // When a BItem is being deleted/removed, it is removed from the collection
+    //    of BItems and then this function is called to remove it's properties
+    //    and otherwise disconnect it from the rest of the system.
+    releaseBItem(): void {
+        this._deleteInProgress = true;
+        // Remove all the properties. This alerts any abilities that they are being removed.
+        const props = this._props.keys();
+        for (const prop of props) {
+            this.removeProperty(prop);
+        };
+    };
     // Return the current state of the BItem
     getState(): BItemState {
         return this.getProp(AbilityBItem.StateProp) as BItemState;
-    }
+    };
     // Return TRUE if the BItem state is READY
     isReady(): boolean {
         return this.getState() === BItemState.READY;
-    }
+    };
     // Set the BItem state to READY
     setReady(): void {
         this.setProp(AbilityBItem.StateProp, BItemState.READY);
