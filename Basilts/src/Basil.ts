@@ -22,6 +22,7 @@ import { Eventing } from '@Eventing/Eventing';
 import { Graphics } from '@Graphics/Graphics';
 import { UI } from '@Tools/UI';
 import { AuthToken } from '@Tools/Auth';
+import { RegisterAllAbilities } from '@Abilities/AbilityManagement';
 
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
@@ -35,6 +36,7 @@ import { initLogging, Logger } from '@Tools/Logging';
 initLogging();
 Eventing.init();
 UI.init();
+RegisterAllAbilities();
 
 // Called with communication configuration parameters in the URL.
 // The 'c' parameter is Base64 encoded JSON data which is merged into

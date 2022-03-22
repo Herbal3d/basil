@@ -17,9 +17,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { PointCameraAt, SetCameraPosition } from '@Graphics/GraphicOps';
-import { RegisterAbility } from '@Abilities/AbilityManagement';
-import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Graphics/AbilityAssembly';
-import { InstanceAbilityName, AbilityInstanceFromProps } from '@Graphics/AbilityInstance';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 
@@ -137,9 +134,6 @@ export const Graphics = {
         Graphics._generateRendererStatEvents();
         // This is disabled until someone needs it
         // Graphics.eventEachFrame = Eventing.Register('display.eachFrame', 'Graphics');
-
-        RegisterAbility(AssemblyAbilityName, AbilityAssemblyFromProps);
-        RegisterAbility(InstanceAbilityName, AbilityInstanceFromProps);
     },
     Start() {
         Logger.debug(`Graphics.Start: Start`);

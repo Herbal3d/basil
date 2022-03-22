@@ -19,13 +19,11 @@ import { BItem, PropValue } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-import { LoadSimpleAsset, LoadAssetParams, ScheduleDelayedGraphicsOperation } from '@Graphics/GraphicOps';
+import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
 import { Logger } from '@Base/Tools/Logging';
-import { Eventing } from '@Base/Eventing/Eventing';
-import { TopicEntry } from '@Base/Eventing/TopicEntry';
+import { RegisterAbility } from '@Abilities/AbilityManagement';
 
 export const AssemblyAbilityName = 'Assembly';
-
 
 interface AssemblyAfterRequestProps {
     Ability: AbilityAssembly;

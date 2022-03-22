@@ -13,6 +13,9 @@
 
 import { Ability } from '@Abilities/Ability';
 
+import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Graphics/AbilityAssembly';
+import { InstanceAbilityName, AbilityInstanceFromProps } from '@Graphics/AbilityInstance';
+
 import { BKeyedCollection } from '@Tools/bTypes';
 
 import { Logger } from '@Tools/Logging';
@@ -23,6 +26,13 @@ import { Logger } from '@Tools/Logging';
 export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
 
 const _registeredAbilities: Map<string, AbilityFromProps> = new Map<string, AbilityFromProps>()
+
+// All abilities must be registed with the factory before they can be used.
+export function RegisterAllAbilities(): void {
+    // RegisterAbility(TEMPLATEAbilityName, AbilityTEMPLATEFromProps);
+    RegisterAbility(AssemblyAbilityName, AbilityAssemblyFromProps);
+    RegisterAbility(InstanceAbilityName, AbilityInstanceFromProps);
+};
 
 // The abilities are registered so they can be created dynamically by name
 export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromProps): void {

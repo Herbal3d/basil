@@ -18,6 +18,7 @@ import { AbilityAssembly } from '@Graphics/AbilityAssembly';
 import { BItem,  PropValue, setPropEventParams } from '@BItem/BItem';
 import { BItems } from '@BItem/BItems';
 import { CoordSystem } from '@Comm/BMessage';
+import { RegisterAbility } from '@Abilities/AbilityManagement';
 
 import { ParseThreeTuple, ParseFourTuple, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
