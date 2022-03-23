@@ -21,7 +21,6 @@ import { AuthToken } from '@Tools/Auth';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
 import { Logger } from '@Base/Tools/Logging';
-import { RegisterAbility } from '@Abilities/AbilityManagement';
 
 export const AssemblyAbilityName = 'Assembly';
 
@@ -34,6 +33,9 @@ export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssem
     return new AbilityAssembly(pProps[AbilityAssembly.AssetUrlProp], pProps[AbilityAssembly.AssetLoaderProp]);
 };
 
+// An "Assembly" is a thing that can be represented or displayed in the world.
+// It can be a mesh, a shader, texture, or anything else that is loaded and used in the world.
+// The SpaceServer creates Assemblys and then creates Instances of those Assemblys (see AbilityInstance).
 export class AbilityAssembly extends Ability {
     static AssetUrlProp = 'assetUrl';
     static AssetLoaderProp = 'assetLoader';
@@ -45,8 +47,8 @@ export class AbilityAssembly extends Ability {
     public set assetUrl(pVal: PropValue) {
         this._assetUrl = pVal;
         Logger.debug(`AbilityAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
-        this._containingBItem.setLoading();
-        void LoadAssembly(this, this._containingBItem);
+        this.containingBItem.setLoading();
+        void LoadAssembly(this, this.containingBItem);
     } 
 
     public assetLoader: PropValue;
@@ -66,9 +68,6 @@ export class AbilityAssembly extends Ability {
 
     public assetRepresenation: Object3D;
 
-    // The BItem that this ability instance is associated with
-    _containingBItem: BItem;
-
     constructor(pAssetUrl: string, pAssetLoader: string) {
         super(AssemblyAbilityName);
         this._assetUrl = pAssetUrl;
@@ -76,9 +75,8 @@ export class AbilityAssembly extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
-        this._containingBItem = pBItem;
+        super.addProperties(pBItem);
 
-        // Get and Set the Assembly's URL
         // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
         pBItem.addProperty(AbilityAssembly.AssetUrlProp, this);
         pBItem.setProp(AbilityAssembly.AssetUrlProp, this._assetUrl);
@@ -124,7 +122,7 @@ export async function LoadAssembly(pAbil: AbilityAssembly, pBItem: BItem): Promi
             pBItem.setFailed();
         }
         else {
-            pAbil._containingBItem.setProp(AbilityAssembly.AssetRepresentationProp, loaded);
+            pAbil.containingBItem.setProp(AbilityAssembly.AssetRepresentationProp, loaded);
             pBItem.setReady();
         }
     })

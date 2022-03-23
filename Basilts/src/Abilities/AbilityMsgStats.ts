@@ -43,6 +43,8 @@ export class AbilityMsgStats extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
+        super.addProperties(pBItem);
+
         // Get and Set the number of received messages
         pBItem.addProperty(AbilityMsgStats.MessagesReceivedProp, this);
         pBItem.addProperty(AbilityMsgStats.MessagesSentProp, this);

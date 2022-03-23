@@ -12,6 +12,7 @@
 'use strict';
 
 // Global debugging parameters and variables. "GP.variable"
+// Even though the IDE says this is not referenced, it is so don't delete it.
 import { GlobalReady } from '@Base/Globals';
 import { Config } from '@Base/Config';
 import { VERSION } from '@Base/VERSION';
@@ -22,6 +23,7 @@ import { Eventing } from '@Eventing/Eventing';
 import { Graphics } from '@Graphics/Graphics';
 import { UI } from '@Tools/UI';
 import { AuthToken } from '@Tools/Auth';
+import { CreateInfrastructureBItems } from '@BItem/WellKnownBItems';
 import { RegisterAllAbilities } from '@Abilities/AbilityManagement';
 
 // Force the processing of the CSS format file
@@ -36,6 +38,7 @@ import { initLogging, Logger } from '@Tools/Logging';
 initLogging();
 Eventing.init();
 UI.init();
+CreateInfrastructureBItems();
 RegisterAllAbilities();
 
 // Called with communication configuration parameters in the URL.
@@ -46,27 +49,11 @@ RegisterAllAbilities();
 let configParams = ConfigGetQueryVariable('c');
 if (IsNullOrEmpty(configParams)) {
     // If no communication parameters are given, use testing parameters
-    let testConfigParams: BKeyedCollection = {};
+    const testConfigParams: BKeyedCollection = {};
     // If there are parameters for testing, use them
     if (Config.WWTester && Config.WWTester.initialMakeConnection) {
         testConfigParams.Init = Config.WWTester.initialMakeConnection;
     }
-    else {
-        testConfigParams = {
-            'Init': {
-                'transport': 'WW',
-                'transportURL': './wwtester.js',
-                'protocol': 'Basil-JSON',
-                'service': 'SpaceServer',
-                'serviceAuth': '12345678901234567890',
-                'serviceAddr': '1234567890',
-                'openParams': {
-                    'assetURL': 'https://files.misterblue.com/BasilTest/testtest88/unoptimized/testtest88.gltf',
-                    'loaderType': 'GLTF'
-                }
-            }
-        };
-    };
     configParams = Buffer.from(JSON.stringify(testConfigParams)).toString('base64');
 };
 

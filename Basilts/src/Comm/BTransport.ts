@@ -29,7 +29,7 @@ export abstract class BTransport extends BItem {
     _receiveCallbackContext: any;
 
     constructor(pLayer?: string) {
-        super(undefined, pLayer ?? Config.layers.comm);
+        super(null, null, pLayer ?? Config.layers.comm);
         this._messages = [];
         this._receiveCallback = undefined;
         this.addAbility(new AbilityMsgStats());

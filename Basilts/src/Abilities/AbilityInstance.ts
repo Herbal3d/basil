@@ -14,7 +14,7 @@
 import { Object3D } from 'three';
 
 import { Ability } from '@Abilities/Ability';
-import { AbilityAssembly } from '@Graphics/AbilityAssembly';
+import { AbilityAssembly } from '@Abilities/AbilityAssembly';
 import { BItem,  PropValue, setPropEventParams } from '@BItem/BItem';
 import { BItems } from '@BItem/BItems';
 import { CoordSystem } from '@Comm/BMessage';
@@ -22,7 +22,7 @@ import { RegisterAbility } from '@Abilities/AbilityManagement';
 
 import { ParseThreeTuple, ParseFourTuple, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
-import { PlaceInWorld, PlaceInWorldProps, RemoveFromWorld, ScheduleDelayedGraphicsOperation } from './GraphicOps';
+import { PlaceInWorld, PlaceInWorldProps, RemoveFromWorld, ScheduleDelayedGraphicsOperation } from '../Graphics/GraphicOps';
 import { Logger } from '@Base/Tools/Logging';
 import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 import { Eventing } from '@Base/Eventing/Eventing';
@@ -63,8 +63,8 @@ export class AbilityInstance extends Ability {
     public get refItem(): PropValue { return this._refItem; }
     public set refItem(pVal: PropValue) {
         if (pVal === AbilityInstance.InstanceRefItemSelf) {
-            if (this._containingBItem) {
-                pVal = this._containingBItem.id;
+            if (this.containingBItem) {
+                pVal = this.containingBItem.id;
             }
         }
         this._refItem = pVal;
@@ -129,8 +129,6 @@ export class AbilityInstance extends Ability {
 
     _worldObject: Object3D;
 
-    _containingBItem: BItem;
-    
     constructor(pRefItem: string, pPos: string | number[], pRot: string | number[] ) {
         super(InstanceAbilityName);
         this._refItem = pRefItem;
@@ -139,7 +137,7 @@ export class AbilityInstance extends Ability {
     };
 
     addProperties(pBItem: BItem): void {
-        this._containingBItem = pBItem;
+        super.addProperties(pBItem);
 
         // Get and Set the BItem that holds the 3d representation of this instance.
         // The reference can be to "SELF" to point to same BItem.
@@ -192,7 +190,7 @@ function InstanceIntoWorld(pAbil: AbilityInstance, pRepresent: Object3D): void {
     try {
         if (pRepresent) {
             const inWorldParams: PlaceInWorldProps = {
-                Name: pAbil._containingBItem.id,
+                Name: pAbil.containingBItem.id,
                 Pos: pAbil._pos,
                 PosCoord: (pAbil._posRef as CoordSystem),
                 Rot: pAbil._rot,
@@ -200,7 +198,7 @@ function InstanceIntoWorld(pAbil: AbilityInstance, pRepresent: Object3D): void {
                 Object: pRepresent
             };
             pAbil._worldObject =  PlaceInWorld(inWorldParams);
-            pAbil._containingBItem.setReady();
+            pAbil.containingBItem.setReady();
             Logger.debug(`AbilityInstance.InstanceIntoWorld: successful PlaceInWorld`);
         }
         else {

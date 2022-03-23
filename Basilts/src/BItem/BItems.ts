@@ -20,6 +20,7 @@ import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 
 import { Logger } from '@Base/Tools/Logging';
 import { AuthToken } from '@Base/Tools/Auth';
+import { Config } from '@Base/Config';
 
 // Management routines for BItems.
 //    Functions for the creation, storage, and manipulation of BItems
@@ -35,8 +36,8 @@ export const BItems = {
         Logger.debug(`BItems.createFromProps: ${JSONstringify(pProps)}`);
         const authTokenString = pProps[AbilityBItem.AuthTokenProp] as string;
         const authToken = authTokenString ? new AuthToken(authTokenString) : null;
-        const layer = pProps[AbilityBItem.LayerProp] as string;
-        const newBItem = new BItem(authToken, layer);
+        const layer = pProps[AbilityBItem.LayerProp] ?? Config.layers.default;
+        const newBItem = new BItem(undefined, authToken, layer);
 
         // Add any Abilities that are asked for
         let err: string;

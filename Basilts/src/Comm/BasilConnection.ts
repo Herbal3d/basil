@@ -67,7 +67,7 @@ export class BasilConnection extends BItem {
     ServerVersion: string;          // the version of the server we're talking to
 
     constructor(pParams: BKeyedCollection, pProtocol: BProtocol) {
-        super(undefined, Config.layers.comm);
+        super(null, null, Config.layers.comm);
         this._params = CombineParameters(undefined, pParams, {
         });
         this._proto = pProtocol;

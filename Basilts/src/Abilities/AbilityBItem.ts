@@ -17,6 +17,7 @@ import { AuthToken } from '@Tools/Auth';
 
 import { CreateUniqueId } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
+import { Config } from '@Base/Config';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -70,11 +71,13 @@ export class AbilityBItem extends Ability {
         super(BItemAbilityName);
         this.id = pId ?? CreateUniqueId('BItemConstruct');
         this._auth = pAuth ?? undefined;
-        this.layer = pLayer ?? 'unknown.b.herbal3d.org';
+        this.layer = pLayer ?? Config.layers.default;
         this._state = BItemState.UNINITIALIZED;
     };
 
     addProperties(pBItem: BItem): void {
+        super.addProperties(pBItem);
+
         pBItem.addProperty(AbilityBItem.IdProp, this);
         pBItem.addProperty(AbilityBItem.LayerProp, this);
         pBItem.addProperty(AbilityBItem.AuthTokenProp, this, { private: true });

@@ -125,10 +125,15 @@ export const Config = {
     },
     // Names for predefined/service BItem layers
     'layers': {
-        'default': 'default.layer.b.herbal3d.org',
+        'default': 'd.layer.b.herbal3d.org',
         'comm': 'comm.layer.b.herbal3d.org',
         'service': 'service.layer.b.herbal3d.org',
         'eventing': 'eventing.layer.b.herbal3d.org',
+    },
+    'infrastructureBItemNames': {
+        'camera': '0.camera.b.basil.org',
+        'keyboard': '0.keyboard.b.basil.org',
+        'mouse': '0.mouse.b.basil.org'
     },
     // Flags for fetching assets.
     'assets': {
@@ -148,15 +153,15 @@ export const Config = {
         'AliveCheckPollMS': 10000,   // ms interval to generate AliveCheck's
         'PrintDebugOnAliveResponse': false, // print message on AliveCheck response
         'initialMakeConnection': {
-            'Transport': 'WW',
-            'TransportURL': './wwtester.js',
-            'Protocol': 'Basil-JSON',
-            'Service': 'SpaceServer',
-            'ServiceAuth': '111999555222000777111222',
-            'OpenParams': {
-                'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            'protocol': 'Basil-JSON',
+            'service': 'SpaceServer',
+            'serviceAuth': '111999555222000777111222',
+            'openParams': {
+                'assetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
                 // 'AssetURL': 'https://files.misterblue.com/BasilTest/convoar/epiccastle/smallassets/epiccastle.gltf',
-                'LoaderType': 'GLTF'
+                'loaderType': 'GLTF'
             }
         }
     },
@@ -210,13 +215,13 @@ export interface LightingParameters {
 // When Basil is started, it is passed configuration parameters
 // This is the format of Config.initialMakeConnection
 export interface EntryConfigParameters {
-    'Transport': string,
-    'TransportURL': string,
-    'Protocol': string,
-    'Service': string,
-    'ServiceAuth': string,
-    'OpenParams': {
-        'AssetURL': string,
-        'LoaderType': string
+    'transport': string,
+    'transportURL': string,
+    'protocol': string,
+    'service': string,
+    'serviceAuth': string,
+    'openParams': {
+        'assetURL': string,
+        'loaderType': string
     }
 };

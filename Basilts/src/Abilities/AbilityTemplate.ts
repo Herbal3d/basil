@@ -53,6 +53,9 @@ export class AbilityTEMPLATE extends Ability {
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
+        // Always do this!!
+        super.addProperties(pBItem);
+
         pBItem.addProperty(AbilityTEMPLATE.OneProp, this);
         pBItem.addProperty(AbilityTEMPLATE.TwoProp, this);
     };

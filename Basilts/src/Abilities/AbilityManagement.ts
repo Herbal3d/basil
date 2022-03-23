@@ -13,8 +13,11 @@
 
 import { Ability } from '@Abilities/Ability';
 
-import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Graphics/AbilityAssembly';
-import { InstanceAbilityName, AbilityInstanceFromProps } from '@Graphics/AbilityInstance';
+import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Abilities/AbilityAssembly';
+import { InstanceAbilityName, AbilityInstanceFromProps } from '@Abilities/AbilityInstance';
+import { CameraAbilityName, AbilityCameraFromProps } from '@Abilities/AbilityCamera';
+import { MouseAbilityName, AbilityMouseFromProps } from '@Abilities/AbilityMouse';
+import { KeyboardAbilityName, AbilityKeyboardFromProps } from '@Abilities/AbilityKeyboard';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 
@@ -32,6 +35,9 @@ export function RegisterAllAbilities(): void {
     // RegisterAbility(TEMPLATEAbilityName, AbilityTEMPLATEFromProps);
     RegisterAbility(AssemblyAbilityName, AbilityAssemblyFromProps);
     RegisterAbility(InstanceAbilityName, AbilityInstanceFromProps);
+    RegisterAbility(CameraAbilityName, AbilityCameraFromProps);
+    RegisterAbility(MouseAbilityName, AbilityMouseFromProps);
+    RegisterAbility(KeyboardAbilityName, AbilityKeyboardFromProps);
 };
 
 // The abilities are registered so they can be created dynamically by name

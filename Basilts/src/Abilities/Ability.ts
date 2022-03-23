@@ -21,6 +21,7 @@ export interface AbilityPropertyValues {
 export abstract class Ability  {
 
     abilityName: string;
+    containingBItem: BItem;
 
     // Creating an ability automatically adds it to it's BItem
     constructor(pName: string) {
@@ -30,7 +31,9 @@ export abstract class Ability  {
 
     // Add this ability's properties to the BItem
     // This happens when the ability is added to the BItem
-    abstract addProperties(pBItem: BItem): void;
+    addProperties(pBItem: BItem): void {
+        this.containingBItem = pBItem;
+    }
 
     // called when a property is about to be removed from its containing BItem
     abstract propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void;

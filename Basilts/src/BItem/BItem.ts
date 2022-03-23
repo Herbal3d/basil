@@ -35,7 +35,7 @@ import { Logger } from '@Base/Tools/Logging';
 // A property entry has either getter/setters to access the property value or
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
 //    is defined for that property.
-export type PropValue = number | number[] | string | string[] | AuthToken | Object3D;
+export type PropValue = number | number[] | string | string[] | boolean | AuthToken | Object3D;
 // Properties have optional parameters that are defined by this interface.
 export interface PropOptions {
     toString?: (pAbility: Ability, pPropName: string) => string,  // return property value as string
@@ -65,8 +65,8 @@ export class BItem {
         return this.getProp(AbilityBItem.IdProp) as string;
     };
 
-    constructor(pAuth: AuthToken, pLayer?: string) {
-        const id = CreateUniqueId('BItem');
+    constructor(pId: string, pAuth: AuthToken, pLayer?: string) {
+        const id = pId ?? CreateUniqueId('BItem');
 
         this._props = new Map<string,Ability>();
         this._propOptions = new Map<string,PropOptions>();
