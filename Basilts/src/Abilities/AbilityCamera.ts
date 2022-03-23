@@ -12,14 +12,15 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { BItem, setPropEventParams } from '@BItem/BItem';
+import { AbilityInstance } from '@Abilities/AbilityInstance';
 
 import { BKeyedCollection } from '@Tools/bTypes';
+import { Eventing } from '@Eventing/Eventing';
+import { SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 // import { Logger } from '@Base/Tools/Logging';
 
 export const CameraAbilityName = 'Camera'
-
-// REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbilityCameraFromProps(pProps: BKeyedCollection): AbilityCamera {
@@ -48,16 +49,36 @@ export class AbilityCamera extends Ability {
     public cameraIndex: number = 0;
     public cameraMode: CameraModes = CameraModes.ThirdPerson;
 
+    _posSubscription: SubscriptionEntry;
+    _rotSubscription: SubscriptionEntry;
+
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
 
         pBItem.addProperty(AbilityCamera.CameraIndexProp, this);
+        pBItem.addProperty(AbilityCamera.CameraModeProp, this);
+
+        this._posSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityInstance.PosProp), this._onPosUpdate.bind(this));
+        this._rotSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityInstance.RotProp), this._onRotUpdate.bind(this));
     };
 
     // When a property is removed from the BItem, this is called
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        if (pPropertyName === AbilityCamera.CameraIndexProp) {
+            Eventing.Unsubscribe(this._posSubscription);
+            Eventing.Unsubscribe(this._rotSubscription);
+        };
         return;
     };
+
+    _onPosUpdate(pBItem: BItem, pPos: setPropEventParams): void {
+        // TODO: put code here
+        return;
+    }
+    _onRotUpdate(pBItem: BItem, pRot: setPropEventParams): void {
+        // TODO: put code here
+        return;
+    }
 };

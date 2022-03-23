@@ -18,11 +18,10 @@ import { AbilityAssembly } from '@Abilities/AbilityAssembly';
 import { BItem,  PropValue, setPropEventParams } from '@BItem/BItem';
 import { BItems } from '@BItem/BItems';
 import { CoordSystem } from '@Comm/BMessage';
-import { RegisterAbility } from '@Abilities/AbilityManagement';
 
 import { ParseThreeTuple, ParseFourTuple, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
-import { PlaceInWorld, PlaceInWorldProps, RemoveFromWorld, ScheduleDelayedGraphicsOperation } from '../Graphics/GraphicOps';
+import { PlaceInWorld, PlaceInWorldProps, RemoveFromWorld } from '../Graphics/GraphicOps';
 import { Logger } from '@Base/Tools/Logging';
 import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 import { Eventing } from '@Base/Eventing/Eventing';
@@ -34,9 +33,9 @@ import { Eventing } from '@Base/Eventing/Eventing';
 export const InstanceAbilityName = 'Instance';
 
 export function AbilityInstanceFromProps(pProps: BKeyedCollection): AbilityInstance {
-    const newAbil = new AbilityInstance(pProps[AbilityInstance.InstanceRefItemProp],
-                                        pProps[AbilityInstance.InstancePosProp],
-                                        pProps[AbilityInstance.InstanceRotProp] );
+    const newAbil = new AbilityInstance(pProps[AbilityInstance.RefItemProp],
+                                        pProps[AbilityInstance.PosProp],
+                                        pProps[AbilityInstance.RotProp] );
     return newAbil;
 };
 
@@ -47,22 +46,23 @@ export interface InstanceAfterRequestProps {
 };
 
 export class AbilityInstance extends Ability {
-    static InstanceRefItemProp = 'refItem'; // either 'SELF' or id of BItem with the geometry
-    static InstanceRefItemSelf = 'SELF';
-    static InstancePosProp = 'pos';
-    static InstanceRotProp = 'rot';
-    static InstancePosRefProp = 'posRef';
-    static InstanceRotRefProp = 'rotRef';
+    static RefItemProp = 'refItem'; // either 'SELF' or id of BItem with the geometry
+    static RefItemSELF = 'SELF';
+    static PosProp = 'pos';
+    static RotProp = 'rot';
+    static PosRefProp = 'posRef';
+    static RotRefProp = 'rotRef';
 
     // This watches the 'assetUrl' on the refItem so we know when to place the instance in the world
     _assetRepresentationWatchTopic: SubscriptionEntry;
-    _previousRefItem: PropValue;
+    // This value is garbage so the first setting will see that the refItem changed
+    _previousRefItem: PropValue = 'JustStuffThatIsNothing';
 
     // 'refItem' is the ID of the BItem that contains the geometry
-    _refItem: PropValue = AbilityInstance.InstanceRefItemSelf;
+    _refItem: PropValue = AbilityInstance.RefItemSELF;
     public get refItem(): PropValue { return this._refItem; }
     public set refItem(pVal: PropValue) {
-        if (pVal === AbilityInstance.InstanceRefItemSelf) {
+        if (pVal === AbilityInstance.RefItemSELF) {
             if (this.containingBItem) {
                 pVal = this.containingBItem.id;
             }
@@ -74,15 +74,17 @@ export class AbilityInstance extends Ability {
                 this._assetRepresentationWatchTopic = null;
             }
             this._previousRefItem = this._refItem;
-            const referedItem = BItems.get(this._refItem as string);
-            if (referedItem) {
-                this._assetRepresentationWatchTopic = Eventing.Subscribe(
-                        referedItem.setPropEventTopicName(AbilityAssembly.AssetRepresentationProp),
-                        ProcessChangedAssetRepresentation,
-                        this);
-            }
-            else {
-                Logger.error(`AbilityInstance: refItem ${this._refItem} not found`);
+            if (this._refItem) {    // one can set refItem to null to remove the instance
+                const referedItem = BItems.get(this._refItem as string);
+                if (referedItem) {
+                    this._assetRepresentationWatchTopic = Eventing.Subscribe(
+                            referedItem.setPropEventTopicName(AbilityAssembly.AssetRepresentationProp),
+                            ProcessChangedAssetRepresentation,
+                            this);
+                }
+                else {
+                    Logger.error(`AbilityInstance: refItem ${this._refItem} not found`);
+                }
             }
         }
     };
@@ -142,26 +144,26 @@ export class AbilityInstance extends Ability {
         // Get and Set the BItem that holds the 3d representation of this instance.
         // The reference can be to "SELF" to point to same BItem.
         // As a side effect, the placement if the Assembly in the 3d world is initiated.
-        const propEntry = pBItem.addProperty(AbilityInstance.InstanceRefItemProp, this);
+        const propEntry = pBItem.addProperty(AbilityInstance.RefItemProp, this);
         // Since the above property has a computed value, set the value so it get updated
         this.refItem = this._refItem;
 
         // Get and Set the instance's position in the 3d world.
         // Passed position is normalized into a number array.
-        pBItem.addProperty(AbilityInstance.InstancePosProp, this);
+        pBItem.addProperty(AbilityInstance.PosProp, this);
         // Get and Set the instances' rotation in the 3d world.
         // Passed rotation is normalized into a number array.
-        pBItem.addProperty(AbilityInstance.InstanceRotProp, this);
+        pBItem.addProperty(AbilityInstance.RotProp, this);
         // Get and Set the Instance's position reference
-        pBItem.addProperty(AbilityInstance.InstancePosRefProp, this);
+        pBItem.addProperty(AbilityInstance.PosRefProp, this);
         // Get and Set the instance's rotation reference
-        pBItem.addProperty(AbilityInstance.InstanceRotRefProp, this);
+        pBItem.addProperty(AbilityInstance.RotRefProp, this);
     };
 
     // If any of my properties are removed, that means I'm being removed.
     // Disconnect this instance from the world.
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
-        if (pPropertyName === AbilityInstance.InstanceRefItemProp) {
+        if (pPropertyName === AbilityInstance.RefItemProp) {
             if (this._worldObject) {
                 RemoveFromWorld(this._worldObject);
                 this._worldObject = null;

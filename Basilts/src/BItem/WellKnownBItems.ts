@@ -16,17 +16,15 @@ import { BItem } from '@BItem/BItem';
 import { AbilityCamera } from '@Abilities/AbilityCamera';
 import { AbilityMouse } from '@Abilities/AbilityMouse';
 import { AbilityKeyboard } from '@Abilities/AbilityKeyboard';
+import { AbilityInstance } from '@Abilities/AbilityInstance';
 
 import { Config } from '@Base/Config';
 
-import { IsNullOrEmpty, IsNotNullOrEmpty, ConfigGetQueryVariable } from '@Tools/Misc';
-import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
-import { BKeyedCollection } from '@Tools/bTypes';
-import { Logger } from '@Tools/Logging';
-
 export function CreateInfrastructureBItems(): void {
+    // Primary camera has an instance so it has pos and rot
     const cam = new BItem(Config.infrastructureBItemNames.camera, null);
     cam.addAbility(new AbilityCamera(0));
+    cam.addAbility(new AbilityInstance(null, [1,2,3], [0,0,0,1]));
 
     const mouse = new BItem(Config.infrastructureBItemNames.mouse, null);
     mouse.addAbility(new AbilityMouse());

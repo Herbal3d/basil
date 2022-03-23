@@ -131,7 +131,7 @@ export const Config = {
         'eventing': 'eventing.layer.b.herbal3d.org',
     },
     'infrastructureBItemNames': {
-        'camera': '0.camera.b.basil.org',
+        'camera': 'camera.b.basil.org',
         'keyboard': '0.keyboard.b.basil.org',
         'mouse': '0.mouse.b.basil.org'
     },
