@@ -46,11 +46,6 @@ module.exports = {
     runtimeChunk: 'single',
   },
   plugins: [
-    // Create a global alias and load ThreeJS (as opposed to having imports for this driver)
-    // new webpack.ProvidePlugin({
-    //     THREE: path.resolve(__dirname, 'src/jslibs/three.min.js')
-    // }),
-
     // Create dist/Basil.html from my template
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({

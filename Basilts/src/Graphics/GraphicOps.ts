@@ -13,26 +13,36 @@
 
 import { Config, LightingParameters } from '@Base/Config';
 
-import * as THREE from 'three';
+import { AbstractMesh, ISceneLoaderProgressEvent, TransformNode } from '@babylonjs/core';
+import { SceneLoader } from '@babylonjs/core';
+import '@babylonjs/loaders/glTF';
+import '@babylonjs/loaders/OBJ';
+import '@babylonjs/loaders/STL';
+import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 
-import { CoordSystem } from '@Comm/BMessage';
 import { Graphics } from '@Graphics/Graphics';
-
-import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { ColladaLoader, Collada } from 'three/examples/jsm/loaders/ColladaLoader';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { BVHLoader, BVH } from 'three/examples/jsm/loaders/BVHLoader';
+import { CoordSystem } from '@Comm/BMessage';
 
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 import { JSONstringify, CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
-import { Object3D } from 'three';
 
 // Collection of graphical operations.
 // Externally, code doesn't know how graphics is implemented and this presents the functions
 //    that the rest of the code operates on the graphical system.
+
+// A representation of the 3D object that is passed around by the rest of the code.
+// This hides the definition of the internal 3D object.
+export class Object3D {
+    public mesh: AbstractMesh = undefined;
+
+    constructor(pMesh: AbstractMesh) {
+        this.mesh = pMesh;
+    }
+    isMesh(): boolean {
+        return this.mesh !== undefined;
+    }
+}
 
 // Function to move the camera from where it is to a new place.
 // This is movement from external source which could conflict with AR
@@ -46,21 +56,9 @@ export function SetCameraPosition(gPos: string | number[]) {
 
 // Pass position as either THREE.Vector3 or array of three numbers
 export function PointCameraAt(gPos: string | number[] ) {
-    const lookArray = ParseThreeTuple(gPos);
-    const look = new THREE.Vector3(lookArray[0], lookArray[1], lookArray[2]);
-    if (Graphics._cameraControl) {
-        Graphics._cameraControl.target = look;
-        Graphics._cameraControl.update();
-    }
-    else {
-        Graphics._camera.lookAt(look);
-    }
-    // Move axes helper to where the camera is looking
-    if (Graphics._axesHelper) {
-        Graphics._axesHelper.geometry.translate(look.x, look.y, look.z);
-    }
-
-    Logger.debug(`Graphics: camera looking at: [${look.x}, ${look.y}, ${look.z}]`);
+    const look = ParseThreeTuple(gPos); 
+    Graphics._camera.target = BJSVector3.FromArray(look);
+    Logger.debug(`Graphics: camera looking at: [${look[0]}, ${look[1]}, ${look[2]}`);
 };
 
 // Parameter block passed to LoadSimpleAssets
@@ -76,7 +74,7 @@ export interface LoadAssetParams {
 // Load an asset that is 'simple": represented by an URL to a displayable item
 // The Promise resolves to the underlying graphical object representation.
 export type ProgressCallback = (pState: string) => void;
-export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallback?: ProgressCallback): Promise<THREE.Object3D> {
+export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallback?: ProgressCallback): Promise<Object3D> {
     const parms = <LoadAssetParams>CombineParameters(Config.assetLoader, pProps, {
         AssetURL: undefined,
         AssetLoader: 'gltf',
@@ -85,82 +83,20 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
         combineInstances: true
     });
 
-    let asset: THREE.Object3D = undefined;
-
-    return new Promise<THREE.Object3D>( (resolve, reject) => {
-
-        let loader = undefined;
-        switch (parms.AssetLoader.toLowerCase()) {
-            case 'gltf':    loader = new GLTFLoader();
-                            if (parms.useDRACO) {
-                                loader.setDRACOLoader( new DRACOLoader() );
-                                // THREE.DRACOLoader.getDecoderModule();
-                            }
-                            break;
-            case 'collada': loader = new ColladaLoader(); break;
-            case 'fbx':     loader = new FBXLoader(); break;
-            case 'obj':     loader = new OBJLoader(); break;
-            case 'bvh':     loader = new BVHLoader(); break;
-        };
-        if (loader) {
-            let requestURL = parms.AssetURL;
-            // If auth info is in parameters, add a "bearer-*" item into the access URL
-            //     so the receiver can verify the request.
-            //     This converts the asset URL from ".../XXX" to ".../bearer-AUTH/XXX"
-            // Note that the auth string is URL encoded to prevent someone passing in foolishness
-            if (parms.Auth) {
-                // Authorization code is packed into the URL
-                const urlPieces = parms.AssetURL.split('/');
-                const lastIndex = urlPieces.length - 1;
-                urlPieces.push(urlPieces[lastIndex]);
-                urlPieces[lastIndex] = 'bearer-' + encodeURI(parms.Auth);
-                requestURL = urlPieces.join('/');
-            }
-            Logger.debug(`Graphics.LoadSimpleAsset: loading from: ${requestURL}`);
-            // To complicate things, ThreeJS loaders return different things
-            loader.load(requestURL, (loaded: GLTF | THREE.Group | BVH | Collada) => {
-                // Successful load
-                Logger.debug(`Graphics.LoadSimpleAsset: loaded`);
-                if (loaded instanceof THREE.Group) {
-                    asset = loaded;
-                }
-                else if (loaded.hasOwnProperty('scene') || loaded.hasOwnProperty('scenes')) {
-                    const gltf: GLTF = loaded as GLTF;
-                    if (gltf.scene) {
-                        asset = gltf.scene;
-                    };
-                    if (gltf.scenes) {
-                        asset = gltf.scenes[0];
-                    };
-                }
-                else if (loaded) {
-                    const errMsg = `LoadSimpleAsset: return type not implemented`;
-                    Logger.error(errMsg);
-                    reject(errMsg);
-                };
-
-                if (typeof(asset) === 'undefined') {
-                    const err = `Graphics.LoadSimpleAsset: Could not understand loaded contents. type=${parms.AssetLoader},url=${parms.AssetURL}`;
-                    reject(err);
-                };
-                resolve(asset);
-            },
-            // loading progress
-            function(xhr) {
-                if (typeof(pProgressCallback) !== 'undefined') {
-                    pProgressCallback('Working');
-                }
-            },
-            // Failed load
-            function(e) {
-                const errMsg = `Graphics.LoadSimpleAsset: loading failed: ${ExtractStringError(e)}`;
-                Logger.debug(errMsg);
-                reject(errMsg);
-            });
+    let asset: Object3D = undefined;
+    SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene, (event: ISceneLoaderProgressEvent) => {
+        if (typeof(pProgressCallback) !== 'undefined') {
+            pProgressCallback('Working');
         }
-        else {
-            reject(`No loader for type ${parms.AssetLoader}`);
-        };
+    })
+    .then ( assetContainer => {
+        if (assetContainer.meshes.length > 0) {
+            asset = new Object3D(assetContainer.meshes[0]);
+        }
+        return asset; 
+    })
+    .catch( (error) => {
+        throw error;
     });
 };
 
@@ -202,7 +138,7 @@ export interface PlaceInWorldProps {
 // The parameters are passed in the block defined above.
 export function PlaceInWorld(pParams: PlaceInWorldProps): Object3D {
     try {
-        const worldNode = new THREE.Group();
+        const worldNode = new TransformNode(pParams.Name, Graphics._scene);
         worldNode.position.fromArray(pParams.Pos);
         worldNode.quaternion.fromArray(pParams.Rot);
         worldNode.name = pParams.Name;  // usually the holding BItem name

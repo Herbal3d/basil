@@ -46,13 +46,13 @@
         "production:wwtester": "webpack --config webpack.wwtester.config.js"
     },
     "dependencies": {
+        "@babylonjs/core": "^4.2.2",
+        "@babylonjs/loaders": "^4.2.2",
         "@types/js-base64": "^3.3.1",
-        "@types/three": "^0.125.3",
         "deepmerge": "^4.2.2",
         "js-base64": "^2.5.2",
         "long": "^4.0.0",
-        "npm": "^6.14.15",
-        "three": "^0.126.0"
+        "npm": "^6.14.15"
     },
     "devDependencies": {
         "@types/node": "^17.0.21",

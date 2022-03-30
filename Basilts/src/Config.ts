@@ -56,51 +56,49 @@ export const Config = {
     // Parameters for the webgl environment
     'webgl': {
         'graphicsId': 'org.basil.b.graphics',
-        'engine': 'ThreeJS',
+        'engine': 'BabylonJS',
         'camera': {
             // Change interface CameraParameters if any thing is changed here
-            'cameraId': '1.camera.b.basil.org',
-            'cameraInstanceId': '1.camera.instance.b.basil.org',
-            'name': 'camera1',
+            'name': 'camera.b.herbal3d.org',
             'initialCameraPosition': [ 200, 50, 200 ],
             'initialViewDistance': 2000,
-            'initialCameraLookAt': [ 128, 30, 128 ],
-            'addCameraHelper': false,
-            'addAxesHelper': true,
-            'axesHelperSize': 20
+            'initialCameraLookAt': [ 128, 30, 128 ]
         },
         'lights': {
             // Change interface LightingParameters if any thing is changed here
             'ambient': {
                 'name': 'ambient1',
-                'color': '[34,34,34]',
+                'color': [34, 34, 34],
                 'intensity': 0.02,
-                'specular': 0x505050,
-                'diffuse': 0x505050,
-                'groundColor': '[0,0,0]'
+                'specular': [ 80, 80, 80 ],
+                'diffuse': [ 80, 80, 80 ],
+                'groundColor': [0, 0, 0]
             },
             // placeholder for the eventual sun system
             'directional': {
                 'name': 'directional1',
-                'color': '[238,238,238]',
+                'color': [238, 238, 238],
                 'direction': [ 1000, 1000, 1000 ],
                 'intensity': 0.01,
                 'shadows': {
-                    'bias': 0.0001,
-                    'mapWidth': 2048,
-                    'mapHeight': 2048
+                    'useShadows': false,
+                    'shadowMapSize': 1024
                 }
             }
         },
         'fog': {
             'enabled': false,
-            'type': 'linear',   // 'linear' or 'exponential'
             'color': '[230,230,230]',
-            'density': 0.00025,
-            'near': 1,
-            'far': 5000
+            'density': 0.025,
         },
         'renderer': {
+            'BabylonJS': {
+                'engineOptions': {
+                    'audioEngine': true,    // initialize the audio system also
+                },
+                'sceneOptions': {
+                }
+            },
             'ThreeJS': {
                 // Parameters passed to the renderer when created.
                 //   see https://threejs.org/docs/index.html#api/renderers/WebGLRenderer
@@ -192,11 +190,11 @@ export interface CameraParameters {
 export interface LightingParameters {
     ambient: {
         name: string;
-        color: string;
+        color: string | number[];
         intensity: number;
-        specular: number;
-        diffuse: number;
-        groundColor: number;
+        specular: string | number[];
+        diffuse: string | number[];
+        groundColor: string | number[];
     },
     // placeholder for the eventual sun system
     directional: {
@@ -205,9 +203,8 @@ export interface LightingParameters {
         direction: number[];
         intensity: number;
         shadows: {
-            bias: number;
-            mapWidth: number;
-            mapHeight: number;
+            useShadows: boolean;
+            shadowMapSize: number;
         }
     }
 };
