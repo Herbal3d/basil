@@ -14,10 +14,13 @@
 import { Config, LightingParameters, CameraParameters } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { Engine, Scene, TargetCamera, Node, TransformNode, Light, DirectionalLight, HemisphericLight,
+import { Engine, Scene, TargetCamera, Node, TransformNode,
+        Light, DirectionalLight, HemisphericLight,
         ShadowGenerator, SceneInstrumentation, AbstractMesh } from "@babylonjs/core";
 import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
+import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
+import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
 
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
@@ -120,23 +123,16 @@ export const Graphics = {
         Logger.debug(`Graphics.Start: Start`);
         Graphics._startRendering();
     },
-    // Remove everything from the scene
-    ClearScene() {
-        Graphics._stopRendering();
-
-        Graphics._disposeScene(Graphics._scene);
-        Logger.debug('Graphics: cleared scene');
-
-        Graphics._startRendering();
-    },
 
     _startRendering() {
         if (Graphics._engine) {
             Graphics._engine.runRenderLoop(() => {
                 Graphics.frameNum++;
                 Graphics._lastFrameDelta = Graphics._sceneInstrumentation.frameTimeCounter.count;
-                Graphics._scene.render();
                 Graphics._doAnimation(Graphics._lastFrameDelta);
+                Graphics._engine.scenes.forEach((scene) => {
+                    scene.render();
+                });
             });
         }
     },
@@ -165,22 +161,44 @@ export const Graphics = {
         // Set the parameter default values if not specified in the config file
         const parms = <CameraParameters>CombineParameters(Config.webgl.camera, passedParms, {
             name: 'cameraX',
-            initialViewDistance: 1000,
+            camtype: 'arcRotateCamera',
+            initialViewDistance: 10,
             initialCameraPosition: [200, 50, 200],
             initialCameraLookAt: [ 0, 0, 0]
         });
 
-        Graphics._camera = new ArcRotateCamera(parms.name, 0, 0, parms.initialViewDistance,
-                    BJSVector3.FromArray(parms.initialCameraLookAt), Graphics._scene);
-        Graphics._camera.position = BJSVector3.FromArray(parms.initialCameraPosition);
-        Graphics._camera.attachControl(Graphics._canvas, true);
-
-        Logger.debug(`Graphics._initializeCamera: camera at ${JSONstringify(parms.initialCameraPosition)} pointing at ${JSONstringify(parms.initialCameraLookAt)}`);
+        const initialCameraPosition = BJSVector3.FromArray(parms.initialCameraPosition);
+        const lookAt = BJSVector3.FromArray(parms.initialCameraLookAt);
+        const camType = parms.camtype;
+        if (camType == 'free') {
+            Graphics._camera = new FreeCamera(parms.name, initialCameraPosition, Graphics._scene);
+            Graphics._camera.setTarget(lookAt);
+            Graphics._camera.attachControl(Graphics._canvas, false /*noPreventDefault*/);
+            // Ellipsoid around the camera to limit what we can run into
+            // Graphics._camera.ellipsiod = new BABYLON.Vector3(1,2,1);
+        }
+        if (camType == 'universal') {
+            // THis camera definition is in the documentation but not the code... odd.
+            Graphics._camera = new UniversalCamera(parms.name, initialCameraPosition, Graphics._scene);
+            Graphics._camera.setTarget(lookAt);
+            Graphics._camera.attachControl(null, false /*noPreventDefault*/);
+        }
+        if (camType == 'arcRotateCamera') {
+            // Graphics._camera = new ArcRotateCamera(parms.name, 0, 0, parms.initialViewDistance, lookAt, Graphics._scene);
+            // Graphics._camera.position = BJSVector3.FromArray(parms.initialCameraPosition);
+            Graphics._camera = new ArcRotateCamera(parms.name, 0, 0, 10, new BJSVector3(0,0,0), Graphics._scene);
+            Graphics._camera.position = new BJSVector3(0,0,20);
+            Graphics._camera.attachControl(Graphics._canvas, false /*noPreventDefault*/);
+            // GR.camera.checkCollisions = true;
+            // Ellipsoid around the camera to limit what we can run into
+            // GR.camera.ellipsiod = new BABYLON.Vector3(1,2,1);
+        }
+        // Logger.debug(`Graphics._initializeCamera: camera at ${JSONstringify(parms.initialCameraPosition)} pointing at ${JSONstringify(parms.initialCameraLookAt)}`);
+        Logger.debug(`Graphics._initializeCamera: camera at ${Graphics._camera.position.toString()} pointing at ${Graphics._camera.target.toString()}`);
     },
 
     _initializeLights(passedParms?: BKeyedCollection) {
         const parms = <LightingParameters>CombineParameters(Config.webgl.lights, passedParms, undefined);
-
         if (parms.ambient) {
             const ambient = new HemisphericLight(parms.ambient.name, new BJSVector3(0,1,0), Graphics._scene);
             ambient.intensity = parms.ambient.intensity;
@@ -272,17 +290,17 @@ export const Graphics = {
                 if (Graphics._eventDisplayInfo.hasSubscriptions) {
                     // not general, but, for the moment, just return the WebGL info
                     const dispInfo = {
-                        fps: Graphics.FPS,
+                        fps: Graphics._engine.getFps(),
                         render: {
-                            calls: 10,
-                            triangles: 11,
-                            points: 12,
+                            calls: Graphics._engine._drawCalls,
+                            triangles: Graphics._scene.totalVerticesPerfCounter.current / 3,
+                            points: Graphics._scene.totalVerticesPerfCounter.current,
                             lines: 13,
-                            frame: 14
-                        },
-                        memory: {
-                            geometries: 20,
-                            textures: 30
+                            frame: Graphics.frameNum
+                        // },
+                        // memory: {
+                        //     geometries: Graphics._engine.
+                        //     textures: 30
                         }
                     };
                     void Graphics._eventDisplayInfo.fire(dispInfo);

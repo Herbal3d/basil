@@ -14,7 +14,7 @@
 import { Ability } from '@Abilities/Ability';
 
 import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Abilities/AbilityAssembly';
-import { InstanceAbilityName, AbilityInstanceFromProps } from '@Abilities/AbilityInstance';
+import { PlacementAbilityName, AbilityPlacementFromProps } from '@Abilities/AbilityPlacement';
 import { CameraAbilityName, AbilityCameraFromProps } from '@Abilities/AbilityCamera';
 import { MouseAbilityName, AbilityMouseFromProps } from '@Abilities/AbilityMouse';
 import { KeyboardAbilityName, AbilityKeyboardFromProps } from '@Abilities/AbilityKeyboard';
@@ -34,7 +34,7 @@ const _registeredAbilities: Map<string, AbilityFromProps> = new Map<string, Abil
 export function RegisterAllAbilities(): void {
     // RegisterAbility(TEMPLATEAbilityName, AbilityTEMPLATEFromProps);
     RegisterAbility(AssemblyAbilityName, AbilityAssemblyFromProps);
-    RegisterAbility(InstanceAbilityName, AbilityInstanceFromProps);
+    RegisterAbility(PlacementAbilityName, AbilityPlacementFromProps);
     RegisterAbility(CameraAbilityName, AbilityCameraFromProps);
     RegisterAbility(MouseAbilityName, AbilityMouseFromProps);
     RegisterAbility(KeyboardAbilityName, AbilityKeyboardFromProps);

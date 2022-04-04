@@ -13,7 +13,7 @@
 
 import { Ability } from '@Abilities/Ability';
 import { BItem, setPropEventParams } from '@BItem/BItem';
-import { AbilityInstance } from '@Abilities/AbilityInstance';
+import { AbilityPlacement } from '@Abilities/AbilityPlacement';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Eventing } from '@Eventing/Eventing';
@@ -60,8 +60,8 @@ export class AbilityCamera extends Ability {
         pBItem.addProperty(AbilityCamera.CameraIndexProp, this);
         pBItem.addProperty(AbilityCamera.CameraModeProp, this);
 
-        this._posSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityInstance.PosProp), this._onPosUpdate.bind(this));
-        this._rotSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityInstance.RotProp), this._onRotUpdate.bind(this));
+        this._posSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityPlacement.PosProp), this._onPosUpdate.bind(this));
+        this._rotSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityPlacement.RotProp), this._onRotUpdate.bind(this));
     };
 
     // When a property is removed from the BItem, this is called

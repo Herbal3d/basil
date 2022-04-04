@@ -141,10 +141,9 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     Logger.debug(`LoadTestAsset`);
     let createdItemId: string;
     const createItemProps = {
-        abilities: [ 'Assembly' ,'Instance' ],
+        abilities: [ 'Assembly' ,'Placement' ],
         assetUrl: pTestAssetURL,
         assetLoader: pTestAssetLoader,
-        refItem: 'SELF',
         pos: [10, 11, 12]
     };
     Logger.debug(`Before CreateItem`);
@@ -152,7 +151,7 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     .then ( resp => {
         Logger.debug(`Response from CreateItem`);
         if (typeof(resp.Exception) === 'undefined') {
-            createdItemId = resp.IProps.IId as string;
+            createdItemId = resp.IProps.id as string;
 
             Logger.debug(`Before RequestProperties`);
             pBasil.RequestProperties(createdItemId, '')
@@ -178,88 +177,4 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     .catch ( e => {
         Logger.debug(`Exception from CreateItem: ${ExtractStringError(e)}`);
     });
-    /*
-    let openSessionProps = _basilClient.openSessionProperties;
-    // Parameters could have been passed from the invoker (test info in OpenSession req)
-    if (openSessionProps) {
-        if (openSessionProps.TestURL) {
-            displayableProps.displayableurl = openSessionProps.TestURL;
-        }
-        if (openSessionProps.TestLoaderType) {
-            displayableProps.loaderType = openSessionProps.TestLoaderType;
-        }
-        if (openSessionProps.TestDisplayType) {
-            displayableProps.displayableType = openSessionProps.TestDisplayType;
-        }
-    }
-    Logger.debug('Asset spec for CreateItem' + JSON.stringify(displayableProps));
-
-    let displayableItemId = undefined;
-    let displayableItemIdN = undefined;
-    let instanceItemId = undefined;
-    let instanceItemIdN = undefined;
-
-    // Create the initial displayable item
-    let createItemProps = {};
-    _basilClient.CreateItem(createItemProps)
-    .then (resp => {
-        _basilClient.addAbility()
-
-    })
-            new AbilityDisplayable().SetFromValues(displayableProps)
-    ])
-    .then( resp => {
-        if (resp.Exception) {
-            throw new Exception('failed creation of displayable:' + resp.Exception);
-        };
-        displayableItemId = resp.IProps.ItemId;
-        displayableItemIdN = resp.IProps.ItemIdN;
-        Logger.debug('Created displayable. Id = ' + displayableItemId);
-
-        // Create a displayed instance of the displayable
-        createItemProps = {};
-        let aProps = {
-            'Pos': '[ 100, 101, 102 ]',
-            'Rot':  '[ 0, 0, 0, 1 ]',
-            'PosRef': '0',   // BasilMessage.CoordSystem.WGS86,
-            'RotRef': '0'    // BasilMessage.RotationSystem.WORLDR
-        };
-        return GP.client.CreateItem(createItemProps, [
-            new AbilityInstance().SetFromValues(displayableItemId, aProps)
-        ]);
-    })
-    .then ( resp => {
-        if (resp.Exception) {
-            throw new Exception('failed creation of instance:' + resp.Exception);
-        };
-        instanceItemId = resp.IProps.ItemId;
-        instanceItemIdN = resp.IProps.ItemIdN;
-        Logger.debug('Created instance. Id = ' + instanceItemId);
-
-        // Get the properties for the instance
-        return _basilClient.RequestProperties(instanceItemId);
-    })
-    .then ( resp => {
-        if (resp.Exception) {
-            throw new Exception('failed fetching properties for instance ' + instanceItemId
-                + ', e=' + e);
-        }
-        Logger.debug('Fetched properties for ' + instanceItemId + ':');
-        if (resp.IProps) {
-            Object.keys(resp.IProps).forEach(prop => {
-                Logger.debug('    ' + prop + ' => ' + resp.IProps[prop]);
-            });
-        }
-        else {
-            Logger.error('No properties were returned');
-        };
-    })
-    .catch ( e => {
-        Logger.error('Test failure');
-        if (displayableItemId) Logger.error('    Displayable ItemId = ' + displayableItemId);
-        if (instanceItemId) Logger.error('    Instance ItemId = ' + instanceItemId);
-        Logger.error('    Error = ' + JSONstringify(e));
-
-    });
-    */
 };

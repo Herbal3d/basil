@@ -13,12 +13,11 @@
 
 import { Config } from '@Base/Config';
 
-import { Object3D } from 'three';
-
 import { Ability } from '@Abilities/Ability';
 import { AbilityBItem, BItemState } from '@Abilities/AbilityBItem';
 import { BItems } from '@BItem/BItems';
 import { Eventing } from '@Eventing/Eventing';
+import { Object3D } from '@Base/Graphics/Object3d';
 
 import { AuthToken } from '@Tools/Auth';
 

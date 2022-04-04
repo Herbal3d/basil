@@ -13,7 +13,7 @@
 
 import { Config, LightingParameters } from '@Base/Config';
 
-import { AbstractMesh, ISceneLoaderProgressEvent, TransformNode } from '@babylonjs/core';
+import { Mesh, ISceneLoaderProgressEvent } from '@babylonjs/core';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import '@babylonjs/loaders/OBJ';
@@ -21,6 +21,7 @@ import '@babylonjs/loaders/STL';
 import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 
 import { Graphics } from '@Graphics/Graphics';
+import { Object3D } from '@Graphics/Object3d';
 import { CoordSystem } from '@Comm/BMessage';
 
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
@@ -30,19 +31,6 @@ import { Logger } from '@Tools/Logging';
 // Collection of graphical operations.
 // Externally, code doesn't know how graphics is implemented and this presents the functions
 //    that the rest of the code operates on the graphical system.
-
-// A representation of the 3D object that is passed around by the rest of the code.
-// This hides the definition of the internal 3D object.
-export class Object3D {
-    public mesh: AbstractMesh = undefined;
-
-    constructor(pMesh: AbstractMesh) {
-        this.mesh = pMesh;
-    }
-    isMesh(): boolean {
-        return this.mesh !== undefined;
-    }
-}
 
 // Function to move the camera from where it is to a new place.
 // This is movement from external source which could conflict with AR
@@ -78,26 +66,22 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
     const parms = <LoadAssetParams>CombineParameters(Config.assetLoader, pProps, {
         AssetURL: undefined,
         AssetLoader: 'gltf',
-        Auth: undefined,
-        useDRACO: true,
-        combineInstances: true
+        Auth: undefined
     });
 
     let asset: Object3D = undefined;
-    SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene, (event: ISceneLoaderProgressEvent) => {
+    const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene, (event: ISceneLoaderProgressEvent) => {
         if (typeof(pProgressCallback) !== 'undefined') {
             pProgressCallback('Working');
         }
-    })
-    .then ( assetContainer => {
-        if (assetContainer.meshes.length > 0) {
-            asset = new Object3D(assetContainer.meshes[0]);
-        }
-        return asset; 
-    })
-    .catch( (error) => {
-        throw error;
     });
+    if (assetContainer) {
+        if (assetContainer.meshes.length > 0) {
+            const rootNode = assetContainer.createRootMesh();
+            asset = new Object3D(assetContainer, rootNode);
+        }
+    };
+    return asset; 
 };
 
 export type DelayedGraphicsOperation = (pProp: BKeyedCollection) => Promise<void>;
@@ -125,58 +109,9 @@ export async function ProcessDelayedGraphicsOperations(): Promise<void> {
     };
 };
 
-export interface PlaceInWorldProps {
-    Name: string,
-    Pos: number[];
-    PosCoord: CoordSystem;
-    Rot: number[];
-    RosCoord: number;
-    Object: Object3D;
-};
-// Do the graphics libaray stuff to place an instance of an Object3D into
-//     a position in the visible world.
-// The parameters are passed in the block defined above.
-export function PlaceInWorld(pParams: PlaceInWorldProps): Object3D {
-    try {
-        const worldNode = new TransformNode(pParams.Name, Graphics._scene);
-        worldNode.position.fromArray(pParams.Pos);
-        worldNode.quaternion.fromArray(pParams.Rot);
-        worldNode.name = pParams.Name;  // usually the holding BItem name
-        if (Array.isArray(pParams.Object)) {
-            for (const piece of (pParams.Object as Object3D[])) {
-                worldNode.add(piece.clone())
-            };
-        }
-        else {
-            worldNode.add(pParams.Object.clone());
-        };
-        if (pParams.PosCoord == CoordSystem.CAMERA) {
-            // item is camera relative
-            Graphics.addNodeToCameraView(worldNode);
-        }
-        else {
-            // item is world coordinate relative
-            Graphics.addNodeToWorldView(worldNode);
-        };
-        return worldNode;
-    }
-    catch (e) {
-        Logger.error(`Graphics.PlaceInWorld: Exception adding. e=${ExtractStringError(e)}`);
-    };
-};
-
-export function RemoveFromWorld(pNode: Object3D): void {
-    if (pNode.parent) {
-        pNode.parent.remove(pNode);
-    };
-};
-
 // Add a test object to the scene
 export function AddTestObject() {
-    const geometry = new THREE.BoxGeometry( 1, 2, 3);
-    const material = new THREE.MeshBasicMaterial( { color: 0x10cf10 } );
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.fromArray(Config.webgl.camera.initialCameraLookAt);
-    Graphics.addNodeToWorldView(cube);
+    const cube = Mesh.CreateBox('box1', 1, Graphics._scene);
+    cube.position = BJSVector3.FromArray(Config.webgl.camera.initialCameraLookAt);
     Logger.debug(`Graphics: added test cube at ${Config.webgl.camera.initialCameraLookAt}`);
 };

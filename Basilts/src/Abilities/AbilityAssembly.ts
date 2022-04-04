@@ -11,8 +11,6 @@
 
 'use strict';
 
-import { Object3D } from 'three';
-
 import { Ability } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
@@ -20,6 +18,7 @@ import { AuthToken } from '@Tools/Auth';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
+import { Object3D } from '@Graphics/Object3d';
 import { Logger } from '@Base/Tools/Logging';
 
 export const AssemblyAbilityName = 'Assembly';
@@ -35,7 +34,6 @@ export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssem
 
 // An "Assembly" is a thing that can be represented or displayed in the world.
 // It can be a mesh, a shader, texture, or anything else that is loaded and used in the world.
-// The SpaceServer creates Assemblys and then creates Instances of those Assemblys (see AbilityInstance).
 export class AbilityAssembly extends Ability {
     static AssetUrlProp = 'assetUrl';
     static AssetLoaderProp = 'assetLoader';
@@ -101,10 +99,6 @@ export class AbilityAssembly extends Ability {
 // Returns a Promise that loads an assembly given the URL and asset type properties.
 // Will load the asset and set the BItem's state to READY.
 // Promise fails of the asset can't be loaded and the BItem's state is set to FAILED
-export async function LoadAssemblyDelayed(pProps: AssemblyAfterRequestProps): Promise<void> {
-    return LoadAssembly(pProps.Ability, pProps.BItem);
-}
-
 export async function LoadAssembly(pAbil: AbilityAssembly, pBItem: BItem): Promise<void> {
     Logger.debug(`AbilityAssembly: LoadAssembly(${pAbil._assetUrl})`);
 

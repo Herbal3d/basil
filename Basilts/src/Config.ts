@@ -60,9 +60,10 @@ export const Config = {
         'camera': {
             // Change interface CameraParameters if any thing is changed here
             'name': 'camera.b.herbal3d.org',
+            'camtype': 'universal',
             'initialCameraPosition': [ 200, 50, 200 ],
-            'initialViewDistance': 2000,
-            'initialCameraLookAt': [ 128, 30, 128 ]
+            'initialViewDistance': 200,
+            'initialCameraLookAt': [ 0, 0, 0 ]
         },
         'lights': {
             // Change interface LightingParameters if any thing is changed here
@@ -180,6 +181,7 @@ export interface CameraParameters {
     cameraId: string,
     cameraInstanceId: string,
     name: string,
+    camtype: string,
     initialCameraPosition: number[],
     initialViewDistance: number,
     initialCameraLookAt: number[],
