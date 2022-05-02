@@ -91,6 +91,10 @@ if (IsNotNullOrEmpty(configParams)) {
     };
 };
 
+// DEBUG DEBUG: Add pointer to graphics stuff for debugging in the browser
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+(globalThis as BKeyedCollection).GGP.Graphics = Graphics;
+
 // Names of display regions on web page.
 const container = document.getElementById(Config.page.webGLcontainerId);
 const canvas = document.getElementById(Config.page.webGLcanvasId) as HTMLCanvasElement;
