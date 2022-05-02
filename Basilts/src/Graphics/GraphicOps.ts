@@ -13,7 +13,7 @@
 
 import { Config, LightingParameters } from '@Base/Config';
 
-import { Mesh, ISceneLoaderProgressEvent } from '@babylonjs/core';
+import { Mesh, ISceneLoaderProgressEvent, ContainerAssetTask } from '@babylonjs/core';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import '@babylonjs/loaders/OBJ';
@@ -70,17 +70,24 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
     });
 
     let asset: Object3D = undefined;
-    const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene, (event: ISceneLoaderProgressEvent) => {
-        if (typeof(pProgressCallback) !== 'undefined') {
-            pProgressCallback('Working');
-        }
-    });
-    if (assetContainer) {
-        if (assetContainer.meshes.length > 0) {
-            const rootNode = assetContainer.createRootMesh();
-            asset = new Object3D(assetContainer, rootNode);
-        }
-    };
+    try {
+        const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene, (event: ISceneLoaderProgressEvent) => {
+            if (typeof(pProgressCallback) !== 'undefined') {
+                pProgressCallback('Working');
+            }
+        });
+        if (assetContainer) {
+            if (assetContainer.meshes.length > 0) {
+                const rootNode = assetContainer.createRootMesh();
+                asset = new Object3D(assetContainer, rootNode);
+                assetContainer.addAllToScene();
+            }
+        };
+    }
+    catch (e) {
+        Logger.error(`Graphics: LoadSimpleAsset: Exception: ${e}`);
+        asset = undefined;
+    }
     return asset; 
 };
 
