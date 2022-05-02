@@ -18,6 +18,9 @@
 // "mergedmaterials". These are actually the names of directories
 // where the actual GLTF file and its sub-files are stored.
 
+// If there is a 'd' parameter, the version is not used and the subdir is used
+// as the base directory to find the specified basename ("subdir/basename/basename.gltf").
+
 'use strict';
 
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
@@ -32,14 +35,21 @@ function CallBasilWithTheFile(): void {
 
   const baseName = ConfigGetQueryVariable('b');
   let version = ConfigGetQueryVariable('v');
+  const subDir = ConfigGetQueryVariable('d');
   if (typeof(version) === 'undefined') {
       version = 'unoptimized';
   };
 
   let GLTFTOLOAD = `${repository}convoar/testtest88/${version}/testtest88.gltf`;
 
-  if (baseName) {
-      GLTFTOLOAD =  `${repository}convoar/${baseName}/${version}/${baseName}.gltf`;
+  if (typeof(subDir) === 'undefined') {
+    if (baseName) {
+        GLTFTOLOAD =  `${repository}convoar/${baseName}/${version}/${baseName}.gltf`;
+    };
+  }
+  else {
+        // If subDir is specified, the basename is just in that subdir
+        GLTFTOLOAD =  `${repository}convoar/${subDir}/${baseName}/${baseName}.gltf`;
   };
 
     const testConfigParams = {
