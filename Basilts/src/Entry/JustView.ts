@@ -24,7 +24,7 @@
 'use strict';
 
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
-import { ConfigGetQueryVariable } from '@Tools/Misc';
+import { ConfigGetQueryVariable } from '@Base/Config'
 
 window.onload = (ev: Event) => {
   CallBasilWithTheFile();

@@ -45,38 +45,6 @@ export function SimpleObject(pProperty: string, pValue: any): BKeyedCollection {
   return ret;
 };
 
-// From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
-// Used to fetch invocation parameters. The request better be well formed as
-//     parsing is pretty simplistic and unforgiving.
-export function ConfigGetQueryVariable(pVariable: string): string {
-    const query: string = window.location.search.substring(1);
-    const vars: string[] = query.split('&');
-    for (const oneQuery of vars) {
-        const pair: string[] = oneQuery.split('=');
-        if (decodeURIComponent(pair[0]) === pVariable) {
-            return decodeURIComponent(pair[1]);
-        };
-    };
-    return undefined;
-};
-// Take apart an URL query string and return an object of key/value pairs
-export function ParseQueryString(pQuery: string): Map<string,string> {
-  const ret = new Map<string,string>();
-  const args = decodeURI(pQuery).split('&');
-  args.forEach( arg => {
-    const argPieces = arg.split('=');
-    switch (argPieces.length) {
-      case 1:
-        ret.set(argPieces[0], null); break;
-      case 2:
-        ret.set(argPieces[0], argPieces[1]); break;
-      default:
-        break;  // doesn't make sense so ignore it
-    };
-  })
-  return ret;
-};
-
 export function GenUUID(): string {
   return uuidv4();
 };

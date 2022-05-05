@@ -4,6 +4,8 @@
 
 'use strict';
 
+import { Console } from "console";
+
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
 //     supplied configuration file contents.
@@ -15,8 +17,12 @@ export const Config = {
         'KnownConfigurationSections': 'OpenSimulator',
         // ms before removing deleted BItem
         'BItemDeleteInterval': 60000,
+        // A random string used to identify this Basil instance
+        'SessionId': '1234567890',
         // Note that basename begins with a dot
-        'UniqueIdBase': '.b.herbal3d.org'
+        'UniqueIdBase': '.b.herbal3d.org',
+        // If 'true', rewite UniqueIdBase to be the SessionId
+        'UseSessionIdForUniqueBase': true,
      },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
@@ -55,11 +61,11 @@ export const Config = {
     },
     // Parameters for the webgl environment
     'webgl': {
-        'graphicsId': 'org.basil.b.graphics',
+        'graphicsId': 'graphics.UNIQUEIDBASE',
         'engine': 'BabylonJS',
         'camera': {
             // Change interface CameraParameters if any thing is changed here
-            'name': 'camera.b.herbal3d.org',
+            'name': 'camera.UNIQUEIDBASE',
             'camtype': 'universal',
             'initialCameraPosition': [ 200, 50, 200 ],
             'initialViewDistance': 200,
@@ -124,15 +130,15 @@ export const Config = {
     },
     // Names for predefined/service BItem layers
     'layers': {
-        'default': 'd.layer.b.herbal3d.org',
-        'comm': 'comm.layer.b.herbal3d.org',
-        'service': 'service.layer.b.herbal3d.org',
-        'eventing': 'eventing.layer.b.herbal3d.org',
+        'default': 'd.layer.UNIQUEIDBASE',
+        'comm': 'comm.layer.UNIQUEIDBASE',
+        'service': 'service.layer.UNIQUEIDBASE',
+        'eventing': 'eventing.layer.UNIQUEIDBASE',
     },
     'infrastructureBItemNames': {
-        'camera': 'camera.b.basil.org',
-        'keyboard': '0.keyboard.b.basil.org',
-        'mouse': '0.mouse.b.basil.org'
+        'camera': 'camera.UNIQUEIDBASE',
+        'keyboard': '0.keyboard.UNIQUEIDBASE',
+        'mouse': '0.mouse.UNIQUEIDBASE'
     },
     // Flags for fetching assets.
     'assets': {
@@ -223,4 +229,65 @@ export interface EntryConfigParameters {
         'assetURL': string,
         'loaderType': string
     }
+};
+
+// Initialize configuration parameters.
+// TODO: look at URL query parameters and get values from there
+export function initConfig(): void {
+    // Config.basil.SessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    Config.basil.SessionId = Math.random().toString(36).substring(3, 15);
+    if (Config.basil.UseSessionIdForUniqueBase) {
+        Config.basil.UniqueIdBase = '.' + Config.basil.SessionId;
+    };
+    configSub(Config, '.UNIQUEIDBASE', Config.basil.UniqueIdBase);
+};
+
+export interface KeyedCollection {
+  [ key: string]: any
+};
+// Replace occurances of pFind with pSub in any string value in the passed
+//     key/value object. Recursively decends the object.
+// Used to replace UNIQUEIDBASE in Config.
+function configSub(pConfig: KeyedCollection, pFind: string, pSub: string): void {
+    const regExp = new RegExp(pFind, 'g');
+    Object.keys(pConfig).forEach((key: string) => {
+        if (typeof(pConfig[key]) === 'object') {
+            configSub(pConfig[key], pFind, pSub);
+        }
+        else if (typeof(pConfig[key]) === 'string') {
+            pConfig[key] = (pConfig[key] as string).replace(regExp, pSub);
+        };
+    });
+}
+
+// From https://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
+// Used to fetch invocation parameters. The request better be well formed as
+//     parsing is pretty simplistic and unforgiving.
+export function ConfigGetQueryVariable(pVariable: string): string {
+    const query: string = window.location.search.substring(1);
+    const vars: string[] = query.split('&');
+    for (const oneQuery of vars) {
+        const pair: string[] = oneQuery.split('=');
+        if (decodeURIComponent(pair[0]) === pVariable) {
+            return decodeURIComponent(pair[1]);
+        };
+    };
+    return undefined;
+};
+// Take apart an URL query string and return an object of key/value pairs
+export function ParseQueryString(pQuery: string): Map<string,string> {
+  const ret = new Map<string,string>();
+  const args = decodeURI(pQuery).split('&');
+  args.forEach( arg => {
+    const argPieces = arg.split('=');
+    switch (argPieces.length) {
+      case 1:
+        ret.set(argPieces[0], null); break;
+      case 2:
+        ret.set(argPieces[0], argPieces[1]); break;
+      default:
+        break;  // doesn't make sense so ignore it
+    };
+  })
+  return ret;
 };

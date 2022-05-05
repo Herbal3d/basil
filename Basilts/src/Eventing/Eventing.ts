@@ -20,6 +20,7 @@ import { RandomIdentifier } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 import { IsNullOrEmpty } from '@Base/Tools/Misc';
+import { config } from 'process';
 
 // A simple pub/sub system. An event producer registers a topic
 //    and later 'fire's event on the topic. An event consumer subscribers
@@ -60,7 +61,7 @@ let onSubscribe: TopicEntry;
 let onUnsubscribe: TopicEntry;
 export const Eventing = {
     init(): void {
-        eventingDefaultLayer = Config.layers?.eventing ?? 'eventing.layer.b.herbal3d.org',
+        eventingDefaultLayer = Config.layers?.eventing ?? 'eventing.layer' + Config.basil.UniqueIdBase,
         eventingTopics = new Map<TopicName, TopicEntry>();
         eventingTimedProcessors = new Map<TopicName, EventProcessor>();
         eventingEventsFired = 0;

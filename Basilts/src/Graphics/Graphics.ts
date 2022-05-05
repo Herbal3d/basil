@@ -110,8 +110,8 @@ export const Graphics = {
         Graphics._throttleFPS = 0; // if zero, no throttling
 
         // There are several top level groups for objects in different coordinate systems
-        Graphics._groupWorldRel = new TransformNode('GroupWorldRel.b.herbal3d.org', Graphics._scene);
-        Graphics._groupCameraRel = new TransformNode('GroupCameraRel.b.herbal3d.org', Graphics._scene);
+        Graphics._groupWorldRel = new TransformNode('GroupWorldRel' + Config.basil.UniqueIdBase, Graphics._scene);
+        Graphics._groupCameraRel = new TransformNode('GroupCameraRel' + Config.basil.UniqueIdBase, Graphics._scene);
 
         // Graphics generate a bunch of events so people can display stuff
         Graphics._generateCameraEvents();

@@ -14,7 +14,7 @@
 // Global debugging parameters and variables. "GP.variable"
 // Even though the IDE says this is not referenced, it is so don't delete it.
 import { GlobalReady } from '@Base/Globals';
-import { Config } from '@Base/Config';
+import { Config, initConfig, ConfigGetQueryVariable } from '@Base/Config';
 import { VERSION } from '@Base/VERSION';
 
 import { Comm } from '@Comm/Comm';
@@ -29,12 +29,13 @@ import { RegisterAllAbilities } from '@Abilities/AbilityManagement';
 // Force the processing of the CSS format file
 import '@Base/Basilts.less';
 
-import { IsNullOrEmpty, IsNotNullOrEmpty, ConfigGetQueryVariable } from '@Tools/Misc';
+import { IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { initLogging, Logger } from '@Tools/Logging';
 
 // Setup logging so progress and errors will be seen
+initConfig();
 initLogging();
 Eventing.init();
 UI.init();
