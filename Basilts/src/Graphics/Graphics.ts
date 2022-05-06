@@ -266,9 +266,9 @@ export const Graphics = {
                     const newPos = Graphics._camera.position.clone();
                     if (!newPos.equals(oldPos)) {
                         const pos = [0,0,0];
-                        Graphics._camera.cameraDirection.toArray(pos, 0);
+                        Graphics._camera.position.toArray(pos, 0);
                         const rot = [0,0,0,0];
-                        Graphics._camera.cameraRotation.toArray(rot, 0);
+                        Graphics._camera.rotation.toArray(rot, 0);
                         const camInfo: CameraInfoEventProps = {
                             'position': pos,
                             'rotation': rot 
