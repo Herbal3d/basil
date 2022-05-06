@@ -13,18 +13,18 @@
 
 import { Ability } from '@Abilities/Ability';
 import { BItem, setPropEventParams } from '@BItem/BItem';
-import { AbilityPlacement } from '@Abilities/AbilityPlacement';
+import { AbPlacement } from '@Abilities/AbilityPlacement';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Eventing } from '@Eventing/Eventing';
 import { SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 // import { Logger } from '@Base/Tools/Logging';
 
-export const CameraAbilityName = 'Camera'
+export const AbCameraName = 'Camera'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
-export function AbilityCameraFromProps(pProps: BKeyedCollection): AbilityCamera {
-    return new AbilityCamera(pProps[AbilityCamera.CameraIndexProp]);
+export function AbCameraFromProps(pProps: BKeyedCollection): AbCamera {
+    return new AbCamera(pProps[AbCamera.CameraIndexProp]);
 };
 
 export enum CameraModes {
@@ -36,13 +36,13 @@ export enum CameraModes {
     Follow = 6
 }
 
-export class AbilityCamera extends Ability {
+export class AbCamera extends Ability {
 
     public static CameraIndexProp = 'cameraIndex';
     public static CameraModeProp = 'cameraMode';
 
     constructor(pIndex: number) {
-        super(CameraAbilityName);
+        super(AbCameraName);
         this.cameraIndex = pIndex;
     };
 
@@ -57,16 +57,16 @@ export class AbilityCamera extends Ability {
         // Always do this!!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbilityCamera.CameraIndexProp, this);
-        pBItem.addProperty(AbilityCamera.CameraModeProp, this);
+        pBItem.addProperty(AbCamera.CameraIndexProp, this);
+        pBItem.addProperty(AbCamera.CameraModeProp, this);
 
-        this._posSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityPlacement.PosProp), this._onPosUpdate.bind(this));
-        this._rotSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbilityPlacement.RotProp), this._onRotUpdate.bind(this));
+        this._posSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbPlacement.PosProp), this._onPosUpdate.bind(this));
+        this._rotSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbPlacement.RotProp), this._onRotUpdate.bind(this));
     };
 
     // When a property is removed from the BItem, this is called
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
-        if (pPropertyName === AbilityCamera.CameraIndexProp) {
+        if (pPropertyName === AbCamera.CameraIndexProp) {
             Eventing.Unsubscribe(this._posSubscription);
             Eventing.Unsubscribe(this._rotSubscription);
         };

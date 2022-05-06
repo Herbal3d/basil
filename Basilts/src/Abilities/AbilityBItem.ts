@@ -27,13 +27,13 @@ export enum BItemState {
     SHUTDOWN
 };
 
-export const BItemAbilityName = 'BItem';
+export const AbBItemName = 'BItem';
 
-export function AbilityBItemFromProps(pProps: BKeyedCollection): AbilityBItem {
-    return new AbilityBItem( pProps[AbilityBItem.IdProp], pProps[AbilityBItem.AuthTokenProp], pProps[AbilityBItem.LayerProp]);
+export function AbBItemFromProps(pProps: BKeyedCollection): AbBItem {
+    return new AbBItem( pProps[AbBItem.IdProp], pProps[AbBItem.AuthTokenProp], pProps[AbBItem.LayerProp]);
 };
 
-export class AbilityBItem extends Ability {
+export class AbBItem extends Ability {
     public static IdProp: string = 'id';
     public static LayerProp: string = 'layer';
     public static StateProp: string = 'state';
@@ -68,7 +68,7 @@ export class AbilityBItem extends Ability {
     };
 
     constructor(pId: string, pAuth: AuthToken, pLayer: string) {
-        super(BItemAbilityName);
+        super(AbBItemName);
         this.id = pId ?? CreateUniqueId('BItemConstruct');
         this._auth = pAuth ?? undefined;
         this.layer = pLayer ?? Config.layers.default;
@@ -78,10 +78,10 @@ export class AbilityBItem extends Ability {
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbilityBItem.IdProp, this);
-        pBItem.addProperty(AbilityBItem.LayerProp, this);
-        pBItem.addProperty(AbilityBItem.AuthTokenProp, this, { private: true });
-        pBItem.addProperty(AbilityBItem.StateProp, this);
+        pBItem.addProperty(AbBItem.IdProp, this);
+        pBItem.addProperty(AbBItem.LayerProp, this);
+        pBItem.addProperty(AbBItem.AuthTokenProp, this, { private: true });
+        pBItem.addProperty(AbBItem.StateProp, this);
     };
 
     // When a property is removed from the BItem, this is called

@@ -14,7 +14,7 @@
 import { Config } from '@Base/Config';
 
 import { Ability } from '@Abilities/Ability';
-import { AbilityBItem, BItemState } from '@Abilities/AbilityBItem';
+import { AbBItem, BItemState } from '@Abilities/AbilityBItem';
 import { BItems } from '@BItem/BItems';
 import { Eventing } from '@Eventing/Eventing';
 import { Object3D } from '@Base/Graphics/Object3d';
@@ -61,7 +61,7 @@ export class BItem {
 
     // A utility variable since lots of people do this
     get id(): string {
-        return this.getProp(AbilityBItem.IdProp) as string;
+        return this.getProp(AbBItem.IdProp) as string;
     };
 
     constructor(pId: string, pAuth: AuthToken, pLayer?: string) {
@@ -71,12 +71,12 @@ export class BItem {
         this._propOptions = new Map<string,PropOptions>();
 
         // Add the base properties to this BItem
-        this.addAbility(new AbilityBItem(id, pAuth, pLayer));
+        this.addAbility(new AbBItem(id, pAuth, pLayer));
 
         this._deleteInProgress = false;
 
-        this.setProp(AbilityBItem.IdProp, id);
-        this.setProp(AbilityBItem.StateProp, BItemState.UNINITIALIZED);
+        this.setProp(AbBItem.IdProp, id);
+        this.setProp(AbBItem.StateProp, BItemState.UNINITIALIZED);
 
         // As a side effect, add this BItem to the collection of BItems
         BItems.add(id, this);
@@ -193,7 +193,7 @@ export class BItem {
     };
     // Return the current state of the BItem
     getState(): BItemState {
-        return this.getProp(AbilityBItem.StateProp) as BItemState;
+        return this.getProp(AbBItem.StateProp) as BItemState;
     };
     // Return TRUE if the BItem state is READY
     isReady(): boolean {
@@ -201,19 +201,19 @@ export class BItem {
     };
     // Set the BItem state to READY
     setReady(): void {
-        this.setProp(AbilityBItem.StateProp, BItemState.READY);
+        this.setProp(AbBItem.StateProp, BItemState.READY);
     };
     // Set the BItem state to FAILED
     setFailed(): void {
-        this.setProp(AbilityBItem.StateProp, BItemState.FAILED);
+        this.setProp(AbBItem.StateProp, BItemState.FAILED);
     };
     // Set the BItem state to LOADING
     setLoading(): void {
-        this.setProp(AbilityBItem.StateProp, BItemState.LOADING);
+        this.setProp(AbBItem.StateProp, BItemState.LOADING);
     };
     // Set the BItem state to SHUTDOWN
     setShutdown(): void {
-        this.setProp(AbilityBItem.StateProp, BItemState.SHUTDOWN);
+        this.setProp(AbBItem.StateProp, BItemState.SHUTDOWN);
     };
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.

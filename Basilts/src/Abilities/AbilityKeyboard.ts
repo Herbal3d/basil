@@ -17,16 +17,16 @@ import { BItem, PropValue } from '@BItem/BItem';
 import { BKeyedCollection } from '@Tools/bTypes';
 // import { Logger } from '@Base/Tools/Logging';
 
-export const KeyboardAbilityName = 'Keyboard'
+export const AbKeyboardName = 'Keyboard'
 
 // REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
-export function AbilityKeyboardFromProps(pProps: BKeyedCollection): AbilityKeyboard {
-    return new AbilityKeyboard();
+export function AbKeyboardFromProps(pProps: BKeyedCollection): AbKeyboard {
+    return new AbKeyboard();
 };
 
-export class AbilityKeyboard extends Ability {
+export class AbKeyboard extends Ability {
 
     // When an ability is referenced in BMessage.IProps, these are the types of values passed in the request
     // These string names are the parameter names passed in the BMessage.IProps structure and they
@@ -40,7 +40,7 @@ export class AbilityKeyboard extends Ability {
     public static MetaKeyProp = 'keyMetaKey';
 
     constructor() {
-        super(KeyboardAbilityName);
+        super(AbKeyboardName);
         document.onkeydown = this._onKeyDown.bind(this);
         document.onkeyup = this._onKeyUp.bind(this);
     };
@@ -57,13 +57,13 @@ export class AbilityKeyboard extends Ability {
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbilityKeyboard.KeyDownProp, this);
-        pBItem.addProperty(AbilityKeyboard.KeyNameProp, this);
-        pBItem.addProperty(AbilityKeyboard.KeyRepeatingProp, this);
-        pBItem.addProperty(AbilityKeyboard.AltKeyProp, this);
-        pBItem.addProperty(AbilityKeyboard.CntlKeyProp, this);
-        pBItem.addProperty(AbilityKeyboard.ShiftKeyProp, this);
-        pBItem.addProperty(AbilityKeyboard.MetaKeyProp, this);
+        pBItem.addProperty(AbKeyboard.KeyDownProp, this);
+        pBItem.addProperty(AbKeyboard.KeyNameProp, this);
+        pBItem.addProperty(AbKeyboard.KeyRepeatingProp, this);
+        pBItem.addProperty(AbKeyboard.AltKeyProp, this);
+        pBItem.addProperty(AbKeyboard.CntlKeyProp, this);
+        pBItem.addProperty(AbKeyboard.ShiftKeyProp, this);
+        pBItem.addProperty(AbKeyboard.MetaKeyProp, this);
     };
 
     // When a property is removed from the BItem, this is called
@@ -86,7 +86,7 @@ export class AbilityKeyboard extends Ability {
         this.keyCtrl = pEvent.ctrlKey;
         this.keyMeta = pEvent.metaKey;
         if (pPushEvent) {
-            this.containingBItem.setProp(AbilityKeyboard.KeyDownProp, this.keyDown);
+            this.containingBItem.setProp(AbKeyboard.KeyDownProp, this.keyDown);
         }
 
     }

@@ -13,11 +13,11 @@
 
 import { Ability } from '@Abilities/Ability';
 
-import { AssemblyAbilityName, AbilityAssemblyFromProps } from '@Abilities/AbilityAssembly';
-import { PlacementAbilityName, AbilityPlacementFromProps } from '@Abilities/AbilityPlacement';
-import { CameraAbilityName, AbilityCameraFromProps } from '@Abilities/AbilityCamera';
-import { MouseAbilityName, AbilityMouseFromProps } from '@Abilities/AbilityMouse';
-import { KeyboardAbilityName, AbilityKeyboardFromProps } from '@Abilities/AbilityKeyboard';
+import { AbAssemblyName, AbAssemblyFromProps } from '@Abilities/AbilityAssembly';
+import { AbPlacementName, AbPlacementFromProps } from '@Abilities/AbilityPlacement';
+import { AbCameraName, AbCameraFromProps } from '@Abilities/AbilityCamera';
+import { AbMouseName, AbMouseFromProps } from '@Abilities/AbilityMouse';
+import { AbKeyboardName, AbKeyboardFromProps } from '@Abilities/AbilityKeyboard';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 
@@ -31,13 +31,14 @@ export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
 const _registeredAbilities: Map<string, AbilityFromProps> = new Map<string, AbilityFromProps>()
 
 // All abilities must be registed with the factory before they can be used.
+// This points the ability name to the *FromProps function.
 export function RegisterAllAbilities(): void {
     // RegisterAbility(TEMPLATEAbilityName, AbilityTEMPLATEFromProps);
-    RegisterAbility(AssemblyAbilityName, AbilityAssemblyFromProps);
-    RegisterAbility(PlacementAbilityName, AbilityPlacementFromProps);
-    RegisterAbility(CameraAbilityName, AbilityCameraFromProps);
-    RegisterAbility(MouseAbilityName, AbilityMouseFromProps);
-    RegisterAbility(KeyboardAbilityName, AbilityKeyboardFromProps);
+    RegisterAbility(AbAssemblyName, AbAssemblyFromProps);
+    RegisterAbility(AbPlacementName, AbPlacementFromProps);
+    RegisterAbility(AbCameraName, AbCameraFromProps);
+    RegisterAbility(AbMouseName, AbMouseFromProps);
+    RegisterAbility(AbKeyboardName, AbKeyboardFromProps);
 };
 
 // The abilities are registered so they can be created dynamically by name

@@ -13,7 +13,7 @@
 
 import { BItem } from '@BItem/BItem';
 import { AbilityFactory } from '@Abilities/AbilityManagement';
-import { AbilityBItem } from '@Abilities/AbilityBItem';
+import { AbBItem } from '@Abilities/AbilityBItem';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
@@ -34,17 +34,17 @@ export const BItems = {
     // Throws a string error if there are any problems.
     createFromProps: (pProps: BKeyedCollection): BItem => {
         Logger.debug(`BItems.createFromProps: ${JSONstringify(pProps)}`);
-        const authTokenString = pProps[AbilityBItem.AuthTokenProp] as string;
+        const authTokenString = pProps[AbBItem.AuthTokenProp] as string;
         const authToken = authTokenString ? new AuthToken(authTokenString) : null;
-        const layer = pProps[AbilityBItem.LayerProp] ?? Config.layers.default;
+        const layer = pProps[AbBItem.LayerProp] ?? Config.layers.default;
         const newBItem = new BItem(undefined, authToken, layer);
 
         // Add any Abilities that are asked for
         let err: string;
         try {
             Logger.debug(`BItems.createFromProps: checking for abilities`);
-            if (pProps.hasOwnProperty(AbilityBItem.AbilityProp)) {
-                const abils = pProps[AbilityBItem.AbilityProp];
+            if (pProps.hasOwnProperty(AbBItem.AbilityProp)) {
+                const abils = pProps[AbBItem.AbilityProp];
                 for (const abil of abils) {
                     try {
                         const newAbility = AbilityFactory(abil, pProps);

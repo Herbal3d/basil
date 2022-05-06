@@ -23,14 +23,14 @@ export enum BItemState {
     SHUTDOWN
 };
 
-export const MsgStatsAbilityName = "MsgStats";
+export const AbMsgStatsName = "MsgStats";
 
-export function AbilityMsgStatsFromProps(pProps: BKeyedCollection): AbilityMsgStats {
-    return new AbilityMsgStats();
+export function AbMsgStatsFromProps(pProps: BKeyedCollection): AbMsgStats {
+    return new AbMsgStats();
 };
 
 // Ability that holds messages received and sent count
-export class AbilityMsgStats extends Ability {
+export class AbMsgStats extends Ability {
 
     static MessagesReceivedProp: string = 'messagesReceived';
     static MessagesSentProp: string = 'messagesSent';
@@ -39,15 +39,15 @@ export class AbilityMsgStats extends Ability {
     public messagesReceived: number = 0;
 
     constructor() {
-        super(MsgStatsAbilityName);
+        super(AbMsgStatsName);
     };
 
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
         // Get and Set the number of received messages
-        pBItem.addProperty(AbilityMsgStats.MessagesReceivedProp, this);
-        pBItem.addProperty(AbilityMsgStats.MessagesSentProp, this);
+        pBItem.addProperty(AbMsgStats.MessagesReceivedProp, this);
+        pBItem.addProperty(AbMsgStats.MessagesSentProp, this);
     };
 
     // When a property is removed from the BItem, this is called

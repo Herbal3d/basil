@@ -12,7 +12,7 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { AbilityAssembly } from '@Abilities/AbilityAssembly';
+import { AbAssembly } from '@Abilities/AbilityAssembly';
 import { BItem,  PropValue } from '@BItem/BItem';
 
 import { ParseThreeTuple, ParseFourTuple } from '@Base/Tools/Utilities';
@@ -26,16 +26,16 @@ import { Logger } from '@Base/Tools/Logging';
 //     3d representations. This Ability is the Intance.
 // There are fixes so a single BItem can include both the Assembly and Placement Abilities.
 
-export const PlacementAbilityName = 'Placement';
+export const AbPlacementName = 'Placement';
 
-export function AbilityPlacementFromProps(pProps: BKeyedCollection): AbilityPlacement {
-    const newAbil = new AbilityPlacement(pProps[AbilityPlacement.PosProp],
-                                        pProps[AbilityPlacement.RotProp],
-                                        pProps[AbilityPlacement.ForProp] );
+export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
+    const newAbil = new AbPlacement(pProps[AbPlacement.PosProp],
+                                        pProps[AbPlacement.RotProp],
+                                        pProps[AbPlacement.ForProp] );
     return newAbil;
 };
 
-export class AbilityPlacement extends Ability {
+export class AbPlacement extends Ability {
     static PosProp = 'pos';
     static RotProp = 'rot';
     static ForProp = 'for';
@@ -50,7 +50,7 @@ export class AbilityPlacement extends Ability {
     public set pos(pVal: string | number[]) {
         this._pos = ParseThreeTuple(pVal);
         if (this.containingBItem) {
-            const object3d = this.containingBItem.getProp(AbilityAssembly.AssetRepresentationProp) as Object3D;
+            const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
             if (object3d) {
                 object3d.pos.fromArray(this._pos);
             };
@@ -62,7 +62,7 @@ export class AbilityPlacement extends Ability {
     public set rot(pVal: string | number[]) {
         this._rot = ParseFourTuple(pVal);
         if (this.containingBItem) {
-            const object3d = this.containingBItem.getProp(AbilityAssembly.AssetRepresentationProp) as Object3D;
+            const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
             if (object3d) {
                 object3d.rot.set(this._rot[0], this._rot[1], this._rot[2], this._rot[3]);
             };
@@ -74,7 +74,7 @@ export class AbilityPlacement extends Ability {
     public set for(pVal: number) {
         this._for = pVal;
         if (this.containingBItem) {
-            const object3d = this.containingBItem.getProp(AbilityAssembly.AssetRepresentationProp) as Object3D;
+            const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
             if (object3d) {
                 object3d.for = this._for;
             };
@@ -82,7 +82,7 @@ export class AbilityPlacement extends Ability {
     };
 
     constructor(pPos: string | number[], pRot: string | number[], pFor?: number) {
-        super(PlacementAbilityName);
+        super(AbPlacementName);
         this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
         this._rot = pRot ? ParseFourTuple(pRot) :  [0,0,0,1];
         this._for = pFor ?? 0;
@@ -92,12 +92,12 @@ export class AbilityPlacement extends Ability {
         super.addProperties(pBItem);
         // Get and Set the instance's position in the 3d world.
         // Passed position is normalized into a number array.
-        pBItem.addProperty(AbilityPlacement.PosProp, this);
+        pBItem.addProperty(AbPlacement.PosProp, this);
         // Get and Set the instances' rotation in the 3d world.
         // Passed rotation is normalized into a number array.
-        pBItem.addProperty(AbilityPlacement.RotProp, this);
+        pBItem.addProperty(AbPlacement.RotProp, this);
         // Get and Set the placement frame of reference.
-        pBItem.addProperty(AbilityPlacement.ForProp, this);
+        pBItem.addProperty(AbPlacement.ForProp, this);
     };
 
     // If any of my properties are removed, that means I'm being removed.

@@ -15,7 +15,7 @@ import { CombineParameters, CreateUniqueId } from "@Tools/Utilities";
 import { BKeyedCollection } from '@Tools/bTypes';
 
 import { Logger } from '@Tools/Logging';
-import { AbilityMsgStats } from '@Abilities/AbilityMsgStats';
+import { AbMsgStats } from '@Abilities/AbilityMsgStats';
 
 export class BTransportWS extends BTransport {
   _socket: WebSocket;
@@ -36,7 +36,7 @@ export class BTransportWS extends BTransport {
                 const _this = this;
                 this._socket.onmessage = (event: MessageEvent) => {
                     _this._messages.push(new Uint8Array(event.data).buffer);
-                    this.incrementProp(AbilityMsgStats.MessagesReceivedProp);
+                    this.incrementProp(AbMsgStats.MessagesReceivedProp);
                     _this.PushReception();
                 };
                 this._socket.onopen = (event: Event) => {
@@ -72,7 +72,7 @@ export class BTransportWS extends BTransport {
     Send(pData: ArrayBuffer): boolean {
         if (this._socket) {
             this._socket.send(pData);
-            this.incrementProp(AbilityMsgStats.MessagesSentProp);
+            this.incrementProp(AbMsgStats.MessagesSentProp);
             return true;
         };
         return false;

@@ -136,6 +136,7 @@ export const Config = {
         'eventing': 'eventing.layer.UNIQUEIDBASE',
     },
     'infrastructureBItemNames': {
+        'registration': 'registration.bitem',  // BItem created to contain AbRegistration
         'camera': 'camera.UNIQUEIDBASE',
         'keyboard': '0.keyboard.UNIQUEIDBASE',
         'mouse': '0.mouse.UNIQUEIDBASE'

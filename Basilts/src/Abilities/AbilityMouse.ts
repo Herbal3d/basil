@@ -17,17 +17,17 @@ import { BItem } from '@BItem/BItem';
 import { BKeyedCollection } from '@Tools/bTypes';
 // import { Logger } from '@Base/Tools/Logging';
 
-export const MouseAbilityName = 'Mouse'
+export const AbMouseName = 'Mouse'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
-export function AbilityMouseFromProps(pProps: BKeyedCollection): AbilityMouse {
-    return new AbilityMouse();
+export function AbMouseFromProps(pProps: BKeyedCollection): AbMouse {
+    return new AbMouse();
 };
 
 // Basic pointer as a mouse.
 // Note: only three properties generate change events: PageXYProp, DownProp, and InPageProp.
 // TODO: generalize for working with headsets
-export class AbilityMouse extends Ability {
+export class AbMouse extends Ability {
 
     public static PageXYProp = 'ptrPageXY';
     public static ClientXYProp = 'ptrClientXY';
@@ -42,7 +42,7 @@ export class AbilityMouse extends Ability {
     public static ModeProp = 'ptrMode';
 
     constructor() {
-        super(MouseAbilityName);
+        super(AbMouseName);
         document.onmousemove = this._mouseMove.bind(this);
         document.onmouseup = this._mouseUp.bind(this);
         document.onmousedown = this._mouseDown.bind(this);
@@ -66,17 +66,17 @@ export class AbilityMouse extends Ability {
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbilityMouse.PageXYProp, this);
-        pBItem.addProperty(AbilityMouse.ClientXYProp, this);
-        pBItem.addProperty(AbilityMouse.ClickedProp, this);
-        pBItem.addProperty(AbilityMouse.DownProp, this);
-        pBItem.addProperty(AbilityMouse.ButtonProp, this);
-        pBItem.addProperty(AbilityMouse.InPageProp, this);
-        pBItem.addProperty(AbilityMouse.AltKeyProp, this);
-        pBItem.addProperty(AbilityMouse.CntlKeyProp, this);
-        pBItem.addProperty(AbilityMouse.ShiftKeyProp, this);
-        pBItem.addProperty(AbilityMouse.MetaKeyProp, this);
-        pBItem.addProperty(AbilityMouse.ModeProp, this);
+        pBItem.addProperty(AbMouse.PageXYProp, this);
+        pBItem.addProperty(AbMouse.ClientXYProp, this);
+        pBItem.addProperty(AbMouse.ClickedProp, this);
+        pBItem.addProperty(AbMouse.DownProp, this);
+        pBItem.addProperty(AbMouse.ButtonProp, this);
+        pBItem.addProperty(AbMouse.InPageProp, this);
+        pBItem.addProperty(AbMouse.AltKeyProp, this);
+        pBItem.addProperty(AbMouse.CntlKeyProp, this);
+        pBItem.addProperty(AbMouse.ShiftKeyProp, this);
+        pBItem.addProperty(AbMouse.MetaKeyProp, this);
+        pBItem.addProperty(AbMouse.ModeProp, this);
     };
 
     // When a property is removed from the BItem, this is called
@@ -122,9 +122,9 @@ export class AbilityMouse extends Ability {
         this.ptrPageXY = [ pEvent.pageX, pEvent.pageY ];
         // If update events are to be sent...
         if (pPushUpdate) {
-            this.containingBItem.setProp(AbilityMouse.PageXYProp, this.ptrPageXY);
-            this.containingBItem.setProp(AbilityMouse.DownProp, this.ptrDown);
-            this.containingBItem.setProp(AbilityMouse.InPageProp, this.ptrInPage);
+            this.containingBItem.setProp(AbMouse.PageXYProp, this.ptrPageXY);
+            this.containingBItem.setProp(AbMouse.DownProp, this.ptrDown);
+            this.containingBItem.setProp(AbMouse.InPageProp, this.ptrInPage);
         }
     }
 };

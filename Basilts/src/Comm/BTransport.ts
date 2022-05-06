@@ -14,7 +14,7 @@ import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
-import { AbilityMsgStats } from '@Abilities/AbilityMsgStats';
+import { AbMsgStats } from '@Abilities/AbilityMsgStats';
 import { Config } from '@Base/Config';
 
 export type BTransportMsg = ArrayBuffer;
@@ -32,7 +32,7 @@ export abstract class BTransport extends BItem {
         super(null, null, pLayer ?? Config.layers.comm);
         this._messages = [];
         this._receiveCallback = undefined;
-        this.addAbility(new AbilityMsgStats());
+        this.addAbility(new AbMsgStats());
     };
 
     abstract Start(pParams: BKeyedCollection): Promise<BTransport>;

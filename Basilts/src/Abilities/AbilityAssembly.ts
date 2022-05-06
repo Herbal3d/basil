@@ -21,20 +21,20 @@ import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
 import { Object3D } from '@Graphics/Object3d';
 import { Logger } from '@Base/Tools/Logging';
 
-export const AssemblyAbilityName = 'Assembly';
+export const AbAssemblyName = 'Assembly';
 
 interface AssemblyAfterRequestProps {
-    Ability: AbilityAssembly;
+    Ability: AbAssembly;
     BItem: BItem;
 };
 
-export function AbilityAssemblyFromProps(pProps: BKeyedCollection): AbilityAssembly {
-    return new AbilityAssembly(pProps[AbilityAssembly.AssetUrlProp], pProps[AbilityAssembly.AssetLoaderProp]);
+export function AbAssemblyFromProps(pProps: BKeyedCollection): AbAssembly {
+    return new AbAssembly(pProps[AbAssembly.AssetUrlProp], pProps[AbAssembly.AssetLoaderProp]);
 };
 
 // An "Assembly" is a thing that can be represented or displayed in the world.
 // It can be a mesh, a shader, texture, or anything else that is loaded and used in the world.
-export class AbilityAssembly extends Ability {
+export class AbAssembly extends Ability {
     static AssetUrlProp = 'assetUrl';
     static AssetLoaderProp = 'assetLoader';
     static AssetAuthProp = 'assetAuth';
@@ -44,7 +44,7 @@ export class AbilityAssembly extends Ability {
     public get assetUrl(): PropValue { return this._assetUrl; }
     public set assetUrl(pVal: PropValue) {
         this._assetUrl = pVal;
-        Logger.debug(`AbilityAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
+        Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
         this.containingBItem.setLoading();
         void LoadAssembly(this, this.containingBItem);
     } 
@@ -67,7 +67,7 @@ export class AbilityAssembly extends Ability {
     public assetRepresenation: Object3D;
 
     constructor(pAssetUrl: string, pAssetLoader: string) {
-        super(AssemblyAbilityName);
+        super(AbAssemblyName);
         this._assetUrl = pAssetUrl;
         this.assetLoader = pAssetLoader;
     };
@@ -76,18 +76,18 @@ export class AbilityAssembly extends Ability {
         super.addProperties(pBItem);
 
         // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
-        pBItem.addProperty(AbilityAssembly.AssetUrlProp, this);
-        pBItem.setProp(AbilityAssembly.AssetUrlProp, this._assetUrl);
+        pBItem.addProperty(AbAssembly.AssetUrlProp, this);
+        pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
 
         // Get and Set the AssetLoader needed for the asset
-        pBItem.addProperty(AbilityAssembly.AssetLoaderProp, this);
+        pBItem.addProperty(AbAssembly.AssetLoaderProp, this);
         // Get and Set the Asset's access token
         // Set value can be either an AuthToken or a string (which is wrapped in an AuthToken)
-        pBItem.addProperty(AbilityAssembly.AssetAuthProp, this);
+        pBItem.addProperty(AbAssembly.AssetAuthProp, this);
         // Get the Assembly's graphical representation.
         // Very dependent on the underlying implementation. This is a ThreeJS Object3D
         // All abilities that create in-world representations present this property
-        pBItem.addProperty(AbilityAssembly.AssetRepresentationProp, this, { private: true });
+        pBItem.addProperty(AbAssembly.AssetRepresentationProp, this, { private: true });
     };
 
     // When a property is removed from the BItem, this is called
@@ -99,8 +99,8 @@ export class AbilityAssembly extends Ability {
 // Returns a Promise that loads an assembly given the URL and asset type properties.
 // Will load the asset and set the BItem's state to READY.
 // Promise fails of the asset can't be loaded and the BItem's state is set to FAILED
-export async function LoadAssembly(pAbil: AbilityAssembly, pBItem: BItem): Promise<void> {
-    Logger.debug(`AbilityAssembly: LoadAssembly(${pAbil._assetUrl})`);
+export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<void> {
+    Logger.debug(`AbAssembly: LoadAssembly(${pAbil._assetUrl})`);
 
     const loaderProps: LoadAssetParams = {
         AssetURL: <string>pAbil._assetUrl,
@@ -110,18 +110,18 @@ export async function LoadAssembly(pAbil: AbilityAssembly, pBItem: BItem): Promi
 
     LoadSimpleAsset(loaderProps)
     .then ( loaded => {
-        Logger.debug(`AbilityAssembly: LoadAssembly: successful load`);
+        Logger.debug(`AbAssembly: LoadAssembly: successful load`);
         if (typeof(loaded) === 'undefined') {
-            Logger.error(`AbilityAssembly: LoadAssembly: loaded object is null`);
+            Logger.error(`AbAssembly: LoadAssembly: loaded object is null`);
             pBItem.setFailed();
         }
         else {
-            pAbil.containingBItem.setProp(AbilityAssembly.AssetRepresentationProp, loaded);
+            pAbil.containingBItem.setProp(AbAssembly.AssetRepresentationProp, loaded);
             pBItem.setReady();
         }
     })
     .catch ( err => {
-        Logger.debug(`AbilityAssembly: LoadAssembly: failed load`);
+        Logger.debug(`AbAssembly: LoadAssembly: failed load`);
         pBItem.setFailed();
         throw err;
     });

@@ -17,16 +17,15 @@ import { BItem, PropValue } from '@BItem/BItem';
 import { BKeyedCollection } from '@Tools/bTypes';
 // import { Logger } from '@Base/Tools/Logging';
 
-export const TEMPLATEAbilityName = 'TEMPLATE'
-
+export const AbTEMPLATEName = 'TEMPLATE'
 // REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
-export function AbilityTEMPLATEFromProps(pProps: BKeyedCollection): AbilityTEMPLATE {
-    return new AbilityTEMPLATE(pProps[AbilityTEMPLATE.TwoProp], pProps[AbilityTEMPLATE.OneProp]);
+export function AbTEMPLATEFromProps(pProps: BKeyedCollection): AbTEMPLATE {
+    return new AbTEMPLATE(pProps[AbTEMPLATE.TwoProp], pProps[AbTEMPLATE.OneProp]);
 };
 
-export class AbilityTEMPLATE extends Ability {
+export class AbTEMPLATE extends Ability {
 
     // When an ability is referenced in BMessage.IProps, these are the types of values passed in the request
     // These string names are the parameter names passed in the BMessage.IProps structure and they
@@ -35,7 +34,7 @@ export class AbilityTEMPLATE extends Ability {
     public static TwoProp = 'two';
 
     constructor(pPropertyOne: string, pPropertyTwo: string) {
-        super(TEMPLATEAbilityName);
+        super(AbTEMPLATEName);
         this.one = pPropertyOne;
         this._two = pPropertyTwo;
     };
@@ -56,8 +55,8 @@ export class AbilityTEMPLATE extends Ability {
         // Always do this!!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbilityTEMPLATE.OneProp, this);
-        pBItem.addProperty(AbilityTEMPLATE.TwoProp, this);
+        pBItem.addProperty(AbTEMPLATE.OneProp, this);
+        pBItem.addProperty(AbTEMPLATE.TwoProp, this);
     };
 
     // When a property is removed from the BItem, this is called

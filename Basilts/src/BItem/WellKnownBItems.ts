@@ -13,23 +13,23 @@
 
 
 import { BItem } from '@BItem/BItem';
-import { AbilityCamera } from '@Abilities/AbilityCamera';
-import { AbilityMouse } from '@Abilities/AbilityMouse';
-import { AbilityKeyboard } from '@Abilities/AbilityKeyboard';
-import { AbilityPlacement } from '@Abilities/AbilityPlacement';
+import { AbCamera } from '@Abilities/AbilityCamera';
+import { AbMouse } from '@Abilities/AbilityMouse';
+import { AbKeyboard } from '@Abilities/AbilityKeyboard';
+import { AbPlacement } from '@Abilities/AbilityPlacement';
 
 import { Config } from '@Base/Config';
 
 export function CreateInfrastructureBItems(): void {
     // Primary camera has an instance so it has pos and rot
     const cam = new BItem(Config.infrastructureBItemNames.camera, null);
-    cam.addAbility(new AbilityCamera(0));
-    cam.addAbility(new AbilityPlacement([1,2,3], [0,0,0,1]));
+    cam.addAbility(new AbCamera(0));
+    cam.addAbility(new AbPlacement([1,2,3], [0,0,0,1]));
 
     const mouse = new BItem(Config.infrastructureBItemNames.mouse, null);
-    mouse.addAbility(new AbilityMouse());
+    mouse.addAbility(new AbMouse());
 
     const keyboard = new BItem(Config.infrastructureBItemNames.keyboard, null);
-    keyboard.addAbility(new AbilityKeyboard());
+    keyboard.addAbility(new AbKeyboard());
 };
 
