@@ -11,16 +11,18 @@
 
 'use strict';
 
+import { Config } from '@Base/Config';
+
 import { BItem } from '@BItem/BItem';
 import { AbilityFactory } from '@Abilities/AbilityManagement';
 import { AbBItem } from '@Abilities/AbilityBItem';
+import { AbRegistrationName } from '@Abilities/AbilityReg';
+import { AuthToken } from '@Base/Tools/Auth';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 
 import { Logger } from '@Base/Tools/Logging';
-import { AuthToken } from '@Base/Tools/Auth';
-import { Config } from '@Base/Config';
 
 // Management routines for BItems.
 //    Functions for the creation, storage, and manipulation of BItems
@@ -88,6 +90,21 @@ export const BItems = {
     // Get a BItem by it's ID
     get: (pId: string): BItem => {
         return BItemCollection.get(pId);
+    },
+    // Register the name and BItem.id a well known BItem in the base/registration BItem
+    // After registration, the registration BItem will return a property of pName with
+    //     the value of pBItem.id.
+    registerWellKnownBItem: (pName: string, pBItem: BItem, pRegBItem?: BItem): void => {
+        // Get the registration BItem
+        const regBItem = pRegBItem ?? BItems.get(Config.infrastructureBItemNames.registration);
+        if (regBItem) {
+            // Get the registration ability in that BItem
+            const abilReg = regBItem.getAbility(AbRegistrationName);
+            if (abilReg) {
+                (abilReg as BKeyedCollection)[pName] = pBItem.id;
+                regBItem.addProperty(pName, abilReg);
+            };
+        };
     }
 };
 

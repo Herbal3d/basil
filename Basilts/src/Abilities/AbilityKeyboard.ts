@@ -73,11 +73,11 @@ export class AbKeyboard extends Ability {
 
     _onKeyDown(e: KeyboardEvent) {
         this.keyDown = true;
-        this._copyKeyboardEvent(e);
+        this._copyKeyboardEvent(e, true);
     }
     _onKeyUp(e: KeyboardEvent) {
         this.keyDown = false;
-        this._copyKeyboardEvent(e);
+        this._copyKeyboardEvent(e, true);
     }
     _copyKeyboardEvent(pEvent: KeyboardEvent, pPushEvent?: boolean) {
         this.keyName = pEvent.key;

@@ -180,6 +180,15 @@ export class BItem {
             };
         });
     };
+    // Return the ability instance on this BITem with the passed name
+    getAbility(pAbilityName: string): Ability {
+        this._props.forEach( (abil: Ability, propName: string) => {
+            if (pAbilityName === abil.abilityName) {
+                return abil;
+            }
+        });
+        return null;
+    };
     // When a BItem is being deleted/removed, it is removed from the collection
     //    of BItems and then this function is called to remove it's properties
     //    and otherwise disconnect it from the rest of the system.
