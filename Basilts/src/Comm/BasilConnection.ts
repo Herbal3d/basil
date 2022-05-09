@@ -255,7 +255,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
             case BMessageOps.CreateItemReq: {
                 const resp: BMessage = MakeResponse(pReq, BMessageOps.CreateItemResp);
                 try {
-                    const newBItem = BItems.createFromProps(pReq.IProps);
+                    const newBItem = BItems.createFromProps(pReq.IProps, pConnection);
                     if (newBItem) {
                         resp.IId = newBItem.id;
                         resp.IProps['id'] = newBItem.id;

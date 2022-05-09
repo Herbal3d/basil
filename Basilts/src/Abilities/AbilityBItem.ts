@@ -18,6 +18,7 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Config } from '@Base/Config';
+import { BasilConnection } from '@Base/Comm/BasilConnection';
 
 export enum BItemState {
     UNINITIALIZED = 0,
@@ -30,7 +31,7 @@ export enum BItemState {
 export const AbBItemName = 'BItem';
 
 export function AbBItemFromProps(pProps: BKeyedCollection): AbBItem {
-    return new AbBItem( pProps[AbBItem.IdProp], pProps[AbBItem.AuthTokenProp], pProps[AbBItem.LayerProp]);
+    return new AbBItem(pProps[AbBItem.IdProp], pProps[AbBItem.AuthTokenProp], pProps[AbBItem.LayerProp], undefined);
 };
 
 export class AbBItem extends Ability {
@@ -38,10 +39,12 @@ export class AbBItem extends Ability {
     public static LayerProp: string = 'layer';
     public static StateProp: string = 'state';
     public static AuthTokenProp: string = 'bitemAuthToken';
+    public static CreatingConnection: string = 'creatingConnection';
     public static AbilityProp: string = 'abilities';
 
     public id: string;
     public layer: string;
+
     _auth: AuthToken;
     public get bitemAuthToken(): AuthToken {
         return this._auth;
@@ -54,6 +57,12 @@ export class AbBItem extends Ability {
             this._auth = new AuthToken(<string>pVal);
         };
     };
+
+    _creatingConnection: BasilConnection;
+    public get creatingConnection(): BasilConnection {
+        return this._creatingConnection;
+    };
+
     _state: BItemState;
     public get state(): BItemState {
         return this._state;
@@ -67,12 +76,13 @@ export class AbBItem extends Ability {
         };
     };
 
-    constructor(pId: string, pAuth: AuthToken, pLayer: string) {
+    constructor(pId: string, pAuth: AuthToken, pLayer: string, pConnection?: BasilConnection) {
         super(AbBItemName);
         this.id = pId ?? CreateUniqueId('BItemConstruct');
         this._auth = pAuth ?? undefined;
         this.layer = pLayer ?? Config.layers.default;
         this._state = BItemState.UNINITIALIZED;
+        this._creatingConnection = pConnection;
     };
 
     addProperties(pBItem: BItem): void {
@@ -81,6 +91,7 @@ export class AbBItem extends Ability {
         pBItem.addProperty(AbBItem.IdProp, this);
         pBItem.addProperty(AbBItem.LayerProp, this);
         pBItem.addProperty(AbBItem.AuthTokenProp, this, { private: true });
+        pBItem.addProperty(AbBItem.CreatingConnection, this, { private: true });
         pBItem.addProperty(AbBItem.StateProp, this);
     };
 

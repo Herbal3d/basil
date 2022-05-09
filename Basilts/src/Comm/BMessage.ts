@@ -46,7 +46,8 @@ export enum CoordSystem {
     MARS      = 5,    // Mars coordinates
     REL1      = 6,    // Mutually agreed base coordinates
     REL2      = 7,
-    REL3      = 8
+    REL3      = 8,
+    FOR       = 20    // Frame of Reference. FOR + reference number
 };
 export enum RotationSystem {
     WORLDR    = 0,    // world relative

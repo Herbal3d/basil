@@ -24,6 +24,7 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
+import { BasilConnection } from '@Base/Comm/BasilConnection';
 
 // BItem class is the base of all the items in the system.
 // A BItem get ALL it's functionality fron the Abilities that are added to it.
@@ -64,14 +65,14 @@ export class BItem {
         return this.getProp(AbBItem.IdProp) as string;
     };
 
-    constructor(pId: string, pAuth: AuthToken, pLayer?: string) {
+    constructor(pId: string, pAuth: AuthToken, pLayer?: string, pCreatingConnection?: BasilConnection) {
         const id = pId ?? CreateUniqueId('BItem');
 
         this._props = new Map<string,Ability>();
         this._propOptions = new Map<string,PropOptions>();
 
         // Add the base properties to this BItem
-        this.addAbility(new AbBItem(id, pAuth, pLayer));
+        this.addAbility(new AbBItem(id, pAuth, pLayer, pCreatingConnection));
 
         this._deleteInProgress = false;
 

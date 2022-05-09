@@ -18,6 +18,7 @@ import { AbilityFactory } from '@Abilities/AbilityManagement';
 import { AbBItem } from '@Abilities/AbilityBItem';
 import { AbRegistrationName } from '@Abilities/AbilityReg';
 import { AuthToken } from '@Base/Tools/Auth';
+import { BasilConnection } from '@Base/Comm/BasilConnection';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
@@ -34,12 +35,12 @@ export const BItems = {
     // Create a BItem from a property object.
     // This looks for properties 'BItem*Prop' but any abilities created will look for their own.
     // Throws a string error if there are any problems.
-    createFromProps: (pProps: BKeyedCollection): BItem => {
+    createFromProps: (pProps: BKeyedCollection, pCreatingConnection: BasilConnection): BItem => {
         Logger.debug(`BItems.createFromProps: ${JSONstringify(pProps)}`);
         const authTokenString = pProps[AbBItem.AuthTokenProp] as string;
         const authToken = authTokenString ? new AuthToken(authTokenString) : null;
         const layer = pProps[AbBItem.LayerProp] ?? Config.layers.default;
-        const newBItem = new BItem(undefined, authToken, layer);
+        const newBItem = new BItem(undefined, authToken, layer, pCreatingConnection);
 
         // Add any Abilities that are asked for
         let err: string;
