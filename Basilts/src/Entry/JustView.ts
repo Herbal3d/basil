@@ -17,9 +17,14 @@
 // image to load. The type is one of "unoptimized", "smallasset", or
 // "mergedmaterials". These are actually the names of directories
 // where the actual GLTF file and its sub-files are stored.
+// This results in the URL "${repository}/${baseName}/${version}/${baseName}.gltf".
 
-// If there is a 'd' parameter, the version is not used and the subdir is used
-// as the base directory to find the specified basename ("subdir/basename/basename.gltf").
+// If there is a 'd' parameter, the 'v' type is not used and the subdir is used
+// as the base directory to find the specified basename. This results
+// in the URL "${repository}/${subDir}/${baseName}/${baseName}.gltf".
+
+// This URL is passed to Basil as a test URL to load and display using
+// WWTester.
 
 'use strict';
 
@@ -27,11 +32,11 @@ import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { ConfigGetQueryVariable } from '@Base/Config'
 
 window.onload = (ev: Event) => {
-  CallBasilWithTheFile();
+    CallBasilWithTheFile();
 }
 
 function CallBasilWithTheFile(): void {
-  const repository = 'https://files.misterblue.com/BasilTest/';
+  const repository = 'https://files.misterblue.com/BasilTest/convoar';
 
   const baseName = ConfigGetQueryVariable('b');
   let version = ConfigGetQueryVariable('v');
@@ -40,16 +45,16 @@ function CallBasilWithTheFile(): void {
       version = 'unoptimized';
   };
 
-  let GLTFTOLOAD = `${repository}convoar/testtest88/${version}/testtest88.gltf`;
+  let GLTFTOLOAD = `${repository}/testtest88/${version}/testtest88.gltf`;
 
   if (typeof(subDir) === 'undefined') {
     if (baseName) {
-        GLTFTOLOAD =  `${repository}convoar/${baseName}/${version}/${baseName}.gltf`;
+        GLTFTOLOAD =  `${repository}/${baseName}/${version}/${baseName}.gltf`;
     };
   }
   else {
         // If subDir is specified, the basename is just in that subdir
-        GLTFTOLOAD =  `${repository}convoar/${subDir}/${baseName}/${baseName}.gltf`;
+        GLTFTOLOAD =  `${repository}/${subDir}/${baseName}/${baseName}.gltf`;
   };
 
     const testConfigParams = {
@@ -58,7 +63,7 @@ function CallBasilWithTheFile(): void {
             'transportURL': './wwtester.js',
             'protocol': 'Basil-JSON',
             'service': 'SpaceServer',
-            'serviceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
+            'serviceAuth': RandomIdentifier(),  // authorization key
             'openParams': {
                 'assetURL': GLTFTOLOAD,
                 'loaderType': 'GLTF',

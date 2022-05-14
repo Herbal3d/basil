@@ -12,6 +12,7 @@
 'use strict';
 
 import { Config } from '@Entry/EntryConfig';
+import { VERSION } from '@Base/VERSION';
 
 import { ClickOpLoginOpenSim } from '@Entry/LoginOpenSim';
 
@@ -37,6 +38,10 @@ for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
         };
     });
 };
+
+// Put current Basil version info on the bottom of the window
+const versionTextNode = document.getElementById('BasilVersion');
+versionTextNode.innerText = 'Basil version ' + VERSION['version-tag'];
 
 LoadGridSelection();
 LoadTestURLs();
