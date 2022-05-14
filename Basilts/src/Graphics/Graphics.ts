@@ -51,12 +51,27 @@ export interface RenderInfoEventProps {
         textures: number;
     };
 };
+export enum GraphicStates {
+    Uninitilized = 0,
+    Initializing,
+    Initialized,
+    Rendering,
+    Paused,
+    ShuttingDown,
+    Shutdown,
+}
+export const GraphicsStateEventName = 'Graphics.State';
+export interface GraphicStateEventProps {
+    state: GraphicStates;
+};
 
 export const Graphics = {
     _container: <HTMLElement>undefined,
     _canvas: <HTMLCanvasElement>undefined,
     _engine: <Engine>undefined,
     _scene: <Scene>undefined,
+
+    _graphicsState: GraphicStates.Uninitilized,
 
     // Top of trees for world and camera relative objects
     _groupWorldRel: <TransformNode>undefined,
@@ -82,6 +97,7 @@ export const Graphics = {
 
     connectGraphics(pContainer: HTMLElement, pCanvas: HTMLCanvasElement): void {
         Logger.debug('Graphics: constructor');
+        Graphics.SetGraphicsState(GraphicStates.Initializing);
         Graphics._container = pContainer;
         Graphics._canvas = pCanvas;
 
@@ -118,12 +134,17 @@ export const Graphics = {
         Graphics._generateRendererStatEvents();
         // This is disabled until someone needs it
         // Graphics.eventEachFrame = Eventing.Register('display.eachFrame', 'Graphics');
+        Graphics.SetGraphicsState(GraphicStates.Initialized);
     },
     Start() {
         Logger.debug(`Graphics.Start: Start`);
         Graphics._startRendering();
+        Graphics.SetGraphicsState(GraphicStates.Rendering);
     },
-
+    SetGraphicsState(pState: GraphicStates) {
+        Graphics._graphicsState = pState;
+        void Eventing.Fire(GraphicsStateEventName, { state: pState });
+    },
     _startRendering() {
         if (Graphics._engine) {
             Graphics._engine.runRenderLoop(() => {
