@@ -23,7 +23,7 @@ import { AuthToken } from '@Tools/Auth';
 
 import { CreateUniqueId, ExtractStringError } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
-import { Logger } from '@Base/Tools/Logging';
+import { initLogging, Logger } from '@Base/Tools/Logging';
 import { BasilConnection } from '@Base/Comm/BasilConnection';
 
 // BItem class is the base of all the items in the system.
@@ -55,15 +55,21 @@ export interface setPropEventParams {
 export class BItem {
 
     // The properties that are added by the Abilities
-    _props: Map<string, Ability>;
-    _propOptions: Map<string, PropOptions>;
+    private _props: Map<string, Ability>;
+    private _propOptions: Map<string, PropOptions>;
     // Flag 'true' when the BItem is being deleted
-    _deleteInProgress: boolean;
+    private _deleteInProgress: boolean;
 
     // A utility variable since lots of people do this
-    get id(): string {
+    public get id(): string {
         return this.getProp(AbBItem.IdProp) as string;
     };
+    // This BItem keeps a reference to the Ability that give it the
+    //     BItem properties. This makes for easier reference to same.
+    private _bItemAbility: AbBItem;
+    public get bItemAbility(): AbBItem {
+        return this._bItemAbility;
+    }
 
     constructor(pId: string, pAuth: AuthToken, pLayer?: string, pCreatingConnection?: BasilConnection) {
         const id = pId ?? CreateUniqueId('BItem');
@@ -72,7 +78,8 @@ export class BItem {
         this._propOptions = new Map<string,PropOptions>();
 
         // Add the base properties to this BItem
-        this.addAbility(new AbBItem(id, pAuth, pLayer, pCreatingConnection));
+        this._bItemAbility = new AbBItem(id, pAuth, pLayer, pCreatingConnection);
+        this.addAbility(this._bItemAbility);
 
         this._deleteInProgress = false;
 
@@ -103,7 +110,8 @@ export class BItem {
             // @ts-ignore
             abil[pPropName] = pVal;
             // Tell anyone listening that this property has changed.
-            void Eventing.Fire(this.setPropEventTopicName(pPropName), {
+            // Logger.debug(`BItem.setProp: firing event ${this.getPropEventTopicName(pPropName)}`);
+            void Eventing.Fire(this.getPropEventTopicName(pPropName), {
                 BItem: this,
                 Ability: abil,
                 PropName: pPropName,
@@ -112,7 +120,7 @@ export class BItem {
         };
     };
     // return the topic name of the event generated when a particular property is set
-    setPropEventTopicName(pPropName: string): string {
+    getPropEventTopicName(pPropName: string): string {
         return pPropName + '.' + this.id;
     };
     // Increment the value of a named property
@@ -124,7 +132,7 @@ export class BItem {
             const val = (abil[pPropName] as number) + 1;
             // @ts-ignore
             abil[pPropName] = val;
-            void Eventing.Fire(this.setPropEventTopicName(pPropName), {
+            void Eventing.Fire(this.getPropEventTopicName(pPropName), {
                 BItem: this,
                 Ability: abil,
                 PropName: pPropName,

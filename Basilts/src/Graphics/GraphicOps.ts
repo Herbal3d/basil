@@ -13,7 +13,8 @@
 
 import { Config, LightingParameters } from '@Base/Config';
 
-import { Mesh, ISceneLoaderProgressEvent, ContainerAssetTask } from '@babylonjs/core';
+import { Mesh, ISceneLoaderProgressEvent } from '@babylonjs/core';
+import { KeyboardEventTypes, KeyboardInfo } from '@babylonjs/core';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import '@babylonjs/loaders/OBJ';
@@ -121,4 +122,20 @@ export function AddTestObject() {
     const cube = Mesh.CreateBox('box1', 1, Graphics._scene);
     cube.position = BJSVector3.FromArray(Config.webgl.camera.initialCameraLookAt);
     Logger.debug(`Graphics: added test cube at ${Config.webgl.camera.initialCameraLookAt}`);
+};
+
+// Set up a function to receive keyboard events
+// Note that only one process can set this event handles.
+export type KeyboardEventHandler = (pEvent: KeyboardEvent, pDown: boolean) => void;
+let _keyboardEventHandler: KeyboardEventHandler = undefined;
+export function SetKeyboardEventHandler(pHandler: KeyboardEventHandler) {
+    _keyboardEventHandler = pHandler;
+    Graphics._scene.onKeyboardObservable.add((pEvent: KeyboardInfo) => {
+        if (typeof(_keyboardEventHandler) !== 'undefined') {
+            if (pEvent.type === KeyboardEventTypes.KEYDOWN
+                    || pEvent.type === KeyboardEventTypes.KEYUP) {
+                _keyboardEventHandler(pEvent.event, pEvent.type === KeyboardEventTypes.KEYDOWN);
+            };
+        };
+    });
 };

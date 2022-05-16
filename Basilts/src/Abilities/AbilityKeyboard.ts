@@ -12,20 +12,23 @@
 'use strict';
 
 import { Ability } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { Eventing } from '@Base/Eventing/Eventing';
+import { GraphicsStateEventName, GraphicStateEventProps, GraphicStates } from '@Base/Graphics/Graphics';
+import { SetKeyboardEventHandler } from '@Base/Graphics/GraphicOps';
+import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-// import { Logger } from '@Base/Tools/Logging';
+import { Logger } from '@Base/Tools/Logging';
 
 export const AbKeyboardName = 'Keyboard'
-
-// REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbKeyboardFromProps(pProps: BKeyedCollection): AbKeyboard {
     return new AbKeyboard();
 };
 
+// Ability that interfaces to the keyboard.
+// Subscribe to events from KeyDownProp to get all changes in keyboard state.
 export class AbKeyboard extends Ability {
 
     // When an ability is referenced in BMessage.IProps, these are the types of values passed in the request
@@ -41,8 +44,6 @@ export class AbKeyboard extends Ability {
 
     constructor() {
         super(AbKeyboardName);
-        document.onkeydown = this._onKeyDown.bind(this);
-        document.onkeyup = this._onKeyUp.bind(this);
     };
 
     public keyDown: boolean = false;
@@ -64,30 +65,30 @@ export class AbKeyboard extends Ability {
         pBItem.addProperty(AbKeyboard.CntlKeyProp, this);
         pBItem.addProperty(AbKeyboard.ShiftKeyProp, this);
         pBItem.addProperty(AbKeyboard.MetaKeyProp, this);
+
+        // Have to wait until the graphics system is initialized before there is a scene to watch
+        Eventing.Subscribe(GraphicsStateEventName, (pEvent: GraphicStateEventProps) => {
+            if (pEvent.state === GraphicStates.Initialized) {   
+                SetKeyboardEventHandler(this._onKeyEvent.bind(this));
+                // Logger.debug('AbKeyboard: Added keyboard event handler');
+            };
+        });
     };
 
     // When a property is removed from the BItem, this is called
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        // When being removed, remove the event handler
+        SetKeyboardEventHandler(undefined);
         return;
     };
 
-    _onKeyDown(e: KeyboardEvent) {
-        this.keyDown = true;
-        this._copyKeyboardEvent(e, true);
-    }
-    _onKeyUp(e: KeyboardEvent) {
-        this.keyDown = false;
-        this._copyKeyboardEvent(e, true);
-    }
-    _copyKeyboardEvent(pEvent: KeyboardEvent, pPushEvent?: boolean) {
+    _onKeyEvent(pEvent: KeyboardEvent, pDown: boolean) {
+        this.keyDown = pDown;
         this.keyName = pEvent.key;
         this.keyAlt = pEvent.altKey;
         this.keyShift = pEvent.shiftKey;
         this.keyCtrl = pEvent.ctrlKey;
         this.keyMeta = pEvent.metaKey;
-        if (pPushEvent) {
-            this.containingBItem.setProp(AbKeyboard.KeyDownProp, this.keyDown);
-        }
-
+        this.containingBItem.setProp(AbKeyboard.KeyDownProp, this.keyDown);
     }
 };

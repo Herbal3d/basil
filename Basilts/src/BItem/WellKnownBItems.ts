@@ -12,15 +12,20 @@
 'use strict';
 
 
+import { Config } from '@Base/Config';
+
 import { BItem } from '@BItem/BItem';
+import { BItems } from './BItems';
+
 import { AbCamera } from '@Abilities/AbilityCamera';
 import { AbMouse } from '@Abilities/AbilityMouse';
 import { AbKeyboard } from '@Abilities/AbilityKeyboard';
 import { AbPlacement } from '@Abilities/AbilityPlacement';
-
-import { Config } from '@Base/Config';
 import { AbRegistration } from '@Abilities/AbilityReg';
-import { BItems } from './BItems';
+
+export const WellKnownCameraName = 'Camera';
+export const WellKnownMouseName = 'Mouse';
+export const WellKnownKeyboardName = 'Keyboard';
 
 export function CreateInfrastructureBItems(): void {
     const baseBItem = new BItem(Config.infrastructureBItemNames.registration, null);
@@ -30,14 +35,14 @@ export function CreateInfrastructureBItems(): void {
     const cam = new BItem(Config.infrastructureBItemNames.camera, null);
     cam.addAbility(new AbCamera(0));
     cam.addAbility(new AbPlacement([1,2,3], [0,0,0,1]));
-    BItems.registerWellKnownBItem('Camera', cam, baseBItem);
+    BItems.registerWellKnownBItem(WellKnownCameraName, cam, baseBItem);
 
     const mouse = new BItem(Config.infrastructureBItemNames.mouse, null);
     mouse.addAbility(new AbMouse());
-    BItems.registerWellKnownBItem('Mouse', mouse, baseBItem);
+    BItems.registerWellKnownBItem(WellKnownMouseName, baseBItem);
 
     const keyboard = new BItem(Config.infrastructureBItemNames.keyboard, null);
     keyboard.addAbility(new AbKeyboard());
-    BItems.registerWellKnownBItem('Keyboard', keyboard, baseBItem);
+    BItems.registerWellKnownBItem(WellKnownKeyboardName, keyboard, baseBItem);
 };
 

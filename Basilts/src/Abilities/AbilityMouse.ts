@@ -25,7 +25,8 @@ export function AbMouseFromProps(pProps: BKeyedCollection): AbMouse {
 };
 
 // Basic pointer as a mouse.
-// Note: only three properties generate change events: PageXYProp, DownProp, and InPageProp.
+// Note: only one property generates change events: DownProp. For mouse events,
+//    subscribe to that one and check the other properties to see if they changed.
 // TODO: generalize for working with headsets
 export class AbMouse extends Ability {
 
@@ -122,9 +123,7 @@ export class AbMouse extends Ability {
         this.ptrPageXY = [ pEvent.pageX, pEvent.pageY ];
         // If update events are to be sent...
         if (pPushUpdate) {
-            this.containingBItem.setProp(AbMouse.PageXYProp, this.ptrPageXY);
             this.containingBItem.setProp(AbMouse.DownProp, this.ptrDown);
-            this.containingBItem.setProp(AbMouse.InPageProp, this.ptrInPage);
         }
     }
 };

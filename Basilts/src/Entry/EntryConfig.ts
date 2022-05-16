@@ -24,10 +24,10 @@ export const Config = {
     },
     // Names for predefined/service BItem layers
     'layers': {
-        'default': 'org.herbal3d.b.layers.default',
-        'comm': 'org.herbal3d.b.layers.comm',
-        'service': 'org.herbal3d.b.layers.service',
-        'eventing': 'org.herbal3d.b.layers.eventing'
+        'default': 'd.layer.entry',
+        'comm': 'comm.layer.entry',
+        'service': 'service.layer.entry',
+        'eventing': 'eventing.leyer.entry'
     },
     // Various flags that turn on/off debug logging, etc
     'Debug': {

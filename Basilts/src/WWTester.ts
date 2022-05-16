@@ -13,6 +13,8 @@
 
 import { GlobalReady } from '@Base/Globals';
 
+import { Config, initConfig } from '@Base/Config';
+
 import { WWConfig } from '@Base/WWTester.Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
@@ -31,6 +33,8 @@ import { Logger, AddLogOutputter } from '@Tools/Logging';
 // TypeScript issue https://github.com/microsoft/TypeScript/issues/41628
 // @ts-ignore
 GlobalReady = false;
+
+initConfig();
 
 let _basilClient: BasilConnection;
 let _aliveIntervalID: NodeJS.Timer;

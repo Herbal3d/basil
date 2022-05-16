@@ -106,7 +106,7 @@ export const BItems = {
                 regBItem.addProperty(pName, abilReg);
             };
         };
-    }
+    },
 };
 
 

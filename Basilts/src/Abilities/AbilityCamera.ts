@@ -60,8 +60,8 @@ export class AbCamera extends Ability {
         pBItem.addProperty(AbCamera.CameraIndexProp, this);
         pBItem.addProperty(AbCamera.CameraModeProp, this);
 
-        this._posSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbPlacement.PosProp), this._onPosUpdate.bind(this));
-        this._rotSubscription = Eventing.Subscribe(pBItem.setPropEventTopicName(AbPlacement.RotProp), this._onRotUpdate.bind(this));
+        this._posSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.PosProp), this._onPosUpdate.bind(this));
+        this._rotSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.RotProp), this._onRotUpdate.bind(this));
     };
 
     // When a property is removed from the BItem, this is called

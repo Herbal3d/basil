@@ -45,7 +45,7 @@ export class AbBItem extends Ability {
     public id: string;
     public layer: string;
 
-    _auth: AuthToken;
+    private _auth: AuthToken;
     public get bitemAuthToken(): AuthToken {
         return this._auth;
     };
@@ -58,12 +58,12 @@ export class AbBItem extends Ability {
         };
     };
 
-    _creatingConnection: BasilConnection;
+    private _creatingConnection: BasilConnection;
     public get creatingConnection(): BasilConnection {
         return this._creatingConnection;
     };
 
-    _state: BItemState;
+    private _state: BItemState;
     public get state(): BItemState {
         return this._state;
     }

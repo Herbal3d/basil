@@ -18,6 +18,7 @@ import { AbPlacementName, AbPlacementFromProps } from '@Abilities/AbilityPlaceme
 import { AbCameraName, AbCameraFromProps } from '@Abilities/AbilityCamera';
 import { AbMouseName, AbMouseFromProps } from '@Abilities/AbilityMouse';
 import { AbKeyboardName, AbKeyboardFromProps } from '@Abilities/AbilityKeyboard';
+import { AbOSAvaMoveName, AbOSAvaMoveFromProps } from './AbilityOSAvaMove';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 
@@ -39,6 +40,7 @@ export function RegisterAllAbilities(): void {
     RegisterAbility(AbCameraName, AbCameraFromProps);
     RegisterAbility(AbMouseName, AbMouseFromProps);
     RegisterAbility(AbKeyboardName, AbKeyboardFromProps);
+    RegisterAbility(AbOSAvaMoveName, AbOSAvaMoveFromProps);
 };
 
 // The abilities are registered so they can be created dynamically by name

@@ -34,12 +34,15 @@ import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { initLogging, Logger } from '@Tools/Logging';
 
-// Setup logging so progress and errors will be seen
 initConfig();
-initLogging();
+initLogging();      // Setup logging so progress and errors will be seen
 Eventing.init();
 UI.init();
+
+// Create BItems that coorespond to the input and output devices, etc
 CreateInfrastructureBItems();
+
+// Register the abilities in the ability factory
 RegisterAllAbilities();
 
 // Called with communication configuration parameters in the URL.
