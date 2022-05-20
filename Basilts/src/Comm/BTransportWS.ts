@@ -29,12 +29,13 @@ export class BTransportWS extends BTransport {
     async Start(pParams: BKeyedCollection): Promise<BTransport> {
         this.setLoading();
         try {
-            this._socket = new WebSocket(this._params.transporturl);
+            this._socket = new WebSocket(this._params.transporturl as string);
             if (this._socket) {
                 // Logger.debug(`BTransportWS: have socket for ${this._params.transporturl}`);
                 this._socket.binaryType = 'arraybuffer';
                 const _this = this;
-                this._socket.onmessage = (event: MessageEvent) => {
+                this._socket.onmessage = (event: MessageEvent<any>) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     _this._messages.push(new Uint8Array(event.data).buffer);
                     this.incrementProp(AbMsgStats.MessagesReceivedProp);
                     _this.PushReception();

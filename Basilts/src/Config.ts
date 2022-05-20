@@ -104,7 +104,14 @@ export const Config = {
                     'audioEngine': true,    // initialize the audio system also
                 },
                 'sceneOptions': {
-                }
+                },
+                'optimizations': {     // optimizations for the BabylonJS engine
+                    'enable': true,
+                    'moderate': true,   // only one of moderate or aggressive
+                    'aggressive': false
+                },
+                // This is needed because of how Babylon interprets the vertex buffers
+                'rebuildBoundingBoxes': true
             },
             'ThreeJS': {
                 // Parameters passed to the renderer when created.
@@ -180,7 +187,9 @@ export const Config = {
         'MakeConnectionDetail': false,  // output detailed info when processing MakeConnection
         'SentMsg': true,                // output detailed message when message received
         'RPCSent': true,                // print sent RPC message
-        'RPCResponse': true             // print RPC response message
+        'RPCResponse': true,            // print RPC response message
+
+        'ShowBoundingBox': false         // show bounding box items loaded into scene
     }
 };
 
@@ -253,7 +262,7 @@ function configSub(pConfig: KeyedCollection, pFind: string, pSub: string): void 
     const regExp = new RegExp(pFind, 'g');
     Object.keys(pConfig).forEach((key: string) => {
         if (typeof(pConfig[key]) === 'object') {
-            configSub(pConfig[key], pFind, pSub);
+            configSub(pConfig[key] as KeyedCollection, pFind, pSub);
         }
         else if (typeof(pConfig[key]) === 'string') {
             pConfig[key] = (pConfig[key] as string).replace(regExp, pSub);

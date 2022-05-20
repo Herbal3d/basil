@@ -16,7 +16,8 @@ import { Config, LightingParameters, CameraParameters } from '@Base/Config';
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { Engine, Scene, TargetCamera, Node, TransformNode,
         Light, DirectionalLight, HemisphericLight,
-        ShadowGenerator, SceneInstrumentation, AbstractMesh } from "@babylonjs/core";
+        ShadowGenerator, SceneInstrumentation, AbstractMesh,
+        SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
 import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
@@ -31,12 +32,14 @@ import { Logger } from '@Tools/Logging';
 
 // The camera generates periodic events. This is the parameter block
 //    returned with the event.
+export const CameraInfoEventTopic = 'Graphics.CameraInfo';
 export interface CameraInfoEventProps {
     position: number[];
     rotation: number[];
 };
 // The renderer generates periodic events. This is the parameter block
 //    returned with the event.
+export const RenderInfoEventTopic = 'Graphics.RenderInfo';
 export interface RenderInfoEventProps {
     fps: number;
     render: {
@@ -129,6 +132,9 @@ export const Graphics = {
         Graphics._groupWorldRel = new TransformNode('GroupWorldRel' + Config.basil.UniqueIdBase, Graphics._scene);
         Graphics._groupCameraRel = new TransformNode('GroupCameraRel' + Config.basil.UniqueIdBase, Graphics._scene);
 
+        // BabylonJS has an optimizer
+        Graphics._makeOptimizations();
+
         // Graphics generate a bunch of events so people can display stuff
         Graphics._generateCameraEvents();
         Graphics._generateRendererStatEvents();
@@ -180,12 +186,12 @@ export const Graphics = {
         }
 
         // Set the parameter default values if not specified in the config file
-        const parms = <CameraParameters>CombineParameters(Config.webgl.camera, passedParms, {
+        const parms = <CameraParameters><unknown>CombineParameters(Config.webgl.camera, passedParms, {
             name: 'cameraX',
             camtype: 'arcRotateCamera',
             initialViewDistance: 10,
             initialCameraPosition: [200, 50, 200],
-            initialCameraLookAt: [ 0, 0, 0]
+            initialCameraLookAt: [0, 0, 0]
         });
 
         const initialCameraPosition = BJSVector3.FromArray(parms.initialCameraPosition);
@@ -219,7 +225,7 @@ export const Graphics = {
     },
 
     _initializeLights(passedParms?: BKeyedCollection) {
-        const parms = <LightingParameters>CombineParameters(Config.webgl.lights, passedParms, undefined);
+        const parms = <LightingParameters><unknown>CombineParameters(Config.webgl.lights, passedParms, undefined);
         if (parms.ambient) {
             const ambient = new HemisphericLight(parms.ambient.name, new BJSVector3(0,1,0), Graphics._scene);
             ambient.intensity = parms.ambient.intensity;
@@ -255,10 +261,25 @@ export const Graphics = {
 
             if (parms.enable) {
                 Graphics._scene.fogMode = Scene.FOGMODE_EXP2;
-                Graphics._scene.fogColor = Graphics._colorFromValue(parms.color);
-                Graphics._scene.fogDensity = parms.density;
+                Graphics._scene.fogColor = Graphics._colorFromValue(parms.color as string);
+                Graphics._scene.fogDensity = parms.density as number;
             }
         };
+    },
+
+    _makeOptimizations() {
+        if (Config.webgl.renderer.BabylonJS.optimizations.enable) {
+            let opOptions = new SceneOptimizerOptions();
+            if (Config.webgl.renderer.BabylonJS.optimizations.moderate) {
+                opOptions = SceneOptimizerOptions.ModerateDegradationAllowed();
+            }
+            else {
+                if (Config.webgl.renderer.BabylonJS.optimizations.aggressive) {
+                    opOptions = SceneOptimizerOptions.HighDegradationAllowed();
+                }
+            }
+            SceneOptimizer.OptimizeAsync(Graphics._scene, opOptions);
+        }
     },
 
     // Return a ThreeJS color number from an array of color values
@@ -275,7 +296,7 @@ export const Graphics = {
 
     // Generate subscribable periodic when camera info (position) changes
     _generateCameraEvents() {
-        Graphics._eventCameraInfo = Eventing.Register('display.cameraInfo', 'Graphics');
+        Graphics._eventCameraInfo = Eventing.Register(CameraInfoEventTopic, 'Graphics');
         Graphics._eventCameraInfoTimer = Eventing.CreateTimedEventProcessor( Graphics._eventCameraInfo,
             (topic) => {
                 if (Graphics._eventCameraInfo.hasSubscriptions) {
@@ -294,7 +315,7 @@ export const Graphics = {
                             'position': pos,
                             'rotation': rot 
                         };
-                        void Graphics._eventCameraInfo.fire(camInfo);
+                        void Graphics._eventCameraInfo.fire(camInfo as unknown as BKeyedCollection);
                         Graphics._prevCamPosition = newPos;
                     };
                 };
@@ -305,7 +326,7 @@ export const Graphics = {
     // Start the generation of renderer statistic events
     _generateRendererStatEvents() {
         // Generate subscribable periodic events when display info changes
-        Graphics._eventDisplayInfo = Eventing.Register('display.info', 'Graphics');
+        Graphics._eventDisplayInfo = Eventing.Register(RenderInfoEventTopic, 'Graphics');
         Graphics._eventDisplayInfoTimer = Eventing.CreateTimedEventProcessor(Graphics._eventDisplayInfo,
             (topic) => {
                 if (Graphics._eventDisplayInfo.hasSubscriptions) {
@@ -313,8 +334,8 @@ export const Graphics = {
                     const dispInfo = {
                         fps: Graphics._engine.getFps(),
                         render: {
-                            calls: Graphics._engine._drawCalls,
-                            triangles: Graphics._scene.totalVerticesPerfCounter.current / 3,
+                            calls: Graphics._engine._drawCalls.current,
+                            triangles: Math.round(Graphics._scene.totalVerticesPerfCounter.current / 3),
                             points: Graphics._scene.totalVerticesPerfCounter.current,
                             lines: 13,
                             frame: Graphics.frameNum

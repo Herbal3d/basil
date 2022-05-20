@@ -82,7 +82,8 @@ try {
     Comm.MakeConnection(params)
     .then ( conn => {
         Logger.debug(`MakeConnection complete`);
-        conn.SubscribeToMessageOp('OpenSession', ( pProps: BasilConnectionEventParams, pTopic: string) => {
+        // @ts-ignore
+        conn.SubscribeToMessageOp('OpenSession', (pProps: BasilConnectionEventParams, pTopic: string) => {
             Logger.debug(`OpenSession received`);
             if (pProps.request.IProps.testAssetURL) {
                 const assetURL = pProps.request.IProps['testAssetURL'] as string;

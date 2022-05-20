@@ -116,6 +116,10 @@ export const Config = {
             'Selected': true
         },
         {
+            'URL': 'https://files.misterblue.com/BasilTest/convoar/testtest1/unoptimized/testtest1.gltf',
+            'Description': 'Testtest1 (unoptimized)',
+        },
+        {
             'URL': 'https://files.misterblue.com/BasilTest/convoar/PalmyraTemple/unoptimized/PalmyraTemple.gltf',
             'Description': 'PalmyraTemple (unoptimized)'
         }

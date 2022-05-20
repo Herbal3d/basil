@@ -18,7 +18,7 @@
 // An object that is used as a keyed collection of objects.
 // The key is always a string
 export interface BKeyedCollection {
-  [ key: string]: any
+  [ key: string]: unknown
 };
 export interface BKeyValue {
   [ key: string]: string

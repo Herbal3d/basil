@@ -232,6 +232,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
     .catch (err => {
         Logger.info('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
         console.log('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         failureCallback(err);
     });
 }

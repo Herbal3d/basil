@@ -18,7 +18,7 @@ import { Eventing } from '@Eventing/Eventing';
 import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 import { BVector3, BVector4 } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
-import { CameraInfoEventProps, RenderInfoEventProps } from '@Base/Graphics/Graphics';
+import { CameraInfoEventTopic, CameraInfoEventProps, RenderInfoEventTopic, RenderInfoEventProps } from '@Base/Graphics/Graphics';
 import { JSONstringify } from './Utilities';
 
 type ClickOperation = ( pTarget: EventTarget ) => void;
@@ -205,7 +205,8 @@ let _infoCameraCoord: UI_Coord;
 function cameraPositionUpdate() {
     _infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
     if (_infoCameraCoord) {
-        _eventCameraInfo = Eventing.Subscribe('display.cameraInfo', (camInfo: CameraInfoEventProps) => {
+        // @ts-ignore
+        _eventCameraInfo = Eventing.Subscribe(CameraInfoEventTopic, (camInfo: CameraInfoEventProps) => {
             if (camInfo && camInfo.position && _infoCameraCoord) {
                 _infoCameraCoord.Update(camInfo.position);
             };
@@ -232,7 +233,8 @@ function renderStatsUpdate() {
     _infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
     _infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
     if (_infoDrawCalls) {
-        _eventDisplayInfo = Eventing.Subscribe('display.info', (info: RenderInfoEventProps) => {
+        // @ts-ignore
+        _eventDisplayInfo = Eventing.Subscribe(RenderInfoEventTopic, (info: RenderInfoEventProps) => {
             if (info && info.render && _infoDrawCalls) {
                 _infoFPS.Update(Math.round(info.fps));
                 _infoDrawCalls.Update(info.render.calls);

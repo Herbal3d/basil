@@ -17,14 +17,26 @@ import { AbPlacement } from '@Abilities/AbilityPlacement';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Eventing } from '@Eventing/Eventing';
-import { SubscriptionEntry } from '@Eventing/SubscriptionEntry';
-// import { Logger } from '@Base/Tools/Logging';
+import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
+import { Logger } from '@Base/Tools/Logging';
 
 export const AbCameraName = 'Camera'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbCameraFromProps(pProps: BKeyedCollection): AbCamera {
-    return new AbCamera(pProps[AbCamera.CameraIndexProp]);
+    if (pProps.hasOwnProperty(AbCamera.CameraIndexProp)) {
+        let camIndex = 0;
+        if (typeof pProps[AbCamera.CameraIndexProp] === 'string') {
+            camIndex = parseInt(pProps[AbCamera.CameraIndexProp] as string);
+        }
+        else {
+            if (typeof pProps[AbCamera.CameraIndexProp] === 'number') {
+                camIndex = pProps[AbCamera.CameraIndexProp] as number;
+            }
+        }
+        return new AbCamera(camIndex);
+    }
+    Logger.error(`AbCameraFromProps: Missing required properties for ${AbCameraName}. pProps: ${JSON.stringify(pProps)}`);
 };
 
 export enum CameraModes {
@@ -60,8 +72,10 @@ export class AbCamera extends Ability {
         pBItem.addProperty(AbCamera.CameraIndexProp, this);
         pBItem.addProperty(AbCamera.CameraModeProp, this);
 
-        this._posSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.PosProp), this._onPosUpdate.bind(this));
-        this._rotSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.RotProp), this._onRotUpdate.bind(this));
+        this._posSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.PosProp),
+                    this._onPosUpdate.bind(this) as EventProcessor);
+        this._rotSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.RotProp),
+                    this._onRotUpdate.bind(this) as EventProcessor);
     };
 
     // When a property is removed from the BItem, this is called

@@ -1,6 +1,6 @@
 {
     "name": "basilviewer",
-    "version": "2.3.2",
+    "version": "2.3.3",
     "description": "Browser based virtual world viewer. Part of Herbal3D.",
     "keywords": [],
     "author": {
@@ -47,24 +47,21 @@
         "production:wwtester": "webpack --config webpack.wwtester.config.js"
     },
     "dependencies": {
-        "@babylonjs/core": "^4.2.2",
-        "@babylonjs/loaders": "^4.2.2",
+        "@babylonjs/core": "^5.7.0",
+        "@babylonjs/loaders": "^5.7.0",
         "@types/js-base64": "^3.3.1",
-        "deepmerge": "^4.2.2",
-        "js-base64": "^2.5.2",
-        "long": "^4.0.0",
-        "npm": "^6.14.15"
+        "npm": "^8.10.0"
     },
     "devDependencies": {
-        "@types/node": "^17.0.21",
-        "@types/uuid": "^8.3.3",
-        "@typescript-eslint/eslint-plugin": "^4.33.0",
-        "@typescript-eslint/parser": "^4.33.0",
+        "@types/node": "^17.0.35",
+        "@types/uuid": "^8.3.4",
+        "@typescript-eslint/eslint-plugin": "^5.25.0",
+        "@typescript-eslint/parser": "^5.25.0",
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^1.0.1",
-        "eslint": "^7.32.0",
-        "eslint-config-airbnb-base": "^14.2.1",
-        "eslint-plugin-import": "^2.25.3",
+        "eslint": "^8.15.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-promise": "^4.3.1",
         "html-webpack-plugin": "^3.2.0",
         "less": "^3.11.1",
@@ -72,13 +69,13 @@
         "mini-css-extract-plugin": "^0.4.5",
         "npm-run-all": "^4.1.5",
         "style-loader": "^0.19.1",
-        "ts-loader": "^8.3.0",
-        "typescript": "^4.5.4",
+        "ts-loader": "^8.4.0",
+        "typescript": "^4.6.4",
         "webpack": "^4.42.1",
         "webpack-cli": "^3.3.11"
     },
     "engines": {
-        "node": ">14.17.3",
-        "npm": ">6.14.13"
+        "node": ">14.16.3",
+        "npm": ">8.9.0"
     }
 }

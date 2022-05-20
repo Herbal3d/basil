@@ -14,7 +14,7 @@
 import { BKeyedCollection } from '@Tools/bTypes';
 
 export type TopicName = string;
-export type EventProcessor = (pParams: BKeyedCollection, pTopic: TopicName, pExtraParams: any) => void;
+export type EventProcessor = (pParams: BKeyedCollection, pTopic?: TopicName, pExtraParams?: any) => void;
 // ===========================================
 // One subscription
 // Subscriptions are created with a unique ID so individual subscriptions can be

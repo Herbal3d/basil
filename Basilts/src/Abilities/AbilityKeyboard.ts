@@ -14,11 +14,12 @@
 import { Ability } from '@Abilities/Ability';
 import { Eventing } from '@Base/Eventing/Eventing';
 import { GraphicsStateEventName, GraphicStateEventProps, GraphicStates } from '@Base/Graphics/Graphics';
-import { SetKeyboardEventHandler } from '@Base/Graphics/GraphicOps';
+import { KeyboardEventHandler, SetKeyboardEventHandler } from '@Base/Graphics/GraphicOps';
 import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
+import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
 
 export const AbKeyboardName = 'Keyboard'
 
@@ -67,12 +68,12 @@ export class AbKeyboard extends Ability {
         pBItem.addProperty(AbKeyboard.MetaKeyProp, this);
 
         // Have to wait until the graphics system is initialized before there is a scene to watch
-        Eventing.Subscribe(GraphicsStateEventName, (pEvent: GraphicStateEventProps) => {
-            if (pEvent.state === GraphicStates.Initialized) {   
-                SetKeyboardEventHandler(this._onKeyEvent.bind(this));
-                // Logger.debug('AbKeyboard: Added keyboard event handler');
-            };
-        });
+        Eventing.Subscribe(GraphicsStateEventName, this._onGraphicsReady.bind(this) as EventProcessor);
+    };
+    _onGraphicsReady(pEvent: GraphicStateEventProps): void {
+        if (pEvent.state === GraphicStates.Initialized) {   
+            SetKeyboardEventHandler(this._onKeyEvent.bind(this) as KeyboardEventHandler);
+        };
     };
 
     // When a property is removed from the BItem, this is called
@@ -82,7 +83,7 @@ export class AbKeyboard extends Ability {
         return;
     };
 
-    _onKeyEvent(pEvent: KeyboardEvent, pDown: boolean) {
+    _onKeyEvent(pEvent: KeyboardEvent, pDown: boolean): void {
         this.keyDown = pDown;
         this.keyName = pEvent.key;
         this.keyAlt = pEvent.altKey;

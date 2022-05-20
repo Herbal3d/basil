@@ -71,6 +71,7 @@ if (IsNotNullOrEmpty(configParams)) {
             // Could do this assign but then the caller could change any configuration param.
             // Only the 'initialMakeConnection' parameter is passed in for more security.
             // deepmerge(Config, newParams);    // property merge of unpacked into Config
+            // @ts-ignore
             Config.initialMakeConnection = newParams['Init'];
 
             // There are additional sections that might be passed depending on system logging in
@@ -96,7 +97,7 @@ if (IsNotNullOrEmpty(configParams)) {
 };
 
 // DEBUG DEBUG: Add pointer to graphics stuff for debugging in the browser
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+// @ts-ignore
 (globalThis as BKeyedCollection).GGP.Graphics = Graphics;
 
 // Names of display regions on web page.

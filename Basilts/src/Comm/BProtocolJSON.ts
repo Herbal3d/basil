@@ -67,13 +67,15 @@ function Processor(pMsg: BTransportMsg, pContext: BProtocolJSON, pXPort: BTransp
     if (pContext._receiveCallback) {
         try {
             if (typeof(pMsg) === 'string') {
-                const parsedMessage = JSON.parse(pMsg);
+                const parsedMessage = JSON.parse(pMsg) as BMessage;
                 // Logger.debug(`BProtocolJSON: received message: ${JSONstringify(parsedMessage)}`);
+                // TODO: check for valid message
                 void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
             }
             else {
-                const parsedMessage = JSON.parse(_decoder.decode(pMsg));
+                const parsedMessage = JSON.parse(_decoder.decode(pMsg)) as BMessage;
                 // Logger.debug(`BProtocolJSON: received message: ${JSONstringify(parsedMessage)}`);
+                // TODO: check for valid message
                 void pContext._receiveCallback(parsedMessage, pContext._receiveCallbackContext, pContext);
             };
         }

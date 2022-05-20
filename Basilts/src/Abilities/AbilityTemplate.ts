@@ -15,14 +15,19 @@ import { Ability } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-// import { Logger } from '@Base/Tools/Logging';
+import { Logger } from '@Base/Tools/Logging';
 
 export const AbTEMPLATEName = 'TEMPLATE'
 // REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbTEMPLATEFromProps(pProps: BKeyedCollection): AbTEMPLATE {
-    return new AbTEMPLATE(pProps[AbTEMPLATE.TwoProp], pProps[AbTEMPLATE.OneProp]);
+    if (pProps.hasOwnProperty(AbTEMPLATE.OneProp) && pProps.hasOwnProperty(AbTEMPLATE.TwoProp)) {
+        const oneProp = pProps[AbTEMPLATE.OneProp] as string;
+        const twoProp = pProps[AbTEMPLATE.TwoProp] as string;
+        return new AbTEMPLATE(oneProp, twoProp);
+    };
+    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbTEMPLATEName}. pProps: ${JSON.stringify(pProps)}`);
 };
 
 export class AbTEMPLATE extends Ability {

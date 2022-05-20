@@ -21,6 +21,7 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { AbKeyboard } from './AbilityKeyboard';
 import { Eventing } from '@Eventing/Eventing';
 import { Logger } from '@Base/Tools/Logging';
+import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
 
 export const AbOSAvaMoveName = 'OSAvatarMovement'
 // REMEMBER TO ADD the ability registration in AbilityManagement.ts
@@ -62,7 +63,8 @@ export class AbOSAvaMove extends Ability {
         // OpenSim avatar movement takes keyboard controls
         const keyboardBItem = BItems.get(Config.infrastructureBItemNames.keyboard);
         // Logger.debug(`AbOSAvaMove.addProperties: subscribing to ${keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp)}`);
-        Eventing.Subscribe(keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp), this.processKeyboard.bind(this));
+        Eventing.Subscribe(keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp),
+                            this.processKeyboard.bind(this) as EventProcessor);
     };
 
     processKeyboard(pEvent: setPropEventParams): void {

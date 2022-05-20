@@ -31,7 +31,14 @@ export enum BItemState {
 export const AbBItemName = 'BItem';
 
 export function AbBItemFromProps(pProps: BKeyedCollection): AbBItem {
-    return new AbBItem(pProps[AbBItem.IdProp], pProps[AbBItem.AuthTokenProp], pProps[AbBItem.LayerProp], undefined);
+    let authTok: AuthToken = undefined;
+    if (pProps.hasOwnProperty(AbBItem.AuthTokenProp)) {
+        authTok = new AuthToken(pProps[AbBItem.AuthTokenProp] as string);
+    };
+    return new AbBItem(pProps[AbBItem.IdProp] as string,
+                        authTok,
+                        pProps[AbBItem.LayerProp] as string,
+                        undefined);
 };
 
 export class AbBItem extends Ability {

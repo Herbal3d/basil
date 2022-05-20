@@ -38,11 +38,11 @@ export class BTransportWW extends BTransport {
             // We're the master
             // this.params.transporturl is WebWorker URL to connect to
             try {
-                this._worker = new Worker(this._params.transportURL);
+                this._worker = new Worker(this._params.transportURL as string);
                 if (this._worker) {
                     this._isWorker = false;
                     const _this = this;
-                    this._worker.onmessage = (evnt: MessageEvent) => {
+                    this._worker.onmessage = (evnt: MessageEvent<ArrayBuffer>) => {
                         _this._messages.push(evnt.data);
                         this.incrementProp(AbMsgStats.MessagesReceivedProp);
                         _this.PushReception();
@@ -69,7 +69,7 @@ export class BTransportWW extends BTransport {
             // We're the worker
             this._isWorker = true;
             const _this = this;
-            onmessage = (evnt: MessageEvent) => {
+            onmessage = (evnt: MessageEvent<ArrayBuffer>) => {
                 _this._messages.push(evnt.data);
                 _this.incrementProp(AbMsgStats.MessagesReceivedProp);
                 _this.PushReception();

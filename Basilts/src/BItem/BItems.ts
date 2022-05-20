@@ -39,29 +39,33 @@ export const BItems = {
         Logger.debug(`BItems.createFromProps: ${JSONstringify(pProps)}`);
         const authTokenString = pProps[AbBItem.AuthTokenProp] as string;
         const authToken = authTokenString ? new AuthToken(authTokenString) : null;
-        const layer = pProps[AbBItem.LayerProp] ?? Config.layers.default;
+        const layer = (pProps[AbBItem.LayerProp] as string) ?? Config.layers.default;
         const newBItem = new BItem(undefined, authToken, layer, pCreatingConnection);
+        let abils: string[] = []
+        if (pProps.hasOwnProperty(AbBItem.AbilityProp)) {
+            abils = pProps[AbBItem.AbilityProp] as string[];
+            if (!Array.isArray(abils)) {
+                Logger.error(`BItems.createFromProps: ${AbBItem.AbilityProp} is not an array. ${JSONstringify(pProps)}`);
+            };
+        };
 
         // Add any Abilities that are asked for
         let err: string;
         try {
             Logger.debug(`BItems.createFromProps: checking for abilities`);
-            if (pProps.hasOwnProperty(AbBItem.AbilityProp)) {
-                const abils = pProps[AbBItem.AbilityProp];
-                for (const abil of abils) {
-                    try {
-                        const newAbility = AbilityFactory(abil, pProps);
-                        if (newAbility) {
-                            newBItem.addAbility(newAbility);
-                        }
-                        else {
-                            err = `BItems.createFromProps: could not create ability ${abil}`;
-                        };
+            for (const abil of abils) {
+                try {
+                    const newAbility = AbilityFactory(abil, pProps);
+                    if (newAbility) {
+                        newBItem.addAbility(newAbility);
                     }
-                    catch (e) {
-                        err = `BItems.createFromProps: exception adding ability to BItem: ${ExtractStringError(e)}`;
-                        break;
+                    else {
+                        err = `BItems.createFromProps: could not create ability ${abil}`;
                     };
+                }
+                catch (e) {
+                    err = `BItems.createFromProps: exception adding ability to BItem: ${ExtractStringError(e)}`;
+                    break;
                 };
             };
         }
@@ -95,6 +99,7 @@ export const BItems = {
     // Register the name and BItem.id a well known BItem in the base/registration BItem
     // After registration, the registration BItem will return a property of pName with
     //     the value of pBItem.id.
+    // Note that you can pass the registration BItem if known to save the lookup.
     registerWellKnownBItem: (pName: string, pBItem: BItem, pRegBItem?: BItem): void => {
         // Get the registration BItem
         const regBItem = pRegBItem ?? BItems.get(Config.infrastructureBItemNames.registration);
@@ -102,7 +107,9 @@ export const BItems = {
             // Get the registration ability in that BItem
             const abilReg = regBItem.getAbility(AbRegistrationName);
             if (abilReg) {
-                (abilReg as BKeyedCollection)[pName] = pBItem.id;
+                // Stuff the value onto  the registration ability
+                (abilReg as unknown as BKeyedCollection)[pName] = pBItem.id;
+                // Add the name to the list of values on the registration ability
                 regBItem.addProperty(pName, abilReg);
             };
         };

@@ -14,7 +14,8 @@
 import { Config, LightingParameters } from '@Base/Config';
 
 import { Mesh, ISceneLoaderProgressEvent } from '@babylonjs/core';
-import { KeyboardEventTypes, KeyboardInfo } from '@babylonjs/core';
+import { KeyboardEventTypes, KeyboardInfo, IKeyboardEvent } from '@babylonjs/core';
+import { VertexBuffer, BoundingInfo } from '@babylonjs/core';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 import '@babylonjs/loaders/OBJ';
@@ -28,6 +29,7 @@ import { CoordSystem } from '@Comm/BMessage';
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 import { JSONstringify, CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
+import { minmaxReduxPixelShader } from '@babylonjs/core/Shaders/minmaxRedux.fragment';
 
 // Collection of graphical operations.
 // Externally, code doesn't know how graphics is implemented and this presents the functions
@@ -63,8 +65,8 @@ export interface LoadAssetParams {
 // Load an asset that is 'simple": represented by an URL to a displayable item
 // The Promise resolves to the underlying graphical object representation.
 export type ProgressCallback = (pState: string) => void;
-export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallback?: ProgressCallback): Promise<Object3D> {
-    const parms = <LoadAssetParams>CombineParameters(Config.assetLoader, pProps, {
+export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback?: ProgressCallback): Promise<Object3D> {
+    const parms = <LoadAssetParams><unknown>CombineParameters(Config.assetLoader, pProps as unknown as BKeyedCollection, {
         AssetURL: undefined,
         AssetLoader: 'gltf',
         Auth: undefined
@@ -72,13 +74,49 @@ export async function LoadSimpleAsset(pProps: BKeyedCollection, pProgressCallbac
 
     let asset: Object3D = undefined;
     try {
-        const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene, (event: ISceneLoaderProgressEvent) => {
-            if (typeof(pProgressCallback) !== 'undefined') {
-                pProgressCallback('Working');
-            }
+        const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene,
+            (event: ISceneLoaderProgressEvent) => {
+                if (typeof(pProgressCallback) !== 'undefined') {
+                    pProgressCallback('Working');
+                }
         });
         if (assetContainer) {
             if (assetContainer.meshes.length > 0) {
+                if (Config.Debug.ShowBoundingBox) {
+                    Logger.debug(`GraphicsOps: showing bounding boxes`);
+                    assetContainer.meshes.forEach( mesh => {
+                        mesh.showBoundingBox = true;
+                    });
+                };
+                if (Config.webgl.renderer.BabylonJS.rebuildBoundingBoxes) {
+                    Logger.debug(`GraphicsOps: refreshing bounding boxes`);
+                    for (const mesh of assetContainer.meshes) {
+                        const verts = mesh.getVerticesData(VertexBuffer.PositionKind);
+                        if (verts) {
+                            const inds = mesh.getIndices();
+                            if (inds) {
+                                let minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
+                                for (let i = 0; i < inds.length; i++) {
+                                    const ind = inds[i];
+                                    const x = verts[ind * 3];
+                                    const y = verts[ind * 3 + 1];
+                                    const z = verts[ind * 3 + 2];
+                                    if (x < minX) { minX = x; }
+                                    if (y < minY) { minY = y; }
+                                    if (z < minZ) { minZ = z; }
+                                    if (x > maxX) { maxX = x; }
+                                    if (y > maxY) { maxY = y; }
+                                    if (z > maxZ) { maxZ = z; }
+                                };
+                                // Logger.debug(`GraphicsOps: min=[${minX}, ${minY}, ${minZ}], max=[${maxX}, ${maxY}, ${maxZ}]`);
+                                mesh.setBoundingInfo(new BoundingInfo(
+                                    BJSVector3.FromArray([minX, minY, minZ]),
+                                    BJSVector3.FromArray([maxX, maxY, maxZ])));
+                                // mesh.refreshBoundingInfo();
+                            }
+                        }
+                    };
+                };
                 const rootNode = assetContainer.createRootMesh();
                 asset = new Object3D(assetContainer, rootNode);
                 assetContainer.addAllToScene();
@@ -126,7 +164,7 @@ export function AddTestObject() {
 
 // Set up a function to receive keyboard events
 // Note that only one process can set this event handles.
-export type KeyboardEventHandler = (pEvent: KeyboardEvent, pDown: boolean) => void;
+export type KeyboardEventHandler = (pEvent: IKeyboardEvent, pDown: boolean) => void;
 let _keyboardEventHandler: KeyboardEventHandler = undefined;
 export function SetKeyboardEventHandler(pHandler: KeyboardEventHandler) {
     _keyboardEventHandler = pHandler;

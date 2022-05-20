@@ -29,10 +29,18 @@ import { Logger } from '@Base/Tools/Logging';
 export const AbPlacementName = 'Placement';
 
 export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
-    const newAbil = new AbPlacement(pProps[AbPlacement.PosProp],
-                                        pProps[AbPlacement.RotProp],
-                                        pProps[AbPlacement.ForProp] );
-    return newAbil;
+    const position = pProps[AbPlacement.PosProp] as string | number[] | undefined;
+    const rotation = pProps[AbPlacement.RotProp] as string | number[] | undefined;
+    let frameOfReference: number = undefined;
+    if (pProps.hasOwnProperty(AbPlacement.ForProp)) {
+        if (pProps[AbPlacement.ForProp] instanceof Number) {
+            frameOfReference = pProps[AbPlacement.ForProp] as number;
+        }
+        else {
+            frameOfReference = parseInt(pProps[AbPlacement.ForProp] as string);
+        }
+    }   
+    return new AbPlacement(position, rotation, frameOfReference);
 };
 
 export class AbPlacement extends Ability {
@@ -81,7 +89,7 @@ export class AbPlacement extends Ability {
         };
     };
 
-    constructor(pPos: string | number[], pRot: string | number[], pFor?: number) {
+    constructor(pPos: string | number[] | undefined, pRot: string | number[] | undefined, pFor?: number) {
         super(AbPlacementName);
         this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
         this._rot = pRot ? ParseFourTuple(pRot) :  [0,0,0,1];

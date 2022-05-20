@@ -137,6 +137,7 @@ export class BasilConnection extends BItem {
         const bmsg: BMessage = { 'Op': BMessageOps.CreateItemReq, IProps: {} };
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
+        // @ts-ignore
         if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
@@ -177,6 +178,7 @@ export class BasilConnection extends BItem {
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
         if (pId) bmsg.IId = pId;
+        // @ts-ignore
         if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
@@ -186,7 +188,8 @@ export class BasilConnection extends BItem {
         const bmsg: BMessage = { 'Op': BMessageOps.OpenSessionReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
-        if (pProps) bmsg.IProps = CreatePropertyList(pProps);
+        // @ts-ignore
+        if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
     async CloseSession(reason: string): Promise<BMessage> {
@@ -200,6 +203,7 @@ export class BasilConnection extends BItem {
         const bmsg: BMessage = { 'Op': BMessageOps.MakeConnectionReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
+        // @ts-ignore
         if (pProps) bmsg.IProps = pProps;
         return SendAndPromiseResponse(bmsg, this);
     };
@@ -347,6 +351,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 const bitem = BItems.get(pReq.IId);
                 const filter = pReq.IProps['filter'] as string;
                 if (bitem) {
+                    // @ts-ignore
                     resp.IProps = bitem.getProperties(filter);
                     resp.IId = bitem.id;
                 }
@@ -510,6 +515,7 @@ function SendResponse(pComm: BasilConnection, pResp: BMessage): void {
 function CreatePropertyList(pProps: BKeyedCollection): BMessageIProps {
     const list: BMessageIProps = {};
     Object.keys(pProps).forEach(prop => {
+        // @ts-ignore
         list[prop] = pProps[prop];
     });
     return list;

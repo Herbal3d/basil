@@ -29,7 +29,14 @@ interface AssemblyAfterRequestProps {
 };
 
 export function AbAssemblyFromProps(pProps: BKeyedCollection): AbAssembly {
-    return new AbAssembly(pProps[AbAssembly.AssetUrlProp], pProps[AbAssembly.AssetLoaderProp]);
+    if (pProps.hasOwnProperty(AbAssembly.AssetUrlProp) && pProps.hasOwnProperty(AbAssembly.AssetLoaderProp)) {
+        const assetUrl = pProps[AbAssembly.AssetUrlProp] as string;
+        const assetLoader = pProps[AbAssembly.AssetLoaderProp] as string;
+        if (assetUrl && assetLoader) {
+            return new AbAssembly(assetUrl, assetLoader);
+        };
+    };
+    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbAssemblyName}. pProps: ${JSON.stringify(pProps)}`);
 };
 
 // An "Assembly" is a thing that can be represented or displayed in the world.
