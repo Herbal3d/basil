@@ -49,6 +49,7 @@
     "dependencies": {
         "@babylonjs/core": "^5.7.0",
         "@babylonjs/loaders": "^5.7.0",
+        "@babylonjs/materials": "^5.7.0",
         "@types/js-base64": "^3.3.1",
         "npm": "^8.10.0"
     },

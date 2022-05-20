@@ -94,7 +94,7 @@ export const Config = {
             }
         },
         'fog': {
-            'enabled': false,
+            'enabled': true,
             'color': '[230,230,230]',
             'density': 0.025,
         },
@@ -104,6 +104,19 @@ export const Config = {
                     'audioEngine': true,    // initialize the audio system also
                 },
                 'sceneOptions': {
+                },
+                'environment': {
+                    'skyMaterial': {
+                        'enable': true,
+                        'turbidity': 2,         // scattering of haze (1..20)
+                        'luminance': 1,         // overall luminance of the scene (0..1)
+                        'inclination': 0.4,     // angle between the up and z axis (0..1)
+                        'azimuth': 0.25,        // angle between the x and z axis (0..1)
+                        'rayleigh': 1,          // sky color at the horizon. (0..2)
+                        'mieDirectionalG': 0.8, // sun light scattering factor (0..1)
+                        'mieCoefficient': 0.005,// sun light absorption factor (0..1)
+                        'trackCamera': true     // follow camera height
+                    }
                 },
                 'optimizations': {     // optimizations for the BabylonJS engine
                     'enable': true,
@@ -146,7 +159,8 @@ export const Config = {
         'registration': 'registration.bitem',  // BItem created to contain AbRegistration
         'camera': 'camera.UNIQUEIDBASE',
         'keyboard': '0.keyboard.UNIQUEIDBASE',
-        'mouse': '0.mouse.UNIQUEIDBASE'
+        'mouse': '0.mouse.UNIQUEIDBASE',
+        'environment': 'env.UNIQUEIDBASE'
     },
     // Flags for fetching assets.
     'assets': {
@@ -205,25 +219,22 @@ export interface CameraParameters {
     addAxesHelper: boolean,
     axesHelperSize: number
 };
-export interface LightingParameters {
-    ambient: {
-        name: string;
-        color: string | number[];
-        intensity: number;
-        specular: string | number[];
-        diffuse: string | number[];
-        groundColor: string | number[];
-    },
-    // placeholder for the eventual sun system
-    directional: {
-        name: string;
-        color: string;
-        direction: number[];
-        intensity: number;
-        shadows: {
-            useShadows: boolean;
-            shadowMapSize: number;
-        }
+export interface AmbientLightingParameters {
+    name?: string;
+    color?: string | number[];
+    intensity?: number;
+    specular?: string | number[];
+    diffuse?: string | number[];
+    groundColor?: string | number[];
+}
+export interface DirectionalLightingParameters {
+    name?: string;
+    color?: string | number[];
+    direction?: string | number[];
+    intensity?: number;
+    shadows?: {
+        useShadows: boolean;
+        shadowMapSize: number;
     }
 };
 

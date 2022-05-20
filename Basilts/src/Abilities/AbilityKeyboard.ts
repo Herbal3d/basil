@@ -71,7 +71,7 @@ export class AbKeyboard extends Ability {
         Eventing.Subscribe(GraphicsStateEventName, this._onGraphicsReady.bind(this) as EventProcessor);
     };
     _onGraphicsReady(pEvent: GraphicStateEventProps): void {
-        if (pEvent.state === GraphicStates.Initialized) {   
+        if (pEvent.state === GraphicStates.Initialized || pEvent.state === GraphicStates.Rendering) {   
             SetKeyboardEventHandler(this._onKeyEvent.bind(this) as KeyboardEventHandler);
         };
     };

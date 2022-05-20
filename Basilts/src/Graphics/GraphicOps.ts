@@ -11,7 +11,7 @@
 
 'use static';
 
-import { Config, LightingParameters } from '@Base/Config';
+import { Config, AmbientLightingParameters } from '@Base/Config';
 
 import { Mesh, ISceneLoaderProgressEvent } from '@babylonjs/core';
 import { KeyboardEventTypes, KeyboardInfo, IKeyboardEvent } from '@babylonjs/core';

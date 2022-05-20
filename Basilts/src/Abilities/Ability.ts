@@ -12,6 +12,7 @@
 'use strict';
 
 import { BItem, PropValue } from "@BItem/BItem";
+import { Logger } from '@Base/Tools/Logging';
 
 export interface AbilityPropertyValues {
   [ key: string]: PropValue
@@ -37,4 +38,21 @@ export abstract class Ability  {
 
     // called when a property is about to be removed from its containing BItem
     abstract propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void;
+
+    // UTILITY FUNCTIONS
+    propValueToFloat(pVal: PropValue): number {
+        let ret = 0;
+        if (pVal instanceof Number) {
+            ret = pVal as number;
+        }
+        else {
+            try {
+                ret = parseFloat(pVal as string);
+            }
+            catch (e) {
+                Logger.error(`AbEnviron.solarAzimuth: Error parsing ${pVal} as a number`);
+            }
+        }
+        return ret;
+    }
 }

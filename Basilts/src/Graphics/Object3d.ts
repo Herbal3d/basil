@@ -11,7 +11,7 @@
 
 'use static';
 
-import { Config, LightingParameters } from '@Base/Config';
+import { Config } from '@Base/Config';
 
 import { AbstractMesh, AssetContainer, ISceneLoaderProgressEvent } from '@babylonjs/core';
 import { Vector3 as BJSVector3, Quaternion as BJSQuaternion } from '@babylonjs/core/Maths';

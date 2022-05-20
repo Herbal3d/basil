@@ -22,6 +22,7 @@ import { AbMouse } from '@Abilities/AbilityMouse';
 import { AbKeyboard } from '@Abilities/AbilityKeyboard';
 import { AbPlacement } from '@Abilities/AbilityPlacement';
 import { AbRegistration } from '@Abilities/AbilityReg';
+import { AbEnviron } from '@Abilities/AbilityEnvironment';
 
 export const WellKnownCameraName = 'Camera';
 export const WellKnownMouseName = 'Mouse';
@@ -44,5 +45,10 @@ export function CreateInfrastructureBItems(): void {
     const keyboard = new BItem(Config.infrastructureBItemNames.keyboard, null);
     keyboard.addAbility(new AbKeyboard());
     BItems.registerWellKnownBItem(WellKnownKeyboardName, keyboard, baseBItem);
+
+    const env = new BItem(Config.infrastructureBItemNames.environment, null);
+    env.addAbility(new AbEnviron());
+    BItems.registerWellKnownBItem(WellKnownKeyboardName, env, baseBItem);
+
 };
 

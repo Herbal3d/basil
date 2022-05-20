@@ -11,13 +11,14 @@
 
 'use static';
 
-import { Config, LightingParameters, CameraParameters } from '@Base/Config';
+import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { Engine, Scene, TargetCamera, Node, TransformNode,
-        Light, DirectionalLight, HemisphericLight,
-        ShadowGenerator, SceneInstrumentation, AbstractMesh,
-        SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
+import { Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
+import { Light, DirectionalLight, HemisphericLight, ShadowGenerator } from "@babylonjs/core";
+import { TargetCamera, TransformNode, MeshBuilder, AbstractMesh, Mesh  } from "@babylonjs/core";
+import { StandardMaterial, Texture, CubeTexture } from '@babylonjs/core';
+import { SkyMaterial } from '@babylonjs/materials';
 import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
@@ -82,7 +83,7 @@ export const Graphics = {
 
     _camera:  <TargetCamera>undefined,
     _ambientLight: <Light>undefined,
-    _directionalLight: <Light>undefined,
+    _directionalLight: <DirectionalLight>undefined,
 
     _sceneInstrumentation: <SceneInstrumentation>undefined,
     frameNum: <number>undefined,
@@ -97,6 +98,8 @@ export const Graphics = {
     _eventDisplayInfo: <TopicEntry>undefined,
     _eventDisplayInfoTimer: <string>undefined,
     _prevCamPosition: <BJSVector3>undefined,
+
+    _skybox: <Mesh>undefined,
 
     connectGraphics(pContainer: HTMLElement, pCanvas: HTMLCanvasElement): void {
         Logger.debug('Graphics: constructor');
@@ -146,6 +149,13 @@ export const Graphics = {
         Logger.debug(`Graphics.Start: Start`);
         Graphics._startRendering();
         Graphics.SetGraphicsState(GraphicStates.Rendering);
+    },
+    IsActive(): boolean {
+        return Graphics._graphicsState === GraphicStates.Initialized
+            || Graphics._graphicsState === GraphicStates.Rendering;
+    },
+    GetGraphicsState(): GraphicStates {
+        return Graphics._graphicsState;
     },
     SetGraphicsState(pState: GraphicStates) {
         Graphics._graphicsState = pState;
@@ -224,36 +234,59 @@ export const Graphics = {
         Logger.debug(`Graphics._initializeCamera: camera at ${Graphics._camera.position.toString()} pointing at ${Graphics._camera.target.toString()}`);
     },
 
-    _initializeLights(passedParms?: BKeyedCollection) {
-        const parms = <LightingParameters><unknown>CombineParameters(Config.webgl.lights, passedParms, undefined);
-        if (parms.ambient) {
-            const ambient = new HemisphericLight(parms.ambient.name, new BJSVector3(0,1,0), Graphics._scene);
-            ambient.intensity = parms.ambient.intensity;
-            ambient.specular = Graphics._colorFromValue(parms.ambient.specular);
-            ambient.diffuse = Graphics._colorFromValue(parms.ambient.diffuse);
-            ambient.groundColor = Graphics._colorFromValue(parms.ambient.groundColor);
+    _initializeLights() {
+        if (Config.webgl.lights.ambient) {
+            const parms = <AmbientLightingParameters>Config.webgl.lights.ambient;
+            const ambient = new HemisphericLight(parms.name, new BJSVector3(0,1,0), Graphics._scene);
+            ambient.intensity = parms.intensity;
+            ambient.specular = Graphics._colorFromValue(ParseThreeTuple(parms.specular));
+            ambient.diffuse = Graphics._colorFromValue(ParseThreeTuple(parms.diffuse));
+            ambient.groundColor = Graphics._colorFromValue(ParseThreeTuple(parms.groundColor));
             Graphics._ambientLight = ambient;
         }
-        if (parms.directional) {
-            const directionalLight = new DirectionalLight(parms.directional.name, BJSVector3.FromArray(parms.directional.direction), Graphics._scene);
-            directionalLight.intensity = parms.directional.intensity;
-            directionalLight.diffuse = Graphics._colorFromValue(parms.directional.color);
+        if (Config.webgl.lights.directional) {
+            const parms = <DirectionalLightingParameters>Config.webgl.lights.directional;
+            const directionalLight = new DirectionalLight(parms.name,
+                        BJSVector3.FromArray(ParseThreeTuple(parms.direction)), Graphics._scene);
+            directionalLight.intensity = parms.intensity;
+            directionalLight.diffuse = Graphics._colorFromValue(ParseThreeTuple(parms.color));
 
             Graphics._directionalLight = directionalLight;
 
-            if (parms.directional.shadows.useShadows) {
+            if (Config.webgl.lights.directional.shadows.useShadows) {
                 // TODO: Babylonjs wants the meshes added to the generator. Hard to do in a dynamic world
                 //     Figure this out.
-                // const generator = new ShadowGenerator(1024, Graphics._directionalLight as DirectionalLight);
+                // const generator = new ShadowGenerator(1024, Graphics._directionalLight);
+                // const generator = new CascadedShadowGenerator(1024, Graphics._directionalLight);
                 // generator.addShadowCaster(Graphics._groupWorldRel);
             }
         }
     },
 
-    // Initialize environmental properties (fog, sky, ...)
-    _initializeEnvironment(passedParams?: BKeyedCollection) {
+    _initializeEnvironment() {
+        Graphics._skybox = MeshBuilder.CreateBox('skybox', { size: 1000 }, Graphics._scene);
+        if (Config.webgl.renderer.BabylonJS.environment.skyMaterial.enable) {
+            const skyMaterial = new SkyMaterial('skyMaterial', Graphics._scene);
+            skyMaterial.backFaceCulling = false;
+            skyMaterial.turbidity = Config.webgl.renderer.BabylonJS.environment.skyMaterial.turbidity;
+            skyMaterial.luminance = Config.webgl.renderer.BabylonJS.environment.skyMaterial.luminance;
+            skyMaterial.rayleigh = Config.webgl.renderer.BabylonJS.environment.skyMaterial.rayleigh;
+            skyMaterial.inclination = Config.webgl.renderer.BabylonJS.environment.skyMaterial.inclination;
+            skyMaterial.azimuth = Config.webgl.renderer.BabylonJS.environment.skyMaterial.azimuth;
+            Graphics._skybox.material = skyMaterial;
+        }
+        else {
+            const skyboxMaterial = new StandardMaterial("skyBox", Graphics._scene);
+            skyboxMaterial.backFaceCulling = false;
+            skyboxMaterial.reflectionTexture = new CubeTexture("textures/skybox", Graphics._scene);
+            skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+            skyboxMaterial.diffuseColor = new BJSColor3(0, 0, 0);
+            skyboxMaterial.specularColor = new BJSColor3(0, 0, 0);
+            Graphics._skybox.material = skyboxMaterial;
+        }
+
         if (Config.webgl && Config.webgl.fog && Config.webgl.fog.enabled) {
-            const parms = CombineParameters(Config.webgl.fog, passedParams, {
+            const parms = CombineParameters(Config.webgl.fog, undefined, {
                 'enabled': false,
                 'color': '[230,230,230]',
                 'density': 0.00025
@@ -265,6 +298,9 @@ export const Graphics = {
                 Graphics._scene.fogDensity = parms.density as number;
             }
         };
+    },
+    GetSkybox(): Mesh {
+        return Graphics._skybox;
     },
 
     _makeOptimizations() {
