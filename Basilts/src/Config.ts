@@ -43,7 +43,7 @@ export const Config = {
         'protocols': [ 'Basil-JSON', 'Basil-FB', 'Basil-PB' ],
     },
     'security': {
-        'ShouldCheckBasilServerRequestAuth': false,
+        'ShouldCheckBasilServerRequestAuth': true,
     },
     // Parameters for the main display page
     'page': {
@@ -199,7 +199,8 @@ export const Config = {
         'LogLevel': 'debug',            // output log level (error, warn, info, debug)
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
         'MakeConnectionDetail': false,  // output detailed info when processing MakeConnection
-        'SentMsg': true,                // output detailed message when message received
+        'SendMsg': true,                // output detailed message when message sent
+        'RcvdMsg': true,                // output detailed message when message received
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true,            // print RPC response message
 

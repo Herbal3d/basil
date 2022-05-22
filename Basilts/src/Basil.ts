@@ -140,8 +140,10 @@ if (Config.initialMakeConnection) {
             }
             // Start the displayed session
             conn.OpenSession(sessionParams)
-            .then ( conn2 => {
-                Logger.debug(`Basilts: session is opened`);
+            .then ( resp2 => {
+                conn.OutgoingAuth = new AuthToken(resp2.IProps['serverAuth'] as string);
+                Logger.debug(`Basilts: session is opened. Server version: ${resp2.IProps['serverVersion']}`);
+                Logger.debug(`     in=${conn.IncomingAuth.token}, out=${conn.OutgoingAuth.token}`);
             })
             .catch( e => {
                 Logger.error(`OpenSession exception: ${ExtractStringError(e)}`);
