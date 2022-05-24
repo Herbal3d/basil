@@ -24,11 +24,10 @@ type ClickOperation = ( pTarget: EventTarget ) => void;
 const ClickableOps: { [key: string]: ClickOperation } = {};
 
 // Initialize logging to output to the console and to the visible debug messsage area
-initLogging(true, true);
-Logger.setLogLevel(LOGLEVEL_INFO);
-// Logger.setLogLevel(LOGLEVEL_DEBUG);
+initLogging(Config.Debug.DebugLogToConsole, Config.Debug.VisibleDebugLog);
+Logger.setLogLevel(Config.Debug.LogLevel);
 // CSS starts the debug area hidden. We force it to be visible.
-const debugElement = document.getElementById(Config.page.debugElementId.substring(1));
+const debugElement = document.getElementById(Config.page.debugElementId);
 if (debugElement) {
     debugElement.style.visibility = 'visible';
 }
@@ -49,8 +48,10 @@ for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
 };
 
 // Put current Basil version info on the bottom of the window
-const versionTextNode = document.getElementById('BasilVersion');
-versionTextNode.innerText = 'Basil version ' + VERSION['version-tag'];
+const versionTextNode = document.getElementById(Config.page.versionElementId);
+if (versionTextNode) {
+    versionTextNode.innerText = 'Basil version ' + VERSION['version-tag'];
+}
 
 LoadGridSelection();
 LoadTestURLs();

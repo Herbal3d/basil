@@ -61,7 +61,7 @@ export function initLogging(pLogConsole?: boolean, pShowDebug?: boolean) {
     };
     if (pShowDebug ?? Config.page.showDebug) {
         LogOutputters.push( (pMsg: string, pClass?: string) => {
-            const debugg = document.querySelector(Config.page.debugElementId);
+            const debugg = document.getElementById(Config.page.debugElementId);
             if (debugg) {
                 const newLine = document.createElement('div');
                 newLine.appendChild(document.createTextNode(pMsg));

@@ -50,7 +50,8 @@ export const Config = {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
         'showDebug': false,
-        'debugElementId': '#DEBUGG',
+        'debugElementId': 'DEBUGG',
+        'versionElementId': 'BasilVersion',
         'debugErrorClass': 'errorMsg',
         'debugLogLines': 30
     },

@@ -37,6 +37,12 @@ initLogging();      // Setup logging so progress and errors will be seen
 Eventing.init();
 UI.init();
 
+// Put current Basil version info on the bottom of the window
+const versionTextNode = document.getElementById(Config.page.versionElementId);
+if (versionTextNode) {
+    versionTextNode.innerText = 'Basil version ' + VERSION['version-tag'];
+}
+
 // Create BItems that coorespond to the input and output devices, etc
 CreateInfrastructureBItems();
 

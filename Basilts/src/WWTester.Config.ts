@@ -22,7 +22,7 @@ export const WWConfig = {
         'webGLcontainerId': 'webGLcontainer',
         'webGLcanvasId': 'webGLcanvas',
         'showDebug': false,
-        'debugElementId': '#DEBUGG',
+        'debugElementId': 'DEBUGG',
         'debugErrorClass': 'errorMsg',
         'debugLogLines': 30
     },

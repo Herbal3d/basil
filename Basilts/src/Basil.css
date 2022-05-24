@@ -144,6 +144,16 @@ body {
 
 /* An overlay area for controls */
 #controls {
+    /* use with .defn-dialog; */
+    position: absolute;
+    right: 0%;
+    bottom: 0%;
+    width: 25%;
+    /* height: 30em;    // height used when having both position and selected boxes */
+    height: 18em;
+}
+
+#EntryDialog {
     padding-top: 20px;
     width: 50em;
     margin-left: auto;
@@ -151,7 +161,10 @@ body {
 }
 
 #BasilVersion {
-    text-align: center;
+    display: block;
+    bottom: 0%;
+    position: absolute;
+    background: rgba(0,0,0,0.1);
 }
 
 /*  <div> group as a displayed group in a dialog */
