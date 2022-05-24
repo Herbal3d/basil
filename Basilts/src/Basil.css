@@ -1,0 +1,215 @@
+/* Copyright 2021 Robert Adams
+/* This Source Code Form is subject to the terms of the Mozilla Public
+/* License, v. 2.0. If a copy of the MPL was not distributed with this
+/* file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/*
+/* Unless required by applicable law or agreed to in writing, software
+/* distributed under the License is distributed on an "AS IS" BASIS,
+/* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/* See the License for the specific language governing permissions and
+/* limitations under the License.
+*/
+
+/* The one place for font and color definitions */
+:root {
+    --font-global-family: Veranda,Arial,Helvetica,sans-serif;
+    --font-global-size: 12px;
+}
+
+/* First greens =============================
+:root {
+    --color-global-color: #baaf0b;
+    --color-global-bg: #369e09;
+
+    --color-dialog-color: #f0e8af;
+    --color-dialog-bg: #86af0a;
+    --color-group-bg: #769f0a;
+    --dialog-opacity: 0.8;
+
+    --color-dialog-accent: #b8af0b;
+    --color-dialog-button-color: --color-dialog-color;
+    --color-dialog-button-bg: #4dc41a;
+
+    --color-debug-color: #f0e84f;
+    --color-debug-bg: #4d6600;
+    --color-debug-error: #ff2020;
+    --debug-opacity: 0.4;
+}
+*/
+
+/* Creamier greens ============================= */
+:root {
+    --color-base-headline: #11455f;
+    --color-base-color: #058e3f;
+    --color-base-bg: #88d498;
+    --color-base-accent2: #c6dabf;
+    --color-base-accent: #364706;
+
+    --color-global-color: var(--color-base-color);
+    --color-global-bg: var(--color-base-headline);
+
+    --color-dialog-color: var(--color-base-color);
+    --color-dialog-bg: var(--color-base-headline);
+    --color-group-bg: var(--color-base-bg);
+    --dialog-opacity: 0.8;
+
+    --color-dialog-accent: var(--color-base-accent);
+    --color-dialog-button-color: var(--color-base-color);
+    --color-dialog-button-bg: var(--color-base-accent2);
+
+    --color-debug-color: #111;
+    --color-debug-bg: var(--color-base-bg);
+    --color-debug-error: #ff2020;
+    --debug-opacity: 0.6;
+}
+
+.defn-dialog {
+    margin: 5px;
+    padding: 5px;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    color: var(--color-dialog-color);
+    background: var(--color-dialog-bg);
+    opacity: var(--dialog-opacity);
+}
+
+/* value display areas (text, coord, ...) */
+.defn-display {
+    display: inline;
+    margin: 1px;
+    padding: 2px;
+    border: 1px solid var(--color-dialog-accent);
+}
+*/
+
+/* Button appearing in the dialog */
+.button {
+    display: inline;
+    margin: 4px;
+    padding: 2px;
+    text-align: center;
+    border: 3px solid var(--color-dialog-accent);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    color: var(--color-dialog-button-color);
+    background: var(--color-dialog-button-bg);
+    opacity: 100;
+    width: 7em;
+    height: 2em;
+}
+
+.button-sm {
+    /* use with .button */
+    font-size: smaller;
+}
+
+body {
+    font-family: var(--font-global-family);
+    font-size: var(--font-global-size);
+    color: var(--color-global-color);
+    background: var(--color-global-bg);
+    padding: 0px;
+    margin: 0px;
+}
+
+/* The layout for the whole page. */
+/* The width is smaller as Chrome seems to make scroll bars if it's 100%. */
+#pageLayout {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 98%;
+    height: 98%;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* The container that contains the canvas. */
+#webGLcontainer {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 5px;
+    overflow: hidden;
+}
+
+/* The canvas that is passed to ThreeJS */
+#webGLcanvas {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 5px;
+    overflow: hidden;
+}
+
+/* An overlay area for controls */
+#controls {
+    padding-top: 20px;
+    width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#BasilVersion {
+    text-align: center;
+}
+
+/*  <div> group as a displayed group in a dialog */
+.dialog-group {
+    /* use with .defn-dialog; */
+    display: block;
+    border: 2px solid var(--color-dialog-accent);
+    background: var(--color-group-bg);
+    margin: 4px;
+    padding: 4px;
+    margin: 4px;
+}
+
+label {
+    display: block;
+}
+
+.textDisplay {
+    /* use with .defn-display; */
+    border: 0px;
+}
+.textDisplayAccent {
+    /* use with .defn-display; */
+    display: block;
+    color: var(--color-dialog-accent);
+    border: 0px;
+}
+.textDisplayRight {
+    /* use with .defn-display; */
+    display: block;
+    text-align: right;
+    border: 0px;
+}
+.gridLogin-table {
+    padding: 5px 0px 5px 0px;
+    margin: 0px;
+}
+.coordDisplay {
+    /* use with .defn-display; */
+    margin: 1px;
+}
+.coordEntry {
+    display: inline;
+    margin: 1px;
+    background: var(--color-dialog-button-bg);
+}
+
+/* Overlay area for debug and error messages */
+#DEBUGG {
+    /* use with .defn-dialog; */
+    color: var(--color-debug-color);
+    background: var(--color-debug-bg);
+    opacity: var(--debug-opacity);
+    visibility: hidden;
+}
+
+/* Class added to a reported error message in the DEBUGG area */
+.errorMsg {
+    color: var(--color-debug-error);
+    font-weight: heavy;
+}

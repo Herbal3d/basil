@@ -28,6 +28,7 @@
 
 'use strict';
 
+import { Buffer } from 'buffer';
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { ConfigGetQueryVariable } from '@Base/Config'
 

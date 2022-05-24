@@ -4,7 +4,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
@@ -56,18 +55,12 @@ module.exports = {
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US'
     }),
-    // Extract text from a bundle or bundles into a separate file.
-    //     ref: https://github.com/webpack-contrib/mini-css-extract-plugin
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
-    }),
-    //     ref: https://webpack.js.org/plugins/copy-webpack-plugin/
-    // new CopyWebpackPlugin([
-    //   {
-    //     from: 'src/jslibs/three.min.js'
-    //   }
-    // ])
+    // ref: https://webpack.js.org/plugins/copy-webpack-plugin/
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/Basil.css', to: path.resolve(__dirname, "dist") }
+      ]
+    })
   ],
   module: {
     rules: [
@@ -75,16 +68,6 @@ module.exports = {
         test: /\.tsx?/,
         use: 'ts-loader',
         exclude: /node_modules/
-      },
-      {
-        // process less files to the dist directory
-        //    ref: https://webpack.js.org/loaders/less-loader/
-        test: /\.less$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'less-loader'
-        ],
       },
       {
         // move image files to the dist directory

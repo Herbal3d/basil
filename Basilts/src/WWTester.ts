@@ -79,6 +79,10 @@ try {
         'clientAuth': 'xxxx',
         'serviceAuth': 'yyyy'
     };
+
+    // Turn off security for just talking between me and  the Basil server
+    Config.security.ShouldCheckBasilServerRequestAuth = false;
+
     Comm.MakeConnection(params)
     .then ( conn => {
         Logger.debug(`MakeConnection complete`);

@@ -16,16 +16,22 @@ import { VERSION } from '@Base/VERSION';
 
 import { ClickOpLoginOpenSim } from '@Entry/LoginOpenSim';
 
+import { Buffer } from 'buffer';
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
-import { Logger, initLogging } from '@Tools/Logging';
-
-// Force the processing of the css format file
-import '@Entry/Entry.less';
+import { Logger, initLogging, LOGLEVEL_INFO, LOGLEVEL_DEBUG } from '@Tools/Logging';
 
 type ClickOperation = ( pTarget: EventTarget ) => void;
 const ClickableOps: { [key: string]: ClickOperation } = {};
 
-initLogging();
+// Initialize logging to output to the console and to the visible debug messsage area
+initLogging(true, true);
+Logger.setLogLevel(LOGLEVEL_INFO);
+// Logger.setLogLevel(LOGLEVEL_DEBUG);
+// CSS starts the debug area hidden. We force it to be visible.
+const debugElement = document.getElementById(Config.page.debugElementId.substring(1));
+if (debugElement) {
+    debugElement.style.visibility = 'visible';
+}
 
 // Make all 'class=clickable' page items create events
 for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
@@ -35,6 +41,9 @@ for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
         Logger.debug(`Click: ${buttonOp}`);
         if (buttonOp && typeof(ClickableOps[buttonOp]) === 'function') {
             ClickableOps[buttonOp](evnt.target);
+        }
+        else {
+            Logger.error(`Click: unknown op ${buttonOp}`);
         };
     });
 };

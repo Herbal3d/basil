@@ -23,8 +23,14 @@ interface ALogger {
     debug(pMsg: string ): void,
     cdebug(flag: string, pMsg: string ): void,
     error(pMsg: string ): void,
-    setLogLevel(level: string ): void
+    setLogLevel(level: string ): void,
 };
+
+export const LOGLEVEL_NONE = 'none';
+export const LOGLEVEL_INFO = 'info';
+export const LOGLEVEL_WARN = 'warn';
+export const LOGLEVEL_DEBUG = 'debug';
+export const LOGLEVEL_ERROR = 'error';
 
 export type LogIt = (pMsg:string, pClass?: string) => void;
 const LogOutputters: LogIt[] = [];
@@ -40,8 +46,8 @@ function DoLog(pMsg: string, pClass?: string) {
 };
 
 // Initialize logging by adding the console and debug loggers
-export function initLogging() {
-    if (Config.Debug.DebugLogToConsole) {
+export function initLogging(pLogConsole?: boolean, pShowDebug?: boolean) {
+    if (pLogConsole ?? Config.Debug.DebugLogToConsole) {
         LogOutputters.push( (pMsg: string, pClass?: string) => {
             if (pClass) {
                 /* tslint:disable-next-line */
@@ -53,7 +59,7 @@ export function initLogging() {
             };
         });
     };
-    if (Config.page.showDebug) {
+    if (pShowDebug ?? Config.page.showDebug) {
         LogOutputters.push( (pMsg: string, pClass?: string) => {
             const debugg = document.querySelector(Config.page.debugElementId);
             if (debugg) {
@@ -79,7 +85,7 @@ export function AddLogOutputter(pOutputter: LogIt) {
 let _logLevel = Config.Debug.LogLevel;
 export const Logger : ALogger = {
     info: (pMsg: string) => {
-        if (_logLevel === 'info') {
+        if (_logLevel !== 'none') {
             DoLog(pMsg);
         };
     },
@@ -104,7 +110,7 @@ export const Logger : ALogger = {
     },
     setLogLevel: (pLevel: string) => {
         const aLevel = pLevel.toLowerCase();
-        const debugLevels: string[] = [ 'info', 'warn', 'debug', 'error'];
+        const debugLevels: string[] = [ LOGLEVEL_NONE, LOGLEVEL_INFO, LOGLEVEL_WARN, LOGLEVEL_DEBUG, LOGLEVEL_ERROR ];
         if (debugLevels.indexOf(aLevel, 0) !== -1) {
             _logLevel = aLevel;
         }

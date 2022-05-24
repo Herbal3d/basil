@@ -13,6 +13,7 @@
 
 import { ParseOSDXML } from '@Tools/llsd.js';
 import { MD5 } from '@Tools/MD5.js';
+import { Buffer } from 'buffer';
 
 import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
@@ -61,7 +62,7 @@ export const ClickOpLoginOpenSim = function() {
     }
     catch (e) {
         const err = <Error>e;
-        Logger.info(`Login fail: exception: ${err.message}`);
+        Logger.error(`Login fail: exception: ${err.message}`);
         FailedLogin = true;
     }
 };
@@ -136,7 +137,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
             }
         };
         // Logger.info('gridLoginParams=' + JSONstringify(regionConfigParams));
-        Logger.info(`gridLogin. URL=${regionConfigParams.Init.transportURL}`);
+        Logger.debug(`gridLogin. URL=${regionConfigParams.Init.transportURL}`);
 
         SuccessfulLogin = true;
 
@@ -146,13 +147,13 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
     }
     catch (e) {
         const err = <Error>e;
-        Logger.info(`LoginResponseSuccess: exception doing login: ${err.message}`);
+        Logger.debug(`LoginResponseSuccess: exception doing login: ${err.message}`);
         FailedLogin = true;
     };
 };
 
 function LoginResponseFailure(resp: BKeyedCollection): void {
-    Logger.info('Login failure: ' + JSONstringify(resp));
+    Logger.error('Login failure: ' + JSONstringify(resp));
     FailedLogin = true;
 }
 
@@ -163,7 +164,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
                         successCallback: LoginResponseSuccessCallback,
                         failureCallback: LoginResponseFailureCallback) {
     const hashedPW = '$1$' + MD5(password);
-    Logger.info('LoginXML2: Hashed password=' + hashedPW);
+    Logger.debug('LoginXML2: Hashed password=' + hashedPW);
     const xmlreq = [
         '<?xml version="1.0"?>',
         '<methodCall><methodName>login_to_simulator</methodName>',
@@ -184,7 +185,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
         '</params>',
         '</methodCall>'
     ].join('');
-    Logger.info('LoginXML2: doing fetch from ' + loginURL);
+    Logger.debug('LoginXML2: doing fetch from ' + loginURL);
     fetch(loginURL, {
         method: 'POST',
         cache: 'no-cache',
@@ -195,29 +196,29 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
         body: xmlreq
     }) 
     .then( responseObject => {
-        // Logger.info('LoginXML2: responded. status=' + responseObject.status + ', ok=' + responseObject.ok);
+        Logger.debug(`LoginXML2: responded. status=${responseObject.status}, ok=${responseObject.ok}`);
         return responseObject.ok ? responseObject.text() : undefined;
     })
     .then( data => {
-        // Logger.info('LoginXML2: data =' + data);
+        Logger.debug(`LoginXML2: data =${data}`);
         if (data) {
             let resp: BKeyedCollection = undefined;
             try {
                 resp = <BKeyedCollection>ParseOSDXML(data);
             }
             catch (e) {
-                Logger.info(`LoginXML2: parsing of response failed. Data=${data}`);
+                Logger.error(`LoginXML2: parsing of response failed. Data=${data}`);
                 resp = undefined;
             }
             if (resp) {
-                // Logger.info('LoginXML2: Login resp= ' + JSONstringify(resp));
+                // Logger.debug('LoginXML2: Login resp= ' + JSONstringify(resp));
                 if (resp['login'] === 'true') {
                     if (typeof(successCallback) === 'function') {
                         successCallback(resp)
                     };
                 }
                 else {
-                    // Logger.info('LoginXML2: Login failed: ' + resp.message);
+                    // Logger.error('LoginXML2: Login failed: ' + resp.message);
                     if (typeof(failureCallback) === 'function') {
                         failureCallback(resp)
                     };
@@ -225,13 +226,13 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
             };
         }
         else {
-            Logger.info('No response body');
+            Logger.error('No response body');
             failureCallback(undefined);
         };
     })
     .catch (err => {
-        Logger.info('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
-        console.log('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
+        Logger.error('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
+        // console.log('XMLRPC2: Exception from fetch. err=' + JSONstringify(err));
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         failureCallback(err);
     });

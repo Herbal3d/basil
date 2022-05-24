@@ -26,9 +26,7 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateInfrastructureBItems } from '@BItem/WellKnownBItems';
 import { RegisterAllAbilities } from '@Abilities/AbilityManagement';
 
-// Force the processing of the CSS format file
-import '@Base/Basilts.less';
-
+import { Buffer } from 'buffer';
 import { IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';

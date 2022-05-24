@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
@@ -44,11 +43,6 @@ module.exports = {
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US'
-    }),
-    // Extract text from a bundle or bundles into a separate file.
-    //     ref: https://github.com/webpack-contrib/mini-css-extract-plugin
-    new MiniCssExtractPlugin({
-      filename: "[name].css"
     })
   ],
   module: {
@@ -57,16 +51,6 @@ module.exports = {
         test: /\.tsx?/,
         use: 'ts-loader',
         exclude: /node_modules/
-      },
-      {
-        // process less files to the dist directory
-        //    ref: https://webpack.js.org/loaders/less-loader/
-        test: /\.less$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'less-loader'
-        ],
       },
       {
         // move image files to the dist directory
