@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { AbAssembly } from '@Abilities/AbilityAssembly';
 import { BItem,  PropValue } from '@BItem/BItem';
 
@@ -42,6 +42,9 @@ export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
     }   
     return new AbPlacement(position, rotation, frameOfReference);
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbPlacementName, AbPlacementFromProps);
 
 export class AbPlacement extends Ability {
     static PosProp = 'pos';

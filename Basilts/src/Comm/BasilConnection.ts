@@ -14,21 +14,25 @@ import { Config } from '@Base/Config';
 
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { BProtocol } from '@Comm/BProtocol';
-import { BItem } from '@BItem/BItem';
-import { AuthToken } from '@Tools/Auth';
 import { BMessage, BMessageOps, BMessageIProps } from '@Comm/BMessage';
 import { OpenSessionReqProps, MakeConnectionReqProps } from '@Comm/BMessageProps';
+
+import { BItem } from '@BItem/BItem';
+import { BItems } from '@Base/BItem/BItems';
+import { AuthToken } from '@Tools/Auth';
+import { AbilityFactory } from '@Abilities/Ability';
+
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
+
 import { ProcessDelayedGraphicsOperations } from '@Graphics/GraphicOps';
+
 import { VERSION } from '@Base/VERSION';
 
 import { CombineParameters, ExtractStringError, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
 import { BKeyedCollection } from "@Tools/bTypes";
 import { Logger } from '@Tools/Logging';
-import { BItems } from '@Base/BItem/BItems';
-import { AbilityFactory } from '@Abilities/AbilityManagement';
 
 // When an RPC operation is done, this remembers the send so we can process the response
 interface RPCInfo {

@@ -24,7 +24,6 @@ import { Graphics } from '@Graphics/Graphics';
 import { UI } from '@Tools/UI';
 import { AuthToken } from '@Tools/Auth';
 import { CreateInfrastructureBItems } from '@BItem/WellKnownBItems';
-import { RegisterAllAbilities } from '@Abilities/AbilityManagement';
 
 import { Buffer } from 'buffer';
 import { IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
@@ -45,9 +44,6 @@ if (versionTextNode) {
 
 // Create BItems that coorespond to the input and output devices, etc
 CreateInfrastructureBItems();
-
-// Register the abilities in the ability factory
-RegisterAllAbilities();
 
 // Called with communication configuration parameters in the URL.
 // The 'c' parameter is Base64 encoded JSON data which is merged into

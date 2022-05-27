@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { Eventing } from '@Base/Eventing/Eventing';
 import { GraphicsStateEventName, GraphicStateEventProps, GraphicStates } from '@Base/Graphics/Graphics';
 import { KeyboardEventHandler, SetKeyboardEventHandler } from '@Base/Graphics/GraphicOps';
@@ -27,6 +27,9 @@ export const AbKeyboardName = 'Keyboard'
 export function AbKeyboardFromProps(pProps: BKeyedCollection): AbKeyboard {
     return new AbKeyboard();
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbKeyboardName, AbKeyboardFromProps);
 
 // Ability that interfaces to the keyboard.
 // Subscribe to events from KeyDownProp to get all changes in keyboard state.

@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
@@ -38,6 +38,9 @@ export function AbAssemblyFromProps(pProps: BKeyedCollection): AbAssembly {
     };
     Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbAssemblyName}. pProps: ${JSON.stringify(pProps)}`);
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility( AbAssemblyName, AbAssemblyFromProps );
 
 // An "Assembly" is a thing that can be represented or displayed in the world.
 // It can be a mesh, a shader, texture, or anything else that is loaded and used in the world.

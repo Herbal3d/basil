@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 
@@ -28,6 +28,9 @@ export const AbMsgStatsName = "MsgStats";
 export function AbMsgStatsFromProps(pProps: BKeyedCollection): AbMsgStats {
     return new AbMsgStats();
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbMsgStatsName, AbMsgStatsFromProps);
 
 // Ability that holds messages received and sent count
 export class AbMsgStats extends Ability {

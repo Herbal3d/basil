@@ -13,15 +13,16 @@
 
 import { Config } from '@Base/Config';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItems } from '@BItem/BItems';
 import { BItem, setPropEventParams } from '@BItem/BItem';
 
-import { BKeyedCollection } from '@Tools/bTypes';
 import { AbKeyboard } from './AbilityKeyboard';
+
 import { Eventing } from '@Eventing/Eventing';
-import { Logger } from '@Base/Tools/Logging';
 import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
+import { BKeyedCollection } from '@Tools/bTypes';
+import { Logger } from '@Base/Tools/Logging';
 
 export const AbOSAvaMoveName = 'OSAvatarMovement'
 // REMEMBER TO ADD the ability registration in AbilityManagement.ts
@@ -41,6 +42,9 @@ export enum OSAvaMoveActions {
     Up,
     Down
 }
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbOSAvaMoveName, AbOSAvaMoveFromProps);
 
 export class AbOSAvaMove extends Ability {
 

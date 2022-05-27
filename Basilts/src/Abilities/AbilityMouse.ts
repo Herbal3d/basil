@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -23,6 +23,9 @@ export const AbMouseName = 'Mouse'
 export function AbMouseFromProps(pProps: BKeyedCollection): AbMouse {
     return new AbMouse();
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbMouseName, AbMouseFromProps);
 
 // Basic pointer as a mouse.
 // Note: only one property generates change events: DownProp. For mouse events,

@@ -14,7 +14,7 @@
 import { Config } from '@Base/Config';
 
 import { BItem } from '@BItem/BItem';
-import { AbilityFactory } from '@Abilities/AbilityManagement';
+import { AbilityFactory } from '@Abilities/Ability';
 import { AbBItem } from '@Abilities/AbilityBItem';
 import { AbRegistrationName } from '@Abilities/AbilityReg';
 import { AuthToken } from '@Base/Tools/Auth';

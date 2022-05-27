@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, setPropEventParams } from '@BItem/BItem';
 import { AbPlacement } from '@Abilities/AbilityPlacement';
 
@@ -48,6 +48,16 @@ export enum CameraModes {
     Follow = 6
 }
 
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility( AbCameraName, AbCameraFromProps );
+
+/// <summary>
+/// Base camera operation. This holds the state (type of view) and other central
+///    camera operations.
+/// A camera instance is usually a BItem with AbPlacement (for location in the world),
+///    this AbCamera for camera operation coordination, and then one of the world-centric
+///    camera operation abilities (AbOSCamera, AbFreeCamera, etc.).
+/// </summary>
 export class AbCamera extends Ability {
 
     public static CameraIndexProp = 'cameraIndex';
@@ -72,6 +82,7 @@ export class AbCamera extends Ability {
         pBItem.addProperty(AbCamera.CameraIndexProp, this);
         pBItem.addProperty(AbCamera.CameraModeProp, this);
 
+        // Subscribe to the AbPlacement on this BItem so camera knows when it is moved.
         this._posSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.PosProp),
                     this._onPosUpdate.bind(this) as EventProcessor);
         this._rotSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.RotProp),

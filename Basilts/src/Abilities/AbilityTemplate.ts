@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -29,6 +29,9 @@ export function AbTEMPLATEFromProps(pProps: BKeyedCollection): AbTEMPLATE {
     };
     Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbTEMPLATEName}. pProps: ${JSON.stringify(pProps)}`);
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbTEMPLATEName, AbTEMPLATEFromProps);
 
 export class AbTEMPLATE extends Ability {
 

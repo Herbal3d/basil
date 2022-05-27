@@ -12,10 +12,37 @@
 'use strict';
 
 import { BItem, PropValue } from "@BItem/BItem";
+import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
-export interface AbilityPropertyValues {
-  [ key: string]: PropValue
+export interface AbilityPropertyValues { [ key: string]: PropValue };
+
+// Function defined by each ability to create the Ability from a property set
+export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
+
+export const RegisteredAbilities: Map<string, AbilityFromProps> = new Map<string, AbilityFromProps>()
+
+// The abilities are registered so they can be created dynamically by name
+export function RegisterAbility(pAbilityName: string, pFromProps: AbilityFromProps): void {
+    if (RegisteredAbilities.has(pAbilityName)) {
+        Logger.error(`AbilityManagement: attempt to re-register ability ${pAbilityName}`);
+    }
+    else {
+        Logger.debug(`AbilityManagement: registering ability ${pAbilityName}`);
+        RegisteredAbilities.set(pAbilityName, pFromProps);
+    };
+};
+
+// Given an Ability name and a set of properties, create an Ability instance initialized with the properties
+export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability {
+    // Logger.debug(`AbilityFactory: looking for ability ${pName}`);
+    if (RegisteredAbilities.has(pName)) {
+        // Logger.debug(`AbilityFactory: found ${pName}`);
+        const getFrom = RegisteredAbilities.get(pName);
+        return getFrom(pProps);
+    };
+    Logger.error(`AbilityFactory: could not find ability ${pName}`);
+    return null;
 };
 
 // export abstract class Ability implements AbilityPropertyValues {

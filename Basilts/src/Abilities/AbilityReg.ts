@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -24,6 +24,9 @@ export const AbRegistrationName = 'Registration'
 export function AbRegistrationFromProps(pProps: BKeyedCollection): AbRegistration {
     return new AbRegistration();
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbRegistrationName, AbRegistrationFromProps);
 
 // Ability Registration is added to base BItem and the names of BItems are
 //   later added so they can be looked up. For instance, BItem that is the main

@@ -11,7 +11,7 @@
 
 'use strict';
 
-import { Ability } from '@Abilities/Ability';
+import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
 import { Graphics, GraphicsStateEventName, GraphicStateEventProps, GraphicStates } from '@Base/Graphics/Graphics';
@@ -34,6 +34,9 @@ export function AbEnvironFromProps(pProps: BKeyedCollection): AbEnviron {
                 pProps[AbEnviron.SkyRayleighProp] as PropValue);
     Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbEnvironName}. pProps: ${JSON.stringify(pProps)}`);
 };
+
+// Register the ability with the AbilityFactory. Note this is run when this file is imported.
+RegisterAbility(AbEnvironName, AbEnvironFromProps);
 
 export class AbEnviron extends Ability {
 
