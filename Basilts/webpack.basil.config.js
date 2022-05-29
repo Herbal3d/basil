@@ -38,9 +38,6 @@ module.exports = {
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
-    splitChunks: {
-      chunks: 'all'
-    },
     // runtimeChunk: false,
     runtimeChunk: 'single',
   },
@@ -58,7 +55,9 @@ module.exports = {
     // ref: https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'src/Basil.css', to: path.resolve(__dirname, "dist") }
+        { from: 'src/Basil.css', to: path.resolve(__dirname, "dist") },
+        // Dialogs are not processed by Webpack and are just copied to the dist directory
+        { from: 'Dialogs/*', context: path.resolve(__dirname, "src") }
       ]
     })
   ],

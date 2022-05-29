@@ -19,11 +19,11 @@ export const WWConfig = {
     },
     // Parameters for the main display page
     'page': {
-        'webGLcontainerId': 'webGLcontainer',
-        'webGLcanvasId': 'webGLcanvas',
+        'webGLcontainerId': 'b-webGLdiv',
+        'webGLcanvasId': 'b-webGLcanvas',
         'showDebug': false,
-        'debugElementId': 'DEBUGG',
-        'debugErrorClass': 'errorMsg',
+        'debugElementId': 'b-DEBUGG',
+        'debugErrorClass': 'b-errorMsg',
         'debugLogLines': 30
     },
     // Loader for assets

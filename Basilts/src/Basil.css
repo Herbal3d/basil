@@ -16,105 +16,44 @@
     --font-global-size: 12px;
 }
 
-/* First greens =============================
-:root {
-    --color-global-color: #baaf0b;
-    --color-global-bg: #369e09;
-
-    --color-dialog-color: #f0e8af;
-    --color-dialog-bg: #86af0a;
-    --color-group-bg: #769f0a;
-    --dialog-opacity: 0.8;
-
-    --color-dialog-accent: #b8af0b;
-    --color-dialog-button-color: --color-dialog-color;
-    --color-dialog-button-bg: #4dc41a;
-
-    --color-debug-color: #f0e84f;
-    --color-debug-bg: #4d6600;
-    --color-debug-error: #ff2020;
-    --debug-opacity: 0.4;
-}
-*/
-
 /* Creamier greens ============================= */
 :root {
-    --color-base-headline: #11455f;
-    --color-base-color: #058e3f;
-    --color-base-bg: #88d498;
-    --color-base-accent2: #c6dabf;
-    --color-base-accent: #364706;
+    --b-color-base-headline: #11455f;
+    --b-color-base-color: #058e3f;
+    --b-color-base-bg: #88d498;
+    --b-color-base-accent2: #c6dabf;
+    --b-color-base-accent: #364706;
 
-    --color-global-color: var(--color-base-color);
-    --color-global-bg: var(--color-base-headline);
+    --b-color-global-color: var(--b-color-base-color);
+    --b-color-global-bg: var(--b-color-base-headline);
 
-    --color-dialog-color: var(--color-base-color);
-    --color-dialog-bg: var(--color-base-headline);
-    --color-group-bg: var(--color-base-bg);
-    --dialog-opacity: 0.8;
+    --b-color-dialog-color: var(--b-color-base-color);
+    --b-color-dialog-bg: var(--b-color-base-headline);
+    --b-color-group-bg: var(--b-color-base-bg);
+    --b-dialog-opacity: 0.8;
 
-    --color-dialog-accent: var(--color-base-accent);
-    --color-dialog-button-color: var(--color-base-color);
-    --color-dialog-button-bg: var(--color-base-accent2);
+    --b-color-dialog-accent: var(--b-color-base-accent);
+    --b-color-dialog-button-color: var(--b-color-base-color);
+    --b-color-dialog-button-bg: var(--b-color-base-accent2);
 
-    --color-debug-color: #111;
-    --color-debug-bg: var(--color-base-bg);
-    --color-debug-error: #ff2020;
-    --debug-opacity: 0.6;
+    --b-color-debug-color: #111;
+    --b-color-debug-bg: var(--b-color-base-bg);
+    --b-color-debug-error: #ff2020;
+    --b-debug-opacity: 0.6;
 }
 
-.defn-dialog {
-    margin: 5px;
-    padding: 5px;
-    border-radius: 1em;
-    -moz-border-radius: 1em;
-    color: var(--color-dialog-color);
-    background: var(--color-dialog-bg);
-    opacity: var(--dialog-opacity);
-}
-
-/* value display areas (text, coord, ...) */
-.defn-display {
-    display: inline;
-    margin: 1px;
-    padding: 2px;
-    border: 1px solid var(--color-dialog-accent);
-}
-*/
-
-/* Button appearing in the dialog */
-.button {
-    display: inline;
-    margin: 4px;
-    padding: 2px;
-    text-align: center;
-    border: 3px solid var(--color-dialog-accent);
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    color: var(--color-dialog-button-color);
-    background: var(--color-dialog-button-bg);
-    opacity: 100;
-    width: 7em;
-    height: 2em;
-}
-
-.button-sm {
-    /* use with .button */
-    font-size: smaller;
-}
-
-body {
+#b-body {
     font-family: var(--font-global-family);
     font-size: var(--font-global-size);
-    color: var(--color-global-color);
-    background: var(--color-global-bg);
+    color: var(--b-color-global-color);
+    background: var(--b-color-global-bg);
     padding: 0px;
     margin: 0px;
 }
 
 /* The layout for the whole page. */
 /* The width is smaller as Chrome seems to make scroll bars if it's 100%. */
-#pageLayout {
+.b-basil-pageLayout {
     position: absolute;
     top: 0%;
     left: 0%;
@@ -125,7 +64,7 @@ body {
 }
 
 /* The container that contains the canvas. */
-#webGLcontainer {
+#b-webGLdiv {
     width: 100%;
     height: 100%;
     padding: 0px;
@@ -134,13 +73,46 @@ body {
 }
 
 /* The canvas that is passed to ThreeJS */
-#webGLcanvas {
+#b-webGLcanvas {
     width: 100%;
     height: 100%;
     padding: 0px;
     margin: 5px;
     overflow: hidden;
 }
+
+/* Overlay area for debug and error messages */
+#b-DEBUGG {
+    position: absolute;
+    left: 0%;
+    bottom: 0%;
+    width: 50%;
+    margin: 2em;
+    padding: 2em;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    height: 30em;
+    color: var(--b-color-debug-color);
+    background: var(--b-color-debug-bg);
+    opacity: var(--b-debug-opacity);
+    visibility: hidden;
+}
+
+/* Class added to a reported error message in the DEBUGG area */
+.b-errorMsg {
+    color: var(--b-color-debug-error);
+    font-weight: heavy;
+}
+/* ================================================================ */
+
+.b-entry-dialog {
+    padding-top: 20px;
+    width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ================================================================ */
 
 /* An overlay area for controls */
 #controls {
@@ -153,14 +125,47 @@ body {
     height: 18em;
 }
 
-#EntryDialog {
-    padding-top: 20px;
-    width: 50em;
-    margin-left: auto;
-    margin-right: auto;
+.defn-dialog {
+    margin: 5px;
+    padding: 5px;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    color: var(--b-color-dialog-color);
+    background: var(--b-color-dialog-bg);
+    opacity: var(--b-dialog-opacity);
 }
 
-#BasilVersion {
+/* value display areas (text, coord, ...) */
+.defn-display {
+    display: inline;
+    margin: 1px;
+    padding: 2px;
+    border: 1px solid var(--b-color-dialog-accent);
+}
+*/
+
+/* Button appearing in the dialog */
+.button {
+    display: inline;
+    margin: 4px;
+    padding: 2px;
+    text-align: center;
+    border: 3px solid var(--b-color-dialog-accent);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    color: var(--b-color-dialog-button-color);
+    background: var(--b-color-dialog-button-bg);
+    opacity: 100;
+    width: 7em;
+    height: 2em;
+}
+
+.button-sm {
+    /* use with .button */
+    font-size: smaller;
+}
+
+#b-version {
     display: block;
     bottom: 0%;
     position: absolute;
@@ -171,8 +176,8 @@ body {
 .dialog-group {
     /* use with .defn-dialog; */
     display: block;
-    border: 2px solid var(--color-dialog-accent);
-    background: var(--color-group-bg);
+    border: 2px solid var(--b-color-dialog-accent);
+    background: var(--b-color-group-bg);
     margin: 4px;
     padding: 4px;
     margin: 4px;
@@ -189,7 +194,7 @@ label {
 .textDisplayAccent {
     /* use with .defn-display; */
     display: block;
-    color: var(--color-dialog-accent);
+    color: var(--b-color-dialog-accent);
     border: 0px;
 }
 .textDisplayRight {
@@ -209,20 +214,5 @@ label {
 .coordEntry {
     display: inline;
     margin: 1px;
-    background: var(--color-dialog-button-bg);
-}
-
-/* Overlay area for debug and error messages */
-#DEBUGG {
-    /* use with .defn-dialog; */
-    color: var(--color-debug-color);
-    background: var(--color-debug-bg);
-    opacity: var(--debug-opacity);
-    visibility: hidden;
-}
-
-/* Class added to a reported error message in the DEBUGG area */
-.errorMsg {
-    color: var(--color-debug-error);
-    font-weight: heavy;
+    background: var(--b-color-dialog-button-bg);
 }

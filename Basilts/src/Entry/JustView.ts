@@ -23,6 +23,9 @@
 // as the base directory to find the specified basename. This results
 // in the URL "${repository}/${subDir}/${baseName}/${baseName}.gltf".
 
+// There is also the 'r' parameter which gives the base URL.
+// Default is 'https://files.misterblue.com/BasilTest/convoar'.
+
 // This URL is passed to Basil as a test URL to load and display using
 // WWTester.
 
@@ -37,26 +40,26 @@ window.onload = (ev: Event) => {
 }
 
 function CallBasilWithTheFile(): void {
-  const repository = 'https://files.misterblue.com/BasilTest/convoar';
 
-  const baseName = ConfigGetQueryVariable('b');
-  let version = ConfigGetQueryVariable('v');
-  const subDir = ConfigGetQueryVariable('d');
-  if (typeof(version) === 'undefined') {
-      version = 'unoptimized';
-  };
+    const bn = ConfigGetQueryVariable('b');
+    const ver = ConfigGetQueryVariable('v');
+    const subDir = ConfigGetQueryVariable('d');
+    const repos = ConfigGetQueryVariable('r');
 
-  let GLTFTOLOAD = `${repository}/testtest88/${version}/testtest88.gltf`;
+    const baseName = bn ?? 'testtest88';
+    const version = ver ?? 'unoptimized';
+    const repository = repos ?? 'https://files.misterblue.com/BasilTest/convoar';
 
-  if (typeof(subDir) === 'undefined') {
-    if (baseName) {
+    let GLTFTOLOAD = `${repository}/testtest88/${version}/testtest88.gltf`;
+
+    if (typeof(subDir) === 'undefined') {
+        // was passed "?b=BASENAME&v=VERSION"
         GLTFTOLOAD =  `${repository}/${baseName}/${version}/${baseName}.gltf`;
-    };
-  }
-  else {
-        // If subDir is specified, the basename is just in that subdir
+    }
+    else {
+        // was passed "?b=BASENAME&d=SUBDIR"
         GLTFTOLOAD =  `${repository}/${subDir}/${baseName}/${baseName}.gltf`;
-  };
+    };
 
     const testConfigParams = {
         'Init': {
@@ -76,6 +79,6 @@ function CallBasilWithTheFile(): void {
 
     const configParams = Buffer.from(JSONstringify(testConfigParams));
 
-    window.location.assign('Basil.html?c=' + configParams.toString('base64'));
+    window.location.assign('./Basil.html?c=' + configParams.toString('base64'));
 }
 

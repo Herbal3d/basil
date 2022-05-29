@@ -28,9 +28,6 @@ module.exports = {
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
-    splitChunks: {
-      chunks: 'all'
-    },
     runtimeChunk: false,
   },
   plugins: [
@@ -39,7 +36,7 @@ module.exports = {
     new HtmlWebpackPlugin({
         inject: 'body',
         filename: 'JustView.html',
-        template: 'src/JustView.html',
+        template: 'src/Entry/JustView.html',
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US'
@@ -51,12 +48,6 @@ module.exports = {
         test: /\.tsx?/,
         use: 'ts-loader',
         exclude: /node_modules/
-      },
-      {
-        // move image files to the dist directory
-        //    ref: https://webpack.js.org/loaders/file-loader/
-        test: /\.(png|svg|jpg|gif)$/,
-        use: [ 'file-loader' ]
       }
     ]
   }

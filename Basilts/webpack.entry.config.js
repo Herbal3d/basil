@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -29,9 +28,6 @@ module.exports = {
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
-    splitChunks: {
-      chunks: 'all'
-    },
     runtimeChunk: false,
   },
   plugins: [
@@ -40,16 +36,10 @@ module.exports = {
     new HtmlWebpackPlugin({
         inject: 'body',
         filename: 'Entry.html',
-        template: 'src/Entry.html',
+        template: 'src/Entry/Entry.html',
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US'
-    }),
-    // ref: https://webpack.js.org/plugins/copy-webpack-plugin/
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: 'src/Basil.css', to: path.resolve(__dirname, "dist") }
-      ]
     })
   ],
   module: {
@@ -63,6 +53,12 @@ module.exports = {
         // move image files to the dist directory
         //    ref: https://webpack.js.org/loaders/file-loader/
         test: /\.(png|svg|jpg|gif)$/,
+        use: [ 'file-loader' ]
+      },
+      {
+        // move css files to the dist directory
+        //    ref: https://webpack.js.org/loaders/file-loader/
+        test: /\.css$/,
         use: [ 'file-loader' ]
       }
     ]

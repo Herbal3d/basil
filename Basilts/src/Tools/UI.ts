@@ -43,7 +43,7 @@ export const UI = {
     },
     // Call to set debug window to specified state. Pass state that is should be in
     ShowDebug(pOnOff: boolean) {
-        const debugElement = document.getElementById('DEBUGG');
+        const debugElement = document.getElementById(Config.page.debugElementId);
         if (debugElement) {
             if (pOnOff) {   // want it on
                 // const showMS = Config.page.DebugShowMS ? Config.page.DebugShowMS : 800;
@@ -58,7 +58,7 @@ export const UI = {
 };
 
 ClickableOps['showDebug'] = function() {
-    UI.ShowDebug(!(document.getElementById('DEBUGG').style.visibility !== 'hidden'));
+    UI.ShowDebug(!(document.getElementById(Config.page.debugElementId).style.visibility !== 'hidden'));
 };
 ClickableOps['addTestObject'] = function() {
     AddTestObject();

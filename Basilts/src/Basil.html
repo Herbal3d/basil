@@ -3,9 +3,9 @@
 <head>
     <title>Basil</title>
     <meta name="author" content="Herbal3d Project">
-    <meta name="description" content="Basil brouser virtual world viewer">
+    <meta name="description" content="Basil browser virtual world viewer">
     <meta property="og:image" content="">
-    <meta property="og:description" content="Basil brouser virtual world viewer">
+    <meta property="og:description" content="Basil browser virtual world viewer">
     <meta property="od:title" contents="Basil Viewer">
     <script type="text/javascript">
         // A global variable that ties things together for debugging
@@ -13,10 +13,12 @@
     </script>
     <link href="./Basil.css" rel="stylesheet" type="text/css">
 </head>
-<body id="BasilBody">
-    <div id="pageLayout">
-        <div id="webGLcontainer">
-            <canvas id="webGLcanvas"></canvas>
+<body id="b-body">
+    <div id="b-page" class="b-basil-pageLayout">
+        <div id="b-webGLdiv">
+            <canvas id="b-webGLcanvas"></canvas>
+        </div>
+        <div id="b-dialogs">
         </div>
         <div id="controls" class="defn-dialog">
             <div class="defn-dialog dialog-group">
@@ -51,8 +53,8 @@
                 </div>
             </div>
         </div>
-        <div id="DEBUGG"></div>
+        <div id="b-DEBUGG"></div>
     </div>
-    <div id="BasilVersion"></div>
+    <div id="b-version"></div>
 </body>
 </html>

@@ -5,9 +5,9 @@
 
 export const Config = {
     'page': {
-        'showDebug': true,
-        'debugElementId': 'DEBUGG',
-        'versionElementId': 'BasilVersion'
+        'showDebug': false,
+        'debugElementId': 'b-DEBUGG',
+        'versionElementId': 'b-version'
     },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {
@@ -34,7 +34,7 @@ export const Config = {
         'EnableLogging': true,           // whether to output any logging
         'DebugLogToConsole': true,       // output debug message to console rather than debug window
         'VisibleDebugLog': true,         // whether to show debug log in browser
-        'LogLevel': 'info',              // output log level (error, warn, info, debug)
+        'LogLevel': 'debug',              // output log level (error, warn, info, debug)
         'SendAndPromisePrintMsg': false, // optionally print response message
         'DebugLogInstanceName': 'bitem.debug.b.basil.org' // Name of debug logging instance
     },
