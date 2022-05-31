@@ -49,6 +49,7 @@ export const Config = {
     'page': {
         'webGLcontainerId': 'b-webGLdiv',
         'webGLcanvasId': 'b-webGLcanvas',
+        'dialogsElementId': 'b-dialogs',
         'showDebug': false,
         'debugElementId': 'b-DEBUGG',
         'versionElementId': 'b-version',

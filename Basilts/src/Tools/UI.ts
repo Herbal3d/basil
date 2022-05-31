@@ -26,8 +26,8 @@ const ClickableOps: { [key: string]: ClickOperation } = {};
 
 export const UI = {
     init() {
-        // Make all 'class=clickable' page items create events
-        Array.from(document.getElementsByClassName('clickable')).forEach( nn => {
+        // Make all 'class=b-clickable' page items create events
+        Array.from(document.getElementsByClassName('b-clickable')).forEach( nn => {
             nn.addEventListener('click', (evnt: Event) => {
                 const buttonOp = (evnt.target as HTMLElement).getAttribute('op');
                 if (buttonOp && typeof(ClickableOps[buttonOp]) === 'function') {

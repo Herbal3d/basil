@@ -30,7 +30,7 @@
     --b-color-dialog-color: var(--b-color-base-color);
     --b-color-dialog-bg: var(--b-color-base-headline);
     --b-color-group-bg: var(--b-color-base-bg);
-    --b-dialog-opacity: 0.8;
+    --b-dialog-opacity: 0.7;
 
     --b-color-dialog-accent: var(--b-color-base-accent);
     --b-color-dialog-button-color: var(--b-color-base-color);
@@ -39,7 +39,7 @@
     --b-color-debug-color: #111;
     --b-color-debug-bg: var(--b-color-base-bg);
     --b-color-debug-error: #ff2020;
-    --b-debug-opacity: 0.6;
+    --b-debug-opacity: 0.3;
 }
 
 #b-body {
@@ -81,6 +81,14 @@
     overflow: hidden;
 }
 
+/* Display of the version number at the bottom of the page */
+#b-version {
+    display: block;
+    bottom: 0%;
+    position: absolute;
+    background: rgba(0,0,0,0.1);
+}
+
 /* Overlay area for debug and error messages */
 #b-DEBUGG {
     position: absolute;
@@ -105,18 +113,29 @@
 }
 /* ================================================================ */
 
+/* Definition for the larger dialog box used in Entry.html */
 .b-entry-dialog {
     padding-top: 20px;
     width: 50em;
     margin-left: auto;
     margin-right: auto;
 }
+/* table on Entry.html */
+#b-entry-gridLogin-table {
+    padding: 10px;
+}
 
 /* ================================================================ */
 
 /* An overlay area for controls */
 #controls {
-    /* use with .defn-dialog; */
+    margin: 5px;
+    padding: 5px;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    color: var(--b-color-dialog-color);
+    background: var(--b-color-dialog-bg);
+    opacity: var(--b-dialog-opacity);
     position: absolute;
     right: 0%;
     bottom: 0%;
@@ -125,27 +144,8 @@
     height: 18em;
 }
 
-.defn-dialog {
-    margin: 5px;
-    padding: 5px;
-    border-radius: 1em;
-    -moz-border-radius: 1em;
-    color: var(--b-color-dialog-color);
-    background: var(--b-color-dialog-bg);
-    opacity: var(--b-dialog-opacity);
-}
-
-/* value display areas (text, coord, ...) */
-.defn-display {
-    display: inline;
-    margin: 1px;
-    padding: 2px;
-    border: 1px solid var(--b-color-dialog-accent);
-}
-*/
-
 /* Button appearing in the dialog */
-.button {
+.b-button {
     display: inline;
     margin: 4px;
     padding: 2px;
@@ -160,59 +160,35 @@
     height: 2em;
 }
 
-.button-sm {
-    /* use with .button */
-    font-size: smaller;
-}
-
-#b-version {
-    display: block;
-    bottom: 0%;
-    position: absolute;
-    background: rgba(0,0,0,0.1);
-}
-
 /*  <div> group as a displayed group in a dialog */
-.dialog-group {
-    /* use with .defn-dialog; */
+.b-dialog-group {
     display: block;
     border: 2px solid var(--b-color-dialog-accent);
     background: var(--b-color-group-bg);
     margin: 4px;
     padding: 4px;
     margin: 4px;
+    border-radius: 1em;
+    -moz-border-radius: 1em;
+    color: var(--b-color-dialog-color);
+    opacity: var(--b-dialog-opacity);
 }
 
-label {
-    display: block;
-}
-
-.textDisplay {
-    /* use with .defn-display; */
-    border: 0px;
-}
-.textDisplayAccent {
-    /* use with .defn-display; */
-    display: block;
-    color: var(--b-color-dialog-accent);
-    border: 0px;
-}
-.textDisplayRight {
-    /* use with .defn-display; */
-    display: block;
-    text-align: right;
-    border: 0px;
-}
-.gridLogin-table {
-    padding: 5px 0px 5px 0px;
-    margin: 0px;
-}
-.coordDisplay {
-    /* use with .defn-display; */
-    margin: 1px;
-}
-.coordEntry {
+.b-textDisplay {
     display: inline;
     margin: 1px;
-    background: var(--b-color-dialog-button-bg);
+    padding: 2px;
+    border: 0px;
+}
+.b-textAccent {
+    color: var(--b-color-dialog-accent);
+}
+.b-textRight {
+    text-align: right;
+}
+.b-coordDisplay {
+    display: inline;
+    margin: 1px;
+    padding: 2px;
+    border: 1px solid var(--b-color-dialog-accent);
 }

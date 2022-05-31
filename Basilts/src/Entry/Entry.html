@@ -16,54 +16,55 @@
 <body id="b-body" class="b-entry-pageLayout">
     <div id="b-page">
         <div class="b-entry-dialog">
-            <div class=" dialog-group">
+            <div class="b-dialog-group">
                 <fieldset>
                     <legend>Log Into Grid</legend>
-                    <div class="defn-display textDisplayAccent">Invoke Basil viewer logging into the selected Grid.</div>
-                    <div class="defn-display textDisplayAccent">Entry Grid login URL or select grid name</div>
-                    <table id="gridLogin-table">
+                    <div class="b-textDisplay b-textAccent">Invoke Basil viewer logging into the selected Grid.</div>
+                    <div></div>
+                    <div class="b-textDisplay b-textAccent">Enter Grid login URL or select grid name</div>
+                    <table id="b-entry-gridLogin-table">
                         <tr>
-                            <td class="defn-display textDisplayRight"> Grid name: </td>
+                            <td class="b-textDisplay b-textRight"> Grid name: </td>
                             <td>
                                 <!-- filled by the script from Config.Grids -->
                                 <select id="gridLogin-gridName"> </select>
                             </td>
                         </tr>
                         <tr>
-                            <td class="defn-display textDisplayRight"> Grid URL: </td>
+                            <td class="b-textDisplay b-textRight"> Grid URL: </td>
                             <td>
                                 <input id="gridLogin-gridURL" value="http://127.0.0.1:9000" type="text" size="50" maxlength="120"/>
                             </td>
                         </tr>
                         <tr>
-                            <td class="defn-display textDisplayRight">.</td>
+                            <td class="b-textDisplay b-textRight">.</td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="defn-display textDisplayRight"> User name: </td>
+                            <td class="b-textDisplay b-textRight"> User name: </td>
                             <td> <input id="gridLogin-userName" type="text" size="40" maxlength="40"/> </td>
                         </tr>
                         <tr>
-                            <td class="defn-display textDisplayRight"> Password: </td>
+                            <td class="b-textDisplay b-textRight"> Password: </td>
                             <td> <input id="gridLogin-userPassword" type="password" size="40" maxlength="40"/> </td>
                         </tr>
                         <tr>
-                            <td class="defn-display textDisplayRight"> Region: </td>
+                            <td class="b-textDisplay b-textRight"> Region: </td>
                             <td> <input id="gridLogin-region" type="text" size="40" maxlength="40"
                                 placeholder="Region name or 'Home' or 'Last'"/> </td>
                         </tr>
                     </table>
-                    <button type="button" class="button clickable" op="gridLogin">Login</button>
+                    <button type="button" class="b-button b-clickable" op="gridLogin">Login</button>
                     <div id="gridLogin-progress"> </div>
                 </fieldset>
             </div>
         </div>
         <!--
         <div class="b-entry-dialog">
-            <div class="dialog-group">
+            <div class="b-dialog-group">
                 <fieldset>
                     <legend>Connect to test region</legend>
-                    <div class="defn-display textDisplayAccent">Invoke Basil viewer connecting to the specfied SpaceServer</div>
+                    <div class="b-textDisplay b-textAccent">Invoke Basil viewer connecting to the specfied SpaceServer</div>
                     <select id="region-transportURL">
                         <option value="ws://192.168.86.41:11440">
                             ws://192.168.86.41:11440
@@ -94,27 +95,27 @@
                             PestoServer
                         </option>
                     </select>
-                    <button type="button" class="button clickable" op="spaceServerConnect">Launch</button>
+                    <button type="button" class="b-button b-clickable" op="spaceServerConnect">Launch</button>
                 </fieldset>
             </div>
         </div>
         -->
         <div class="b-entry-dialog">
-            <div class="dialog-group">
+            <div class="b-dialog-group">
                 <fieldset>
                     <legend>Test operation -- WebWorker</legend>
-                    <div class="defn-display textDisplayAccent">Invoke Basil viewer with WebWorker tester to load the selected scene</div>
+                    <div class="b-textDisplay b-textAccent">Invoke Basil viewer with WebWorker tester to load the selected scene</div>
                     <span id="sceneSelection">
                         <!-- filled by the script from Config.Grids -->
                         <select id="test-sceneURL"> </select>
                     </span>
-                    <button type="button" class="button clickable" op="testScene">Launch</button>
+                    <button type="button" class="b-button b-clickable" op="testScene">Launch</button>
                 </fieldset>
             </div>
         </div>
         <!--
         <div class="dialog-group">
-            <button type="button" class="button clickable" op="testLLSDParser">TestLLSD</button>
+            <button type="button" class="button b-clickable" op="testLLSDParser">TestLLSD</button>
         </div>
         -->
         <div class="b-entry-dialog">

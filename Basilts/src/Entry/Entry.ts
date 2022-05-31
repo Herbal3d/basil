@@ -32,9 +32,8 @@ if (debugElement) {
     debugElement.style.visibility = 'visible';
 }
 
-// Make all 'class=clickable' page items create events
-for (const nn of Array.from(document.getElementsByClassName('clickable'))) {
-    Logger.debug(`Adding clickable event listener`);
+// Make all 'class=b-clickable' page items create events
+for (const nn of Array.from(document.getElementsByClassName('b-clickable'))) {
     nn.addEventListener('click', (evnt: Event) => {
         const buttonOp = (evnt.target as HTMLElement).getAttribute('op');
         Logger.debug(`Click: ${buttonOp}`);
