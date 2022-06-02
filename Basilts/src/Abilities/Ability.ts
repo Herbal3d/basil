@@ -1,4 +1,4 @@
-// Copyright 2021 Robert Adams
+// Copyright 2022 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -45,7 +45,6 @@ export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability
     return null;
 };
 
-// export abstract class Ability implements AbilityPropertyValues {
 export abstract class Ability  {
 
     abilityName: string;

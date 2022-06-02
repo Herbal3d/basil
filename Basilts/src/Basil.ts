@@ -14,6 +14,7 @@
 // Global debugging parameters and variables. "GP.variable"
 // Even though the IDE says this is not referenced, it is so don't delete it.
 import { GlobalReady } from '@Base/Globals';
+
 import { Config, initConfig, ConfigGetQueryVariable } from '@Base/Config';
 import { VERSION } from '@Base/VERSION';
 

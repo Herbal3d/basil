@@ -18,7 +18,7 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Config } from '@Base/Config';
-import { BasilConnection } from '@Base/Comm/BasilConnection';
+import { BasilConnection } from '@Comm/BasilConnection';
 
 export enum BItemState {
     UNINITIALIZED = 0,

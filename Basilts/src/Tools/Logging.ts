@@ -46,7 +46,7 @@ function DoLog(pMsg: string, pClass?: string) {
 };
 
 // Initialize logging by adding the console and debug loggers
-export function initLogging(pLogConsole?: boolean, pShowDebug?: boolean) {
+export function initLogging(pLogConsole?: boolean, pLogDebug?: boolean) {
     if (pLogConsole ?? Config.Debug.DebugLogToConsole) {
         LogOutputters.push( (pMsg: string, pClass?: string) => {
             if (pClass) {
@@ -59,7 +59,7 @@ export function initLogging(pLogConsole?: boolean, pShowDebug?: boolean) {
             };
         });
     };
-    if (pShowDebug ?? Config.page.showDebug) {
+    if (pLogDebug ?? Config.Debug.EnableLogging) {
         LogOutputters.push( (pMsg: string, pClass?: string) => {
             const debugg = document.getElementById(Config.page.debugElementId);
             if (debugg) {

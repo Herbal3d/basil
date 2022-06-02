@@ -23,7 +23,7 @@ import { BasilConnection } from '@Base/Comm/BasilConnection';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 
-import { Logger } from '@Base/Tools/Logging';
+import { Logger } from '@Tools/Logging';
 
 // Management routines for BItems.
 //    Functions for the creation, storage, and manipulation of BItems

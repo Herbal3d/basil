@@ -18,13 +18,13 @@ import { AbBItem, BItemState } from '@Abilities/AbilityBItem';
 import { BItems } from '@BItem/BItems';
 import { Eventing } from '@Eventing/Eventing';
 import { Object3D } from '@Base/Graphics/Object3d';
+import { BasilConnection } from '@Comm/BasilConnection';
 
 import { AuthToken } from '@Tools/Auth';
 
-import { CreateUniqueId, ExtractStringError } from '@Base/Tools/Utilities';
-import { BKeyedCollection } from '@Base/Tools/bTypes';
-import { initLogging, Logger } from '@Base/Tools/Logging';
-import { BasilConnection } from '@Base/Comm/BasilConnection';
+import { CreateUniqueId, ExtractStringError } from '@Tools/Utilities';
+import { BKeyedCollection } from '@Tools/bTypes';
+import { Logger } from '@Tools/Logging';
 
 // BItem class is the base of all the items in the system.
 // A BItem get ALL it's functionality fron the Abilities that are added to it.
