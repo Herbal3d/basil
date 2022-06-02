@@ -1,12 +1,12 @@
 # don't ever lint node_modules
-node_modules
+node_modules/
 # don't lint build output (make sure it's set to your correct build folder name)
-dist
+dist/
 # don't lint nyc coverage output
 coverage
 
 # Tools for building are not checked
-build_scripts
+build_scripts/
 
 # imported libraries shouldn't be linted
 jslibs/
@@ -16,6 +16,10 @@ THIRDPARTYLICENSES/
 docs/
 genChangelog.sh
 
+# Files created with Typescript type information
+declarations/
+
+# The webpack config files shouldn't be touched either
 webpack.basil.config.js
 webpack.entry.config.js
 webpack.justview.config.js

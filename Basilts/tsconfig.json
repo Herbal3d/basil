@@ -1,32 +1,11 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "allowJs": true,
-        "esModuleInterop": true,
-        "target": "es6",
-        "noImplicitAny": true,
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "outDir": "dist",
-        "baseUrl": ".",
-        "paths": {
-            "@Abilities/*": ["./src/Abilities/*"],
-            "@Base/*": ["./src/*"],
-            "@BItem/*": ["./src/BItem/*"],
-            "@Comm/*": ["./src/Comm/*"],
-            "@Entry/*": ["./src/Entry/*"],
-            "@Eventing/*": ["./src/Eventing/*"],
-            "@Graphics/*": ["./src/Graphics/*"],
-            "@jslibs/*": ["./src/jslibs/*"],
-            "@Tools/*": ["./src/Tools/*"],
-            "*": [ "node_modules/*" ]
-        }
-    },
+    "extends": "./tsconfig-compiler-options.json",
     "include": [
         "src/**/*"
     ],
     "exclude": [
         "src/static/**/*",
-        "src/jslibs/*"
+        "src/jslibs/*",
+        "declarations/**/*"
     ]
 }

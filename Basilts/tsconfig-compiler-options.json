@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "target": "es6",
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "baseUrl": ".",
+        "declaration": true,
+        "declarationDir": "./declarations",
+        "paths": {
+            "@Abilities/*": ["./src/Abilities/*"],
+            "@Base/*": ["./src/*"],
+            "@BItem/*": ["./src/BItem/*"],
+            "@Comm/*": ["./src/Comm/*"],
+            "@Dialogs/*": ["./src/Dialogs/*"],
+            "@Entry/*": ["./src/Entry/*"],
+            "@Eventing/*": ["./src/Eventing/*"],
+            "@Graphics/*": ["./src/Graphics/*"],
+            "@jslibs/*": ["./src/jslibs/*"],
+            "@Tools/*": ["./src/Tools/*"],
+            "*": [ "node_modules/*" ]
+        }
+    }
+}
