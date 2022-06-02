@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -19,6 +20,7 @@ module.exports = {
         '@Base': path.resolve(__dirname, 'src'),
         '@BItem': path.resolve(__dirname, 'src/BItem'),
         '@Comm': path.resolve(__dirname, 'src/Comm'),
+        '@Dialogs': path.resolve(__dirname, 'src/Dialogs'),
         '@Entry': path.resolve(__dirname, 'src/Entry'),
         '@Eventing': path.resolve(__dirname, 'src/Eventing'),
         '@Graphics': path.resolve(__dirname, 'src/Graphics'),
@@ -28,7 +30,6 @@ module.exports = {
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
-    runtimeChunk: false,
   },
   plugins: [
     // Create dist/Entry.html from my template
@@ -40,6 +41,13 @@ module.exports = {
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
         lang: 'en-US'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        // Copy the .css file and the built dialogs into the distribution
+        //      ref: https://webpack.js.org/plugins/copy-webpack-plugin/
+        { from: 'src/Basil.css', to: path.resolve(__dirname, "dist") },
+      ]
     })
   ],
   module: {
@@ -47,18 +55,14 @@ module.exports = {
       {
         test: /\.tsx?/,
         use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        exclude: /Dialogs/,
+        exclude: /declarations/
       },
       {
         // move image files to the dist directory
         //    ref: https://webpack.js.org/loaders/file-loader/
         test: /\.(png|svg|jpg|gif)$/,
-        use: [ 'file-loader' ]
-      },
-      {
-        // move css files to the dist directory
-        //    ref: https://webpack.js.org/loaders/file-loader/
-        test: /\.css$/,
         use: [ 'file-loader' ]
       }
     ]

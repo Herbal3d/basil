@@ -19,6 +19,7 @@ module.exports = {
         '@Base': path.resolve(__dirname, 'src'),
         '@BItem': path.resolve(__dirname, 'src/BItem'),
         '@Comm': path.resolve(__dirname, 'src/Comm'),
+        '@Dialogs': path.resolve(__dirname, 'src/Dialogs'),
         '@Entry': path.resolve(__dirname, 'src/Entry'),
         '@Eventing': path.resolve(__dirname, 'src/Eventing'),
         '@Graphics': path.resolve(__dirname, 'src/Graphics'),
@@ -28,7 +29,6 @@ module.exports = {
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
-    runtimeChunk: false,
   },
   plugins: [
     // Create dist/Entry.html from my template
@@ -47,7 +47,9 @@ module.exports = {
       {
         test: /\.tsx?/,
         use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        exclude: /Dialogs/,
+        exclude: /declarations/
       }
     ]
   }

@@ -11,7 +11,7 @@ module.exports = {
   entry: {
     basil: './src/Basil.ts',
     // declare the config file as a separate entry so it is not packed with the main viewer
-    config: './src/Config.ts',
+    config: './src/Config.ts'
   },
   output: {
     // use webpack.HashedModuleIdsPlugin to create unique filenames for each build
@@ -29,6 +29,7 @@ module.exports = {
         '@Base': path.resolve(__dirname, 'src'),
         '@BItem': path.resolve(__dirname, 'src/BItem'),
         '@Comm': path.resolve(__dirname, 'src/Comm'),
+        '@Dialogs': path.resolve(__dirname, 'src/Dialogs'),
         '@Entry': path.resolve(__dirname, 'src/Entry'),
         '@Eventing': path.resolve(__dirname, 'src/Eventing'),
         '@Graphics': path.resolve(__dirname, 'src/Graphics'),
@@ -38,26 +39,23 @@ module.exports = {
     extensions: [ '.ts', '.js', '.jsx', '.json' ]
   },
   optimization: {
-    // runtimeChunk: false,
-    runtimeChunk: 'single',
   },
   plugins: [
-    // Create dist/Basil.html from my template
+    // Add the references to the built .js files to the .html files
     //      ref: https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
-        inject: 'body',
         filename: 'Basil.html',
         template: 'src/Basil.html',
         // googleAnalytics.trackingId: 'xyz',
         // googleAnalytics.pageViewOnLoad: true,
-        lang: 'en-US'
     }),
-    // ref: https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyWebpackPlugin({
       patterns: [
+        // Copy the .css file and the built dialogs into the distribution
+        //      ref: https://webpack.js.org/plugins/copy-webpack-plugin/
         { from: 'src/Basil.css', to: path.resolve(__dirname, "dist") },
         // Dialogs are not processed by Webpack and are just copied to the dist directory
-        { from: 'Dialogs/*', context: path.resolve(__dirname, "src") }
+        { from: 'Dialogs/*.(css|html)', context: path.resolve(__dirname, "src/") }
       ]
     })
   ],
@@ -66,7 +64,9 @@ module.exports = {
       {
         test: /\.tsx?/,
         use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        exclude: /Dialogs/,
+        exclude: /declarations/
       },
       {
         // move image files to the dist directory
@@ -75,7 +75,6 @@ module.exports = {
         use: [ 'file-loader' ]
       }
     ]
-  }
-};
+  } };
 
 // vim: set tabstop=2 shiftwidth=2 expandtab autoindent :
