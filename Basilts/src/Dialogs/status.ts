@@ -1,4 +1,4 @@
-// Copyright 2021 Robert Adams
+// Copyright 2022 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,66 +9,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
-
-import { Config } from '@Base/Config';
-import { AddTestObject } from '@Graphics/GraphicOps';
-import { Eventing } from '@Eventing/Eventing';
-
 import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
+import { RenderInfoEventProps } from '@Graphics/Graphics';
+import { CameraInfoEventProps } from '@Graphics/Graphics';
 import { BVector3, BVector4 } from '@Tools/bTypes';
-import { Logger } from '@Tools/Logging';
-import { CameraInfoEventTopic, CameraInfoEventProps, RenderInfoEventTopic, RenderInfoEventProps } from '@Base/Graphics/Graphics';
-import { JSONstringify } from './Utilities';
 
-type ClickOperation = ( pTarget: EventTarget ) => void;
-const ClickableOps: { [key: string]: ClickOperation } = {};
+const BItems = window.BItems;
+const Eventing = window.Eventing;
+const Logger = window.Logger;
 
-export const UI = {
-    init() {
-        // Make all 'class=b-clickable' page items create events
-        Array.from(document.getElementsByClassName('b-clickable')).forEach( nn => {
-            nn.addEventListener('click', (evnt: Event) => {
-                const buttonOp = (evnt.target as HTMLElement).getAttribute('op');
-                if (buttonOp && typeof(ClickableOps[buttonOp]) === 'function') {
-                    ClickableOps[buttonOp](evnt.target);
-                };
-            });
-        });
-        // renderStatsUpdate();
-        // cameraPositionUpdate();
+Logger.debug(`status.js entered`);
 
-        // Whether debug output window is initially displayed can be set in the configuration file
-        UI.ShowDebug(Config.page.showDebug);
-    },
-    // Call to set debug window to specified state. Pass state that is should be in
-    ShowDebug(pOnOff: boolean) {
-        const debugElement = document.getElementById(Config.page.debugElementId);
-        if (debugElement) {
-            if (pOnOff) {   // want it on
-                // const showMS = Config.page.DebugShowMS ? Config.page.DebugShowMS : 800;
-                debugElement.style.visibility = 'visible';
-            }
-            else {
-                // const hideMS = Config.page.DebugHideMS ? Config.page.DebugHideMS : 400;
-                debugElement.style.visibility = 'hidden';
-            }
-        }
-    },
+window.onload = function() {
+    _initilize();
 };
 
-ClickableOps['showDebug'] = function() {
-    UI.ShowDebug(!(document.getElementById(Config.page.debugElementId).style.visibility !== 'hidden'));
+// ======================================================
+// Given a DOM node, remove all its children.
+function EmptyNode(nn: HTMLElement) {
+    while (nn.firstChild) {
+        nn.removeChild(nn.firstChild);
+    }
 };
-ClickableOps['addTestObject'] = function() {
-    AddTestObject();
+
+// Given a DOM node, empty the node and add the passed text as a text node.
+function SetNodeText(nn: HTMLElement, txt: string) {
+    EmptyNode(nn);
+    nn.appendChild(document.createTextNode(txt));
 };
 
 // ======================================================
 // UI structure for displaying XYZ coordinates
 // Create instance with the '#ID' of the containing HTML element
 // Call 'Update' to update the values.
-export class UI_Coord {
+class UI_Coord {
     _areaID: string;
     _areaIDnode: HTMLElement;
 
@@ -110,21 +84,34 @@ export class UI_Coord {
     };
 };
 
+function DumpDocument(pChildren: HTMLCollection, pIndent?: string) {
+    const indent = pIndent ?? '  ';
+    for (let i = 0; i < pChildren.length; i++) {
+        const pChild = pChildren[i];
+        Logger.debug(`${indent}${i}: ${pChild.nodeName}`);
+        if (pChild.hasChildNodes()) {
+            DumpDocument(pChild.children, indent + '  ');
+        }
+    };
+}
+
 // ======================================================
 // UI structure for displaying a quaterion.
 // Create instance with the '#ID' of the containing HTML element
 // Call 'Update' to update the values.
-export class UI_Quat {
+class UI_Quat {
     _areaID: string;
     _areaIDnode: HTMLElement;
     constructor(areaID: string) {
-      this._areaID = areaID;
-      this._areaIDnode = document.querySelector(areaID);
+        this._areaID = areaID;
+        this._areaIDnode = document.querySelector(areaID);
         if (this._areaIDnode) {
             EmptyNode(this._areaIDnode);
+            // Logger.debug('Created UI_Quat element for ' + areaID);
         }
         else {
             Logger.debug(`Did not create UI_Quat element because ${areaID} not in document`);
+            // DumpDocument(document.children);
         }
     }
 
@@ -159,7 +146,7 @@ export class UI_Quat {
 // UI structure for displaying text.
 // Create instance with the '#ID' of the containing HTML element
 // Call 'Update' to update the values.
-export class UI_Text {
+class UI_Text {
     _areaID: string;
     _areaIDnode: HTMLElement;
     constructor(areaID: string) {
@@ -171,6 +158,7 @@ export class UI_Text {
         }
         else {
             Logger.debug('Did not create UI_Text element because ' + areaID + ' not in document');
+            // DumpDocument(document.children);
         };
     };
 
@@ -179,52 +167,25 @@ export class UI_Text {
           SetNodeText(this._areaIDnode, String(txt));
         }
         else {
-            Logger.debug('Did not update UI_Text element because no areaID');
+            Logger.debug(`Did not update UI_Text element because no areaID for ${this._areaID}`);
         }
     };
 };
 
-// ======================================================
-// Given a DOM node, remove all its children.
-export function EmptyNode(nn: HTMLElement) {
-    while (nn.firstChild) {
-        nn.removeChild(nn.firstChild);
-    }
-};
+let _infoFPS: UI_Text;
+let _infoDrawCalls: UI_Text;
+let _infoTriangles: UI_Text;
+let _infoLines: UI_Text;
+// const _infoPoints: UI_Text;
+let _infoTextureMem: UI_Text;
+let _infoGeometryMem: UI_Text;
 
-// Given a DOM node, empty the node and add the passed text as a text node.
-export function SetNodeText(nn: HTMLElement, txt: string) {
-    EmptyNode(nn);
-    nn.appendChild(document.createTextNode(txt));
-};
+let _eventDisplayInfo: SubscriptionEntry = undefined;
 
-let _eventCameraInfo: SubscriptionEntry;
 let _infoCameraCoord: UI_Coord;
+let _eventCameraInfo: SubscriptionEntry;
 
-// Update the camera position for debugging
-function cameraPositionUpdate() {
-    _infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
-    if (_infoCameraCoord) {
-        // @ts-ignore
-        _eventCameraInfo = Eventing.Subscribe(CameraInfoEventTopic, (camInfo: CameraInfoEventProps) => {
-            if (camInfo && camInfo.position && _infoCameraCoord) {
-                _infoCameraCoord.Update(camInfo.position);
-            };
-        });
-    };
-};
-
-export let _eventDisplayInfo: SubscriptionEntry;
-export let _infoFPS: UI_Text;
-export let _infoDrawCalls: UI_Text;
-export let _infoTriangles: UI_Text;
-export let _infoLines: UI_Text;
-export let _infoPoints: UI_Text;
-export let _infoTextureMem: UI_Text;
-export let _infoGeometryMem: UI_Text;
-
-    // UPdate the renderer info
-function renderStatsUpdate() {
+const _initilize = function() {
     _infoFPS = new UI_Text('div[b-info=infoFPS]');
     _infoDrawCalls = new UI_Text('div[b-info=infoDrawCalls]');
     _infoTriangles = new UI_Text('div[b-info=infoTriangles]');
@@ -232,20 +193,31 @@ function renderStatsUpdate() {
     // _infoPoints = new UI_Text('div[b-info=infoPoints]');
     _infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
     _infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
-    if (_infoDrawCalls) {
-        // @ts-ignore
-        _eventDisplayInfo = Eventing.Subscribe(RenderInfoEventTopic, (info: RenderInfoEventProps) => {
-            if (info && info.render && _infoDrawCalls) {
-                _infoFPS.Update(Math.round(info.fps));
-                _infoDrawCalls.Update(info.render.calls);
-                _infoTriangles.Update(info.render.triangles);
-                _infoLines.Update(info.render.lines);
-                // _infoPoints.Update(info.render.points);
-            };
-            if (info && info.memory && _infoTextureMem) {
-                _infoTextureMem.Update(info.memory.textures);
-                _infoGeometryMem.Update(info.memory.geometries);
-            };
-        });
+
+    // @ts-ignore
+    _eventDisplayInfo = Eventing.Subscribe('Graphics.RenderInfo', _processRenderInfo);
+
+    _infoCameraCoord = new UI_Coord('div[b-info=camPosition]');
+    // @ts-ignore
+    _eventCameraInfo = Eventing.Subscribe('Graphics.CameraInfo', _processCameraInfo);
+}
+
+const _processRenderInfo = function(info: RenderInfoEventProps) {
+    if (info && info.render && _infoDrawCalls) {
+        _infoFPS.Update(Math.round(info.fps));
+        _infoDrawCalls.Update(info.render.calls);
+        _infoTriangles.Update(info.render.triangles);
+        _infoLines.Update(info.render.lines);
+        // _infoPoints.Update(info.render.points);
+    };
+    if (info && info.memory && _infoTextureMem) {
+        _infoTextureMem.Update(info.memory.textures);
+        _infoGeometryMem.Update(info.memory.geometries);
+    };
+};
+
+const _processCameraInfo = function(camInfo: CameraInfoEventProps) {
+    if (camInfo && camInfo.position && _infoCameraCoord) {
+        _infoCameraCoord.Update(camInfo.position);
     };
 };

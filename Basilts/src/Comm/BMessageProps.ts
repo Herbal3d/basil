@@ -10,7 +10,8 @@
 // limitations under the License.
 'use strict';
 
-import { BKeyedCollection } from "@Base/Tools/bTypes";
+import { PropValue } from "@BItem/BItem";
+import { BKeyedCollection } from "@Tools/bTypes";
 
 // In addition to IId, Auth, and IAuth, all BMessage's have a list
 //      of properties that varies by operation.
@@ -47,9 +48,8 @@ export interface OpenSessionRespProps {
 export interface CreateItemReqProps {
     itemAuthToken?: string;     // token required to access item
     layer?: string;             // layer the BItem is associated with
-    // @ts-ignore
     abilities?: string[];       // comma separated list of abilities to add
-    [ key: string ]: string;    // any parameters required or the added abilities
+    [ key: string ]: PropValue;    // any parameters required or the added abilities
 
 };
 export interface CreateItemRespProps {
@@ -62,9 +62,8 @@ export interface DeleteItemReqProps {
 export interface DeleteItemRespProps {
 };
 export interface AddAbilityReqProps {
-    // @ts-ignore
     abilities: string[],        // array of ability names to add
-    [ key: string ]: string;    // any parameters required or the added abilities
+    [ key: string ]: PropValue;    // any parameters required or the added abilities
 };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AddAbilityRespProps {

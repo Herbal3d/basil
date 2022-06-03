@@ -113,6 +113,16 @@
 }
 /* ================================================================ */
 
+.b-dialog-iframe {
+    position: absolute;
+    right: 5%;
+    bottom: 5%;
+    width: 30%;
+    height: 30%;
+}
+
+/* ================================================================ */
+
 /* Definition for the larger dialog box used in Entry.html */
 .b-entry-dialog {
     padding-top: 20px;
@@ -126,23 +136,6 @@
 }
 
 /* ================================================================ */
-
-/* An overlay area for controls */
-#controls {
-    margin: 5px;
-    padding: 5px;
-    border-radius: 1em;
-    -moz-border-radius: 1em;
-    color: var(--b-color-dialog-color);
-    background: var(--b-color-dialog-bg);
-    opacity: var(--b-dialog-opacity);
-    position: absolute;
-    right: 0%;
-    bottom: 0%;
-    width: 25%;
-    /* height: 30em;    // height used when having both position and selected boxes */
-    height: 18em;
-}
 
 /* Button appearing in the dialog */
 .b-button {
@@ -185,10 +178,4 @@
 }
 .b-textRight {
     text-align: right;
-}
-.b-coordDisplay {
-    display: inline;
-    margin: 1px;
-    padding: 2px;
-    border: 1px solid var(--b-color-dialog-accent);
 }

@@ -162,21 +162,35 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
         if (typeof(resp.Exception) === 'undefined') {
             createdItemId = resp.IProps.id as string;
 
-            Logger.debug(`Before RequestProperties`);
-            pBasil.RequestProperties(createdItemId, '')
-            .then ( resp2 => {
+            Logger.debug(`Adding statistics and status dialog`);
+            pBasil.CreateItem({
+                abilities: [ 'Dialog' ],
+                url: './Dialogs/status.html'
+            })
+            .then( resp2 => {
                 if (resp2.Exception) {
-                    Logger.debug(`RequestProperties returned error: ${resp.Exception}`);
+                    Logger.error(`Create dialog response error: ${resp2.Exception}`);
                 }
-                else {
-                    Logger.debug(`Properties received for item ${createdItemId}`);
-                    Object.keys(resp2.IProps).forEach( key => {
-                        Logger.debug(`   ${key}: ${resp2.IProps[key]}`);
-                    });
-                };
+
+                Logger.debug(`Before RequestProperties`);
+                pBasil.RequestProperties(createdItemId, '')
+                .then ( resp3 => {
+                    if (resp3.Exception) {
+                        Logger.debug(`RequestProperties returned error: ${resp3.Exception}`);
+                    }
+                    else {
+                        Logger.debug(`Properties received for item ${createdItemId}`);
+                        Object.keys(resp3.IProps).forEach( key => {
+                            Logger.debug(`   ${key}: ${resp3.IProps[key]}`);
+                        });
+                    };
+                })
+                .catch ( e => {
+                    Logger.debug(`Exception from RequestProperties: ${ExtractStringError(e)}`);
+                });
             })
             .catch ( e => {
-                Logger.debug(`Exception from RequestProperties: ${ExtractStringError(e)}`);
+                Logger.debug(`Exception from creating status dialog: ${ExtractStringError(e)}`);
             });
         }
         else {

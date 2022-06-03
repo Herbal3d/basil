@@ -1,6 +1,6 @@
 {
     "name": "basilviewer",
-    "version": "2.3.13",
+    "version": "2.3.15",
     "description": "Browser based virtual world viewer. Part of Herbal3D.",
     "keywords": [],
     "author": {
@@ -27,7 +27,7 @@
         "@Tools": "dist/Tools"
     },
     "scripts": {
-        "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\" \"build:justview\"",
+        "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\" \"build:justview\" \"build-dialogs\"",
         "buildBasil": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\"",
         "clean-dist": "node build_scripts/cleanDist.js",
         "prestart": "npm run build",
@@ -44,7 +44,9 @@
         "build:basil": "webpack --config webpack.basil.config.js",
         "production:basil": "webpack --mode production --config webpack.basil.config.js",
         "build:wwtester": "webpack --config webpack.wwtester.config.js",
-        "production:wwtester": "webpack --config webpack.wwtester.config.js"
+        "production:wwtester": "webpack --config webpack.wwtester.config.js",
+        "build-dialogs": "npm-run-all -s \"dialog-status\"",
+        "dialog-status": "tsc -p tsconfig-status.json"
     },
     "dependencies": {
         "@babylonjs/core": "^5.7.0",

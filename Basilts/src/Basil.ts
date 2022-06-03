@@ -25,6 +25,7 @@ import { Graphics } from '@Graphics/Graphics';
 import { UI } from '@Tools/UI';
 import { AuthToken } from '@Tools/Auth';
 import { CreateInfrastructureBItems } from '@BItem/WellKnownBItems';
+import { initAbilities } from '@Abilities/AbilityMgt';
 
 import { Buffer } from 'buffer';
 import { IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
@@ -35,6 +36,7 @@ import { initLogging, Logger } from '@Tools/Logging';
 initConfig();
 initLogging();      // Setup logging so progress and errors will be seen
 Eventing.init();
+initAbilities(false);
 UI.init();
 
 // Put current Basil version info on the bottom of the window

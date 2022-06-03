@@ -42,6 +42,7 @@ export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability
         return getFrom(pProps);
     };
     Logger.error(`AbilityFactory: could not find ability ${pName}`);
+    Logger.error(`   Known abilities: ${Array.from(RegisteredAbilities.keys()).join(', ')}`);
     return null;
 };
 
