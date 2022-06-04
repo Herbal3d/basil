@@ -4,19 +4,24 @@
         <link href="./status.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <div id="controls">
-            <div class="b-dialog-group">
-                <fieldset>
-                    <legend>Status</legend>
-                    <div>Position: <div b-info="camPosition" class="b-status-coordDisplay"></div></div>
-                    <div>FPS: <div b-info="infoFPS" class="b-status-textDisplay"></div></div>
-                    <div>Drawcalls: <div b-info="infoDrawCalls" class="b-status-textDisplay"></div></div>
-                    <div>Triangles: <div b-info="infoTriangles" class="b-status-textDisplay"></div></div>
-                    <div>Lines: <div b-info="infoLines" class="b-status-textDisplay"></div></div>
-                    <div>Texture Mem: <div b-info="infoTextureMem" class="b-status-textDisplay"></div></div>
-                    <div>Geometry Mem: <div b-info="infoGeometryMem" class="b-status-textDisplay"></div></div>
-                </fieldset>
-            </div>
+        <div class="b-dialog-group">
+            <fieldset>
+                <legend>Loading Status</legend>
+                <div>Loading: <div b-info="loadingLoading" class="b-status-textDisplay"></div></div>
+                <div>Progress: <div b-info="loadingProgress" class="b-status-textDisplay"></div></div>
+            </fieldset>
+        </div>
+        <div class="b-dialog-group">
+            <fieldset>
+                <legend>Rendering</legend>
+                <div>Camera Position: <div b-info="camPosition" class="b-status-coordDisplay"></div></div>
+                <div>FPS: <div b-info="infoFPS" class="b-status-textDisplay"></div></div>
+                <div>Drawcalls: <div b-info="infoDrawCalls" class="b-status-textDisplay"></div></div>
+                <div>Triangles: <div b-info="infoTriangles" class="b-status-textDisplay"></div></div>
+                <div>Lines: <div b-info="infoLines" class="b-status-textDisplay"></div></div>
+                <div>Texture Mem: <div b-info="infoTextureMem" class="b-status-textDisplay"></div></div>
+                <div>Geometry Mem: <div b-info="infoGeometryMem" class="b-status-textDisplay"></div></div>
+            </fieldset>
         </div>
         <script type="module" src="./status.js"> </script>
     </body>

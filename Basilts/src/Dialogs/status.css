@@ -12,20 +12,6 @@
 
 /* Formatting and display CSS for the status dialog. */
 
-/* An overlay area for controls */
-#controls {
-    margin: 5px;
-    padding: 5px;
-    border-radius: 1em;
-    -moz-border-radius: 1em;
-    color: var(--b-color-dialog-color);
-    background: var(--b-color-dialog-bg);
-    opacity: var(--b-dialog-opacity);
-    position: absolute;
-    right: 0%;
-    bottom: 0%;
-}
-
 .b-status-textDisplay {
     display: inline;
     margin: 1px;

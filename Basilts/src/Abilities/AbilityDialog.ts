@@ -24,11 +24,10 @@ export const AbDialogName = 'Dialog'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbDialogFromProps(pProps: BKeyedCollection): AbDialog {
-    if (pProps.hasOwnProperty(AbDialog.UrlProp)) {
-        const urlProp = pProps[AbDialog.UrlProp] as string;
-        return new AbDialog(urlProp);
-    };
-    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbDialogName}. pProps: ${JSON.stringify(pProps)}`);
+    const urlProp = pProps.hasOwnProperty(AbDialog.UrlProp) ? pProps[AbDialog.UrlProp] as string : null;
+    const nameProp = pProps.hasOwnProperty(AbDialog.DialogNameProp) ? pProps[AbDialog.DialogNameProp] as string : null;
+    const placementProp = pProps.hasOwnProperty(AbDialog.DialogPlacementProp) ? pProps[AbDialog.DialogPlacementProp] as string : null;
+    return new AbDialog(urlProp, nameProp, placementProp);
 };
 
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
@@ -41,14 +40,18 @@ export class AbDialog extends Ability {
     //     coorespond to the class property names.
     public static UrlProp = 'url';
     public static DialogNameProp = 'dialogName';
+    public static DialogPlacementProp = 'dialogPlacement';
 
-    constructor(pUrl: string, pDialogName?: string) {
+    constructor(pUrl: string, pDialogName?: string, pPlacement?: string) {
         super(AbDialogName);
         this.dialogName = pDialogName ?? 'Dialog' + RandomIdentifier();
+        this.dialogPlacement = pPlacement ?? 'center';
         this.url = pUrl;
     };
 
     public dialogName: string;
+
+    public dialogPlacement: string;
 
     public _url: string;
     public get url(): string {
@@ -56,7 +59,7 @@ export class AbDialog extends Ability {
     }
     public set url(pVal: string) {
         this._url = pVal;
-        DialogMgt.createDialog(this.dialogName, this.url);
+        DialogMgt.createDialog(this.dialogName, this.url, this.dialogPlacement);
     }
 
     // Add all the properties from this assembly to the holding BItem

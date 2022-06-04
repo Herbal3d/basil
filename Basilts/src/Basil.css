@@ -28,6 +28,7 @@
     --b-color-global-bg: var(--b-color-base-headline);
 
     --b-color-dialog-color: var(--b-color-base-color);
+    --b-color-dialog-title-bg: #0d2c52;
     --b-color-dialog-bg: var(--b-color-base-headline);
     --b-color-group-bg: var(--b-color-base-bg);
     --b-dialog-opacity: 0.7;
@@ -113,12 +114,54 @@
 }
 /* ================================================================ */
 
-.b-dialog-iframe {
+:root {
+    --b-dialog-titlebar-height: 1em;
+}
+.b-dialog-wrapper {
+    padding: 0px;
+    margin: 0px;
     position: absolute;
-    right: 5%;
-    bottom: 5%;
-    width: 30%;
-    height: 30%;
+    bottom: 2%;
+    right: 2%;
+    background-color: var(--b-color-dialog-bg);
+}
+.b-dialog-titlebar {
+    display: block;
+    height: var(--b-dialog-titlebar-height);
+    background-color: var(--b-color-dialog-title-bg);
+    width: 100%;
+}
+.b-dialog-titlebar-minimize {
+    display: inline;
+    float: right;
+    height: var(--b-dialog-titlebar-height);
+    width: var(--b-dialog-titlebar-height);
+    background-color: cadetblue;
+}
+.b-dialog-titlebar-close {
+    display: inline;
+    float: right;
+    height: var(--b-dialog-titlebar-height);
+    width: var(--b-dialog-titlebar-height);
+    background-color: mediumvioletred;
+}
+.b-dialog-titlebar-titlearea {
+    display: inline;
+    float: left;
+}
+.b-dialog-iframe-wrapper {
+    display: block;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 90%;
+}
+.b-dialog-iframe {
+    display: block;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 /* ================================================================ */
@@ -164,7 +207,6 @@
     border-radius: 1em;
     -moz-border-radius: 1em;
     color: var(--b-color-dialog-color);
-    opacity: var(--b-dialog-opacity);
 }
 
 .b-textDisplay {

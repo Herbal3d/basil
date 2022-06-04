@@ -100,6 +100,7 @@ try {
                 const serverAuth = new AuthToken();
                 pProps.connection.IncomingAuth = serverAuth;
                 pProps.response.IProps['serverAuth'] = serverAuth.token;
+                pProps.response.IProps['serverVersion'] = 'WWTester';
 
                 pProps.connection.Send(pProps.response);
 
@@ -165,7 +166,9 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
             Logger.debug(`Adding statistics and status dialog`);
             pBasil.CreateItem({
                 abilities: [ 'Dialog' ],
-                url: './Dialogs/status.html'
+                url: './Dialogs/status.html',
+                dialogName: 'Status',
+                dialogPlacement: 'bottom right'
             })
             .then( resp2 => {
                 if (resp2.Exception) {

@@ -40,6 +40,9 @@ module.exports = {
   },
   optimization: {
   },
+  externals: {
+    'draggable-dialog': 'jslibs/draggable-resizable-dialog.js'
+  },
   plugins: [
     // Add the references to the built .js files to the .html files
     //      ref: https://github.com/jantimon/html-webpack-plugin
