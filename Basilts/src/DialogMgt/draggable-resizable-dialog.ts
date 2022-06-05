@@ -1,5 +1,5 @@
 /*
-* Pure JavaScript for Draggable and Risizable Dialog Box
+* Pure JavaScript/Typescript for Draggable and Resizable Dialog Box
 *
 * Designed by ZulNs, @Gorontalo, Indonesia, 7 June 2017
 * Extended by FrankBuchholz, Germany, 2019
@@ -7,7 +7,6 @@
 *
 * MIT License
 */
-import { Logger } from '@Tools/Logging';
 
 // When button pressed, this callback is called with the button name
 type ButtonCallback = (pButtonName: string, pDialogId: string) => void;
@@ -483,8 +482,6 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
         // Let's try to get rid of some of constants in javascript but use values from css
         const _dialogContentStyle = getComputedStyle(_dialogContent);
 
-        Logger.debug(`drd._setDialogContent: clientWidth: ${_dialogContent.clientWidth}, clientHeight: ${_dialogContent.clientHeight}`);
-        Logger.debug(`drd._setDialogContent: clientStyleLeft: ${_dialogContentStyle.left}, clientHeight: ${_dialogContentStyle.top}`);
         const w = _dialog.clientWidth 
                 - parseInt( _dialogContentStyle.left) // .dialog .content { left: 16px; }
                 - 16 // right margin?
@@ -531,14 +528,10 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
 
 
         // Calculate minimal width
-        Logger.debug(`drd._init: clientWidth=${_dialog.clientWidth}, contentClientWidth=${_dialogContent.clientWidth}, contentStyleWidth=${_dialogContentStyle.width}`);
-        Logger.debug(`drd._init: clientHeight=${_dialog.clientHeight}, contentClientHeight=${_dialogContent.clientHeight}, contentStyleHeight=${_dialogContentStyle.height}`);
         _minW = Math.max(_dialog.clientWidth, _dialogContent.clientWidth);
 
         _dialog.style.width = `${_minW}px`;
 
-        Logger.debug(`drd._init: contentClientHeight=${_dialogContent.clientHeight}, contentStyleHeight=${_dialogContentStyle.height}`);
-        Logger.debug(`drd._init: titleClientHeight=${_dialogTitle.clientHeight}, titleStyleHeight=${_dialogTitleStyle.height}`);
         // Calculate minimal height
         _minH = Math.max(_dialog.clientHeight,
                     _dialogContent.clientHeight + _dialogTitle.clientHeight + 16,
@@ -546,7 +539,6 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
                     );
 
         _dialog.style.height = `${_minH}px`;
-        Logger.debug(`drd._init: _minH=${_minH}, _minW=${_minW}`);
 
         // center the dialog box
         _dialog.style.left = `${(window.innerWidth - _dialog.clientWidth) / 2}px`;
