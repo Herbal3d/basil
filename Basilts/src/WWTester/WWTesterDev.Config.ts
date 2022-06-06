@@ -8,7 +8,13 @@ export const WWConfig = {
     // Various overall Basil viewer parameters
     'basil': {
         // ms before removing deleted BItem
-        'BItemDeleteInterval': 60000
+        'BItemDeleteInterval': 60000,
+        // A random string used to identify this Basil instance
+        'SessionId': '1234567890',
+        // Note that basename begins with a dot
+        'UniqueIdBase': '.wwt.herbal3d.org',
+        // If 'true', rewite UniqueIdBase to be the SessionId
+        'UseSessionIdForUniqueBase': true,
      },
     'comm': {
         'transports': [ 'WW', 'WS' ],
@@ -67,3 +73,34 @@ export const WWConfig = {
         'RPCResponse': true             // print RPC response message
     }
 };
+
+// Initialize configuration parameters.
+// TODO: look at URL query parameters and get values from there
+export function initConfig(): void {
+    // Config.basil.SessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    WWConfig.basil.SessionId = Math.random().toString(36).substring(3, 15);
+    if (WWConfig.basil.UseSessionIdForUniqueBase) {
+        WWConfig.basil.UniqueIdBase = '.' + WWConfig.basil.SessionId;
+    };
+    configSub(WWConfig, '.UNIQUEIDBASE', WWConfig.basil.UniqueIdBase);
+};
+export interface KeyedCollection {
+  [ key: string]: any
+};
+// Replace occurances of pFind with pSub in any string value in the passed
+//     key/value object. Recursively decends the object.
+// Used to replace UNIQUEIDBASE in Config.
+function configSub(pConfig: KeyedCollection, pFind: string, pSub: string): void {
+    const regExp = new RegExp(pFind, 'g');
+    Object.keys(pConfig).forEach((key: string) => {
+        if (typeof(pConfig[key]) === 'object') {
+            configSub(pConfig[key] as KeyedCollection, pFind, pSub);
+        }
+        else if (typeof(pConfig[key]) === 'string') {
+            pConfig[key] = (pConfig[key] as string).replace(regExp, pSub);
+        };
+    });
+}
+
+
+

@@ -20,7 +20,6 @@ import { RandomIdentifier } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 import { IsNullOrEmpty } from '@Base/Tools/Misc';
-import { config } from 'process';
 
 // A simple pub/sub system. An event producer registers a topic
 //    and later 'fire's event on the topic. An event consumer subscribers
@@ -81,7 +80,7 @@ export const Eventing = {
         if (eventingTimedProcessors) {
             eventingTimedProcessors.forEach( (proc, topic) =>{
                 // GP.DebugLog('Eventing.processTimedEvents: calling processor for topic=' + topic);
-                proc(undefined, topic, undefined);
+                void proc(undefined, topic, undefined);
             });
         };
         let interval = 500;

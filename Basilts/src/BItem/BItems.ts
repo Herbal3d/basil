@@ -52,7 +52,7 @@ export const BItems = {
         // Add any Abilities that are asked for
         let err: string;
         try {
-            Logger.debug(`BItems.createFromProps: checking for abilities`);
+            // Logger.debug(`BItems.createFromProps: checking for abilities`);
             for (const abil of abils) {
                 try {
                     const newAbility = AbilityFactory(abil, pProps);

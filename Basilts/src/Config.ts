@@ -4,12 +4,12 @@
 
 'use strict';
 
-import { Console } from "console";
+import { BKeyedCollection } from '@Tools/bTypes';
 
 // All the possible configuration parameters.
 // This sets defaults values and is over-written by environment variables and
 //     supplied configuration file contents.
-export const Config = {
+export let Config = {
     // Various overall Basil viewer parameters
     'basil': {
         // The invocation of Basil can pass sections to add to configuration
@@ -254,6 +254,12 @@ export interface EntryConfigParameters {
         'loaderType': string
     }
 };
+
+// When other config definitions are used, we need to sit on top of the base config
+export function resetConfig(pNewConfig: BKeyedCollection): void {
+    // @ts-ignore
+    Config = pNewConfig;
+}
 
 // Initialize configuration parameters.
 // TODO: look at URL query parameters and get values from there

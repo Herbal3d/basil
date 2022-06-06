@@ -1,15 +1,14 @@
-// As copied from example at https://webpack.js.org/guides/getting-started/
-//    This is not ES6 'import' format so update this file someday
+
 const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
   entry: {
-    wwtester: './src/WWTester/WWTester.ts',
+    wwtesterdev: './src/WWTester/WWTesterDev.ts',
   },
   output: {
-    filename: 'wwtester.js',
+    filename: 'wwtesterdev.js',
     path: path.resolve(__dirname, 'dist')
   },
   // devtool: 'inline-source-map',

@@ -334,7 +334,7 @@ export const Graphics = {
     _generateCameraEvents() {
         Graphics._eventCameraInfo = Eventing.Register(CameraInfoEventTopic, 'Graphics');
         Graphics._eventCameraInfoTimer = Eventing.CreateTimedEventProcessor( Graphics._eventCameraInfo,
-            (topic) => {
+            async (topic) => {
                 if (Graphics._eventCameraInfo.hasSubscriptions) {
                     if (Graphics._prevCamPosition == undefined) {
                         Graphics._prevCamPosition = new BJSVector3(0,0,0);
@@ -364,7 +364,7 @@ export const Graphics = {
         // Generate subscribable periodic events when display info changes
         Graphics._eventDisplayInfo = Eventing.Register(RenderInfoEventTopic, 'Graphics');
         Graphics._eventDisplayInfoTimer = Eventing.CreateTimedEventProcessor(Graphics._eventDisplayInfo,
-            (topic) => {
+            async (topic) => {
                 if (Graphics._eventDisplayInfo.hasSubscriptions) {
                     // not general, but, for the moment, just return the WebGL info
                     const dispInfo = {

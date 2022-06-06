@@ -108,23 +108,18 @@ export const DialogMgt = {
         DialogMgt.showDialog(pName);
 
         if (pPlacement) {
-            Logger.debug(`createDialog: setting placement to ${pPlacement}`);
             const place = pPlacement.toLowerCase().split(' ');
             if (place.includes('top')) {
                 dialogInDoc.style.top = '5%';
-                Logger.debug(`createDialog: setting placement top`);
             }
             if (place.includes('bottom')) {
                 dialogInDoc.style.top = '75%';
-                Logger.debug(`createDialog: setting placement bottom`);
             }
             if (place.includes('right')) {
                 dialogInDoc.style.left = '65%';
-                Logger.debug(`createDialog: setting placement right`);
             }
             if (place.includes('left')) {
                 dialogInDoc.style.left = '5%';
-                Logger.debug(`createDialog: setting placement left`);
             }
         }
 

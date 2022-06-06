@@ -29,7 +29,6 @@ import { CoordSystem } from '@Comm/BMessage';
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 import { JSONstringify, CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
 import { Logger } from '@Tools/Logging';
-import { minmaxReduxPixelShader } from '@babylonjs/core/Shaders/minmaxRedux.fragment';
 
 // Collection of graphical operations.
 // Externally, code doesn't know how graphics is implemented and this presents the functions

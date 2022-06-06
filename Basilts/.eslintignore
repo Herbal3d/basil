@@ -20,7 +20,4 @@ genChangelog.sh
 declarations/
 
 # The webpack config files shouldn't be touched either
-webpack.basil.config.js
-webpack.entry.config.js
-webpack.justview.config.js
-webpack.wwtester.config.js
+webpack.*.config.js

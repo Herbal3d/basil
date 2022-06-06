@@ -1,6 +1,6 @@
 {
     "name": "basilviewer",
-    "version": "2.3.16",
+    "version": "2.3.18",
     "description": "Browser based virtual world viewer. Part of Herbal3D.",
     "keywords": [],
     "author": {
@@ -27,26 +27,41 @@
         "@Tools": "dist/Tools"
     },
     "scripts": {
-        "build": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\" \"build:justview\" \"build-dialogs\"",
-        "buildBasil": "npm-run-all -s \"clean-dist\" \"create-version\" \"build:basil\" \"build:wwtester\" \"build:entry\"",
+        "build": "npm-run-all -s \"buildSetup\" \"buildBasil\" \"buildEntry\" \"buildTesters\"",
+
+        "buildSetup": "npm-run-all -s \"clean-dist\" \"create-version\"",
+        "buildBasil": "npm-run-all -s \"build:basil\" \"build-dialogs\"",
+        "buildEntry": "npm-run-all -s \"build:entry\" \"build:justview\"",
+        "buildTesters": "npm-run-all -s \"build:wwtester\" \"build:wwtesterdev\"",
+
         "clean-dist": "node build_scripts/cleanDist.js",
+
         "prestart": "npm run build",
         "start": "node dist/index.js",
+
         "create-version": "node build_scripts/createVersion.js",
         "copy-static": "node build_scripts/copyStatic.js",
         "test": "echo \"Error: no test specified\" && exit 1",
+
         "production": "npm-run-all -s \"clean:dist\" \"production:entry\" \"production:basil\" \"production:wwtester\" \"production:justview\"",
-        "build:entry": "webpack --config webpack.entry.config.js",
-        "production:entry": "webpack --mode production --config webpack.entry.config.js",
-        "build:justview": "webpack --config webpack.justview.config.js",
-        "production:justview": "webpack --mode production --config webpack.justview.config.js",
+
         "prebuild:basil": "eslint . --ext .js,.ts",
         "build:basil": "webpack --config webpack.basil.config.js",
         "production:basil": "webpack --mode production --config webpack.basil.config.js",
+
+        "build:entry": "webpack --config webpack.entry.config.js",
+        "production:entry": "webpack --mode production --config webpack.entry.config.js",
+
+        "build:justview": "webpack --config webpack.justview.config.js",
+        "production:justview": "webpack --mode production --config webpack.justview.config.js",
+
         "build:wwtester": "webpack --config webpack.wwtester.config.js",
-        "production:wwtester": "webpack --config webpack.wwtester.config.js",
+        "production:wwtester": "webpack --mode production --config webpack.wwtester.config.js",
+
         "build-dialogs": "npm-run-all -s \"dialog-status\"",
-        "dialog-status": "tsc -p tsconfig-status.json"
+        "dialog-status": "tsc -p tsconfig-status.json",
+
+        "build:wwtesterdev": "webpack --config webpack.wwtesterdev.config.js"
     },
     "dependencies": {
         "@babylonjs/core": "^5.7.0",
