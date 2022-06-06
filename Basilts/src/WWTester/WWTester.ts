@@ -13,6 +13,7 @@
 
 import { GlobalReady } from '@Base/Globals';
 
+import { Config } from '@Base/Config';
 import { WWConfig, initConfig } from '@Base/WWTester/WWTester.Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
