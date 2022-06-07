@@ -429,7 +429,10 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 });
 
                 try {
+                    // We have been asked to make a connection to somewhere
                     const newConnection = await Comm.MakeConnection(params);
+
+                    // We can connect (transport is working). Now open the session
                     newConnection.OutgoingAuth = new AuthToken(props.serviceAuth);
                     newConnection.OutgoingAddr = props.serviceAddr;
                     const openProps: OpenSessionReqProps = {
@@ -450,7 +453,8 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                         // The response has the authentication we must use for sending in the future
                         newConnection.OutgoingAuth = new AuthToken(osResp.IProps['serverAuth'] as string);
                     }
-                    // The caller gets a response after a successful connection
+
+                    // This is the response to the original MakeConnection and reports success/failure
                     pConnection.Send(resp);
                 }
                 catch (e) {
@@ -460,6 +464,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                     if (err.ExceptionHints) {
                         resp.ExceptionHints = err.ExceptionHints;
                     }
+                    // Respond to the original MakeConnection request
                     pConnection.Send(resp);
                 };
                 break;

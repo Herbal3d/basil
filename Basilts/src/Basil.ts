@@ -32,6 +32,7 @@ import { IsNullOrEmpty, IsNotNullOrEmpty } from '@Tools/Misc';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { initLogging, Logger } from '@Tools/Logging';
+import { BasilConnection } from './Comm/BasilConnection';
 
 initConfig();
 initLogging();      // Setup logging so progress and errors will be seen
@@ -99,6 +100,13 @@ if (IsNotNullOrEmpty(configParams)) {
     };
 };
 
+// If the window gets closed, send a CloseSession to try and logout or whatever.
+window.onbeforeunload = function() {
+    if (firstConnection) {
+        void firstConnection.CloseSession("User closed window");
+    }
+};
+
 // DEBUG DEBUG: Add pointer to graphics stuff for debugging in the browser
 // @ts-ignore
 (globalThis as BKeyedCollection).GGP.Graphics = Graphics;
@@ -117,15 +125,24 @@ GlobalReady = true;
 
 Logger.info(`Starting Basil version ${VERSION['version-tag']}`);
 
-// If there are connection parameters, start the first connection
-if (Config.initialMakeConnection) {
-    Logger.debug('Basilts: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
+// Keep a handle on the first connection
+let firstConnection: BasilConnection
+;
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+(async () => {
     try {
-        // Connect to the server
-        Comm.MakeConnection(Config.initialMakeConnection)
-        .then( conn => {
+        if (Config.initialMakeConnection) {
+            Logger.debug('Basilts: starting transport and service: ' + JSONstringify(Config.initialMakeConnection));
+            // Connect to the server
+            const conn = await Comm.MakeConnection(Config.initialMakeConnection)
+            firstConnection = conn;
+
+            // Update in and out authorizations to use in the connection
+            // This includes service login information
             conn.OutgoingAuth = new AuthToken(Config.initialMakeConnection.serviceAuth);
             conn.OutgoingAddr = Config.initialMakeConnection.serviceAddr;
+
+            // Build OpenSession request
             const sessionParams: OpenSessionReqProps = {
                 basilVersion: VERSION['version-tag'],
                 clientAuth: conn.IncomingAuth.token
@@ -141,23 +158,20 @@ if (Config.initialMakeConnection) {
                 sessionParams.testAssetURL = Config.initialMakeConnection.openParams.assetURL;
                 sessionParams.testAssetLoader = Config.initialMakeConnection.openParams.loaderType;
             }
+
             // Start the displayed session
-            conn.OpenSession(sessionParams)
-            .then ( resp2 => {
-                conn.OutgoingAuth = new AuthToken(resp2.IProps['serverAuth'] as string);
-                Logger.debug(`Basilts: session is opened. Server version: ${resp2.IProps['serverVersion']}`);
-                Logger.debug(`     in=${conn.IncomingAuth.token}, out=${conn.OutgoingAuth.token}`);
-            })
-            .catch( e => {
-                Logger.error(`OpenSession exception: ${ExtractStringError(e)}`);
-            });
-        })
-        .catch( e => {
-            Logger.error(`MakeConnection exception: ${ExtractStringError(e)}`);
-        });
+            const resp2 = await conn.OpenSession(sessionParams)
+
+            // The OpenSession response includes the authorization for us talking to the service
+            conn.OutgoingAuth = new AuthToken(resp2.IProps['serverAuth'] as string);
+
+            Logger.debug(`Basilts: session is opened. Server version: ${resp2.IProps['serverVersion']}`);
+            Logger.debug(`     in=${conn.IncomingAuth.token}, out=${conn.OutgoingAuth.token}`);
+        }
     }
     catch ( e ) {
+        // TODO: if this fails, there should be a popup dialog to report the error
         const err = ExtractStringError(e);
         Logger.debug(`Basilts: OpenSession failed: ${err}`);
     };
-};
+})();

@@ -99,6 +99,28 @@ ClickableOps['wwTesterDev'] = function() {
     window.location.assign('Basil.html?c=' + configParams);
 };
 
+ClickableOps['loadGLTF'] = function() {
+    const gltfURL = (document.getElementById('loadGLTF-URL') as HTMLTextAreaElement).value;
+    const testConfigParams = {
+        'Init': {
+            'transport': 'WW',
+            'transportURL': './wwtester.js',
+            'protocol': 'Basil-JSON',
+            'service': 'SpaceServer',
+            'serviceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
+            'openParams': {
+                'assetURL': gltfURL,
+                'loaderType': 'GLTF',
+            }
+        }
+    };
+    console.log('testConfigParams=' + JSONstringify(testConfigParams));
+
+    const configParams = Buffer.from(JSONstringify(testConfigParams)).toString('base64');
+
+    window.location.assign('Basil.html?c=' + configParams);
+};
+
 ClickableOps['gridLogin'] = ClickOpLoginOpenSim;
 
 // Load the grid name selection box with the names from the configuration file.

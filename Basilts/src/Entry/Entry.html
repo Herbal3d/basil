@@ -59,47 +59,6 @@
                 </fieldset>
             </div>
         </div>
-        <!--
-        <div class="b-entry-dialog">
-            <div class="b-dialog-group">
-                <fieldset>
-                    <legend>Connect to test region</legend>
-                    <div class="b-textDisplay b-textAccent">Invoke Basil viewer connecting to the specfied SpaceServer</div>
-                    <select id="region-transportURL">
-                        <option value="ws://192.168.86.41:11440">
-                            ws://192.168.86.41:11440
-                        </option>
-                        <option value="wss://192.168.86.41:11440">
-                            wss://192.168.86.41:11440
-                        </option>
-                        <option value="ws://192.168.86.56:11440">
-                            ws://192.168.86.56:11440
-                        </option>
-                        <option value="ws://region.herbal3d.org:11440" selected>
-                            ws://region.herbal3d.org:11440
-                        </option>
-                    </select>
-                    <select id="region-transport">
-                        <option value="WS" selected>
-                            WebSocket
-                        </option>
-                        <option value="WW">
-                            WebWorker
-                        </option>
-                    </select>
-                    <select id="region-service">
-                        <option value="SpaceServerClient" selected>
-                            SpaceServer
-                        </option>
-                        <option value="Pesto">
-                            PestoServer
-                        </option>
-                    </select>
-                    <button type="button" class="b-button b-clickable" op="spaceServerConnect">Launch</button>
-                </fieldset>
-            </div>
-        </div>
-        -->
         <div class="b-entry-dialog">
             <div class="b-dialog-group">
                 <fieldset>
@@ -110,6 +69,20 @@
                         <select id="test-sceneURL"> </select>
                     </span>
                     <button type="button" class="b-button b-clickable" op="testScene">Launch</button>
+                </fieldset>
+            </div>
+        </div>
+        <div class="b-entry-dialog">
+            <div class="b-dialog-group">
+                <fieldset>
+                    <legend>Load GLTF</legend>
+                    <div class="b-textDisplay b-textAccent">Load GLTF from URL</div>
+                    <div>
+                        <input id="loadGLTF-URL" type="text" size="60" maxlength="200"/>
+                    </div>
+                    <div>
+                        <button type="button" class="button b-clickable" op="loadGLTF">Load</button>
+                    </div>
                 </fieldset>
             </div>
         </div>
