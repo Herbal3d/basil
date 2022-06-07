@@ -65,6 +65,8 @@ export class AbOSCamera extends Ability {
 
         pBItem.addProperty(AbOSCamera.OneProp, this);
         pBItem.addProperty(AbOSCamera.TwoProp, this);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

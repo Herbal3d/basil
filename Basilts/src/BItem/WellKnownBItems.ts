@@ -27,28 +27,29 @@ import { AbEnviron } from '@Abilities/AbilityEnvironment';
 export const WellKnownCameraName = 'Camera';
 export const WellKnownMouseName = 'Mouse';
 export const WellKnownKeyboardName = 'Keyboard';
+export const WellKnownEnvironName = 'Environment';
 
 export function CreateInfrastructureBItems(): void {
-    const baseBItem = new BItem(Config.infrastructureBItemNames.registration, null);
-    baseBItem.addAbility(new AbRegistration());
+    const regBItem = new BItem(Config.infrastructureBItemNames.registration, null);
+    regBItem.addAbility(new AbRegistration());
 
     // Primary camera has an instance so it has pos and rot
     const cam = new BItem(Config.infrastructureBItemNames.camera, null);
     cam.addAbility(new AbCamera(0));
     cam.addAbility(new AbPlacement([1,2,3], [0,0,0,1]));
-    BItems.registerWellKnownBItem(WellKnownCameraName, cam, baseBItem);
+    BItems.registerWellKnownBItem(WellKnownCameraName, cam, regBItem);
 
     const mouse = new BItem(Config.infrastructureBItemNames.mouse, null);
     mouse.addAbility(new AbMouse());
-    BItems.registerWellKnownBItem(WellKnownMouseName, baseBItem);
+    BItems.registerWellKnownBItem(WellKnownMouseName, mouse, regBItem);
 
     const keyboard = new BItem(Config.infrastructureBItemNames.keyboard, null);
     keyboard.addAbility(new AbKeyboard());
-    BItems.registerWellKnownBItem(WellKnownKeyboardName, keyboard, baseBItem);
+    BItems.registerWellKnownBItem(WellKnownKeyboardName, keyboard, regBItem);
 
-    const env = new BItem(Config.infrastructureBItemNames.environment, null);
-    env.addAbility(new AbEnviron());
-    BItems.registerWellKnownBItem(WellKnownKeyboardName, env, baseBItem);
+    const environ = new BItem(Config.infrastructureBItemNames.environment, null);
+    environ.addAbility(new AbEnviron());
+    BItems.registerWellKnownBItem(WellKnownEnvironName, environ, regBItem);
 
 };
 

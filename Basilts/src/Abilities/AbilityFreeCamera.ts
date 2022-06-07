@@ -65,6 +65,8 @@ export class AbFreeCamera extends Ability {
 
         pBItem.addProperty(AbFreeCamera.OneProp, this);
         pBItem.addProperty(AbFreeCamera.TwoProp, this);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

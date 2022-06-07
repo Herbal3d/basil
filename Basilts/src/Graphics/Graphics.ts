@@ -102,7 +102,6 @@ export const Graphics = {
     _skybox: <Mesh>undefined,
 
     connectGraphics(pContainer: HTMLElement, pCanvas: HTMLCanvasElement): void {
-        Logger.debug('Graphics: constructor');
         Graphics.SetGraphicsState(GraphicStates.Initializing);
         Graphics._container = pContainer;
         Graphics._canvas = pCanvas;
@@ -146,7 +145,7 @@ export const Graphics = {
         Graphics.SetGraphicsState(GraphicStates.Initialized);
     },
     Start() {
-        Logger.debug(`Graphics.Start: Start`);
+        // Logger.debug(`Graphics.Start: Start`);
         Graphics._startRendering();
         Graphics.SetGraphicsState(GraphicStates.Rendering);
     },

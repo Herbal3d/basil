@@ -59,6 +59,8 @@ export class AbRegistration extends Ability {
 
         pBItem.addProperty(AbRegistration.FocusAvatarProp, this);
         pBItem.addProperty(AbRegistration.AvatarsProp, this);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

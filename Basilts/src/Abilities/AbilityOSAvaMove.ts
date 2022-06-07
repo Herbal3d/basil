@@ -69,6 +69,8 @@ export class AbOSAvaMove extends Ability {
         // Logger.debug(`AbOSAvaMove.addProperties: subscribing to ${keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp)}`);
         Eventing.Subscribe(keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp),
                             this.processKeyboard.bind(this) as EventProcessor);
+
+        pBItem.setReady();
     };
 
     processKeyboard(pEvent: setPropEventParams): void {

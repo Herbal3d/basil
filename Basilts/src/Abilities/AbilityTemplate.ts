@@ -65,6 +65,9 @@ export class AbTEMPLATE extends Ability {
 
         pBItem.addProperty(AbTEMPLATE.OneProp, this);
         pBItem.addProperty(AbTEMPLATE.TwoProp, this);
+
+        // For 'simple' abilities, it is ready when it is loaded
+        // pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

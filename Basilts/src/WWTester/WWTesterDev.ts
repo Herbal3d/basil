@@ -18,9 +18,15 @@ import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
 import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
 import { AuthToken } from '@Tools/Auth';
+import { WellKnownCameraName } from '@Base/BItem/WellKnownBItems';
+import { WellKnownKeyboardName } from '@Base/BItem/WellKnownBItems';
+import { WellKnownMouseName } from '@Base/BItem/WellKnownBItems';
+import { WellKnownEnvironName } from '@Base/BItem/WellKnownBItems';
+
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
+import { BMessageIProps } from '@Base/Comm/BMessage';
 
 // For some reason ESLint thinks WWConfig is an 'any' and thus we shouldn't be
 //    unsafely referencing it. It's exactly the same as the Config file which
@@ -32,6 +38,7 @@ import { Logger, AddLogOutputter } from '@Tools/Logging';
 // @ts-ignore
 GlobalReady = false;
 
+// Merge our config into Config and make Config and WWConfig the same
 initConfig();
 
 let _basilClient: BasilConnection;
@@ -67,6 +74,8 @@ if (WWConfig.Debug && WWConfig.Debug.DebugLogInstanceName && WWConfig.WWTester.L
 };
 Eventing.init();
 
+Logger.debug(`Starting WWTesterDev`);
+
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
     try {
@@ -76,8 +85,27 @@ Eventing.init();
         await StartAliveCheck(conn);
         // Resolve when an OpenSession is received
         const connParms = await waitForOpenSession(conn);
+        const knownBItems = await RequestProperties(conn, 'registration.bitem');
+        if (knownBItems[WellKnownCameraName]) {
+            const cameraProps = await RequestProperties(conn, knownBItems[WellKnownCameraName] as string);
+            PrintProperties('camera', cameraProps);
+        }
+        if (knownBItems[WellKnownMouseName]) {
+            const mouseProps = await RequestProperties(conn, knownBItems[WellKnownMouseName] as string);
+            PrintProperties('mouse', mouseProps);
+        }
+        if (knownBItems[WellKnownKeyboardName]) {
+            const keyboardProps = await RequestProperties(conn, knownBItems[WellKnownKeyboardName] as string);
+            PrintProperties('keyboard', keyboardProps);
+        }
+        if (knownBItems[WellKnownEnvironName]) {
+            const environProps = await RequestProperties(conn, knownBItems[WellKnownEnvironName] as string);
+            PrintProperties('environ', environProps);
+        }
+
+        /*
         if (connParms.request.IProps.testAssetURL) {
-            // If an asset URL is passed, request the creation of that asset
+            // If an asset URL is passed, request the creation of that assetG
             const assetURL = connParms.request.IProps['testAssetURL'] as string;
             const assetLoader = connParms.request.IProps['testAssetLoader'] as string;
             Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
@@ -87,6 +115,7 @@ Eventing.init();
             // As a test, request the properties of the created asset
             await RequestProperties(conn, assetId);
         }
+        */
     }
     catch (e) {
         Logger.error(`connection exception: ${ExtractStringError(e)}`);
@@ -207,15 +236,28 @@ async function CreateStatusDialog(pBasil: BasilConnection): Promise<void> {
 }
 
 // Request and print the properties of the asset
-async function RequestProperties(pBasil: BasilConnection, pItemID: string): Promise<void> {
+async function RequestAndPrintProperties(pBasil: BasilConnection, pId: string): Promise<BMessageIProps> {
+    const resp = await pBasil.RequestProperties(pId, '');
+    if (resp.Exception) {
+        throw new Error(`RequestProperties response error: ${resp.Exception}`);
+    }
+    PrintProperties(pId, resp.IProps);
+    return resp.IProps;
+}
+
+// Request and print the properties of the asset
+async function RequestProperties(pBasil: BasilConnection, pItemID: string): Promise<BMessageIProps> {
     Logger.debug(`requestProperties`);
     const resp = await pBasil.RequestProperties(pItemID, '');
     if (resp.Exception) {
         throw new Error(`RequestProperties response error: ${resp.Exception}`);
     }
-    Logger.debug(`Properties received for item ${pItemID}`);
-    Object.keys(resp.IProps).forEach( key => {
-        Logger.debug(`   ${key}: ${resp.IProps[key]}`);
-    });
+    return resp.IProps;
 }
 
+function PrintProperties(pId: string, pProps: BMessageIProps): void {
+    Logger.debug(`Properties received for item ${pId}`);
+    Object.keys(pProps).forEach( key => {
+        Logger.debug(`   ${key}: ${pProps[key]}`);
+    });
+}

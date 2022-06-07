@@ -81,6 +81,8 @@ export class AbMouse extends Ability {
         pBItem.addProperty(AbMouse.ShiftKeyProp, this);
         pBItem.addProperty(AbMouse.MetaKeyProp, this);
         pBItem.addProperty(AbMouse.ModeProp, this);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

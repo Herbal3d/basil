@@ -104,7 +104,7 @@ export const Eventing = {
             topicEnt = Eventing.Register(pTopic, 'subscribe');
         };
         topicEnt.addSubscription(sub);
-        Logger.debug("Eventing.subscribe: adding subscription to event " + pTopic);
+        // Logger.debug("Eventing.subscribe: adding subscription to event " + pTopic);
         void onSubscribe.fire({ 'topic': pTopic, 'topicEntry': topicEnt });
         return sub;
     },

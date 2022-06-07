@@ -86,6 +86,10 @@ ClickableOps['wwTesterDev'] = function() {
             'protocol': 'Basil-JSON',
             'service': 'SpaceServer',
             'serviceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
+            'openParams': {
+                'assetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+                'loaderType': 'GLTF',
+            }
         }
     };
     console.log('testConfigParams=' + JSONstringify(testConfigParams));

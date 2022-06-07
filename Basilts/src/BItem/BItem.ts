@@ -191,12 +191,13 @@ export class BItem {
     };
     // Return the ability instance on this BITem with the passed name
     getAbility(pAbilityName: string): Ability {
+        let ret: Ability = null;
         this._props.forEach( (abil: Ability, propName: string) => {
             if (pAbilityName === abil.abilityName) {
-                return abil;
+                ret = abil;
             }
         });
-        return null;
+        return ret;
     };
     // When a BItem is being deleted/removed, it is removed from the collection
     //    of BItems and then this function is called to remove it's properties

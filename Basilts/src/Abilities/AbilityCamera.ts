@@ -87,6 +87,8 @@ export class AbCamera extends Ability {
                     this._onPosUpdate.bind(this) as EventProcessor);
         this._rotSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.RotProp),
                     this._onRotUpdate.bind(this) as EventProcessor);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

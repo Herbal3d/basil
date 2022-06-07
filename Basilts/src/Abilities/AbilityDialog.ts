@@ -68,6 +68,8 @@ export class AbDialog extends Ability {
         super.addProperties(pBItem);
 
         pBItem.addProperty(AbDialog.UrlProp, this);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

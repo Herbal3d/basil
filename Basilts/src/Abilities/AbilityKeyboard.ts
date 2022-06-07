@@ -72,6 +72,8 @@ export class AbKeyboard extends Ability {
 
         // Have to wait until the graphics system is initialized before there is a scene to watch
         Eventing.Subscribe(GraphicsStateEventName, this._onGraphicsReady.bind(this) as EventProcessor);
+
+        pBItem.setReady();
     };
     _onGraphicsReady(pEvent: GraphicStateEventProps): void {
         if (pEvent.state === GraphicStates.Initialized || pEvent.state === GraphicStates.Rendering) {   

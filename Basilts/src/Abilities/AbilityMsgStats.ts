@@ -51,6 +51,8 @@ export class AbMsgStats extends Ability {
         // Get and Set the number of received messages
         pBItem.addProperty(AbMsgStats.MessagesReceivedProp, this);
         pBItem.addProperty(AbMsgStats.MessagesSentProp, this);
+
+        pBItem.setReady();
     };
 
     // When a property is removed from the BItem, this is called

@@ -111,7 +111,14 @@ export const BItems = {
                 (abilReg as unknown as BKeyedCollection)[pName] = pBItem.id;
                 // Add the name to the list of values on the registration ability
                 regBItem.addProperty(pName, abilReg);
+                regBItem.setProp(pName, pBItem.id);
+            }
+            else {
+                Logger.error(`BItems.registerWellKnownBItem: could not find registration ability ${AbRegistrationName} in ${regBItem.id}`);
             };
+        }
+        else {
+            Logger.error(`BItems.registerWellKnownBItem: could not find registration BItem`);
         };
     },
 };
