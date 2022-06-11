@@ -85,9 +85,7 @@ export class AbAssembly extends Ability {
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
-        // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
         pBItem.addProperty(AbAssembly.AssetUrlProp, this);
-        pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
 
         // Get and Set the AssetLoader needed for the asset
         pBItem.addProperty(AbAssembly.AssetLoaderProp, this);
@@ -98,6 +96,9 @@ export class AbAssembly extends Ability {
         // Very dependent on the underlying implementation. This is a ThreeJS Object3D
         // All abilities that create in-world representations present this property
         pBItem.addProperty(AbAssembly.AssetRepresentationProp, this, { private: true });
+
+        // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
+        pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
     };
 
     // When a property is removed from the BItem, this is called

@@ -49,6 +49,8 @@ RegisterAbility(AbOSAvaMoveName, AbOSAvaMoveFromProps);
 export class AbOSAvaMove extends Ability {
 
     public static MoveActionProp = 'moveAction';
+    public static StartStopProp = 'startStop';
+    public static MoveToProp = 'moveTo';
 
     constructor() {
         super(AbOSAvaMoveName);
@@ -56,6 +58,8 @@ export class AbOSAvaMove extends Ability {
 
     // Make the properties available
     public moveAction: OSAvaMoveActions;
+    public startStop: boolean;
+    public moveTo: number[];
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
@@ -63,6 +67,8 @@ export class AbOSAvaMove extends Ability {
         super.addProperties(pBItem);
 
         pBItem.addProperty(AbOSAvaMove.MoveActionProp, this);
+        pBItem.addProperty(AbOSAvaMove.StartStopProp, this);
+        pBItem.addProperty(AbOSAvaMove.MoveToProp, this);
 
         // OpenSim avatar movement takes keyboard controls
         const keyboardBItem = BItems.get(Config.infrastructureBItemNames.keyboard);
@@ -94,8 +100,10 @@ export class AbOSAvaMove extends Ability {
     // Avatar is being asked to move. Send it to the SpaceServer to figure out what to do in world
     sendMovementUpdate(pMovement: OSAvaMoveActions, pStartStop: boolean): void {
         this.moveAction = pMovement;
+        this.startStop = pStartStop;
         const updateProps = {
-            [AbOSAvaMove.MoveActionProp]: pMovement
+            [AbOSAvaMove.MoveActionProp]: pMovement,
+            [AbOSAvaMove.StartStopProp]: pStartStop
         };
         // Logger.debug(`AbOSAvaMove.sendMovementUpdate: sending ${JSON.stringify(updateProps)}`);
         void this.containingBItem.bItemAbility.creatingConnection.UpdateProperties(this.containingBItem.id, updateProps);

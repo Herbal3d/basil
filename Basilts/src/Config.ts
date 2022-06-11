@@ -205,6 +205,7 @@ export let Config = {
         'RcvdMsg': true,                // output detailed message when message received
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true,            // print RPC response message
+        'PlacementDetail': true,        // print detailed info from AbPlacement
 
         'ShowBoundingBox': false         // show bounding box items loaded into scene
     }

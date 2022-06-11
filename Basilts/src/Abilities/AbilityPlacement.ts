@@ -13,14 +13,14 @@
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { AbAssembly } from '@Abilities/AbilityAssembly';
-import { BItem,  PropValue } from '@BItem/BItem';
+import { BItem, PropValue, setPropEventParams } from '@BItem/BItem';
 
-import { ParseThreeTuple, ParseFourTuple } from '@Base/Tools/Utilities';
+import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Object3D } from '@Graphics/Object3d';
-import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
+import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 import { Eventing } from '@Base/Eventing/Eventing';
-import { Logger } from '@Base/Tools/Logging';
+import { initLogging, Logger } from '@Base/Tools/Logging';
 
 // Some BItems are Assemblys (3d represntations) and other BItems are instances of the
 //     3d representations. This Ability is the Intance.
@@ -63,7 +63,11 @@ export class AbPlacement extends Ability {
         if (this.containingBItem) {
             const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
             if (object3d) {
-                object3d.pos.fromArray(this._pos);
+                Logger.cdebug('PlacementDetail', `AbilityPlacement.pos set: ${this.containingBItem.id} to ${JSONstringify(this._pos)}`);
+                object3d.pos = this._pos;
+            }
+            else {
+                Logger.debug(`AbilityPlacement.rot set: ${this.containingBItem.id} no object3d available`);
             };
         };
     };
@@ -75,7 +79,11 @@ export class AbPlacement extends Ability {
         if (this.containingBItem) {
             const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
             if (object3d) {
-                object3d.rot.set(this._rot[0], this._rot[1], this._rot[2], this._rot[3]);
+                Logger.cdebug('PlacementDetail', `AbilityPlacement.rot set: ${this.containingBItem.id} to ${JSONstringify(this._rot)}`);
+                object3d.rot = this._rot;
+            }
+            else {
+                Logger.debug(`AbilityPlacement.rot set: ${this.containingBItem.id} no object3d available`);
             };
         };
     };
@@ -109,7 +117,19 @@ export class AbPlacement extends Ability {
         pBItem.addProperty(AbPlacement.RotProp, this);
         // Get and Set the placement frame of reference.
         pBItem.addProperty(AbPlacement.ForProp, this);
+
+        // Watch the assetUrl so we know when to place the instance in the world
+        Eventing.Subscribe(pBItem.getPropEventTopicName(AbAssembly.AssetRepresentationProp),
+                            this.processRepresentationChange.bind(this) as EventProcessor);
+
     };
+
+    // Called when the BItem's representation property changes. We force placement variables.
+    processRepresentationChange(pEvent: setPropEventParams): void {
+        Logger.cdebug('PlacementDetail', `AbilityPlacement.processRepresentationChange: ${pEvent.PropName}`);
+        pEvent.BItem.setProp(AbPlacement.PosProp, this._pos);
+        pEvent.BItem.setProp(AbPlacement.RotProp, this._rot);
+    }
 
     // If any of my properties are removed, that means I'm being removed.
     // Disconnect this instance from the world.

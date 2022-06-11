@@ -41,6 +41,7 @@ export const BItems = {
         const authToken = authTokenString ? new AuthToken(authTokenString) : null;
         const layer = (pProps[AbBItem.LayerProp] as string) ?? Config.layers.default;
         const newBItem = new BItem(undefined, authToken, layer, pCreatingConnection);
+
         let abils: string[] = []
         if (pProps.hasOwnProperty(AbBItem.AbilityProp)) {
             abils = pProps[AbBItem.AbilityProp] as string[];
@@ -48,8 +49,6 @@ export const BItems = {
                 Logger.error(`BItems.createFromProps: ${AbBItem.AbilityProp} is not an array. ${JSONstringify(pProps)}`);
             };
         };
-
-        // Add any Abilities that are asked for
         let err: string;
         try {
             // Logger.debug(`BItems.createFromProps: checking for abilities`);

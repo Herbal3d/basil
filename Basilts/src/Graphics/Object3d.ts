@@ -11,15 +11,14 @@
 
 'use static';
 
-import { Config } from '@Base/Config';
+// import { Config } from '@Base/Config';
 
 import { AbstractMesh, AssetContainer, ISceneLoaderProgressEvent } from '@babylonjs/core';
 import { Vector3 as BJSVector3, Quaternion as BJSQuaternion } from '@babylonjs/core/Maths';
 
-import { Graphics } from '@Graphics/Graphics';
 import { CoordSystem } from '@Comm/BMessage';
 
-import { Logger } from '@Tools/Logging';
+// import { Logger } from '@Tools/Logging';
 
 // A representation of the 3D object that is passed around by the rest of the code.
 // This hides the definition of the internal 3D object.
@@ -28,13 +27,44 @@ export class Object3D {
     public mesh: AbstractMesh = undefined;
     public container: AssetContainer = undefined;
 
-    public pos: BJSVector3;
-    public rot: BJSQuaternion;
+    public get pos(): BJSVector3 {
+        if (this.mesh) {
+            return this.mesh.position;
+        }
+        return new BJSVector3(0, 0, 0);
+    }
+    public set pos(pVal: BJSVector3 | number[]) {
+        if (this.mesh) {
+            if (Array.isArray(pVal)) {
+                this.mesh.position.set(pVal[0], pVal[1], pVal[2]);
+            }
+            else {
+                this.mesh.position = pVal.clone();
+            }
+        }
+    }
+    public get rot(): BJSQuaternion {
+        if (this.mesh) {
+            return this.mesh.rotationQuaternion;
+        }
+        return new BJSQuaternion(0, 0, 0, 1);
+    }
+    public set rot(pVal: BJSQuaternion | number[]) {
+        if (this.mesh) {
+            if (Array.isArray(pVal)) {
+                this.mesh.rotationQuaternion = new BJSQuaternion(pVal[0], pVal[1], pVal[2], pVal[3]);
+            }
+            else {
+                this.mesh.rotationQuaternion = pVal.clone();
+            }
+        }
+    }
     public for: number;
 
     constructor(pContainer?: AssetContainer, pMesh?: AbstractMesh) {
         this.container = pContainer;
         this.mesh = pMesh;
+        this.for = CoordSystem.WGS86;
     }
     isMesh(): boolean {
         return this.mesh !== undefined;
