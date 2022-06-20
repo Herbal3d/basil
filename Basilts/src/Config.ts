@@ -35,7 +35,8 @@ export let Config = {
         'serviceAddr': '1234567890',
         'openParams': {
             'assetURL': '',
-            'loaderType': 'GLTF'
+            'loaderType': 'GLTF',
+            'display': 'none'
         }
     },
     'comm': {
@@ -251,9 +252,10 @@ export interface EntryConfigParameters {
     'protocol': string,
     'service': string,
     'serviceAuth': string,
-    'openParams': {
+    'openParams': { // parameters specifying object to open for testing
         'assetURL': string,
-        'loaderType': string
+        'loaderType': string,
+        'display': string
     }
 };
 

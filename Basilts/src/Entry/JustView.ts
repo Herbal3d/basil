@@ -71,6 +71,7 @@ function CallBasilWithTheFile(): void {
             'openParams': {
                 'assetURL': GLTFTOLOAD,
                 'loaderType': 'GLTF',
+                'display': 'status'
             }
         }
     };

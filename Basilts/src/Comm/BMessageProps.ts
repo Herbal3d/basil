@@ -18,27 +18,28 @@ import { BKeyedCollection } from "@Tools/bTypes";
 // This defines the expected properties for each of the requests
 
 export interface MakeConnectionReqProps {
-    transport: string;        // transport type: 'WW'|'WS'
-    transportURL: string;   // URL to connect transport to
-    protocol: string;       // message encoding: 'Basil-JSON'|...
-    service: string;        // service connecting too (usually 'SpaceServer')
+    transport: string;       // transport type: 'WW'|'WS'
+    transportURL: string;    // URL to connect transport to
+    protocol: string;        // message encoding: 'Basil-JSON'|...
+    service: string;         // service connecting too (usually 'SpaceServer')
     serviceAuth: string;     // authorization token to use when connecting
     serviceAddr?: string;    // routing address of service
     openParams?: BKeyedCollection; // optional parameters to send when doing OpenConnection
 };
 export interface MakeConnectionRespProps {
-    none: string;           // place holder REPLACE ME
+    none: string;            // place holder REPLACE ME
 };
 export interface OpenSessionReqProps {
-    basilVersion: string;   // version string for Basil
-    clientAuth: string      // token to use when talking back to me
+    basilVersion: string;    // version string for Basil
+    clientAuth: string       // token to use when talking back to me
     clientAddr?: string      // routing address to client
     // The Test* props are for WWTester and causes it to create the specified asset.
     //    These are not use for normal SpaceServer operation.
     //    They usually come from the OpenParams prop in the MakeConnectionReq
     //       so passing the test asset through Entry => Basil => WWTester => Basil works
-    testAssetURL?: string;  // URL of test asset to load
+    testAssetURL?: string;      // URL of test asset to load
     testAssetLoader?: string;   // loader to use for test asset
+    testAssetDisplay?: string;  // options for display of the test asset
 };
 export interface OpenSessionRespProps {
     serverVersion?: string; // server version string

@@ -68,6 +68,7 @@ ClickableOps['testScene'] = function() {
             'openParams': {
                 'assetURL': basilTestURL,
                 'loaderType': 'GLTF',
+                'display': 'all'
             }
         }
     };
@@ -89,6 +90,7 @@ ClickableOps['wwTesterDev'] = function() {
             'openParams': {
                 'assetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
                 'loaderType': 'GLTF',
+                'display': 'all'
             }
         }
     };
@@ -111,6 +113,7 @@ ClickableOps['loadGLTF'] = function() {
             'openParams': {
                 'assetURL': gltfURL,
                 'loaderType': 'GLTF',
+                'display': 'status'
             }
         }
     };

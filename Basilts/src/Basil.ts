@@ -162,6 +162,7 @@ let firstConnection: BasilConnection
             if (Config.initialMakeConnection.openParams) {
                 sessionParams.testAssetURL = Config.initialMakeConnection.openParams.assetURL;
                 sessionParams.testAssetLoader = Config.initialMakeConnection.openParams.loaderType;
+                sessionParams.testAssetDisplay = Config.initialMakeConnection.openParams.display ?? 'none';
             }
 
             // Start the displayed session

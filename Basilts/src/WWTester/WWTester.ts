@@ -81,12 +81,18 @@ Eventing.init();
             // If an asset URL is passed, request the creation of that asset
             const assetURL = connParms.request.IProps['testAssetURL'] as string;
             const assetLoader = connParms.request.IProps['testAssetLoader'] as string;
-            Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
+            const assetDisplay = connParms.request.IProps['testAssetDisplay'] as string;
+            const displayOpt = assetDisplay.toLowerCase().split(' ');
+            Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}, display: ${displayOpt}`);
             const assetId = await LoadTestAsset(conn, assetURL, assetLoader)
             // Create the status dialog box in the display
-            await CreateTopMenuDialog(conn);
+            if (displayOpt.includes('all') || displayOpt.includes('topmenu')) {
+                await CreateTopMenuDialog(conn);
+            }
             // Create the status dialog box in the display
-            await CreateStatusDialog(conn);
+            if (displayOpt.includes('all') || displayOpt.includes('status')) {
+                await CreateStatusDialog(conn);
+            }
             // As a test, request the properties of the created asset
             await RequestProperties(conn, assetId);
         }
