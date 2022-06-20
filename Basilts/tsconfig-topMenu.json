@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "module": "es2020",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "outDir": "dist/Dialogs",
+        "baseUrl": ".",
+        "paths": {
+            "@Abilities/*": ["./declarations/Abilities/*"],
+            "@Base/*": ["./declarations/*"],
+            "@BItem/*": ["./declarations/BItem/*"],
+            "@Comm/*": ["./declarations/Comm/*"],
+            "@Dialogs/*": ["./declarations/Dialogs/*"],
+            "@Entry/*": ["./declarations/Entry/*"],
+            "@Eventing/*": ["./declarations/Eventing/*"],
+            "@Graphics/*": ["./declarations/Graphics/*"],
+            "@Tools/*": ["./declarations/Tools/*"]
+        }
+    },
+    "include": [
+        "src/Dialogs/topMenu.ts",
+        "./declarations/**/*"
+    ],
+    "exclude": [
+        "src/static/**/*",
+        "src/jslibs/*"
+    ]
+}

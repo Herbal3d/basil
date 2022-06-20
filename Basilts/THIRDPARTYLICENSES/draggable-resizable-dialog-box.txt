@@ -1,0 +1,15 @@
+Cloned from https://github.com/Max-ChenFei/Draggable-Resizable-Dialog
+on June 1, 2022
+Herbal3d repository at https://github.com/Herbal3d/Draggable-Resizable-Dialog
+
+/*
+*
+* Pure JavaScript/Typescript for Draggable and Resizable Dialog Box
+*
+* Designed by ZulNs, @Gorontalo, Indonesia, 7 June 2017
+* Extended by FrankBuchholz, Germany, 2019
+* Typescript'ified by Robert Adams, Oregon USA, 2022
+*
+* MIT License
+*/
+

@@ -176,9 +176,9 @@ let _infoFPS: UI_Text;
 let _infoDrawCalls: UI_Text;
 let _infoTriangles: UI_Text;
 let _infoLines: UI_Text;
-// const _infoPoints: UI_Text;
-let _infoTextureMem: UI_Text;
-let _infoGeometryMem: UI_Text;
+// let _infoPoints: UI_Text;
+// let _infoTextureMem: UI_Text;
+// let _infoGeometryMem: UI_Text;
 
 let _eventDisplayInfo: SubscriptionEntry = undefined;
 
@@ -191,8 +191,8 @@ const _initilize = function() {
     _infoTriangles = new UI_Text('div[b-info=infoTriangles]');
     _infoLines = new UI_Text('div[b-info=infoLines]');
     // _infoPoints = new UI_Text('div[b-info=infoPoints]');
-    _infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
-    _infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
+    // _infoTextureMem = new UI_Text('div[b-info=infoTextureMem]');
+    // _infoGeometryMem = new UI_Text('div[b-info=infoGeometryMem]');
 
     // @ts-ignore
     _eventDisplayInfo = Eventing.Subscribe('Graphics.RenderInfo', _processRenderInfo);
@@ -210,10 +210,12 @@ const _processRenderInfo = function(info: RenderInfoEventProps) {
         _infoLines.Update(info.render.lines);
         // _infoPoints.Update(info.render.points);
     };
+    /*
     if (info && info.memory && _infoTextureMem) {
         _infoTextureMem.Update(info.memory.textures);
         _infoGeometryMem.Update(info.memory.geometries);
     };
+    */
 };
 
 const _processCameraInfo = function(camInfo: CameraInfoEventProps) {

@@ -186,7 +186,8 @@ export const Graphics = {
     // Adjust the camera and environment when display size changes
     _onContainerResize() {
         // Logger.debug(`Graphics._onContainerResize: width=${Graphics._canvas.clientWidth}, height=${Graphics._canvas.clientHeight}`);
-        Graphics._engine.resize();
+        // Graphics._engine.resize();
+        Graphics._engine.setSize(Graphics._canvas.clientWidth, Graphics._canvas.clientHeight);
     },
 
     _initializeCamera(passedParms?: BKeyedCollection) {

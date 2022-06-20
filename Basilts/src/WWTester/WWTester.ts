@@ -84,6 +84,8 @@ Eventing.init();
             Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
             const assetId = await LoadTestAsset(conn, assetURL, assetLoader)
             // Create the status dialog box in the display
+            await CreateTopMenuDialog(conn);
+            // Create the status dialog box in the display
             await CreateStatusDialog(conn);
             // As a test, request the properties of the created asset
             await RequestProperties(conn, assetId);
@@ -190,6 +192,19 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
         throw new Error(`CreateItem response error: ${resp.Exception}`);
     }
     return resp.IProps.id as string;
+}
+
+// Create the top Menu
+async function CreateTopMenuDialog(pBasil: BasilConnection): Promise<void> {
+    const resp = await pBasil.CreateItem({
+        abilities: [ 'Dialog' ],
+        url: './Dialogs/topMenu.html',
+        dialogName: 'topMenu',
+        dialogPlacement: 'menu'
+    });
+    if (resp.Exception) {
+        throw new Error(`CreateItem dialog response error: ${resp.Exception}`);
+    }
 }
 
 // Create the status dialog box in the display

@@ -31,11 +31,15 @@
     --b-color-dialog-title-bg: #0d2c52;
     --b-color-dialog-bg: var(--b-color-base-headline);
     --b-color-group-bg: var(--b-color-base-bg);
-    --b-dialog-opacity: 0.7;
+    --b-dialog-opacity: 0.6;
 
     --b-color-dialog-accent: var(--b-color-base-accent);
     --b-color-dialog-button-color: var(--b-color-base-color);
     --b-color-dialog-button-bg: var(--b-color-base-accent2);
+
+    --b-color-menu-bg: var(--b-color-base-accent);
+    --b-color-menu-color: var(--b-color-base-accent2);
+    --b-menu-opacity: 0.8;
 
     --b-color-debug-color: #111;
     --b-color-debug-bg: var(--b-color-base-bg);
@@ -50,36 +54,39 @@
     background: var(--b-color-global-bg);
     padding: 0px;
     margin: 0px;
+    /* 'vh' is viewport height, 'vw' is viewport width */
+    /*
+    height: 100vh;
+    width: 100vh;
+    */
+    /* the causes no scroll bars */
+    overflow: hidden;
 }
 
 /* The layout for the whole page. */
 /* The width is smaller as Chrome seems to make scroll bars if it's 100%. */
 .b-basil-pageLayout {
-    position: absolute;
-    top: 0%;
-    left: 0%;
-    width: 98%;
-    height: 98%;
     padding: 0px;
     margin: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 /* The container that contains the canvas. */
 #b-webGLdiv {
-    width: 100%;
-    height: 100%;
     padding: 0px;
-    margin: 5px;
-    overflow: hidden;
+    margin: 1em auto; 
 }
 
 /* The canvas that is passed to ThreeJS */
 #b-webGLcanvas {
-    width: 100%;
-    height: 100%;
-    padding: 0px;
-    margin: 5px;
-    overflow: hidden;
+    position: absolute;
+    top: 2vh;
+    left: 1vw;
+    width: 98vw;
+    height: 97vh;
+    border: 0px;
+    outline: none;
 }
 
 /* Display of the version number at the bottom of the page */
@@ -116,21 +123,37 @@
 
 :root {
     --b-dialog-titlebar-height: 1em;
+    --b-dialog-resize-margin: 4px;
 }
+/* The area for the menu bars that are at the top of the page. They overlay the display */
+.b-topDialogs {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    opacity: var(--b-dialog-opacity);
+}
+/* the area for the floating dialogs */
+/*
+.b-dialogs {
+}
+*/
+/* == Floating dialogs ============================================ */
+/* Each of the floating dialogs has a wrapper */
 .b-dialog-wrapper {
     padding: 0px;
-    margin: 0px;
+    margin: 0px auto;
     position: absolute;
-    bottom: 2%;
-    right: 2%;
     background-color: var(--b-color-dialog-bg);
+    opacity: var(--b-dialog-opacity);
 }
+/* The title bar that is at the top of the floating dialogs. */
 .b-dialog-titlebar {
     display: block;
     height: var(--b-dialog-titlebar-height);
     background-color: var(--b-color-dialog-title-bg);
     width: 100%;
 }
+/* Title bar minimize button */
 .b-dialog-titlebar-minimize {
     display: inline;
     float: right;
@@ -138,6 +161,7 @@
     width: var(--b-dialog-titlebar-height);
     background-color: cadetblue;
 }
+/* Title bar close button */
 .b-dialog-titlebar-close {
     display: inline;
     float: right;
@@ -145,23 +169,42 @@
     width: var(--b-dialog-titlebar-height);
     background-color: mediumvioletred;
 }
+/* The left part of the title bar is for descriptive text */
 .b-dialog-titlebar-titlearea {
     display: inline;
     float: left;
 }
-.b-dialog-iframe-wrapper {
-    display: block;
-    padding: 0px;
-    margin: 0px;
-    width: 100%;
-    height: 90%;
-}
+/* The contents of the floating dialog is an iframe */
 .b-dialog-iframe {
     display: block;
     padding: 0px;
-    margin: 0px;
+    margin: 0px auto;
     width: 100%;
     height: 100%;
+}
+
+/* == Menu bars =================================================== */
+/* each of the menu bars has a wrapper */
+.b-menu-wrapper {
+    padding: 0px;
+    margin: 2px;
+    width: 100%;
+    color: var(--b-color-menu-color);
+    background-color: var(--b-color-menu-bg);
+    opacity: var(--b-menu-opacity);
+}
+/* each title bar contents is an iframe */
+.b-menu-iframe {
+    display: block;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+}
+/* a body class that is shared by all of the menu bars */
+.b-menu-body {
+    height: fit-content;
+    color: var(--b-color-menu-color);
+    background: var(--b-color-menu-bg);
 }
 
 /* ================================================================ */

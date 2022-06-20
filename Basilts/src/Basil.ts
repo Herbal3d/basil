@@ -65,6 +65,11 @@ if (IsNullOrEmpty(configParams)) {
     configParams = Buffer.from(JSON.stringify(testConfigParams)).toString('base64');
 };
 
+// Hack to cause the various iframes to get properly sized
+setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+}, 3000);
+
 // Parse the passed configuration parameters and add to Config
 if (IsNotNullOrEmpty(configParams)) {
     try {

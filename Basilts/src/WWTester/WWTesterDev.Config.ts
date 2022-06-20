@@ -10,7 +10,10 @@ export let WWConfig = {
     'basil': {
         // If 'true', rewite UniqueIdBase to be the SessionId
         'UseSessionIdForUniqueBase': false,
-     },
+    },
+    'page': {
+        'showDebug': true,
+    },
     'security': {
         'ShouldCheckBasilServerRequestAuth': false,
     },

@@ -7,6 +7,7 @@
 *
 * MIT License
 */
+import { Logger } from '@Tools/Logging';
 
 // When button pressed, this callback is called with the button name
 type ButtonCallback = (pButtonName: string, pDialogId: string) => void;
@@ -25,6 +26,8 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
     const titlebarClass = pClasses['titlebar'] ?? '.titlebar';
     const contentClass = pClasses['content'] ?? '.content';
     const buttonContainerAttribute = pClasses['buttonContainer'] ?? 'buttonContainer';
+
+    const resizeMargin = 4; // margin that is put around content so mouse can sense when to resize
 
     let	_minW = 100; // The exact value get's calculated
     let _minH = 1; // The exact value get's calculated
@@ -366,7 +369,7 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
                 _dialog.style.width = `${w}px`;
                 _dialog.style.height = `${h}px`;
             }
-            _setDialogContent();
+            _setDialogContent(_dialog, _dialogTitle, _dialogContent);
         }
         else if (!_isButton) {
             let cs, rm = '';
@@ -478,23 +481,25 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
         _buttons[0].style.cursor = cur;
     };
 
-    function _setDialogContent() {
+    // Set the height and width of the content to fit inside the dialog box
+    function _setDialogContent(pWholeDialog: HTMLElement, pDialogTitle: HTMLElement, pDialogContent: HTMLElement) {
         // Let's try to get rid of some of constants in javascript but use values from css
-        const _dialogContentStyle = getComputedStyle(_dialogContent);
+        const _dialogContentStyle = getComputedStyle(pDialogContent);
+        const _dialogTitleStyle = getComputedStyle(pDialogTitle);
+        const _titlebarHeight = parseInt(_dialogTitleStyle.height);
 
-        const w = _dialog.clientWidth 
-                - parseInt( _dialogContentStyle.left) // .dialog .content { left: 16px; }
-                - 16 // right margin?
-                ;
-        const h = _dialog.clientHeight - (
-                parseInt(_dialogContentStyle.top) // .dialog .content { top: 48px } 
-                + 16 // ?
-        ); // Ensure to get minimal height
+        const w = pWholeDialog.clientWidth - resizeMargin * 2;
+        const h = pWholeDialog.clientHeight - _titlebarHeight - resizeMargin * 2;
 
-        _dialogContent.style.width = `${w}px`;
-        _dialogContent.style.height = `${h}px`;
+        // Logger.debug(`_setDialogContent: w: ${w} h: ${h}`);
+        // Logger.debug(`_setDialogContent: wd.clientW: ${pWholeDialog.clientWidth} wd.clientH: ${pWholeDialog.clientHeight}`);
+        // Logger.debug(`_setDialogContent: cs.left: ${_dialogContentStyle.left} cs.top: ${_dialogContentStyle.top}`);
 
-        _dialogTitle.style.width = `${w - 16}px`;
+        pDialogContent.style.width = `${w}px`;
+        pDialogContent.style.height = `${h}px`;
+
+        // The title goes across the whole dialog
+        pDialogTitle.style.width = `${w + resizeMargin * 2}px`;
     };
 
     function _showDialog() {
@@ -518,27 +523,41 @@ export function DialogBox(pId: string, pCallback: ButtonCallback, pClasses?: { [
         _dialogContent = _dialog.querySelector(contentClass);
         _buttons = _dialog.querySelectorAll('button');  // Ensure to get minimal width
 
-        // Set the content size parameters
-        _setDialogContent();
+        // const frog = _dialogContent as HTMLIFrameElement;
+        // const _dialogContentWindow = frog.contentWindow;
+        // const _dialogContentDocument = frog.contentDocument;
+        // const _dialogContentBody = _dialogContentDocument.body;
 
-        // Let's try to get rid of some of constants in javascript but use values from css
+        // When first started, try to fit the dialog box to the content
+
         const _dialogStyle = getComputedStyle(_dialog);
         const _dialogTitleStyle = getComputedStyle(_dialogTitle);
         const _dialogContentStyle = getComputedStyle(_dialogContent);
 
-
         // Calculate minimal width
-        _minW = Math.max(_dialog.clientWidth, _dialogContent.clientWidth);
+        _minW = Math.max(_dialog.clientWidth, _dialogContent.clientWidth + resizeMargin * 2);
 
         _dialog.style.width = `${_minW}px`;
 
         // Calculate minimal height
         _minH = Math.max(_dialog.clientHeight,
-                    _dialogContent.clientHeight + _dialogTitle.clientHeight + 16,
-                    parseInt(_dialogContentStyle.height) + parseInt(_dialogTitleStyle.height) + 16
+                    _dialogContent.clientHeight + _dialogTitle.clientHeight + resizeMargin * 2,
+                    parseInt(_dialogContentStyle.height) + parseInt(_dialogTitleStyle.height) + resizeMargin * 2
                     );
 
+        // Logger.debug(`_init: _minW: ${_minW}, _minH: ${_minH}`);
+        // Logger.debug(`_init: d.clientH: ${_dialog.clientHeight}, d.clientW: ${_dialog.clientWidth}`);
+        // Logger.debug(`_init: dc.clientH: ${_dialogContent.clientHeight}, dc.clientW: ${_dialogContent.clientWidth}`);
+        // Logger.debug(`_init: c.scrW: ${_dialogContentBody.scrollWidth}, c.scrH: ${_dialogContentBody.scrollHeight}`);
+        // Logger.debug(`_init: c.cltW: ${_dialogContentBody.clientWidth}, c.cltH: ${_dialogContentBody.clientHeight}`);
+        // Logger.debug(`_init: w.scrX: ${_dialogContentWindow.screenX}, w.scrY: ${_dialogContentWindow.screenY}`);
+        // Logger.debug(`_init: w.inW: ${_dialogContentWindow.innerWidth}, w.inH: ${_dialogContentWindow.innerHeight}`);
+
         _dialog.style.height = `${_minH}px`;
+
+        // Adjust the content to fit inside the dialog box
+        // or, in this initialization case, make sure content setting match the size
+        _setDialogContent(_dialog, _dialogTitle, _dialogContent);
 
         // center the dialog box
         _dialog.style.left = `${(window.innerWidth - _dialog.clientWidth) / 2}px`;
