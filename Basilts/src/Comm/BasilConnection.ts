@@ -26,8 +26,6 @@ import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
-import { ProcessDelayedGraphicsOperations } from '@Graphics/GraphicOps';
-
 import { VERSION } from '@Base/VERSION';
 
 import { CombineParameters, ExtractStringError, JSONstringify, RandomIdentifier } from "@Tools/Utilities";
@@ -490,7 +488,6 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
             default:
                 break;
         };
-        void ProcessDelayedGraphicsOperations();
     };
 };
 

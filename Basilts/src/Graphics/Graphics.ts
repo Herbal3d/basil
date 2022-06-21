@@ -74,7 +74,9 @@ export const Graphics = {
     _canvas: <HTMLCanvasElement>undefined,
     _engine: <Engine>undefined,
     _scene: <Scene>undefined,
+    _skybox: <Mesh>undefined,
 
+    // Graphics engine can be running or paused
     _graphicsState: GraphicStates.Uninitilized,
 
     // Top of trees for world and camera relative objects
@@ -85,22 +87,25 @@ export const Graphics = {
     _ambientLight: <Light>undefined,
     _directionalLight: <DirectionalLight>undefined,
 
+    // Statistics and information about the renderer
     _sceneInstrumentation: <SceneInstrumentation>undefined,
     frameNum: <number>undefined,
     FPS: <number>undefined,
     _lastFrameDelta: <number>undefined,
     _throttleFPS: <number>undefined,
 
+    // Topic for events generated each frame
     _eventEachFrame: <TopicEntry>undefined,
 
+    // Events generated giving camera position information
     _eventCameraInfo: <TopicEntry>undefined,
     _eventCameraInfoTimer: <string>undefined,
+    _prevCamPosition: <BJSVector3>undefined,
+    // Events generated giving renderer information
     _eventDisplayInfo: <TopicEntry>undefined,
     _eventDisplayInfoTimer: <string>undefined,
-    _prevCamPosition: <BJSVector3>undefined,
 
-    _skybox: <Mesh>undefined,
-
+    // Initalize and setup the graphics engine
     connectGraphics(pContainer: HTMLElement, pCanvas: HTMLCanvasElement): void {
         Graphics.SetGraphicsState(GraphicStates.Initializing);
         Graphics._container = pContainer;
@@ -144,6 +149,7 @@ export const Graphics = {
         // Graphics.eventEachFrame = Eventing.Register('display.eachFrame', 'Graphics');
         Graphics.SetGraphicsState(GraphicStates.Initialized);
     },
+    // After initialization, Graphics can be started or paused
     Start() {
         // Logger.debug(`Graphics.Start: Start`);
         Graphics._startRendering();
@@ -190,6 +196,9 @@ export const Graphics = {
         Graphics._engine.setSize(Graphics._canvas.clientWidth, Graphics._canvas.clientHeight);
     },
 
+    // Initialize the camera
+    // Camera can be different types depending on whether Basil is being used as a content viewer
+    //    (just displaying and object) or a virtual world presenece viewer (displaying avatar view).
     _initializeCamera(passedParms?: BKeyedCollection) {
         if (Graphics._camera) {
             return;
@@ -234,6 +243,8 @@ export const Graphics = {
         Logger.debug(`Graphics._initializeCamera: camera at ${Graphics._camera.position.toString()} pointing at ${Graphics._camera.target.toString()}`);
     },
 
+    // At the moment, make things visible.
+    // TODO: enable general environmental setup from the SpaceServer
     _initializeLights() {
         if (Config.webgl.lights.ambient) {
             const parms = <AmbientLightingParameters>Config.webgl.lights.ambient;
@@ -263,6 +274,7 @@ export const Graphics = {
         }
     },
 
+    // TODO: enable general environmental setup from the SpaceServer
     _initializeEnvironment() {
         Graphics._skybox = MeshBuilder.CreateBox('skybox', { size: 1000 }, Graphics._scene);
         if (Config.webgl.renderer.BabylonJS.environment.skyMaterial.enable) {

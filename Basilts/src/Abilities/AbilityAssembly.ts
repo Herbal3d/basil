@@ -127,8 +127,8 @@ export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<vo
             pBItem.setFailed();
         }
         else {
-            pAbil.containingBItem.setProp(AbAssembly.AssetRepresentationProp, loaded);
             pBItem.setReady();
+            pAbil.containingBItem.setProp(AbAssembly.AssetRepresentationProp, loaded);
         }
     })
     .catch ( err => {

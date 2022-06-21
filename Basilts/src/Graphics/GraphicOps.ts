@@ -60,10 +60,36 @@ export interface LoadAssetParams {
     combineInstances?: boolean;  // whether to combine instances
 };
 
+// While asset is loading, state is reported
+export enum AssetLoadingState {
+    NotLoaded,
+    Started,
+    Working,
+    Loaded,
+    Failed
+};
+export interface IProgressInfo {
+    state: AssetLoadingState;
+    asset: string;
+    percent: number | undefined;    // percent completed or undefined if not known
+}
+export function MakeProgress(pState: AssetLoadingState, 
+                            pAsset: string,
+                            pProgress: ISceneLoaderProgressEvent,
+                            pProgressCallback: ProgressCallback) {
+    if (typeof(pProgressCallback) !== 'undefined') {
+        let percent: number | undefined;
+        if (pProgress && pProgress.lengthComputable) {
+            percent = pProgress.loaded / pProgress.total;
+        }
+        pProgressCallback({state: pState, asset: pAsset, percent: percent});
+    }
+};
+
 // Return a Promise that wraps the loading of an asset.
 // Load an asset that is 'simple": represented by an URL to a displayable item
 // The Promise resolves to the underlying graphical object representation.
-export type ProgressCallback = (pState: string) => void;
+export type ProgressCallback = (pProgress: IProgressInfo) => void;
 export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback?: ProgressCallback): Promise<Object3D> {
     const parms = <LoadAssetParams><unknown>CombineParameters(Config.assetLoader, pProps as unknown as BKeyedCollection, {
         AssetURL: undefined,
@@ -73,12 +99,13 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
 
     let asset: Object3D = undefined;
     try {
+        // Load the asset
+        MakeProgress(AssetLoadingState.Started, parms.AssetURL, null, pProgressCallback);
         const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene,
             (event: ISceneLoaderProgressEvent) => {
-                if (typeof(pProgressCallback) !== 'undefined') {
-                    pProgressCallback('Working');
-                }
+                MakeProgress(AssetLoadingState.Working, parms.AssetURL, event, pProgressCallback);
         });
+        MakeProgress(AssetLoadingState.Loaded, parms.AssetURL, null, pProgressCallback);
         if (assetContainer) {
             if (assetContainer.meshes.length > 0) {
                 if (Config.Debug.ShowBoundingBox) {
@@ -123,35 +150,11 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
         };
     }
     catch (e) {
+        MakeProgress(AssetLoadingState.Failed, parms.AssetURL, null, pProgressCallback);
         Logger.error(`Graphics: LoadSimpleAsset: Exception: ${e}`);
         asset = undefined;
     }
     return asset; 
-};
-
-export type DelayedGraphicsOperation = (pProp: BKeyedCollection) => Promise<void>;
-interface DelayedGraphicsEntry {
-    op: DelayedGraphicsOperation,
-    params: BKeyedCollection
-};
-
-const _DelayedGraphicsOperations: DelayedGraphicsEntry[] = [];
-
-// Queue an operation that is performed in a group
-export function ScheduleDelayedGraphicsOperation(pOp: DelayedGraphicsOperation, pParams: BKeyedCollection): void {
-    _DelayedGraphicsOperations.push({
-        op: pOp,
-        params: pParams
-    });
-};
-
-// Process all the queued graphical operations
-export async function ProcessDelayedGraphicsOperations(): Promise<void> {
-    while (_DelayedGraphicsOperations.length > 0) {
-        Logger.debug(`GraphicsOp.ProcessDelayedGraphicsOperations: doing delayed op`);
-        const opEntry = _DelayedGraphicsOperations.shift();
-        void opEntry.op(opEntry.params);
-    };
 };
 
 // Add a test object to the scene
