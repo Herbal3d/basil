@@ -145,6 +145,7 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
                 };
                 const rootNode = assetContainer.createRootMesh();
                 asset = new Object3D(assetContainer, rootNode);
+                Graphics.addNodeToWorldView(rootNode);
                 assetContainer.addAllToScene();
             }
         };

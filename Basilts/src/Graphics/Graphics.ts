@@ -119,6 +119,8 @@ export const Graphics = {
         window._scene = Graphics._scene;
         // END DEBUG DEBUG DEBUG
 
+        Graphics._scene.useRightHandedSystem = true;
+
         Graphics._initializeCamera();
         Graphics._initializeLights();
         Graphics._initializeEnvironment();
