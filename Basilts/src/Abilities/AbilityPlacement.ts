@@ -119,9 +119,8 @@ export class AbPlacement extends Ability {
         pBItem.addProperty(AbPlacement.ForProp, this);
 
         // Watch the assetUrl so we know when to place the instance in the world
-        Eventing.Subscribe(pBItem.getPropEventTopicName(AbAssembly.AssetRepresentationProp),
-                            this.processRepresentationChange.bind(this) as EventProcessor);
-
+        pBItem.watchProperty(AbAssembly.AssetRepresentationProp,
+                this.processRepresentationChange.bind(this) as EventProcessor);
     };
 
     // Called when the BItem's representation property changes. We force placement variables.

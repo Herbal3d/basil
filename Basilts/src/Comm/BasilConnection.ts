@@ -88,8 +88,11 @@ export class BasilConnection extends BItem {
         return pOp + '-' + this.id;
     };
     // Subscribe to a particular message operation.
-    SubscribeToMessageOp(pOp: string, pEventProcessor: EventProcessor): SubscriptionEntry {
+    WatchMessageOp(pOp: string, pEventProcessor: EventProcessor): SubscriptionEntry {
         return Eventing.Subscribe(this.GetEventTopicForMessageOp(pOp), pEventProcessor);
+    };
+    UnWatchMessageOp(pSub: SubscriptionEntry): void {
+        Eventing.Unsubscribe(pSub);
     };
 
     // Return the routing address for sending messages to me. This is passed
@@ -125,7 +128,7 @@ export class BasilConnection extends BItem {
         const bmsg: BMessage = { 'Op': BMessageOps.DeleteItemReq, IProps: {}};
         if (this.OutgoingAuth) bmsg.Auth = this.OutgoingAuth.token;
         if (this.OutgoingAddr) bmsg.Addr = this.OutgoingAddr;
-        if (pId) bmsg.IId = pId;
+        bmsg.IId = pId;
         if (pItemAuth) bmsg.IAuth = pItemAuth.token;
         return SendAndPromiseResponse(bmsg, this);
     };
@@ -337,6 +340,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 }
                 else {
                     resp.IId = pReq.IId;
+                    resp.Exception = 'BItem not found';
                 };
                 await Eventing.Fire(pConnection.GetEventTopicForMessageOp('RequestProperties'), {
                     request: pReq,

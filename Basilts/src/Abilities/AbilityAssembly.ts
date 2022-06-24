@@ -17,7 +17,7 @@ import { BItem, PropValue } from '@BItem/BItem';
 import { AuthToken } from '@Tools/Auth';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-import { LoadSimpleAsset, LoadAssetParams } from '@Graphics/GraphicOps';
+import { LoadSimpleAsset, LoadAssetParams, DeleteAsset } from '@Graphics/GraphicOps';
 import { Object3D } from '@Graphics/Object3d';
 import { Logger } from '@Base/Tools/Logging';
 
@@ -101,8 +101,17 @@ export class AbAssembly extends Ability {
         pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
     };
 
-    // When a property is removed from the BItem, this is called
+    // When my properties are being removed, the asset is no longer in world.
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        if (pPropertyName === AbAssembly.AssetRepresentationProp) {
+            if (this.assetRepresenation) {
+                DeleteAsset(this.assetRepresenation);
+                this.assetRepresenation = undefined;
+            }
+            else {
+                Logger.error(`AbAssembly.propertyBeingRemoved: removing ${pPropertyName} but no representation`);
+            }
+        }
         return;
     };
 };
@@ -127,8 +136,10 @@ export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<vo
             pBItem.setFailed();
         }
         else {
+            pAbil.assetRepresenation = loaded;
             pBItem.setReady();
-            pAbil.containingBItem.setProp(AbAssembly.AssetRepresentationProp, loaded);
+            // Formally set the property so a content changed event will happen
+            pBItem.setProp(AbAssembly.AssetRepresentationProp, loaded);
         }
     })
     .catch ( err => {

@@ -56,7 +56,7 @@ export let Config = {
         'debugElementId': 'b-DEBUGG',
         'versionElementId': 'b-version',
         'debugErrorClass': 'b-errorMsg',
-        'debugLogLines': 30
+        'debugLogLines': 29
     },
     // Loader for assets
     'assetLoader': {

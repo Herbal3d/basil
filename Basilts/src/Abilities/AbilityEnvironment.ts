@@ -25,7 +25,6 @@ import { Logger } from '@Base/Tools/Logging';
 import { Config } from '@Base/Config';
 
 export const AbEnvironName = 'Environ'
-// REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbEnvironFromProps(pProps: BKeyedCollection): AbEnviron {

@@ -46,6 +46,8 @@ export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability
     return null;
 };
 
+// Parent class for Abilities.
+// Mostly helper and common functions.
 export abstract class Ability  {
 
     abilityName: string;

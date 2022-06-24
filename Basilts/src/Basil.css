@@ -112,6 +112,7 @@
     background: var(--b-color-debug-bg);
     opacity: var(--b-debug-opacity);
     visibility: hidden;
+    overflow: auto;
 }
 
 /* Class added to a reported error message in the DEBUGG area */

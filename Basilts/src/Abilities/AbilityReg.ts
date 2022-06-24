@@ -18,7 +18,6 @@ import { BKeyedCollection } from '@Tools/bTypes';
 // import { Logger } from '@Base/Tools/Logging';
 
 export const AbRegistrationName = 'Registration'
-// REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbRegistrationFromProps(pProps: BKeyedCollection): AbRegistration {

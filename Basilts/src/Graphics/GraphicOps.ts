@@ -158,6 +158,13 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
     return asset; 
 };
 
+export function DeleteAsset(pAsset: Object3D): boolean {
+    Logger.debug(`GraphicsOps.DeleteAsset: removing`);
+    pAsset.container.removeAllFromScene();
+    pAsset.container.dispose();
+    return true;
+}
+
 // Add a test object to the scene
 export function AddTestObject() {
     const cube = Mesh.CreateBox('box1', 1, Graphics._scene);

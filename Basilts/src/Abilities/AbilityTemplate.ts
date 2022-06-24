@@ -18,7 +18,6 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
 export const AbTEMPLATEName = 'TEMPLATE'
-// REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbTEMPLATEFromProps(pProps: BKeyedCollection): AbTEMPLATE {

@@ -62,6 +62,7 @@ export class AbCamera extends Ability {
 
     public static CameraIndexProp = 'cameraIndex';
     public static CameraModeProp = 'cameraMode';
+    public static CameraLookAtProp = 'cameraLookAt';
 
     constructor(pIndex: number) {
         super(AbCameraName);
@@ -70,6 +71,7 @@ export class AbCamera extends Ability {
 
     public cameraIndex: number = 0;
     public cameraMode: CameraModes = CameraModes.ThirdPerson;
+    public cameraLookAt: number[];
 
     _posSubscription: SubscriptionEntry;
     _rotSubscription: SubscriptionEntry;
@@ -81,12 +83,11 @@ export class AbCamera extends Ability {
 
         pBItem.addProperty(AbCamera.CameraIndexProp, this);
         pBItem.addProperty(AbCamera.CameraModeProp, this);
+        pBItem.addProperty(AbCamera.CameraLookAtProp, this);
 
         // Subscribe to the AbPlacement on this BItem so camera knows when it is moved.
-        this._posSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.PosProp),
-                    this._onPosUpdate.bind(this) as EventProcessor);
-        this._rotSubscription = Eventing.Subscribe(pBItem.getPropEventTopicName(AbPlacement.RotProp),
-                    this._onRotUpdate.bind(this) as EventProcessor);
+        this._posSubscription = pBItem.watchProperty(AbPlacement.PosProp, this._onPosUpdate.bind(this) as EventProcessor);
+        this._rotSubscription = pBItem.watchProperty(AbPlacement.RotProp, this._onRotUpdate.bind(this) as EventProcessor);
 
         pBItem.setReady();
     };
@@ -94,17 +95,17 @@ export class AbCamera extends Ability {
     // When a property is removed from the BItem, this is called
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
         if (pPropertyName === AbCamera.CameraIndexProp) {
-            Eventing.Unsubscribe(this._posSubscription);
-            Eventing.Unsubscribe(this._rotSubscription);
+            pBItem.unWatchProperty(this._posSubscription);
+            pBItem.unWatchProperty(this._rotSubscription);
         };
         return;
     };
 
-    _onPosUpdate(pBItem: BItem, pPos: setPropEventParams): void {
+    _onPosUpdate(pPosChangeInfo: setPropEventParams): void {
         // TODO: put code here
         return;
     }
-    _onRotUpdate(pBItem: BItem, pRot: setPropEventParams): void {
+    _onRotUpdate(pRotChangeInfo: setPropEventParams): void {
         // TODO: put code here
         return;
     }

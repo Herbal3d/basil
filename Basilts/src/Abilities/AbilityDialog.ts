@@ -20,7 +20,6 @@ import { Logger } from '@Tools/Logging';
 import { RandomIdentifier } from '@Tools/Utilities';
 
 export const AbDialogName = 'Dialog'
-// REMEMBER TO ADD the ability registration in AbilityManagement.ts
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbDialogFromProps(pProps: BKeyedCollection): AbDialog {

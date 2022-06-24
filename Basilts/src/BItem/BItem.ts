@@ -25,6 +25,7 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId, ExtractStringError } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
+import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 
 // BItem class is the base of all the items in the system.
 // A BItem get ALL it's functionality fron the Abilities that are added to it.
@@ -123,6 +124,14 @@ export class BItem {
     getPropEventTopicName(pPropName: string): string {
         return pPropName + '.' + this.id;
     };
+    // helper function that subscribes to a specific property on this BItem
+    watchProperty(pPropName: string, pWatcher: EventProcessor): SubscriptionEntry {
+        return Eventing.Subscribe(this.getPropEventTopicName(pPropName), pWatcher);
+    };
+    // helper function for above to hide that it's an Eventing subscription
+    unWatchProperty(pSub: SubscriptionEntry): void {
+        Eventing.Unsubscribe(pSub);
+    };
     // Increment the value of a named property
     incrementProp(pPropName: string) : number {
         // Logger.debug(`incrementProp ${pPropName}`);
@@ -156,6 +165,9 @@ export class BItem {
             this._props.get(pPropName).propertyBeingRemoved(this, pPropName);
             this._props.delete(pPropName);
             this._propOptions.delete(pPropName);
+        }
+        else {
+            Logger.error(`BItem.removeProperty: unknown property: ${pPropName} in ${this.id}`);
         };
     };
     // Return a collection of the public properties of the BItem
@@ -206,6 +218,7 @@ export class BItem {
         this._deleteInProgress = true;
         // Remove all the properties. This alerts any abilities that they are being removed.
         const props = this._props.keys();
+        Logger.debug(`BItem.releaseBItem: releasing properties for ${this.id}`);
         for (const prop of props) {
             this.removeProperty(prop);
         };

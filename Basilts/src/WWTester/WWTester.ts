@@ -131,7 +131,7 @@ async function doMakeConnection(): Promise<BasilConnection> {
 async function waitForOpenSession(pConn: BasilConnection): Promise<BasilConnectionEventParams> {
     return new Promise( (resolve, reject) => {
         // @ts-ignore
-        pConn.SubscribeToMessageOp('OpenSession', (pProps: BasilConnectionEventParams, pTopic: string) => {
+        pConn.WatchMessageOp('OpenSession', (pProps: BasilConnectionEventParams, pTopic: string) => {
             Logger.debug(`OpenSession received`);
             if (pProps.request.IProps.testAssetURL) {
                 // The client tells me what token to send with requests

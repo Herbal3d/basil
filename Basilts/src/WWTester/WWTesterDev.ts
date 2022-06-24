@@ -22,11 +22,12 @@ import { WellKnownCameraName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownKeyboardName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownMouseName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownEnvironName } from '@Base/BItem/WellKnownBItems';
+import { BItemState } from '@Abilities/AbilityBItem';
 
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
-import { BMessageIProps } from '@Base/Comm/BMessage';
+import { BMessage, BMessageIProps } from '@Base/Comm/BMessage';
 
 // For some reason ESLint thinks WWConfig is an 'any' and thus we shouldn't be
 //    unsafely referencing it. It's exactly the same as the Config file which
@@ -37,6 +38,9 @@ import { BMessageIProps } from '@Base/Comm/BMessage';
 // TypeScript issue https://github.com/microsoft/TypeScript/issues/41628
 // @ts-ignore
 GlobalReady = false;
+
+// Test object to load and display
+const duckURL = 'https://files.misterblue.com/BasilTest/gltf/Duck/glTF/Duck.gltf';
 
 // Merge our config into Config and make Config and WWConfig the same
 initConfig();
@@ -79,15 +83,19 @@ Logger.debug(`Starting WWTesterDev`);
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
     try {
+        // The Id of the camera is found through the well known BItem names
+        let cameraId: string | undefined = undefined;
+
         // Create connection
-        const conn = await doMakeConnection();
+        const conn = await DoMakeConnection();
         // Start alive check when connected
         await StartAliveCheck(conn);
         // Resolve when an OpenSession is received
-        const connParms = await waitForOpenSession(conn);
+        const connParms = await WaitForOpenSession(conn);
         const knownBItems = await RequestProperties(conn, 'registration.bitem');
         if (knownBItems[WellKnownCameraName]) {
             const cameraProps = await RequestProperties(conn, knownBItems[WellKnownCameraName] as string);
+            cameraId = knownBItems[WellKnownCameraName] as string;
             PrintProperties('camera', cameraProps);
         }
         if (knownBItems[WellKnownMouseName]) {
@@ -103,27 +111,26 @@ Logger.debug(`Starting WWTesterDev`);
             PrintProperties('environ', environProps);
         }
 
-        /*
-        if (connParms.request.IProps.testAssetURL) {
-            // If an asset URL is passed, request the creation of that assetG
-            const assetURL = connParms.request.IProps['testAssetURL'] as string;
-            const assetLoader = connParms.request.IProps['testAssetLoader'] as string;
-            Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}`)
-            const assetId = await LoadTestAsset(conn, assetURL, assetLoader)
-            // Create the status dialog box in the display
-            await CreateStatusDialog(conn);
-            // As a test, request the properties of the created asset
-            await RequestProperties(conn, assetId);
-        }
-        */
+        // Create some items and diddle them
+        await CreateAndDeleteItem(conn, cameraId)
+        await WaitABit(3000);
+        await CreateTenItemsAndDelete(conn, cameraId);
+        await WaitABit(3000);
+        await Create125ItemsAndDelete(conn, cameraId);
+        await WaitABit(3000);
+        await UpdateItemPosition(conn, cameraId);
+        await WaitABit(3000);
+
     }
     catch (e) {
         Logger.error(`connection exception: ${ExtractStringError(e)}`);
     }
 })();
 
+// =============================================================================
+
 // Create the connection listener and return handle to it
-async function doMakeConnection(): Promise<BasilConnection> {
+async function DoMakeConnection(): Promise<BasilConnection> {
     // Startup the testing and wait for the OpenSession
     try {
         const params: MakeConnectionParams = {
@@ -149,10 +156,10 @@ async function doMakeConnection(): Promise<BasilConnection> {
 }
 
 // Return promise that is resolved when an OpenSession is received
-async function waitForOpenSession(pConn: BasilConnection): Promise<BasilConnectionEventParams> {
+async function WaitForOpenSession(pConn: BasilConnection): Promise<BasilConnectionEventParams> {
     return new Promise( (resolve, reject) => {
         // @ts-ignore
-        pConn.SubscribeToMessageOp('OpenSession', (pProps: BasilConnectionEventParams, pTopic: string) => {
+        pConn.WatchMessageOp('OpenSession', (pProps: BasilConnectionEventParams, pTopic: string) => {
             Logger.debug(`OpenSession received`);
             if (pProps.request.IProps.testAssetURL) {
                 // The client tells me what token to send with requests
@@ -203,6 +210,156 @@ async function StartAliveCheck(pConn: BasilConnection): Promise<void> {
         });
     };
 };
+
+// =============================================================================
+// Create one item, delete it, and verify it has been deleted
+async function CreateAndDeleteItem(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+    Logger.info(`CreateAndDeleteItem: enter`);
+    const createResp = await pConn.CreateItem({
+        abilities: [ 'Assembly' ,'Placement' ],
+        assetUrl: duckURL,
+        assetLoader: 'gltf',
+        pos: [10, 11, 12]
+    });
+    throwIfError(createResp);
+    const createdId = createResp.IId;
+    Logger.info(`CreateAndDeleteItem: created ${createdId}`);
+    await RequestAndPrintProperties(pConn, createdId);
+
+    await WaitUntilReady(pConn, createdId);
+
+    Logger.info(`CreateAndDeleteItem: before delete`);
+    const deleteResp = await pConn.DeleteItem(createdId);
+    throwIfError(deleteResp);
+
+    try {
+        await RequestAndPrintProperties(pConn, createdId);
+        Logger.info(`CreateAndDeleteItem: FAILURE - deleted item found`);
+    }
+    catch (e) {
+        Logger.info(`CreateAndDeleteItem: SUCCESS - deleted item not found`);
+    }
+
+    return ;
+}
+// Create 10 items, delete one of them, and check to make sure there are nine items left
+async function CreateTenItemsAndDelete(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+    const sep = 3;
+    const items: string[] = [];
+    // Create 10 items
+    for (let ii=0; ii<10; ii++) {
+        const createResp = await pConn.CreateItem({
+            abilities: [ 'Assembly' ,'Placement' ],
+            assetUrl: duckURL,
+            assetLoader: 'gltf',
+            pos: [10, 10, 10 + (ii * sep)]
+        });
+        throwIfError(createResp);
+        items.push(createResp.IId);
+    }
+
+    // Wait until the last one is ready
+    await WaitUntilReady(pConn, items[items.length-1]);
+
+    // Delete the items one at a time
+    const delItems = [...items];
+    while (delItems.length > 0) {
+        const rand = RandomInt(0, delItems.length);
+        const toDelId = delItems.splice(rand, 1);
+        const deleteResp = await pConn.DeleteItem(toDelId[0]);
+        throwIfError(deleteResp);
+        await WaitABit(500);
+    }
+
+    // Verify all items are gone
+    // TODO:
+
+    return;
+}
+// Create a 5x5x5 array of Items, delete them slowly, and verify they were deleted
+async function Create125ItemsAndDelete(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+    const sep = 3;
+    const items: string[] = [];
+    // Create 125 items
+    for (let ii=0; ii<5; ii++) {
+        for (let jj=0; jj<5; jj++) {
+            for (let kk=0; kk<5; kk++) {
+                const createResp = await pConn.CreateItem({
+                    abilities: [ 'Assembly' ,'Placement' ],
+                    assetUrl: duckURL,
+                    assetLoader: 'gltf',
+                    pos: [10 + (ii * sep), 10 + (jj * sep), 10 + (kk * sep)]
+                });
+                throwIfError(createResp);
+                items.push(createResp.IId);
+            }
+        }
+    }
+
+    // Wait until the last one is ready
+    await WaitUntilReady(pConn, items[items.length-1]);
+
+    // Delete the items but don't wait for the response
+    const delItems = [...items];
+    while (delItems.length > 0) {
+        const rand = RandomInt(0, delItems.length);
+        const toDelId = delItems.splice(rand, 1);
+        void pConn.DeleteItem(toDelId[0]);
+        // const deleteResp = await pConn.DeleteItem(toDelId[0]);
+        // throwIfError(deleteResp);
+        // await WaitABit(100);
+    }
+
+    // Verify all items are gone
+    // TODO:
+
+    return;
+}
+async function UpdateItemPosition(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+    return;
+}
+
+// Test the message and throw an error if the message contains an error report
+// The string error message is what is thrown
+function throwIfError(pMsg: BMessage) {
+    if (pMsg.Exception) {
+        throw pMsg.Exception;
+    }
+}
+// Wait until the specified BItem reports READY
+async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void> {
+    let notReady = 1;
+    while (notReady > 0) {
+        const resp = await pConn.RequestProperties(pId, '');
+        if (resp.Exception) {
+            throw "Error getting properties";
+        }
+        if (Number(resp.IProps['state']) === Number(BItemState.READY)) {
+            notReady = 0;
+        }
+        else {
+            Logger.debug(`WaitUntilReady: not ready ${notReady}`);
+            notReady++;
+            await WaitABit(100);
+        }
+    }
+}
+async function WaitABit(pTime: number): Promise<void> {
+    return new Promise<void>( (resolve) => {
+        const timer = setTimeout( () => {
+            resolve();
+        }, pTime);
+    })
+}
+
+// Return an integer between min (inclusive) and max (exclusive)
+function RandomInt(min:number, max:number):number {
+    const imin = Math.ceil(min);
+    const imax = Math.floor(max);
+    return Math.floor(Math.random() * (imax - imin) + imin);
+}
+
+// =============================================================================
 
 // Ask the client to load a test asset
 async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTestAssetLoader: string): Promise<string> {
