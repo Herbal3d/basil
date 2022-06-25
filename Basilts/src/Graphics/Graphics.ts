@@ -24,6 +24,7 @@ import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
 
+import { GraphicsInfo } from '@Graphics/GraphicsInfo';
 import { Eventing } from '@Eventing/Eventing';
 import { TopicEntry } from '@Eventing/TopicEntry';
 
@@ -31,30 +32,6 @@ import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilit
 import { BKeyedCollection } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
 
-// The camera generates periodic events. This is the parameter block
-//    returned with the event.
-export const CameraInfoEventTopic = 'Graphics.CameraInfo';
-export interface CameraInfoEventProps {
-    position: number[];
-    rotation: number[];
-};
-// The renderer generates periodic events. This is the parameter block
-//    returned with the event.
-export const RenderInfoEventTopic = 'Graphics.RenderInfo';
-export interface RenderInfoEventProps {
-    fps: number;
-    render: {
-        calls: number;
-        triangles: number;
-        points: number;
-        lines: number;
-        frame: number;
-    };
-    memory: {
-        geometries: number;
-        textures: number;
-    };
-};
 export enum GraphicStates {
     Uninitilized = 0,
     Initializing,
@@ -87,23 +64,11 @@ export const Graphics = {
     _ambientLight: <Light>undefined,
     _directionalLight: <DirectionalLight>undefined,
 
-    // Statistics and information about the renderer
-    _sceneInstrumentation: <SceneInstrumentation>undefined,
-    frameNum: <number>undefined,
-    FPS: <number>undefined,
+    // ms of last frame rendering
     _lastFrameDelta: <number>undefined,
-    _throttleFPS: <number>undefined,
 
     // Topic for events generated each frame
     _eventEachFrame: <TopicEntry>undefined,
-
-    // Events generated giving camera position information
-    _eventCameraInfo: <TopicEntry>undefined,
-    _eventCameraInfoTimer: <string>undefined,
-    _prevCamPosition: <BJSVector3>undefined,
-    // Events generated giving renderer information
-    _eventDisplayInfo: <TopicEntry>undefined,
-    _eventDisplayInfoTimer: <string>undefined,
 
     // Initalize and setup the graphics engine
     connectGraphics(pContainer: HTMLElement, pCanvas: HTMLCanvasElement): void {
@@ -130,13 +95,6 @@ export const Graphics = {
         // eslint-disable-next-line @typescript-eslint/unbound-method
         window.addEventListener('resize', Graphics._onContainerResize);
 
-        // Clock used to keep track of frame time and FPS
-        Graphics._sceneInstrumentation  = new SceneInstrumentation(Graphics._scene);
-        Graphics._sceneInstrumentation.captureFrameTime = true;
-        Graphics.frameNum = 0;    // counted once each frame time
-        Graphics.FPS = 10;        // an initial value to start computation
-        Graphics._throttleFPS = 0; // if zero, no throttling
-
         // There are several top level groups for objects in different coordinate systems
         Graphics._groupWorldRel = new TransformNode('GroupWorldRel' + Config.basil.UniqueIdBase, Graphics._scene);
         Graphics._groupCameraRel = new TransformNode('GroupCameraRel' + Config.basil.UniqueIdBase, Graphics._scene);
@@ -145,8 +103,9 @@ export const Graphics = {
         Graphics._makeOptimizations();
 
         // Graphics generate a bunch of events so people can display stuff
-        Graphics._generateCameraEvents();
-        Graphics._generateRendererStatEvents();
+        GraphicsInfo.SetupCameraInfoEvents();
+        GraphicsInfo.SetupRendererStatEvents();
+
         // This is disabled until someone needs it
         // Graphics.eventEachFrame = Eventing.Register('display.eachFrame', 'Graphics');
         Graphics.SetGraphicsState(GraphicStates.Initialized);
@@ -171,8 +130,7 @@ export const Graphics = {
     _startRendering() {
         if (Graphics._engine) {
             Graphics._engine.runRenderLoop(() => {
-                Graphics.frameNum++;
-                Graphics._lastFrameDelta = Graphics._sceneInstrumentation.frameTimeCounter.count;
+                Graphics._lastFrameDelta = GraphicsInfo.UpdateFrameInfo();
                 Graphics._doAnimation(Graphics._lastFrameDelta);
                 Graphics._engine.scenes.forEach((scene) => {
                     scene.render();
@@ -188,7 +146,7 @@ export const Graphics = {
     },
 
     _doAnimation(delta: number) {
-        // look into https://github.com/tweenjs/tween.js
+        // look into https://github.com/tweenjs/tween.js or similar per-frame animation engines
     },
 
     // Adjust the camera and environment when display size changes
@@ -317,6 +275,7 @@ export const Graphics = {
         return Graphics._skybox;
     },
 
+    // Called at initialization time to setup the engine optimization settings
     _makeOptimizations() {
         if (Config.webgl.renderer.BabylonJS.optimizations.enable) {
             let opOptions = new SceneOptimizerOptions();
@@ -342,63 +301,6 @@ export const Graphics = {
         };
         const val = ParseThreeTuple(pColorValue);
         return new BJSColor3(val[0], val[1], val[2]);
-    },
-
-    // Generate subscribable periodic when camera info (position) changes
-    _generateCameraEvents() {
-        Graphics._eventCameraInfo = Eventing.Register(CameraInfoEventTopic, 'Graphics');
-        Graphics._eventCameraInfoTimer = Eventing.CreateTimedEventProcessor( Graphics._eventCameraInfo,
-            async (topic) => {
-                if (Graphics._eventCameraInfo.hasSubscriptions) {
-                    if (Graphics._prevCamPosition == undefined) {
-                        Graphics._prevCamPosition = new BJSVector3(0,0,0);
-                    }
-                    const oldPos = Graphics._prevCamPosition;
-                    // must clone or 'newPos' will be just a reference to the old value.
-                    const newPos = Graphics._camera.position.clone();
-                    if (!newPos.equals(oldPos)) {
-                        const pos = [0,0,0];
-                        Graphics._camera.position.toArray(pos, 0);
-                        const rot = [0,0,0,0];
-                        Graphics._camera.rotation.toArray(rot, 0);
-                        const camInfo: CameraInfoEventProps = {
-                            'position': pos,
-                            'rotation': rot 
-                        };
-                        void Graphics._eventCameraInfo.fire(camInfo as unknown as BKeyedCollection);
-                        Graphics._prevCamPosition = newPos;
-                    };
-                };
-            }
-        );
-    },
-
-    // Start the generation of renderer statistic events
-    _generateRendererStatEvents() {
-        // Generate subscribable periodic events when display info changes
-        Graphics._eventDisplayInfo = Eventing.Register(RenderInfoEventTopic, 'Graphics');
-        Graphics._eventDisplayInfoTimer = Eventing.CreateTimedEventProcessor(Graphics._eventDisplayInfo,
-            async (topic) => {
-                if (Graphics._eventDisplayInfo.hasSubscriptions) {
-                    // not general, but, for the moment, just return the WebGL info
-                    const dispInfo = {
-                        fps: Graphics._engine.getFps(),
-                        render: {
-                            calls: Graphics._engine._drawCalls.current,
-                            triangles: Math.round(Graphics._scene.totalVerticesPerfCounter.current / 3),
-                            points: Graphics._scene.totalVerticesPerfCounter.current,
-                            lines: 13,
-                            frame: Graphics.frameNum
-                        // },
-                        // memory: {
-                        //     geometries: Graphics._engine.
-                        //     textures: 30
-                        }
-                    };
-                    void Graphics._eventDisplayInfo.fire(dispInfo);
-                };
-            }
-        );
     },
 
     _disposeScene(scene: Scene): void {

@@ -10,8 +10,8 @@
 // limitations under the License.
 
 import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
-import { RenderInfoEventProps } from '@Graphics/Graphics';
-import { CameraInfoEventProps } from '@Graphics/Graphics';
+import { RenderInfoEventProps } from '@Graphics/GraphicsInfo';
+import { CameraInfoEventProps } from '@Graphics/GraphicsInfo';
 import { BVector3, BVector4 } from '@Tools/bTypes';
 
 const BItems = window.BItems;

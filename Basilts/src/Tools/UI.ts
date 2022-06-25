@@ -13,13 +13,8 @@
 
 import { Config } from '@Base/Config';
 import { AddTestObject } from '@Graphics/GraphicOps';
-import { Eventing } from '@Eventing/Eventing';
 
-import { SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
-import { BVector3, BVector4 } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
-import { CameraInfoEventTopic, CameraInfoEventProps, RenderInfoEventTopic, RenderInfoEventProps } from '@Base/Graphics/Graphics';
-import { JSONstringify } from './Utilities';
 
 type ClickOperation = ( pTarget: EventTarget ) => void;
 const ClickableOps: { [key: string]: ClickOperation } = {};

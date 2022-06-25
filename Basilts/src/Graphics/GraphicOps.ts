@@ -57,7 +57,6 @@ export interface LoadAssetParams {
     AssetLoader: string;    // type of loader to use
     Auth?: string;           // authorization needed to access URL
     useDRACO?: boolean;      // whether to include DRACO compressed image loader
-    combineInstances?: boolean;  // whether to combine instances
 };
 
 // While asset is loading, state is reported
@@ -73,6 +72,7 @@ export interface IProgressInfo {
     asset: string;
     percent: number | undefined;    // percent completed or undefined if not known
 }
+// Routine called from LoadSimpleAsset to package and report loading progress
 export function MakeProgress(pState: AssetLoadingState, 
                             pAsset: string,
                             pProgress: ISceneLoaderProgressEvent,
