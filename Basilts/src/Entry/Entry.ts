@@ -88,8 +88,6 @@ ClickableOps['wwTesterDev'] = function() {
             'service': 'SpaceServer',
             'serviceAuth': RandomIdentifier() + RandomIdentifier() + RandomIdentifier(),  // authorization key
             'openParams': {
-                'assetURL': 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
-                'loaderType': 'GLTF',
                 'display': 'all'
             }
         }

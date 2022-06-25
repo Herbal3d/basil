@@ -202,6 +202,7 @@ const _initilize = function() {
     _eventCameraInfo = Eventing.Subscribe('Graphics.CameraInfo', _processCameraInfo);
 }
 
+// Received event with current renderer information
 const _processRenderInfo = function(info: RenderInfoEventProps) {
     if (info && info.render && _infoDrawCalls) {
         _infoFPS.Update(Math.round(info.fps));
@@ -218,6 +219,7 @@ const _processRenderInfo = function(info: RenderInfoEventProps) {
     */
 };
 
+// Received event with current camera information
 const _processCameraInfo = function(camInfo: CameraInfoEventProps) {
     if (camInfo && camInfo.position && _infoCameraCoord) {
         _infoCameraCoord.Update(camInfo.position);

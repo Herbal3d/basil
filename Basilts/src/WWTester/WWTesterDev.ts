@@ -83,33 +83,18 @@ Logger.debug(`Starting WWTesterDev`);
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
     try {
-        // The Id of the camera is found through the well known BItem names
-        let cameraId: string | undefined = undefined;
-
         // Create connection
         const conn = await DoMakeConnection();
         // Start alive check when connected
         await StartAliveCheck(conn);
         // Resolve when an OpenSession is received
         const connParms = await WaitForOpenSession(conn);
-        const knownBItems = await RequestProperties(conn, 'registration.bitem');
-        if (knownBItems[WellKnownCameraName]) {
-            const cameraProps = await RequestProperties(conn, knownBItems[WellKnownCameraName] as string);
-            cameraId = knownBItems[WellKnownCameraName] as string;
-            PrintProperties('camera', cameraProps);
-        }
-        if (knownBItems[WellKnownMouseName]) {
-            const mouseProps = await RequestProperties(conn, knownBItems[WellKnownMouseName] as string);
-            PrintProperties('mouse', mouseProps);
-        }
-        if (knownBItems[WellKnownKeyboardName]) {
-            const keyboardProps = await RequestProperties(conn, knownBItems[WellKnownKeyboardName] as string);
-            PrintProperties('keyboard', keyboardProps);
-        }
-        if (knownBItems[WellKnownEnvironName]) {
-            const environProps = await RequestProperties(conn, knownBItems[WellKnownEnvironName] as string);
-            PrintProperties('environ', environProps);
-        }
+
+        // Show properties of well known BItems.
+        // await ShowWellKnownBItemProperties(conn);
+
+        // Get the ID of the camera BItem
+        const cameraId = await GetCameraId(conn);
 
         // Create some items and diddle them
         await CreateAndDeleteItem(conn, cameraId)
@@ -161,26 +146,17 @@ async function WaitForOpenSession(pConn: BasilConnection): Promise<BasilConnecti
         // @ts-ignore
         pConn.WatchMessageOp('OpenSession', (pProps: BasilConnectionEventParams, pTopic: string) => {
             Logger.debug(`OpenSession received`);
-            if (pProps.request.IProps.testAssetURL) {
-                // The client tells me what token to send with requests
-                pProps.connection.OutgoingAuth = new AuthToken(pProps.request.IProps['clientAuth'] as string);
-                // I respond with the token I want to receive for requests
-                const serverAuth = new AuthToken();
-                pProps.connection.IncomingAuth = serverAuth;
-                pProps.response.IProps['serverAuth'] = serverAuth.token;
-                pProps.response.IProps['serverVersion'] = 'WWTester';
+            // The client tells me what token to send with requests
+            pProps.connection.OutgoingAuth = new AuthToken(pProps.request.IProps['clientAuth'] as string);
+            // I respond with the token I want to receive for requests
+            const serverAuth = new AuthToken();
+            pProps.connection.IncomingAuth = serverAuth;
+            pProps.response.IProps['serverAuth'] = serverAuth.token;
+            pProps.response.IProps['serverVersion'] = 'WWTester';
 
-                pProps.connection.Send(pProps.response);
+            pProps.connection.Send(pProps.response);
 
-                resolve(pProps);
-            }
-            else {
-                const errMsg = `OpenSession did not have a test URL: ${JSONstringify(pProps.request.IProps)}`;
-                Logger.error(errMsg);
-                pProps.response.Exception = errMsg;
-                pProps.connection.Send(pProps.response);
-                reject(new Error(errMsg));
-            };
+            resolve(pProps);
         });
     });
 };
@@ -212,6 +188,37 @@ async function StartAliveCheck(pConn: BasilConnection): Promise<void> {
 };
 
 // =============================================================================
+// Print out the properties of the well known devices
+async function ShowWellKnownBItemProperties(pConn: BasilConnection): Promise<void> {
+    const knownBItems = await RequestProperties(pConn, 'registration.bitem');
+    if (knownBItems[WellKnownCameraName]) {
+        const cameraProps = await RequestProperties(pConn, knownBItems[WellKnownCameraName] as string);
+        PrintProperties('camera', cameraProps);
+    }
+    if (knownBItems[WellKnownMouseName]) {
+        const mouseProps = await RequestProperties(pConn, knownBItems[WellKnownMouseName] as string);
+        PrintProperties('mouse', mouseProps);
+    }
+    if (knownBItems[WellKnownKeyboardName]) {
+        const keyboardProps = await RequestProperties(pConn, knownBItems[WellKnownKeyboardName] as string);
+        PrintProperties('keyboard', keyboardProps);
+    }
+    if (knownBItems[WellKnownEnvironName]) {
+        const environProps = await RequestProperties(pConn, knownBItems[WellKnownEnvironName] as string);
+        PrintProperties('environ', environProps);
+    }
+};
+
+// Request the ID of the camera BItem
+async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
+    let ret: string|undefined = undefined;
+    const knownBItems = await RequestProperties(pConn, 'registration.bitem');
+    if (knownBItems[WellKnownCameraName]) {
+        ret = knownBItems[WellKnownCameraName] as string;
+    }
+    return ret;
+}
+
 // Create one item, delete it, and verify it has been deleted
 async function CreateAndDeleteItem(pConn: BasilConnection, pCamneraId: string): Promise<void> {
     Logger.info(`CreateAndDeleteItem: enter`);
