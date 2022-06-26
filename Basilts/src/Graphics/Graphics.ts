@@ -14,7 +14,7 @@
 import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
+import { ActionManager, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
 import { Light, DirectionalLight, HemisphericLight, ShadowGenerator } from "@babylonjs/core";
 import { TargetCamera, TransformNode, MeshBuilder, AbstractMesh, Mesh  } from "@babylonjs/core";
 import { StandardMaterial, Texture, CubeTexture } from '@babylonjs/core';
@@ -23,9 +23,11 @@ import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Math
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
+import { Observer, EventState } from '@babylonjs/core/Misc/observable';
 
 import { GraphicsInfo } from '@Graphics/GraphicsInfo';
-import { Eventing } from '@Eventing/Eventing';
+import { Eventing  } from '@Eventing/Eventing';
+import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 import { TopicEntry } from '@Eventing/TopicEntry';
 
 import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilities';
@@ -86,6 +88,9 @@ export const Graphics = {
 
         Graphics._scene.useRightHandedSystem = true;
 
+        // Add ActionManager for events in the scene
+        Graphics._scene.actionManager = new ActionManager(Graphics._scene);
+
         Graphics._initializeCamera();
         Graphics._initializeLights();
         Graphics._initializeEnvironment();
@@ -126,6 +131,25 @@ export const Graphics = {
     SetGraphicsState(pState: GraphicStates) {
         Graphics._graphicsState = pState;
         void Eventing.Fire(GraphicsStateEventName, { state: pState });
+    },
+    // Call EventProcessor before each frame. Wrap BabylonJS Observer with Eventing
+    //      so all callbacks look the same.
+    _beforeFrameObserver: <Observer<Scene>>undefined,
+    _beforeFrameTopic: <TopicEntry>undefined,
+    WatchBeforeFrame(pProcessor: EventProcessor): SubscriptionEntry {
+        if (Graphics._beforeFrameObserver === undefined) {
+            // Create the Observer when the first one asks to watch
+            Graphics._beforeFrameTopic = Eventing.Register('Graphics.BeforeFrame', 'Graphics');
+            Graphics._beforeFrameObserver = Graphics._scene.onBeforeRenderObservable.add(
+                (eventData: Scene, eventState: EventState): void => {
+                    void Graphics._beforeFrameTopic.fire({
+                        scene: eventData,
+                        eventState: EventState
+                    }
+                );
+            });
+        }
+        return Eventing.Subscribe('Graphics.BeforeFrame', pProcessor);
     },
     _startRendering() {
         if (Graphics._engine) {

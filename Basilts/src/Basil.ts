@@ -40,6 +40,14 @@ Eventing.init();
 initAbilities(false);
 UI.init();
 
+// Names of display regions on web page.
+const container = document.getElementById(Config.page.webGLcontainerId);
+const canvas = document.getElementById(Config.page.webGLcanvasId) as HTMLCanvasElement;
+
+// Get the graphics system running
+Graphics.connectGraphics(container, canvas);
+Graphics.Start();
+
 // Put current Basil version info on the bottom of the window
 const versionTextNode = document.getElementById(Config.page.versionElementId);
 if (versionTextNode) {
@@ -115,14 +123,6 @@ window.onbeforeunload = function() {
 // DEBUG DEBUG: Add pointer to graphics stuff for debugging in the browser
 // @ts-ignore
 (globalThis as BKeyedCollection).GGP.Graphics = Graphics;
-
-// Names of display regions on web page.
-const container = document.getElementById(Config.page.webGLcontainerId);
-const canvas = document.getElementById(Config.page.webGLcanvasId) as HTMLCanvasElement;
-
-// Get the graphics syste running
-Graphics.connectGraphics(container, canvas);
-Graphics.Start();
 
 // TypeScript issue https://github.com/microsoft/TypeScript/issues/41628
 // @ts-ignore
