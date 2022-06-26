@@ -20,6 +20,7 @@ import { BItem } from '@BItem/BItem';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
+import { timeStamp } from 'console';
 
 export const AbKeyboardName = 'Keyboard'
 
@@ -40,6 +41,7 @@ export class AbKeyboard extends Ability {
     //     coorespond to the class property names.
     public static KeyDownProp = 'keyDown'; 
     public static KeyNameProp = 'keyName';
+    public static KeyCodeProp = 'keyCode';
     public static KeyRepeatingProp = 'keyRepeating';
     public static AltKeyProp = 'keyAltKey';
     public static CntlKeyProp = 'keyCtrlKey';
@@ -52,6 +54,7 @@ export class AbKeyboard extends Ability {
 
     public keyDown: boolean = false;
     public keyName: string = 'unknown';
+    public keyCode: string = 'unknown';
     public keyRepeating: boolean = false;
     public keyAlt: boolean = false;        // 'true' when alt key is pressed on last keyboard event
     public keyCtrl: boolean = false;       // 'true' when cntl key is pressed on last keyboard event
@@ -64,6 +67,7 @@ export class AbKeyboard extends Ability {
 
         pBItem.addProperty(AbKeyboard.KeyDownProp, this);
         pBItem.addProperty(AbKeyboard.KeyNameProp, this);
+        pBItem.addProperty(AbKeyboard.KeyCodeProp, this);
         pBItem.addProperty(AbKeyboard.KeyRepeatingProp, this);
         pBItem.addProperty(AbKeyboard.AltKeyProp, this);
         pBItem.addProperty(AbKeyboard.CntlKeyProp, this);
@@ -91,6 +95,7 @@ export class AbKeyboard extends Ability {
     _onKeyEvent(pEvent: KeyboardEvent, pDown: boolean): void {
         this.keyDown = pDown;
         this.keyName = pEvent.key;
+        this.keyCode = pEvent.code;
         this.keyAlt = pEvent.altKey;
         this.keyShift = pEvent.shiftKey;
         this.keyCtrl = pEvent.ctrlKey;
