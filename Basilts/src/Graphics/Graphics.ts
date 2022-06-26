@@ -43,11 +43,22 @@ export enum GraphicStates {
     ShuttingDown,
     Shutdown,
 }
-export const GraphicsStateEventName = 'Graphics.State';
-export interface GraphicStateEventProps {
+// Event topic name for before frame render events
+export const GraphicsBeforeFrameTopic = 'Graphics.BeforeFrame';
+export interface GraphicsBeforeFrameProps {
+    scene: Scene,           // handle to the scene
+    eventState: EventState, // Babylonjs event information
+    delta?: number          // seconds since last frame event
+}
+
+// Event topic name for Graphic state changes
+export const GraphicsStateChangeTopic = 'Graphics.State';
+export interface GraphicsStateChangeProps {
     state: GraphicStates;
 };
 
+// Code for manipulating the Graphics subsystem.
+// Holds initialization and state changing control.
 export const Graphics = {
     _container: <HTMLElement>undefined,
     _canvas: <HTMLCanvasElement>undefined,
@@ -130,26 +141,36 @@ export const Graphics = {
     },
     SetGraphicsState(pState: GraphicStates) {
         Graphics._graphicsState = pState;
-        void Eventing.Fire(GraphicsStateEventName, { state: pState });
+        void Eventing.Fire(GraphicsStateChangeTopic, { state: pState });
+    },
+    WatchGraphicsStateChange(pProcessor: EventProcessor): SubscriptionEntry {
+        return Eventing.Subscribe(GraphicsStateChangeTopic, pProcessor);
     },
     // Call EventProcessor before each frame. Wrap BabylonJS Observer with Eventing
     //      so all callbacks look the same.
     _beforeFrameObserver: <Observer<Scene>>undefined,
     _beforeFrameTopic: <TopicEntry>undefined,
+    _timeOfLastBeforeFrame: <Date>undefined,
     WatchBeforeFrame(pProcessor: EventProcessor): SubscriptionEntry {
         if (Graphics._beforeFrameObserver === undefined) {
             // Create the Observer when the first one asks to watch
-            Graphics._beforeFrameTopic = Eventing.Register('Graphics.BeforeFrame', 'Graphics');
+            Graphics._beforeFrameTopic = Eventing.Register(GraphicsBeforeFrameTopic, 'Graphics');
             Graphics._beforeFrameObserver = Graphics._scene.onBeforeRenderObservable.add(
                 (eventData: Scene, eventState: EventState): void => {
+                    if (Graphics._timeOfLastBeforeFrame === undefined) {
+                        Graphics._timeOfLastBeforeFrame = new Date();
+                    };
+                    const now = new Date();
+                    const deltaTime = (now.getTime() - Graphics._timeOfLastBeforeFrame.getTime()) / 1000;
+                    Graphics._timeOfLastBeforeFrame = now;
                     void Graphics._beforeFrameTopic.fire({
                         scene: eventData,
-                        eventState: EventState
-                    }
-                );
+                        eventState: EventState,
+                        delta: deltaTime
+                    });
             });
         }
-        return Eventing.Subscribe('Graphics.BeforeFrame', pProcessor);
+        return Eventing.Subscribe(GraphicsBeforeFrameTopic, pProcessor);
     },
     _startRendering() {
         if (Graphics._engine) {

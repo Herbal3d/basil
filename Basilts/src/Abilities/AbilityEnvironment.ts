@@ -14,7 +14,7 @@
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue } from '@BItem/BItem';
 
-import { Graphics, GraphicsStateEventName, GraphicStateEventProps, GraphicStates } from '@Base/Graphics/Graphics';
+import { Graphics, GraphicsStateChangeProps, GraphicStates } from '@Base/Graphics/Graphics';
 import { SkyMaterial } from '@babylonjs/materials';
 
 import { Eventing } from '@Base/Eventing/Eventing';
@@ -86,11 +86,11 @@ export class AbEnviron extends Ability {
         pBItem.addProperty(AbEnviron.SkyRayleighProp, this);
 
         // Have to wait until the graphics system is initialized before there is a scene to set
-        Eventing.Subscribe(GraphicsStateEventName, this._onGraphicsReady.bind(this) as EventProcessor);
+        Graphics.WatchGraphicsStateChange(this._onGraphicsReady.bind(this) as EventProcessor);
 
         pBItem.setReady();
     };
-    _onGraphicsReady(pEvent: GraphicStateEventProps): void {
+    _onGraphicsReady(pEvent: GraphicsStateChangeProps): void {
         if (pEvent.state === GraphicStates.Initialized || pEvent.state === GraphicStates.Rendering) {   
             this._initializeEnvironment();
         };

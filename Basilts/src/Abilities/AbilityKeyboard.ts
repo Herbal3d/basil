@@ -13,7 +13,7 @@
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { Eventing } from '@Base/Eventing/Eventing';
-import { GraphicsStateEventName, GraphicStateEventProps, GraphicStates } from '@Base/Graphics/Graphics';
+import { GraphicsStateChangeProps, GraphicStates, Graphics } from '@Base/Graphics/Graphics';
 import { KeyboardEventHandler, SetKeyboardEventHandler } from '@Base/Graphics/GraphicOps';
 import { BItem } from '@BItem/BItem';
 
@@ -75,11 +75,11 @@ export class AbKeyboard extends Ability {
         pBItem.addProperty(AbKeyboard.MetaKeyProp, this);
 
         // Have to wait until the graphics system is initialized before there is a scene to watch
-        Eventing.Subscribe(GraphicsStateEventName, this._onGraphicsReady.bind(this) as EventProcessor);
+        Graphics.WatchGraphicsStateChange(this._onGraphicsReady.bind(this) as EventProcessor);
 
         pBItem.setReady();
     };
-    _onGraphicsReady(pEvent: GraphicStateEventProps): void {
+    _onGraphicsReady(pEvent: GraphicsStateChangeProps): void {
         if (pEvent.state === GraphicStates.Initialized || pEvent.state === GraphicStates.Rendering) {   
             SetKeyboardEventHandler(this._onKeyEvent.bind(this) as KeyboardEventHandler);
         };
