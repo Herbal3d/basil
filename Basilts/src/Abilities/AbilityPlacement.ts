@@ -13,12 +13,13 @@
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { AbAssembly } from '@Abilities/AbilityAssembly';
-import { BItem, PropValue, setPropEventParams } from '@BItem/BItem';
+import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
+
 import { Graphics } from '@Base/Graphics/Graphics';
+import { Object3D } from '@Graphics/Object3d';
 
 import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
-import { Object3D } from '@Graphics/Object3d';
 import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 import { Logger } from '@Base/Tools/Logging';
 
@@ -46,42 +47,57 @@ export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
 RegisterAbility(AbPlacementName, AbPlacementFromProps);
 
+// Placement controls position/rotation of the BItem.
+// Base properties are 'pos' and 'rot' which are the current position/rotation of the BItem
+// There are 'posTo' and 'rotTo' which act as "move to" locations and this does LERP
+//     type actions to move pos/rot to those targets.
 export class AbPlacement extends Ability {
     static PosProp = 'pos';
     static RotProp = 'rot';
     static ForProp = 'for';
-
-    // This watches the 'assetUrl' on the refItem so we know when to place the instance in the world
-    _assetRepresentationWatchTopic: SubscriptionEntry;
-    // This value is garbage so the first setting will see that the refItem changed
-    _previousRefItem: PropValue = 'JustStuffThatIsNothing';
+    static PosToProp = 'posTo';
+    static RotToProp = 'rotTo';
 
     _pos: number[] = [0,0,0];
     _posMod = false;
     public get pos(): number[] { return this._pos; }
     public set pos(pVal: string | number[]) {
-        this._pos = ParseThreeTuple(pVal);
-        this._posMod = true; // see processBeforeFrame
+        if (pVal) {
+            this._pos = ParseThreeTuple(pVal);
+            this._posMod = true; // see processBeforeFrame
+        }
+    };
+    // The *To properties will be used to known when to set absolute or to LERP
+    public get posTo(): number[] { return this._pos; }
+    public set posTo(pVal: string | number[]) {
+        if (pVal) {
+            this._pos = ParseThreeTuple(pVal);
+            this._posMod = true; // see processBeforeFrame
+        }
     };
 
     _rot: number[] = [0,0,0,1];
     _rotMod = false;
     public get rot(): number[] { return this._rot; }
     public set rot(pVal: string | number[]) {
-        this._rot = ParseFourTuple(pVal);
-        this._rotMod = true; // see processBeforeFrame
+        if (pVal) {
+            this._rot = ParseFourTuple(pVal);
+            this._rotMod = true; // see processBeforeFrame
+        }
+    };
+
+    public get rotTo(): number[] { return this._rot; }
+    public set rotTo(pVal: string | number[]) {
+        if (pVal) {
+            this._rot = ParseFourTuple(pVal);
+            this._rotMod = true; // see processBeforeFrame
+        }
     };
 
     _for: number = 0;
     public get for(): number { return this._for; }
     public set for(pVal: number) {
         this._for = pVal;
-        if (this.containingBItem) {
-            const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
-            if (object3d) {
-                object3d.for = this._for;
-            };
-        };
     };
 
     constructor(pPos: string | number[] | undefined, pRot: string | number[] | undefined, pFor?: number) {
@@ -104,36 +120,20 @@ export class AbPlacement extends Ability {
         pBItem.addProperty(AbPlacement.RotProp, this);
         // Get and Set the placement frame of reference.
         pBItem.addProperty(AbPlacement.ForProp, this);
-
-        // Watch the assetUrl so we know when to place the instance in the world
-        pBItem.watchProperty(AbAssembly.AssetRepresentationProp,
-                this.processRepresentationChange.bind(this) as EventProcessor);
     };
 
-    // Called when the BItem's representation property changes.
-    // Force placement variable setting which will set the pos/rot on the new representation.
-    processRepresentationChange(pEvent: setPropEventParams): void {
-        Logger.cdebug('PlacementDetail', `AbilityPlacement.processRepresentationChange: ${pEvent.PropName}`);
-        pEvent.BItem.setProp(AbPlacement.PosProp, this._pos);
-        pEvent.BItem.setProp(AbPlacement.RotProp, this._rot);
-    };
+    // This watches the 'assetUrl' on the refItem so we know when to place the instance in the world
+    _assetRepresentationWatchTopic: SubscriptionEntry;
+    // This value is garbage so the first setting will see that the refItem changed
+    _previousRefItem: PropValue = 'JustStuffThatIsNothing';
 
     processBeforeFrame(pParms: BKeyedCollection): void {
         if (this._posMod || this._rotMod) {
-            if (this.containingBItem) {
-                const object3d = this.containingBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
-                if (object3d) {
-                    Logger.cdebug('PlacementDetail', `AbilityPlacement.pos/rot set: ${this.containingBItem.id} to ${JSONstringify(this._pos)}`);
-                    object3d.pos = this._pos;
-                    object3d.rot = this._rot;
-                    this._posMod = false;
-                    this._rotMod = false;
-                }
-                else {
-                    Logger.debug(`AbilityPlacement.rot set: ${this.containingBItem.id} no object3d available`);
-                };
-            };
-        };
+            // Start the LERPing
+        }
+        else {
+            // do the LERPing of the position movement
+        }
     };
 
     // If any of my properties are removed, that means I'm being removed.

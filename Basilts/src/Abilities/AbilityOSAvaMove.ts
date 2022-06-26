@@ -15,7 +15,7 @@ import { Config } from '@Base/Config';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItems } from '@BItem/BItems';
-import { BItem, setPropEventParams } from '@BItem/BItem';
+import { BItem, SetPropEventParams } from '@BItem/BItem';
 
 import { AbKeyboard } from './AbilityKeyboard';
 
@@ -78,7 +78,7 @@ export class AbOSAvaMove extends Ability {
         pBItem.setReady();
     };
 
-    processKeyboard(pEvent: setPropEventParams): void {
+    processKeyboard(pEvent: SetPropEventParams): void {
         const abil = pEvent.Ability as AbKeyboard;
         // Logger.debug(`AbOSAvaMove.processKeyboard: keyboard event: ${abil.keyName}`);
         switch (abil.keyName) {

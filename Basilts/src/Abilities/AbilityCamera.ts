@@ -12,7 +12,7 @@
 'use strict';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, setPropEventParams } from '@BItem/BItem';
+import { BItem, SetPropEventParams } from '@BItem/BItem';
 import { AbPlacement } from '@Abilities/AbilityPlacement';
 
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -101,11 +101,11 @@ export class AbCamera extends Ability {
         return;
     };
 
-    _onPosUpdate(pPosChangeInfo: setPropEventParams): void {
+    _onPosUpdate(pPosChangeInfo: SetPropEventParams): void {
         // TODO: put code here
         return;
     }
-    _onRotUpdate(pRotChangeInfo: setPropEventParams): void {
+    _onRotUpdate(pRotChangeInfo: SetPropEventParams): void {
         // TODO: put code here
         return;
     }

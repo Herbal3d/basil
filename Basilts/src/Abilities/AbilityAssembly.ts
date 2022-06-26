@@ -12,7 +12,8 @@
 'use strict';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { AbPlacement } from '@Abilities/AbilityPlacement';
+import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
 
 import { AuthToken } from '@Tools/Auth';
 
@@ -20,6 +21,7 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { LoadSimpleAsset, LoadAssetParams, DeleteAsset } from '@Graphics/GraphicOps';
 import { Object3D } from '@Graphics/Object3d';
 import { Logger } from '@Base/Tools/Logging';
+import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
 
 export const AbAssemblyName = 'Assembly';
 
@@ -99,6 +101,10 @@ export class AbAssembly extends Ability {
 
         // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
         pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
+
+        // We watch for position changes and set them in the representation
+        pBItem.watchProperty(AbPlacement.PosProp, this._processPosChange.bind(this) as EventProcessor);
+        pBItem.watchProperty(AbPlacement.RotProp, this._processRotChange.bind(this) as EventProcessor);
     };
 
     // When my properties are being removed, the asset is no longer in world.
@@ -113,6 +119,19 @@ export class AbAssembly extends Ability {
             }
         }
         return;
+    };
+
+    // We're told the position changed
+    _processPosChange(pParms: SetPropEventParams): void {
+        if (this.assetRepresenation) {
+            this.assetRepresenation.pos = pParms.NewValue as number[];
+        }
+    };
+    // We're told the position changed
+    _processRotChange(pParms: BKeyedCollection): void {
+        if (this.assetRepresenation) {
+            this.assetRepresenation.rot = pParms.NewValue as number[];
+        }
     };
 };
 
@@ -137,6 +156,8 @@ export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<vo
         }
         else {
             pAbil.assetRepresenation = loaded;
+            loaded.pos = pBItem.getProp(AbPlacement.PosProp) as number[] ?? [ 0,0,0 ];
+            loaded.rot = pBItem.getProp(AbPlacement.RotProp) as number[] ?? [ 0,0,0,1 ];
             pBItem.setReady();
             // Formally set the property so a content changed event will happen
             pBItem.setProp(AbAssembly.AssetRepresentationProp, loaded);

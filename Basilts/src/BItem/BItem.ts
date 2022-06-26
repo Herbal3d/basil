@@ -46,7 +46,7 @@ export interface PropOptions {
 // When a property value is set (setProp()), an event with this parameter
 //   block is generated.
 // The topicname can be fetched with bitem.setPropEventTopic(pPropName).
-export interface setPropEventParams {
+export interface SetPropEventParams {
     BItem: BItem,
     Ability: Ability,
     PropName: string,

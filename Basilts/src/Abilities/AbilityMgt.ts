@@ -13,6 +13,7 @@
 
 import { DialogMgt } from "@Base/DialogMgt/DialogMgt";
 
+import { AbAssembly } from "@Abilities/AbilityAssembly";
 import { AbDialog } from "@Abilities/AbilityDialog";
 import { AbFreeCamera } from "@Abilities/AbilityFreeCamera";
 import { AbOSAvaMove } from "@Abilities/AbilityOSAvaMove";
@@ -25,6 +26,7 @@ import { AbOSCamera } from "@Abilities/AbilityOSCamera";
 // This is referenced and called by the main Basil.ts file.
 export const initAbilities = (pShouldInit: boolean): void => {
     if (pShouldInit) {
+        const abilityAssembly = new AbAssembly(undefined, undefined);
         const abilityDialog = new AbDialog(undefined);
         const abilityFreeCamera = new AbFreeCamera(undefined, undefined);
         const abilityOSAvaMove = new AbOSAvaMove();
