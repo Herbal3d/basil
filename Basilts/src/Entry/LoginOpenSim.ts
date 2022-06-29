@@ -48,10 +48,8 @@ export const ClickOpLoginOpenSim = function() {
 
         const password = (document.getElementById('gridLogin-userPassword') as HTMLTextAreaElement).value.trim();
 
-        let startLocation = (document.getElementById('gridLogin-region') as HTMLTextAreaElement).value.trim().toLowerCase();
-        if (startLocation.length == 0) {
-            startLocation = 'last';
-        }
+        const startLocation = NormalizeStartLocation(
+            (document.getElementById('gridLogin-region') as HTMLTextAreaElement).value.trim().toLowerCase());
 
         const loginURL = (document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement).value.trim();
         Logger.info('Start location = ' + startLocation + ', loginURL=' + loginURL);
@@ -164,6 +162,8 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
                         successCallback: LoginResponseSuccessCallback,
                         failureCallback: LoginResponseFailureCallback) {
     const hashedPW = '$1$' + MD5(password);
+    // StartLocation is defined to have "&" but XML needs that fixed up
+    const fixedStartLocation = startLocation.replace(/&/g, '&amp;');
     Logger.debug('LoginXML2: Hashed password=' + hashedPW);
     const xmlreq = [
         '<?xml version="1.0"?>',
@@ -174,7 +174,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
           '<member><name>first</name><value><string>' + firstname + '</string></value></member>',
           '<member><name>last</name><value><string>' + lastname + '</string></value></member>',
           '<member><name>passwd</name><value><string>' + hashedPW + '</string></value></member>',
-          '<member><name>start</name><value><string>' + startLocation + '</string></value></member>',
+          '<member><name>start</name><value><string>' + fixedStartLocation + '</string></value></member>',
           '<member><name>channel</name><value><string>Herbal3d</string></value></member>',
           '<member><name>version</name><value><string>Herbal3d 1.0.0.1</string></value></member>',
           '<member><name>platform</name><value><string>Linux</string></value></member>',
@@ -194,6 +194,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
         '</methodCall>'
     ].join('');
     Logger.debug('LoginXML2: doing fetch from ' + loginURL);
+    Logger.debug(`Sending: ${xmlreq}`);
     fetch(loginURL, {
         method: 'POST',
         cache: 'no-cache',
@@ -317,3 +318,35 @@ function LoginWS(firstname: string, lastname: string, password: string, startLoc
         Logger.info('Login failed: could not make WebSocket connection to ' + wsURL);
     };
 };
+
+// Start location can have may formats:
+//      home
+//      last
+//      regionName/x/y/z
+// They all must be normalized into: "home" | "last" | "uri:regionName&x&y&z"
+function NormalizeStartLocation(pStart: string): string {
+    if (pStart === "home") return pStart;
+    if (pStart === "last") return pStart;
+    if (pStart.length > 0) {
+        const sp = pStart.split('/');
+        switch (sp.length) {
+            case 1: {   // just region name
+                return `uri:${sp[0]}&128&128&0`;
+            }
+            case 2: {
+                return `uri:${sp[0]}&${sp[1]}&128&0`;
+            }
+            case 3: {
+                return `uri:${sp[0]}&${sp[1]}&${sp[2]}&0`;
+            }
+            case 4: {
+                return `uri:${sp[0]}&${sp[1]}&${sp[2]}&${sp[3]}`;
+            }
+            default: {
+                Logger.error(`Start string "${pStart}" did not normalize. Starting in "last"`);
+                break;
+            }
+        }
+    }
+    return "last";
+}
