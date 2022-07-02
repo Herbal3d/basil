@@ -36,7 +36,6 @@ export function CreateInfrastructureBItems(): void {
     // Primary camera has an instance so it has pos and rot
     const cam = new BItem(Config.infrastructureBItemNames.camera, null);
     cam.addAbility(new AbCamera(0));
-    cam.addAbility(new AbPlacement([1,2,3], [0,0,0,1]));
     BItems.registerWellKnownBItem(WellKnownCameraName, cam, regBItem);
 
     const mouse = new BItem(Config.infrastructureBItemNames.mouse, null);

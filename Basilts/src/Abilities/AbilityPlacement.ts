@@ -12,11 +12,9 @@
 'use strict';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { AbAssembly } from '@Abilities/AbilityAssembly';
 import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
 
 import { Graphics } from '@Base/Graphics/Graphics';
-import { Object3D } from '@Graphics/Object3d';
 
 import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Base/Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -68,11 +66,13 @@ export class AbPlacement extends Ability {
         }
     };
     // The *To properties will be used to known when to set absolute or to LERP
+    _posTo: number[] = [0,0,0];
+    _posToMod = false;
     public get posTo(): number[] { return this._pos; }
     public set posTo(pVal: string | number[]) {
         if (pVal) {
-            this._pos = ParseThreeTuple(pVal);
-            this._posMod = true; // see processBeforeFrame
+            this._posTo = ParseThreeTuple(pVal);
+            this._posToMod = true; // see processBeforeFrame
         }
     };
 
@@ -86,11 +86,13 @@ export class AbPlacement extends Ability {
         }
     };
 
+    _rotTo: number[] = [0,0,0,1];
+    _rotToMod = false;
     public get rotTo(): number[] { return this._rot; }
     public set rotTo(pVal: string | number[]) {
         if (pVal) {
-            this._rot = ParseFourTuple(pVal);
-            this._rotMod = true; // see processBeforeFrame
+            this._rotTo = ParseFourTuple(pVal);
+            this._rotToMod = true; // see processBeforeFrame
         }
     };
 
@@ -103,7 +105,9 @@ export class AbPlacement extends Ability {
     constructor(pPos: string | number[] | undefined, pRot: string | number[] | undefined, pFor?: number) {
         super(AbPlacementName);
         this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
+        this._posTo = this._pos;
         this._rot = pRot ? ParseFourTuple(pRot) :  [0,0,0,1];
+        this._rotTo = this._rot;
         this._for = pFor ?? 0;
 
         // Update things just before rendering
@@ -118,6 +122,9 @@ export class AbPlacement extends Ability {
         // Get and Set the instances' rotation in the 3d world.
         // Passed rotation is normalized into a number array.
         pBItem.addProperty(AbPlacement.RotProp, this);
+        // MoveTo targets
+        pBItem.addProperty(AbPlacement.PosToProp, this);
+        pBItem.addProperty(AbPlacement.RotToProp, this);
         // Get and Set the placement frame of reference.
         pBItem.addProperty(AbPlacement.ForProp, this);
     };
@@ -133,6 +140,7 @@ export class AbPlacement extends Ability {
         }
         else {
             // do the LERPing of the position movement
+            // do the SLERPing of the rotation movement
         }
     };
 

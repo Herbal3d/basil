@@ -70,7 +70,6 @@ export let Config = {
         'camera': {
             // Change interface CameraParameters if any thing is changed here
             'name': 'camera.UNIQUEIDBASE',
-            'camtype': 'universal',
             'initialCameraPosition': [ 200, 50, 200 ],
             'initialViewDistance': 200,
             'initialCameraLookAt': [ 0, 0, 0 ]
@@ -215,15 +214,10 @@ export let Config = {
 
 export interface CameraParameters {
     cameraId: string,
-    cameraInstanceId: string,
     name: string,
-    camtype: string,
     initialCameraPosition: number[],
     initialViewDistance: number,
     initialCameraLookAt: number[],
-    addCameraHelper: boolean,
-    addAxesHelper: boolean,
-    axesHelperSize: number
 };
 export interface AmbientLightingParameters {
     name?: string;

@@ -16,12 +16,18 @@ import { GlobalReady } from '@Base/Globals';
 import { Config } from '@Base/Config';
 import { WWConfig, initConfig } from '@Base/WWTester/WWTester.Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
-import { Eventing } from '@Eventing/Eventing';
 import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
+import { BMessage, BMessageIProps } from '@Comm/BMessage';
 import { AuthToken } from '@Tools/Auth';
+
+import { Eventing } from '@Eventing/Eventing';
+
+import { BItemState } from '@Abilities/AbilityBItem';
+import { WellKnownCameraName } from '@Base/BItem/WellKnownBItems';
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
+import { CameraModes } from '@Abilities/AbilityCamera';
 
 // For some reason ESLint thinks WWConfig is an 'any' and thus we shouldn't be
 //    unsafely referencing it. It's exactly the same as the Config file which
@@ -84,7 +90,10 @@ Eventing.init();
             const assetDisplay = connParms.request.IProps['testAssetDisplay'] as string;
             const displayOpt = assetDisplay.toLowerCase().split(' ');
             Logger.debug(`Test asset URL: ${assetURL}, loader: ${assetLoader}, display: ${displayOpt}`);
-            const assetId = await LoadTestAsset(conn, assetURL, assetLoader)
+
+            // Add the free camera to the scene
+            const cameraId = await CreateFreeCamera(conn);
+
             // Create the status dialog box in the display
             if (displayOpt.includes('all') || displayOpt.includes('topmenu')) {
                 await CreateTopMenuDialog(conn);
@@ -93,14 +102,19 @@ Eventing.init();
             if (displayOpt.includes('all') || displayOpt.includes('status')) {
                 await CreateStatusDialog(conn);
             }
+            const assetId = await LoadTestAsset(conn, assetURL, assetLoader)
             // As a test, request the properties of the created asset
-            await RequestProperties(conn, assetId);
+            await WaitUntilReady(conn, assetId);
+            const props = await RequestProperties(conn, assetId);
+            PrintProperties(assetId, props);
         }
     }
     catch (e) {
         Logger.error(`connection exception: ${ExtractStringError(e)}`);
     }
 })();
+
+// ====================================================================================
 
 // Create the connection listener and return handle to it
 async function doMakeConnection(): Promise<BasilConnection> {
@@ -200,6 +214,16 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
     return resp.IProps.id as string;
 }
 
+async function CreateFreeCamera(pConn: BasilConnection): Promise<string> {
+    const cameraId = await GetCameraId(pConn);
+    const resp = await pConn.UpdateProperties(cameraId, {
+        cameraMode: CameraModes.FreeLook,
+        pos: Config.webgl.camera.initialCameraPosition,
+        cameraTarget: Config.webgl.camera.initialCameraLookAt
+    });
+    return cameraId;
+}
+
 // Create the top Menu
 async function CreateTopMenuDialog(pBasil: BasilConnection): Promise<void> {
     const resp = await pBasil.CreateItem({
@@ -226,15 +250,72 @@ async function CreateStatusDialog(pBasil: BasilConnection): Promise<void> {
     }
 }
 
+// ====================================================================================
+
+// Test the message and throw an error if the message contains an error report
+// The string error message is what is thrown
+function throwIfError(pMsg: BMessage) {
+    if (pMsg.Exception) {
+        throw pMsg.Exception;
+    }
+}
+// Wait until the specified BItem reports READY
+async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void> {
+    let notReady = 1;
+    while (notReady > 0) {
+        const resp = await pConn.RequestProperties(pId, '');
+        if (resp.Exception) {
+            throw "Error getting properties";
+        }
+        if (Number(resp.IProps['state']) === Number(BItemState.READY)) {
+            notReady = 0;
+        }
+        else {
+            Logger.debug(`WaitUntilReady: not ready ${notReady}`);
+            notReady++;
+            await WaitABit(100);
+        }
+    }
+}
+async function WaitABit(pTime: number): Promise<void> {
+    return new Promise<void>( (resolve) => {
+        const timer = setTimeout( () => {
+            resolve();
+        }, pTime);
+    })
+}
+
+// Return an integer between min (inclusive) and max (exclusive)
+function RandomInt(min:number, max:number):number {
+    const imin = Math.ceil(min);
+    const imax = Math.floor(max);
+    return Math.floor(Math.random() * (imax - imin) + imin);
+}
+
+// ====================================================================================
+
+// Request the ID of the camera BItem
+async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
+    let ret: string|undefined = undefined;
+    const knownBItems = await RequestProperties(pConn, 'registration.bitem');
+    if (knownBItems[WellKnownCameraName]) {
+        ret = knownBItems[WellKnownCameraName] as string;
+    }
+    return ret;
+}
+
 // Request and print the properties of the asset
-async function RequestProperties(pBasil: BasilConnection, pItemID: string): Promise<void> {
+async function RequestProperties(pBasil: BasilConnection, pItemID: string): Promise<BMessageIProps> {
     const resp = await pBasil.RequestProperties(pItemID, '');
     if (resp.Exception) {
         throw new Error(`RequestProperties response error: ${resp.Exception}`);
     }
-    Logger.debug(`Properties received for item ${pItemID}`);
-    Object.keys(resp.IProps).forEach( key => {
-        Logger.debug(`   ${key}: ${resp.IProps[key]}`);
-    });
+    return resp.IProps;
 }
 
+function PrintProperties(pId: string, pProps: BMessageIProps): void {
+    Logger.debug(`Properties received for item ${pId}`);
+    Object.keys(pProps).forEach( key => {
+        Logger.debug(`   ${key}: ${pProps[key]}`);
+    });
+}

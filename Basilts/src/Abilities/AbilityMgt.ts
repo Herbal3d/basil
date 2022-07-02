@@ -26,6 +26,7 @@ import { AbOSCamera } from "@Abilities/AbilityOSCamera";
 // This is referenced and called by the main Basil.ts file.
 export const initAbilities = (pShouldInit: boolean): void => {
     if (pShouldInit) {
+        // NOTE: the parameter is only 'false' so this code is never executed
         const abilityAssembly = new AbAssembly(undefined, undefined);
         const abilityDialog = new AbDialog(undefined);
         const abilityFreeCamera = new AbFreeCamera(undefined, undefined);

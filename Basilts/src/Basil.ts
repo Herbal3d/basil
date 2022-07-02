@@ -172,7 +172,7 @@ let firstConnection: BasilConnection
             conn.OutgoingAuth = new AuthToken(resp2.IProps['serverAuth'] as string);
 
             Logger.debug(`Basilts: session is opened. Server version: ${resp2.IProps['serverVersion']}`);
-            Logger.debug(`     in=${conn.IncomingAuth.token}, out=${conn.OutgoingAuth.token}`);
+            // Logger.debug(`     in=${conn.IncomingAuth.token}, out=${conn.OutgoingAuth.token}`);
         }
     }
     catch ( e ) {

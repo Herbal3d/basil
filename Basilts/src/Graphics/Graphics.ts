@@ -14,15 +14,15 @@
 import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { ActionManager, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
+import { ActionManager, Camera, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
 import { Light, DirectionalLight, HemisphericLight, ShadowGenerator } from "@babylonjs/core";
 import { TargetCamera, TransformNode, MeshBuilder, AbstractMesh, Mesh  } from "@babylonjs/core";
 import { StandardMaterial, Texture, CubeTexture } from '@babylonjs/core';
 import { SkyMaterial } from '@babylonjs/materials';
-import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
-import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
+import { Vector3 as BJSVector3, Color3 as BJSColor3, Quaternion as BJSQuaternion} from '@babylonjs/core/Maths';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
+import { FollowCamera } from '@babylonjs/core/Cameras/followCamera';
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { Observer, EventState } from '@babylonjs/core/Misc/observable';
 
 import { GraphicsInfo } from '@Graphics/GraphicsInfo';
@@ -33,6 +33,7 @@ import { TopicEntry } from '@Eventing/TopicEntry';
 import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
+import { timeStamp } from 'console';
 
 export enum GraphicStates {
     Uninitilized = 0,
@@ -201,6 +202,96 @@ export const Graphics = {
         Graphics._engine.setSize(Graphics._canvas.clientWidth, Graphics._canvas.clientHeight);
     },
 
+    // Get and activate a camera of a specific type.
+    // If the type has been allocated before, reused the previously allocated one.
+    // Parameter are passed in he param block
+    _cameraUniversal: <UniversalCamera>undefined,
+    _cameraFollow: <FollowCamera>undefined,
+    _cameraArcRotate: <ArcRotateCamera>undefined,
+    activateCamera(passedParms?: BKeyedCollection): Camera {
+        // Set the parameter default values if not specified in the config file
+        const parms = CombineParameters(Config.webgl.camera, passedParms, {
+            name: 'cameraX',
+            camtype: 'universal',
+            position: [200, 50, 200],
+            // rotationQuaternion: [0, 0, 0, 1], // rotation is not set if not passed
+            target: [0, 0, 0],
+            // for 'follow' camera
+            heightOffset: 8,
+            radius: 1,
+            rotationOffset: 0,
+            cameraAcceleration: 0.005,
+            maxCameraSpeed: 10,
+            // for 'arcRotateCamera'
+            viewDistance: 10
+        });
+
+        const pos = BJSVector3.FromArray(<number[]>parms['position']);
+        const pRot = <number[]>parms['rotationQuaterion'];
+        const rot = pRot ? new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]) : undefined;
+        const lookAt = BJSVector3.FromArray(<number[]>parms['target']);
+        const camType = (<string>parms['camtype']).toLowerCase();
+
+        Logger.debug(`Graphics.activateCamera: activating ${camType} named ${parms.name}`);
+        switch (camType) {
+            case 'universal': {
+                const cam = Graphics._cameraUniversal ?? new UniversalCamera(<string>parms.name, pos, Graphics._scene);
+                cam.position            = pos;
+                if (rot) cam.rotationQuaternion  = rot;
+                Graphics._camera = cam;
+                Graphics._cameraUniversal = cam;
+                break;
+
+            }
+            case 'follow': {
+                const cam = Graphics._cameraFollow
+                                    ?? new FollowCamera(<string>parms['name'],
+                                        pos,
+                                        Graphics._scene);
+                cam.position            = pos;
+                if (rot) cam.rotationQuaternion  = rot;
+                cam.heightOffset        = <number>parms['heightOffset'];
+                cam.radius              = <number>parms['radius'];
+                cam.rotationOffset      = <number>parms['rotationOffset'];
+                cam.cameraAcceleration  = <number>parms['cameraAcceleration'];
+                cam.maxCameraSpeed      = <number>parms['maxCameraSpeed'];
+                cam.lockedTarget        = <AbstractMesh>parms['target'];
+                Graphics._camera = cam;
+                Graphics._cameraFollow = cam;
+                break;
+
+            }
+            case 'arcRotateCamera': {
+                const cam = Graphics._cameraArcRotate
+                                    ?? new ArcRotateCamera(<string>parms['name'],
+                                        0 /* alpha angle */,
+                                        0 /* beta angle */,
+                                        <number>parms['viewDistance>'],
+                                        lookAt,
+                                        Graphics._scene);
+                cam.position            = pos;
+                if (rot) cam.rotationQuaternion  = rot;
+                Graphics._camera = cam;
+                Graphics._cameraArcRotate = cam;
+                break;
+
+            }
+            default: {
+                Logger.error(`Graphics.activateCamera: unknown camera type ${camType}`);
+                break;
+            }
+
+        }
+        Graphics._camera.attachControl();
+        Graphics._scene.activeCamera = Graphics._camera;
+        return Graphics._camera;
+    },
+    releaseCamera(): void {
+        if (!Graphics._camera) {
+            return;
+        }
+        Graphics._camera.detachControl();
+    },
     // Initialize the camera
     // Camera can be different types depending on whether Basil is being used as a content viewer
     //    (just displaying and object) or a virtual world presenece viewer (displaying avatar view).
@@ -212,40 +303,23 @@ export const Graphics = {
         // Set the parameter default values if not specified in the config file
         const parms = <CameraParameters><unknown>CombineParameters(Config.webgl.camera, passedParms, {
             name: 'cameraX',
-            camtype: 'arcRotateCamera',
-            initialViewDistance: 10,
             initialCameraPosition: [200, 50, 200],
             initialCameraLookAt: [0, 0, 0]
         });
 
         const initialCameraPosition = BJSVector3.FromArray(parms.initialCameraPosition);
         const lookAt = BJSVector3.FromArray(parms.initialCameraLookAt);
-        const camType = parms.camtype;
-        if (camType == 'free') {
-            Graphics._camera = new FreeCamera(parms.name, initialCameraPosition, Graphics._scene);
-            Graphics._camera.setTarget(lookAt);
-            Graphics._camera.attachControl(Graphics._canvas, false /*noPreventDefault*/);
-            // Ellipsoid around the camera to limit what we can run into
-            // Graphics._camera.ellipsiod = new BABYLON.Vector3(1,2,1);
-        }
-        if (camType == 'universal') {
-            // THis camera definition is in the documentation but not the code... odd.
-            Graphics._camera = new UniversalCamera(parms.name, initialCameraPosition, Graphics._scene);
-            Graphics._camera.setTarget(lookAt);
-            Graphics._camera.attachControl(null, false /*noPreventDefault*/);
-        }
-        if (camType == 'arcRotateCamera') {
-            // Graphics._camera = new ArcRotateCamera(parms.name, 0, 0, parms.initialViewDistance, lookAt, Graphics._scene);
-            // Graphics._camera.position = BJSVector3.FromArray(parms.initialCameraPosition);
-            Graphics._camera = new ArcRotateCamera(parms.name, 0, 0, 10, new BJSVector3(0,0,0), Graphics._scene);
-            Graphics._camera.position = new BJSVector3(0,0,20);
-            Graphics._camera.attachControl(Graphics._canvas, false /*noPreventDefault*/);
-            // GR.camera.checkCollisions = true;
-            // Ellipsoid around the camera to limit what we can run into
-            // GR.camera.ellipsiod = new BABYLON.Vector3(1,2,1);
-        }
+
+        // The scene needs a camera while waiting for any client
+        const cam = new UniversalCamera(parms.name, initialCameraPosition, Graphics._scene);
+        cam.minZ = 0.1;
+        cam.speed = 0.02;
+        cam.setTarget(lookAt);
+        cam.attachControl(null, false);
+        Graphics._camera = cam;
+
         // Logger.debug(`Graphics._initializeCamera: camera at ${JSONstringify(parms.initialCameraPosition)} pointing at ${JSONstringify(parms.initialCameraLookAt)}`);
-        Logger.debug(`Graphics._initializeCamera: camera at ${Graphics._camera.position.toString()} pointing at ${Graphics._camera.target.toString()}`);
+        // Logger.debug(`Graphics._initializeCamera: camera at ${Graphics._camera.position.toString()} pointing at ${Graphics._camera.target.toString()}`);
     },
 
     // At the moment, make things visible.
