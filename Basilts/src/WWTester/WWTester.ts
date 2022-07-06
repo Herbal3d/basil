@@ -22,6 +22,10 @@ import { AuthToken } from '@Tools/Auth';
 
 import { Eventing } from '@Eventing/Eventing';
 
+import { WaitABit, WaitUntilReady, CreateTopMenuDialog, CreateStatusDialog } from './WWTesterCommon';
+import { GetCameraId } from './WWTesterCommon';
+import { RequestProperties, PrintProperties } from './WWTesterCommon';
+
 import { BItemState } from '@Abilities/AbilityBItem';
 import { WellKnownCameraName } from '@Base/BItem/WellKnownBItems';
 
@@ -222,104 +226,4 @@ async function CreateFreeCamera(pConn: BasilConnection): Promise<string> {
         cameraTarget: Config.webgl.camera.initialCameraLookAt
     });
     return cameraId;
-}
-
-// Create the top Menu
-async function CreateTopMenuDialog(pBasil: BasilConnection): Promise<void> {
-    const resp = await pBasil.CreateItem({
-        abilities: [ 'Dialog' ],
-        url: './Dialogs/topMenu.html',
-        dialogName: 'topMenu',
-        dialogPlacement: 'menu'
-    });
-    if (resp.Exception) {
-        throw new Error(`CreateItem dialog response error: ${resp.Exception}`);
-    }
-}
-
-// Create the status dialog box in the display
-async function CreateStatusDialog(pBasil: BasilConnection): Promise<void> {
-    const resp = await pBasil.CreateItem({
-        abilities: [ 'Dialog' ],
-        url: './Dialogs/status.html',
-        dialogName: 'Status',
-        dialogPlacement: 'bottom right'
-    });
-    if (resp.Exception) {
-        throw new Error(`CreateItem dialog response error: ${resp.Exception}`);
-    }
-}
-
-// ====================================================================================
-
-// Test the message and throw an error if the message contains an error report
-// The string error message is what is thrown
-function throwIfError(pMsg: BMessage) {
-    if (pMsg.Exception) {
-        throw pMsg.Exception;
-    }
-}
-// Wait until the specified BItem reports READY
-async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void> {
-    let notReady = 1;
-    while (notReady > 0) {
-        const resp = await pConn.RequestProperties(pId, 'state');
-        if (resp.Exception) {
-            throw "Error getting properties";
-        }
-        const state = Number(resp.IProps['state']);
-        if (state === Number(BItemState.FAILED) || state === Number(BItemState.SHUTDOWN)) {
-            throw "Loadind Failed"
-        }
-        if (state === Number(BItemState.READY)) {
-            notReady = 0;
-        }
-        else {
-            Logger.debug(`WaitUntilReady: state=${state}. Not ready ${notReady}`);
-            notReady++;
-            await WaitABit(100);
-        }
-    }
-}
-async function WaitABit(pTime: number): Promise<void> {
-    return new Promise<void>( (resolve) => {
-        const timer = setTimeout( () => {
-            resolve();
-        }, pTime);
-    })
-}
-
-// Return an integer between min (inclusive) and max (exclusive)
-function RandomInt(min:number, max:number):number {
-    const imin = Math.ceil(min);
-    const imax = Math.floor(max);
-    return Math.floor(Math.random() * (imax - imin) + imin);
-}
-
-// ====================================================================================
-
-// Request the ID of the camera BItem
-async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
-    let ret: string|undefined = undefined;
-    const knownBItems = await RequestProperties(pConn, 'registration.bitem', WellKnownCameraName);
-    if (knownBItems[WellKnownCameraName]) {
-        ret = knownBItems[WellKnownCameraName] as string;
-    }
-    return ret;
-}
-
-// Request and print the properties of the asset
-async function RequestProperties(pBasil: BasilConnection, pItemID: string, pFilter: string = ''): Promise<BMessageIProps> {
-    const resp = await pBasil.RequestProperties(pItemID, pFilter);
-    if (resp.Exception) {
-        throw new Error(`RequestProperties response error: ${resp.Exception}`);
-    }
-    return resp.IProps;
-}
-
-function PrintProperties(pId: string, pProps: BMessageIProps): void {
-    Logger.debug(`Properties received for item ${pId}`);
-    Object.keys(pProps).forEach( key => {
-        Logger.debug(`   ${key}: ${pProps[key]}`);
-    });
 }

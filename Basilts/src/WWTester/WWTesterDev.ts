@@ -1,4 +1,4 @@
-// Copyright 2021 Robert Adams
+// Copyright 2022 Robert Adams
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -17,18 +17,22 @@ import { WWConfig, initConfig } from '@Base/WWTester/WWTester.Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { Eventing } from '@Eventing/Eventing';
 import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
-import { AuthToken } from '@Tools/Auth';
+
+import { CameraModes } from '@Abilities/AbilityCamera';
+
 import { WellKnownCameraName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownKeyboardName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownMouseName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownEnvironName } from '@Base/BItem/WellKnownBItems';
-import { BItemState } from '@Abilities/AbilityBItem';
-import { CameraModes } from '@Abilities/AbilityCamera';
 
+import { WaitABit, WaitUntilReady, CreateStatusDialog } from './WWTesterCommon';
+import { GetCameraId } from './WWTesterCommon';
+import { RequestProperties, PrintProperties, RequestAndPrintProperties } from './WWTesterCommon';
+import { throwIfError, RandomInt } from './WWTesterCommon';
 
-import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
+import { AuthToken } from '@Tools/Auth';
+import { ExtractStringError } from '@Tools/Utilities';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
-import { BMessage, BMessageIProps } from '@Base/Comm/BMessage';
 
 // For some reason ESLint thinks WWConfig is an 'any' and thus we shouldn't be
 //    unsafely referencing it. It's exactly the same as the Config file which
@@ -223,16 +227,6 @@ async function ShowWellKnownBItemProperties(pConn: BasilConnection): Promise<voi
     }
 };
 
-// Request the ID of the camera BItem
-async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
-    let ret: string|undefined = undefined;
-    const knownBItems = await RequestProperties(pConn, 'registration.bitem', WellKnownCameraName);
-    if (knownBItems[WellKnownCameraName]) {
-        ret = knownBItems[WellKnownCameraName] as string;
-    }
-    return ret;
-}
-
 // Create one item, delete it, and verify it has been deleted
 async function CreateAndDeleteItem(pConn: BasilConnection, pCenter: number[]): Promise<void> {
     Logger.info(`CreateAndDeleteItem: enter`);
@@ -414,111 +408,4 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
             };
         }, 200);
     })
-}
-
-// ========================================================================
-
-// Test the message and throw an error if the message contains an error report
-// The string error message is what is thrown
-function throwIfError(pMsg: BMessage) {
-    if (pMsg.Exception) {
-        throw pMsg.Exception;
-    }
-}
-// Wait until the specified BItem reports READY
-async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void> {
-    let notReady = 1;
-    while (notReady > 0) {
-        const resp = await pConn.RequestProperties(pId, 'state');
-        if (resp.Exception) {
-            throw "Error getting properties";
-        }
-        const state = Number(resp.IProps['state']);
-        if (state === Number(BItemState.FAILED) || state === Number(BItemState.SHUTDOWN)) {
-            throw "Loadind Failed"
-        }
-        if (state === Number(BItemState.READY)) {
-            notReady = 0;
-        }
-        else {
-            Logger.debug(`WaitUntilReady: state=${state}. Not ready ${notReady}`);
-            notReady++;
-            await WaitABit(100);
-        }
-    }
-}
-// Return a Promise that is resolved in 'pTime' milliseconds
-async function WaitABit(pTime: number): Promise<void> {
-    return new Promise<void>( (resolve) => {
-        const timer = setTimeout( () => {
-            resolve();
-        }, pTime);
-    })
-}
-
-// Return an integer between min (inclusive) and max (exclusive)
-function RandomInt(min:number, max:number):number {
-    const imin = Math.ceil(min);
-    const imax = Math.floor(max);
-    return Math.floor(Math.random() * (imax - imin) + imin);
-}
-
-// =============================================================================
-
-// Ask the client to load a test asset
-async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTestAssetLoader: string): Promise<string> {
-    Logger.debug(`LoadTestAsset`);
-    const createItemProps = {
-        abilities: [ 'Assembly' ,'Placement' ],
-        assetUrl: pTestAssetURL,
-        assetLoader: pTestAssetLoader,
-        pos: [10, 11, 12]
-    };
-    Logger.debug(`Before CreateItem`);
-    const resp = await pBasil.CreateItem(createItemProps);
-    if (resp.Exception) {
-        throw new Error(`CreateItem response error: ${resp.Exception}`);
-    }
-    return resp.IProps.id as string;
-}
-
-// Create the status dialog box in the display
-async function CreateStatusDialog(pBasil: BasilConnection): Promise<void> {
-    Logger.debug(`Adding statistics and status dialog`);
-    const resp = await pBasil.CreateItem({
-        abilities: [ 'Dialog' ],
-        url: './Dialogs/status.html',
-        dialogName: 'Status',
-        dialogPlacement: 'bottom right'
-    });
-    if (resp.Exception) {
-        throw new Error(`CreateItem dialog response error: ${resp.Exception}`);
-    }
-}
-
-// Request and print the properties of the asset
-async function RequestAndPrintProperties(pBasil: BasilConnection, pId: string): Promise<BMessageIProps> {
-    const resp = await pBasil.RequestProperties(pId, '');
-    if (resp.Exception) {
-        throw new Error(`RequestProperties response error: ${resp.Exception}`);
-    }
-    PrintProperties(pId, resp.IProps);
-    return resp.IProps;
-}
-
-// Request and print the properties of the asset
-async function RequestProperties(pBasil: BasilConnection, pItemID: string, pFilter: string = ''): Promise<BMessageIProps> {
-    Logger.debug(`requestProperties`);
-    const resp = await pBasil.RequestProperties(pItemID, pFilter);
-    if (resp.Exception) {
-        throw new Error(`RequestProperties response error: ${resp.Exception}`);
-    }
-    return resp.IProps;
-}
-
-function PrintProperties(pId: string, pProps: BMessageIProps): void {
-    Logger.debug(`Properties received for item ${pId}`);
-    Object.keys(pProps).forEach( key => {
-        Logger.debug(`   ${key}: ${pProps[key]}`);
-    });
 }
