@@ -90,6 +90,21 @@ export class BItem {
         // As a side effect, add this BItem to the collection of BItems
         BItems.add(id, this);
     };
+
+    // When a BItem is being deleted/removed, it is removed from the collection
+    //    of BItems and then this function is called to remove it's properties
+    //    and otherwise disconnect it from the rest of the system.
+    releaseBItem(): void {
+        this._deleteInProgress = true;
+        // Remove all the properties. This alerts any abilities that they are being removed.
+        const props = this._props.keys();
+        Logger.debug(`BItem.releaseBItem: releasing properties for ${this.id}`);
+        for (const prop of props) {
+            this.removeProperty(prop);
+        };
+    };
+
+    // =========================================================================
     // Common interface for getting the value of any property an Ability has added to the BItem
     getProp(pPropName: string): PropValue {
         // Logger.debug(`Getting property ${pPropName}`);
@@ -190,19 +205,34 @@ export class BItem {
     // Returned is of the form: { name: value, ... }
     getProperties(pFilter: string): BKeyedCollection {
         const ret: BKeyedCollection = {};
+        let notFiltering = true;
+        let filter: RegExp;
+        if (pFilter) {
+            try {   // user can pass anything so do some safety
+                filter = new RegExp(pFilter);
+                notFiltering = false;
+            }
+            catch {
+                filter = undefined;
+                notFiltering = true;
+            }
+        }
         this._props.forEach( (abil: Ability, propName: string) => {
             let priv = false;
-            if (this._propOptions.has(propName)) {
-                const propOptions = this._propOptions.get(propName);
-                priv = propOptions.private;
-            };
-            if (!priv) {
-                ret[propName] = this.getProp(propName);
+            if (notFiltering || filter.test(propName)) {
+                if (this._propOptions.has(propName)) {
+                    const propOptions = this._propOptions.get(propName);
+                    priv = propOptions.private;
+                };
+                if (!priv) {
+                    ret[propName] = this.getProp(propName);
+                }
             }
         });
         return ret;
     };
 
+    // =========================================================================
     // Add an Ability to this BItem
     // This adds the Ability to the Ability collection and calls the Abilitie's
     //      "addProperties" function to add it's properties to this BItem
@@ -227,18 +257,8 @@ export class BItem {
         });
         return ret;
     };
-    // When a BItem is being deleted/removed, it is removed from the collection
-    //    of BItems and then this function is called to remove it's properties
-    //    and otherwise disconnect it from the rest of the system.
-    releaseBItem(): void {
-        this._deleteInProgress = true;
-        // Remove all the properties. This alerts any abilities that they are being removed.
-        const props = this._props.keys();
-        Logger.debug(`BItem.releaseBItem: releasing properties for ${this.id}`);
-        for (const prop of props) {
-            this.removeProperty(prop);
-        };
-    };
+
+    // =========================================================================
     // Return the current state of the BItem
     getState(): BItemState {
         return this.getProp(AbBItem.StateProp) as BItemState;
@@ -263,6 +283,8 @@ export class BItem {
     setShutdown(): void {
         this.setProp(AbBItem.StateProp, BItemState.SHUTDOWN);
     };
+
+    // =========================================================================
     // Return a Promise that is resolved when item status is READY.
     // Promise will be rejected if timeout interval.
     // If the item is deleted while waiting, this Promise is rejected.
@@ -273,6 +295,21 @@ export class BItem {
     //    Would make a useful display when things are slow/hung.
     async WhenReady(pTimeoutMS?: number): Promise<BItem> {
         // Logger.debug(`BItem.WhenReady: Entry. Current state=${this.getState()}. id=${this.id}`);
+        const checkInterval = Config.assets?.assetFetchCheckIntervalMS ?? 200;
+        let timeout = pTimeoutMS ?? Config.assets?.assetFetchTimeoutMS ?? 5000;
+        while (this.getState() !== BItemState.READY) {
+            if (this.NeverGonnaBeReady()) {
+                throw this;
+            }
+            if (timeout <= 0) {
+                Logger.error(`BItem.WhenReady: Reject timeout. id=${this.id}`);
+                throw this;
+            }
+            await this.WaitABit(checkInterval, this);
+            timeout -= checkInterval;
+        }
+        return this;
+        /* Old convoluted version. Delete someday
         if (this.getState() === BItemState.READY) {
             // Logger.debug(`BItem.WhenReady: READY.id=${this.id}`);
             return this;
@@ -301,6 +338,7 @@ export class BItem {
                 };
             };
         };
+        */
     };
     // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
     // Only used locally for WhenReady()

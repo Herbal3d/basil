@@ -96,12 +96,13 @@ Logger.debug(`Starting WWTesterDev`);
 
         // Get the ID of the camera BItem
         const cameraId = await GetCameraId(conn);
-        const height = 35.5;
-        const center = [ 50, height, -50 ];
+        const height = 25;
+        const center = [ 100, height, -100 ];
+        const cameraLoc = [ 110, 60, -30 ];
 
         void conn.UpdateProperties(cameraId, {
             cameraMode: CameraModes.FreeLook,
-            pos: [ 70, 40, -80],
+            pos: cameraLoc,
             cameraTarget: center
         });
 
@@ -113,6 +114,12 @@ Logger.debug(`Starting WWTesterDev`);
         await Create125ItemsAndDelete(conn, center);
         await WaitABit(2000);
         await CreateMovingItemWithCamera(conn, cameraId, center);
+
+        void conn.UpdateProperties(cameraId, {
+            cameraMode: CameraModes.FreeLook,
+            pos: cameraLoc,
+            cameraTarget: center
+        });
     }
     catch (e) {
         Logger.error(`connection exception: ${ExtractStringError(e)}`);
@@ -219,7 +226,7 @@ async function ShowWellKnownBItemProperties(pConn: BasilConnection): Promise<voi
 // Request the ID of the camera BItem
 async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
     let ret: string|undefined = undefined;
-    const knownBItems = await RequestProperties(pConn, 'registration.bitem');
+    const knownBItems = await RequestProperties(pConn, 'registration.bitem', WellKnownCameraName);
     if (knownBItems[WellKnownCameraName]) {
         ret = knownBItems[WellKnownCameraName] as string;
     }
@@ -333,8 +340,8 @@ async function Create125ItemsAndDelete(pConn: BasilConnection, pCenter: number[]
 // Create a moving item and setup a follow camera
 async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: string, pCenter: number[]): Promise<void> {
 
-    const step = 40;
-    const lastStep = step * 5;
+    const step = 20;
+    const lastStep = step * 3;
     const center = pCenter;
     const radius = 5;
 
@@ -352,7 +359,6 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
         abilities: [ 'Assembly' ,'Placement' ],
         assetUrl: duckURL,
         assetLoader: 'gltf',
-        // pos: [10, height, 10]
         pos: [center[0] + Math.cos(0) * radius, center[1], center[2] + Math.sin(0) * radius]
     });
     throwIfError(createResp);
@@ -397,11 +403,13 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
                 // Delete the one item we've been moving around
                 const deleteResp = pConn.DeleteItem(createdId);
                 // reset camera to viewing the scene
+                /*
                 void pConn.UpdateProperties(pCameraId, {
                     cameraMode: CameraModes.FreeLook,
                     pos: [ 50, 70, -50],
                     cameraTarget: center
                 });
+                */
                 resolve();
             };
         }, 200);
@@ -421,7 +429,7 @@ function throwIfError(pMsg: BMessage) {
 async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void> {
     let notReady = 1;
     while (notReady > 0) {
-        const resp = await pConn.RequestProperties(pId, '');
+        const resp = await pConn.RequestProperties(pId, 'state');
         if (resp.Exception) {
             throw "Error getting properties";
         }
@@ -435,6 +443,7 @@ async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void
         }
     }
 }
+// Return a Promise that is resolved in 'pTime' milliseconds
 async function WaitABit(pTime: number): Promise<void> {
     return new Promise<void>( (resolve) => {
         const timer = setTimeout( () => {
@@ -494,9 +503,9 @@ async function RequestAndPrintProperties(pBasil: BasilConnection, pId: string): 
 }
 
 // Request and print the properties of the asset
-async function RequestProperties(pBasil: BasilConnection, pItemID: string): Promise<BMessageIProps> {
+async function RequestProperties(pBasil: BasilConnection, pItemID: string, pFilter: string = ''): Promise<BMessageIProps> {
     Logger.debug(`requestProperties`);
-    const resp = await pBasil.RequestProperties(pItemID, '');
+    const resp = await pBasil.RequestProperties(pItemID, pFilter);
     if (resp.Exception) {
         throw new Error(`RequestProperties response error: ${resp.Exception}`);
     }

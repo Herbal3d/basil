@@ -263,7 +263,7 @@ function throwIfError(pMsg: BMessage) {
 async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void> {
     let notReady = 1;
     while (notReady > 0) {
-        const resp = await pConn.RequestProperties(pId, '');
+        const resp = await pConn.RequestProperties(pId, 'state');
         if (resp.Exception) {
             throw "Error getting properties";
         }
@@ -297,7 +297,7 @@ function RandomInt(min:number, max:number):number {
 // Request the ID of the camera BItem
 async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
     let ret: string|undefined = undefined;
-    const knownBItems = await RequestProperties(pConn, 'registration.bitem');
+    const knownBItems = await RequestProperties(pConn, 'registration.bitem', WellKnownCameraName);
     if (knownBItems[WellKnownCameraName]) {
         ret = knownBItems[WellKnownCameraName] as string;
     }
@@ -305,8 +305,8 @@ async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
 }
 
 // Request and print the properties of the asset
-async function RequestProperties(pBasil: BasilConnection, pItemID: string): Promise<BMessageIProps> {
-    const resp = await pBasil.RequestProperties(pItemID, '');
+async function RequestProperties(pBasil: BasilConnection, pItemID: string, pFilter: string = ''): Promise<BMessageIProps> {
+    const resp = await pBasil.RequestProperties(pItemID, pFilter);
     if (resp.Exception) {
         throw new Error(`RequestProperties response error: ${resp.Exception}`);
     }
