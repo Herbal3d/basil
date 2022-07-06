@@ -49,13 +49,16 @@ function DoLog(pMsg: string, pClass?: string) {
 export function initLogging(pLogConsole?: boolean, pLogDebug?: boolean) {
     if (pLogConsole ?? Config.Debug.DebugLogToConsole) {
         LogOutputters.push( (pMsg: string, pClass?: string) => {
+            const now = Date.now();
             if (pClass) {
                 /* tslint:disable-next-line */
-                console.log(pClass + ": " + pMsg);
+                // console.log(pClass + ": " + pMsg);
+                console.log(`${now}: ${pClass}: ${pMsg}`);
             }
             else {
                 /* tslint:disable-next-line */
-                console.log(pMsg);
+                // console.log(now + pMsg);
+                console.log(`${now}: ${pMsg}`);
             };
         });
     };

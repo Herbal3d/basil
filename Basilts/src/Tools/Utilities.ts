@@ -143,6 +143,7 @@ export function JSONstringify(obj: any): string {
 // NOTE: since protobuf doesn't send zero values, it's possible to get "{ y: 10 }"
 export function ParseThreeTuple(tuple: string | number[] | BVector3): number[] {
     let val = tuple
+    // If passed a string, try to unJSONify it
     if (typeof(tuple) === 'string') {
         try {
             val = JSON.parse(tuple);
@@ -153,6 +154,7 @@ export function ParseThreeTuple(tuple: string | number[] | BVector3): number[] {
             val = null;
         };
     };
+    // If it's not an array, extract the x,y,z to make an array
     if (!Array.isArray(val)) {
         const vvv = [ 0, 0, 0 ];
         const vval = val as BVector3;

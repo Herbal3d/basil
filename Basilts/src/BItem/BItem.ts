@@ -120,6 +120,22 @@ export class BItem {
             });
         };
     };
+    // Identical to BItem.setProp() but does not actually set the value.
+    // Used by routines that want to announce an updated value without changing
+    //     same which might have side effects.
+    propChanged(pPropName: string, pVal: PropValue): void {
+        if (this._props.has(pPropName)) {
+            const abil = this._props.get(pPropName);
+            // Tell anyone listening that this property has changed.
+            // Logger.debug(`BItem.setProp: firing event ${this.getPropEventTopicName(pPropName)}`);
+            void Eventing.Fire(this.getPropEventTopicName(pPropName), {
+                BItem: this,
+                Ability: abil,
+                PropName: pPropName,
+                NewValue: pVal
+            });
+        };
+    }
     // return the topic name of the event generated when a particular property is set
     getPropEventTopicName(pPropName: string): string {
         return pPropName + '.' + this.id;
@@ -130,7 +146,7 @@ export class BItem {
     };
     // helper function for above to hide that it's an Eventing subscription
     unWatchProperty(pSub: SubscriptionEntry): void {
-        Eventing.Unsubscribe(pSub);
+        if (pSub) Eventing.Unsubscribe(pSub);
     };
     // Increment the value of a named property
     incrementProp(pPropName: string) : number {

@@ -21,7 +21,8 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { LoadSimpleAsset, LoadAssetParams, DeleteAsset } from '@Graphics/GraphicOps';
 import { Object3D } from '@Graphics/Object3d';
 import { Logger } from '@Base/Tools/Logging';
-import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
+import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
+import { JSONstringify } from '@Base/Tools/Utilities';
 
 export const AbAssemblyName = 'Assembly';
 
@@ -103,8 +104,10 @@ export class AbAssembly extends Ability {
         pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
 
         // We watch for position changes and set them in the representation
-        pBItem.watchProperty(AbPlacement.PosProp, this._processPosChange.bind(this) as EventProcessor);
-        pBItem.watchProperty(AbPlacement.RotProp, this._processRotChange.bind(this) as EventProcessor);
+        this._posChangeWatcher = pBItem.watchProperty(AbPlacement.PosProp,
+                this._processPosChange.bind(this) as EventProcessor);
+        this._rotChangeWatcher = pBItem.watchProperty(AbPlacement.RotProp,
+                this._processRotChange.bind(this) as EventProcessor);
     };
 
     // When my properties are being removed, the asset is no longer in world.
@@ -113,6 +116,8 @@ export class AbAssembly extends Ability {
             if (this.assetRepresenation) {
                 DeleteAsset(this.assetRepresenation);
                 this.assetRepresenation = undefined;
+                pBItem.unWatchProperty(this._posChangeWatcher);
+                pBItem.unWatchProperty(this._rotChangeWatcher);
             }
             else {
                 Logger.error(`AbAssembly.propertyBeingRemoved: removing ${pPropertyName} but no representation`);
@@ -122,12 +127,14 @@ export class AbAssembly extends Ability {
     };
 
     // We're told the position changed
+    _posChangeWatcher: SubscriptionEntry;
     _processPosChange(pParms: SetPropEventParams): void {
         if (this.assetRepresenation) {
             this.assetRepresenation.pos = pParms.NewValue as number[];
         }
     };
-    // We're told the position changed
+    // We're told the rotation changed
+    _rotChangeWatcher: SubscriptionEntry;
     _processRotChange(pParms: BKeyedCollection): void {
         if (this.assetRepresenation) {
             this.assetRepresenation.rot = pParms.NewValue as number[];

@@ -30,8 +30,8 @@ export let WWConfig = {
         'DebugLogToConsole': true,      // output debug message to console rather than debug window
         'LogLevel': 'debug',            // output log level (error, warn, info, debug)
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance,
-        'RPCSent': true,                // print sent RPC message
-        'RPCResponse': true             // print RPC response message
+        'RPCSent': false,                // print sent RPC message
+        'RPCResponse': false             // print RPC response message
     }
 };
 

@@ -23,6 +23,7 @@ import { WellKnownKeyboardName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownMouseName } from '@Base/BItem/WellKnownBItems';
 import { WellKnownEnvironName } from '@Base/BItem/WellKnownBItems';
 import { BItemState } from '@Abilities/AbilityBItem';
+import { CameraModes } from '@Abilities/AbilityCamera';
 
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
@@ -95,17 +96,23 @@ Logger.debug(`Starting WWTesterDev`);
 
         // Get the ID of the camera BItem
         const cameraId = await GetCameraId(conn);
+        const height = 35.5;
+        const center = [ 50, height, -50 ];
+
+        void conn.UpdateProperties(cameraId, {
+            cameraMode: CameraModes.FreeLook,
+            pos: [ 70, 40, -80],
+            cameraTarget: center
+        });
 
         // Create some items and diddle them
-        await CreateAndDeleteItem(conn, cameraId)
-        await WaitABit(3000);
-        await CreateTenItemsAndDelete(conn, cameraId);
-        await WaitABit(3000);
-        await Create125ItemsAndDelete(conn, cameraId);
-        await WaitABit(3000);
-        await UpdateItemPosition(conn, cameraId);
-        await WaitABit(3000);
-
+        await CreateAndDeleteItem(conn, center)
+        await WaitABit(2000);
+        await CreateTenItemsAndDelete(conn, center);
+        await WaitABit(2000);
+        await Create125ItemsAndDelete(conn, center);
+        await WaitABit(2000);
+        await CreateMovingItemWithCamera(conn, cameraId, center);
     }
     catch (e) {
         Logger.error(`connection exception: ${ExtractStringError(e)}`);
@@ -220,13 +227,13 @@ async function GetCameraId(pConn: BasilConnection): Promise<string|undefined> {
 }
 
 // Create one item, delete it, and verify it has been deleted
-async function CreateAndDeleteItem(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+async function CreateAndDeleteItem(pConn: BasilConnection, pCenter: number[]): Promise<void> {
     Logger.info(`CreateAndDeleteItem: enter`);
     const createResp = await pConn.CreateItem({
         abilities: [ 'Assembly' ,'Placement' ],
         assetUrl: duckURL,
         assetLoader: 'gltf',
-        pos: [10, 11, 12]
+        pos: pCenter
     });
     throwIfError(createResp);
     const createdId = createResp.IId;
@@ -250,7 +257,7 @@ async function CreateAndDeleteItem(pConn: BasilConnection, pCamneraId: string): 
     return ;
 }
 // Create 10 items, delete one of them, and check to make sure there are nine items left
-async function CreateTenItemsAndDelete(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+async function CreateTenItemsAndDelete(pConn: BasilConnection, pCenter: number[]): Promise<void> {
     const sep = 3;
     const items: string[] = [];
     // Create 10 items
@@ -259,7 +266,7 @@ async function CreateTenItemsAndDelete(pConn: BasilConnection, pCamneraId: strin
             abilities: [ 'Assembly' ,'Placement' ],
             assetUrl: duckURL,
             assetLoader: 'gltf',
-            pos: [10, 10, 10 + (ii * sep)]
+            pos: [pCenter[0], pCenter[1], pCenter[2] + (ii * sep)]
         });
         throwIfError(createResp);
         items.push(createResp.IId);
@@ -284,7 +291,7 @@ async function CreateTenItemsAndDelete(pConn: BasilConnection, pCamneraId: strin
     return;
 }
 // Create a 5x5x5 array of Items, delete them slowly, and verify they were deleted
-async function Create125ItemsAndDelete(pConn: BasilConnection, pCamneraId: string): Promise<void> {
+async function Create125ItemsAndDelete(pConn: BasilConnection, pCenter: number[]): Promise<void> {
     const sep = 3;
     const items: string[] = [];
     // Create 125 items
@@ -295,7 +302,7 @@ async function Create125ItemsAndDelete(pConn: BasilConnection, pCamneraId: strin
                     abilities: [ 'Assembly' ,'Placement' ],
                     assetUrl: duckURL,
                     assetLoader: 'gltf',
-                    pos: [10 + (ii * sep), 10 + (jj * sep), 10 + (kk * sep)]
+                    pos: [pCenter[0] + (ii * sep), pCenter[1] + (jj * sep), pCenter[2] + (kk * sep)]
                 });
                 throwIfError(createResp);
                 items.push(createResp.IId);
@@ -322,9 +329,86 @@ async function Create125ItemsAndDelete(pConn: BasilConnection, pCamneraId: strin
 
     return;
 }
-async function UpdateItemPosition(pConn: BasilConnection, pCamneraId: string): Promise<void> {
-    return;
+
+// Create a moving item and setup a follow camera
+async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: string, pCenter: number[]): Promise<void> {
+
+    const step = 40;
+    const lastStep = step * 5;
+    const center = pCenter;
+    const radius = 5;
+
+    const landCreateResp = await pConn.CreateItem({
+        abilities: [ 'Assembly' ,'Placement' ],
+        assetUrl: 'https://files.misterblue.com/BasilTest/convoar/testtest88/unoptimized/testtest88.gltf',
+        assetLoader: 'gltf',
+        pos: [0, 0, 0]
+    });
+    throwIfError(landCreateResp);
+    const landId = landCreateResp.IId;
+    Logger.info(`CreateMovingItemWithCamera: background asset ${landId}`);
+
+    const createResp = await pConn.CreateItem({
+        abilities: [ 'Assembly' ,'Placement' ],
+        assetUrl: duckURL,
+        assetLoader: 'gltf',
+        // pos: [10, height, 10]
+        pos: [center[0] + Math.cos(0) * radius, center[1], center[2] + Math.sin(0) * radius]
+    });
+    throwIfError(createResp);
+    const createdId = createResp.IId;
+    Logger.info(`CreateMovingItemWithCamera: moving asset ${createdId}`);
+
+    // Setup the follow camera that watches our created item
+    const camResp = await pConn.UpdateProperties(pCameraId, {
+        cameraMode: CameraModes.ThirdPerson,
+        cameraTargetAvatarId: createdId,
+        cameraDisplacement: [ 0, 3.0, -20.0 ]
+    });
+    /*
+    const camResp = await pConn.UpdateProperties(pCameraId, {
+        cameraMode: CameraModes.FreeLook,
+        cameraTarget: center,
+        pos: [ 50, 70, -20 ]
+    });
+    */
+
+    await CreateStatusDialog(pConn);
+
+    // Wait for things to be loaded before moving stuff around
+    await WaitUntilReady(pConn, landId);
+    await WaitUntilReady(pConn, createdId);
+    Logger.info(`CreateMovingItemWithCamera: assets are ready`);
+
+    // Do the moving and wrap it in a Promise so we can await until it's finished
+    await new Promise<void>( (resolve) => {
+        let moveCount = 0;
+        const _intervalHandle = setInterval(() => {
+            const rads = (moveCount % step) / step * Math.PI * 2;
+            const xx = center[0] + Math.cos(rads) * radius
+            const yy = center[1];
+            const zz = center[2] + Math.sin(rads) * radius
+            moveCount++;
+            void pConn.UpdateProperties(createdId, {
+                posTo: [ xx, yy, zz ]
+            });
+            if (moveCount > lastStep) {
+                clearInterval(_intervalHandle);
+                // Delete the one item we've been moving around
+                const deleteResp = pConn.DeleteItem(createdId);
+                // reset camera to viewing the scene
+                void pConn.UpdateProperties(pCameraId, {
+                    cameraMode: CameraModes.FreeLook,
+                    pos: [ 50, 70, -50],
+                    cameraTarget: center
+                });
+                resolve();
+            };
+        }, 200);
+    })
 }
+
+// ========================================================================
 
 // Test the message and throw an error if the message contains an error report
 // The string error message is what is thrown

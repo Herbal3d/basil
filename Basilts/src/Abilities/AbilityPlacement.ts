@@ -11,15 +11,21 @@
 
 'use strict';
 
+import { Config } from '@Base/Config';
+import { Eventing } from '@Base/Eventing/Eventing';
+
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
 
-import { Graphics } from '@Base/Graphics/Graphics';
+import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
+import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 
-import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Base/Tools/Utilities';
+import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
+
+import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
-import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
-import { Logger } from '@Base/Tools/Logging';
+import { Clamp } from '@Tools/Misc';
+import { Logger } from '@Tools/Logging';
 
 // Some BItems are Assemblys (3d represntations) and other BItems are instances of the
 //     3d representations. This Ability is the Intance.
@@ -55,6 +61,7 @@ export class AbPlacement extends Ability {
     static ForProp = 'for';
     static PosToProp = 'posTo';
     static RotToProp = 'rotTo';
+    static PosSpeed = 'posSpeed';
 
     _pos: number[] = [0,0,0];
     _posMod = false;
@@ -62,17 +69,21 @@ export class AbPlacement extends Ability {
     public set pos(pVal: string | number[]) {
         if (pVal) {
             this._pos = ParseThreeTuple(pVal);
+            // Explicitly setting position means we're not moving to a target
+            this._posTo = this._pos;
             this._posMod = true; // see processBeforeFrame
         }
     };
     // The *To properties will be used to known when to set absolute or to LERP
     _posTo: number[] = [0,0,0];
     _posToMod = false;
+    _posToStart: number = Date.now();
     public get posTo(): number[] { return this._pos; }
     public set posTo(pVal: string | number[]) {
         if (pVal) {
             this._posTo = ParseThreeTuple(pVal);
             this._posToMod = true; // see processBeforeFrame
+            this._posToStart = Date.now();
         }
     };
 
@@ -88,11 +99,13 @@ export class AbPlacement extends Ability {
 
     _rotTo: number[] = [0,0,0,1];
     _rotToMod = false;
+    _rotToStart: number = Date.now();
     public get rotTo(): number[] { return this._rot; }
     public set rotTo(pVal: string | number[]) {
         if (pVal) {
             this._rotTo = ParseFourTuple(pVal);
             this._rotToMod = true; // see processBeforeFrame
+            this._rotToStart = Date.now();
         }
     };
 
@@ -102,6 +115,12 @@ export class AbPlacement extends Ability {
         this._for = pVal;
     };
 
+    _posSpeed: number = 1;
+    public get posSpeed(): number { return this._posSpeed; }
+    public set posSpeed(pVal: number) {
+        this._posSpeed = Number(pVal);
+    };
+
     constructor(pPos: string | number[] | undefined, pRot: string | number[] | undefined, pFor?: number) {
         super(AbPlacementName);
         this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
@@ -109,9 +128,6 @@ export class AbPlacement extends Ability {
         this._rot = pRot ? ParseFourTuple(pRot) :  [0,0,0,1];
         this._rotTo = this._rot;
         this._for = pFor ?? 0;
-
-        // Update things just before rendering
-        Graphics.WatchBeforeFrame(this.processBeforeFrame.bind(this) as EventProcessor);
     };
 
     addProperties(pBItem: BItem): void {
@@ -127,26 +143,42 @@ export class AbPlacement extends Ability {
         pBItem.addProperty(AbPlacement.RotToProp, this);
         // Get and Set the placement frame of reference.
         pBItem.addProperty(AbPlacement.ForProp, this);
+
+        // Update things just before rendering
+        this._beforeFrameWatcher = Graphics.WatchBeforeFrame(this.processBeforeFrame.bind(this) as EventProcessor);
     };
 
-    // This watches the 'assetUrl' on the refItem so we know when to place the instance in the world
-    _assetRepresentationWatchTopic: SubscriptionEntry;
-    // This value is garbage so the first setting will see that the refItem changed
-    _previousRefItem: PropValue = 'JustStuffThatIsNothing';
+    _beforeFrameWatcher: SubscriptionEntry = undefined;
+    processBeforeFrame(pParms: GraphicsBeforeFrameProps): void {
+        if (this._pos[0] != this._posTo[0] || this._pos[2] != this._posTo[2] || this._pos[1] != this._posTo[1]) {
+            const moveDuration = Date.now() - this._posToStart;
+            const moveScale = Clamp(moveDuration / Config.world.lerpIntervalMS, 0, 1);
 
-    processBeforeFrame(pParms: BKeyedCollection): void {
-        if (this._posMod || this._rotMod) {
-            // Start the LERPing
-        }
-        else {
-            // do the LERPing of the position movement
-            // do the SLERPing of the rotation movement
+            if (moveScale > 0.98) {
+                // Moved enough. Assume we're done
+                // Logger.debug(`AbPlacement.beforeFrame: moveScale done d=${moveDuration}, ms=${moveScale}`);
+                this._pos = this._posTo;
+            }
+            else {
+                const pos = new BJSVector3(this._pos[0], this._pos[1], this._pos[2]);
+                const posTo = new BJSVector3(this._posTo[0], this._posTo[1], this._posTo[2]);
+                const np = BJSVector3.Lerp(pos, posTo, moveScale);
+
+                this._pos = [ np.x, np.y, np.z ];
+                // Logger.debug(`AbPlacement.beforeFrame: pos=${pos}, pTo=${posTo}, d=${moveDuration}, ms=${moveScale}`);
+            }
+            // Anyone watching the position should know about the position update
+            this.containingBItem.propChanged(AbPlacement.PosProp, this._pos);
         }
     };
 
     // If any of my properties are removed, that means I'm being removed.
     // Disconnect this instance from the world.
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
+        if (this._beforeFrameWatcher) {
+            Eventing.Unsubscribe(this._beforeFrameWatcher);
+            this._beforeFrameWatcher = undefined;
+        }
         return;
     };
 };

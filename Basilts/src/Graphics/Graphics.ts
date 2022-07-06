@@ -11,7 +11,7 @@
 
 'use static';
 
-import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters } from '@Base/Config';
+import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters, ConfigGetQueryVariable } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { ActionManager, Camera, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
@@ -151,18 +151,15 @@ export const Graphics = {
     //      so all callbacks look the same.
     _beforeFrameObserver: <Observer<Scene>>undefined,
     _beforeFrameTopic: <TopicEntry>undefined,
-    _timeOfLastBeforeFrame: <Date>undefined,
+    _timeOfLastBeforeFrame: 0,
     WatchBeforeFrame(pProcessor: EventProcessor): SubscriptionEntry {
         if (Graphics._beforeFrameObserver === undefined) {
             // Create the Observer when the first one asks to watch
             Graphics._beforeFrameTopic = Eventing.Register(GraphicsBeforeFrameTopic, 'Graphics');
             Graphics._beforeFrameObserver = Graphics._scene.onBeforeRenderObservable.add(
                 (eventData: Scene, eventState: EventState): void => {
-                    if (Graphics._timeOfLastBeforeFrame === undefined) {
-                        Graphics._timeOfLastBeforeFrame = new Date();
-                    };
-                    const now = new Date();
-                    const deltaTime = (now.getTime() - Graphics._timeOfLastBeforeFrame.getTime()) / 1000;
+                    const now = Date.now();
+                    const deltaTime = (now - Graphics._timeOfLastBeforeFrame) / 1000;
                     Graphics._timeOfLastBeforeFrame = now;
                     void Graphics._beforeFrameTopic.fire({
                         scene: eventData,
@@ -208,83 +205,83 @@ export const Graphics = {
     _cameraUniversal: <UniversalCamera>undefined,
     _cameraFollow: <FollowCamera>undefined,
     _cameraArcRotate: <ArcRotateCamera>undefined,
-    activateCamera(passedParms?: BKeyedCollection): Camera {
-        // Set the parameter default values if not specified in the config file
-        const parms = CombineParameters(Config.webgl.camera, passedParms, {
-            name: 'cameraX',
-            camtype: 'universal',
-            position: [200, 50, 200],
-            // rotationQuaternion: [0, 0, 0, 1], // rotation is not set if not passed
-            target: [0, 0, 0],
-            // for 'follow' camera
-            heightOffset: 8,
-            radius: 1,
-            rotationOffset: 0,
-            cameraAcceleration: 0.005,
-            maxCameraSpeed: 10,
-            // for 'arcRotateCamera'
-            viewDistance: 10
-        });
 
-        const pos = BJSVector3.FromArray(<number[]>parms['position']);
-        const pRot = <number[]>parms['rotationQuaterion'];
-        const rot = pRot ? new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]) : undefined;
-        const lookAt = BJSVector3.FromArray(<number[]>parms['target']);
-        const camType = (<string>parms['camtype']).toLowerCase();
-
-        Logger.debug(`Graphics.activateCamera: activating ${camType} named ${parms.name}`);
-        switch (camType) {
-            case 'universal': {
-                const cam = Graphics._cameraUniversal ?? new UniversalCamera(<string>parms.name, pos, Graphics._scene);
-                cam.position            = pos;
-                if (rot) cam.rotationQuaternion  = rot;
-                Graphics._camera = cam;
-                Graphics._cameraUniversal = cam;
-                break;
-
-            }
-            case 'follow': {
-                const cam = Graphics._cameraFollow
-                                    ?? new FollowCamera(<string>parms['name'],
-                                        pos,
-                                        Graphics._scene);
-                cam.position            = pos;
-                if (rot) cam.rotationQuaternion  = rot;
-                cam.heightOffset        = <number>parms['heightOffset'];
-                cam.radius              = <number>parms['radius'];
-                cam.rotationOffset      = <number>parms['rotationOffset'];
-                cam.cameraAcceleration  = <number>parms['cameraAcceleration'];
-                cam.maxCameraSpeed      = <number>parms['maxCameraSpeed'];
-                cam.lockedTarget        = <AbstractMesh>parms['target'];
-                Graphics._camera = cam;
-                Graphics._cameraFollow = cam;
-                break;
-
-            }
-            case 'arcRotateCamera': {
-                const cam = Graphics._cameraArcRotate
-                                    ?? new ArcRotateCamera(<string>parms['name'],
-                                        0 /* alpha angle */,
-                                        0 /* beta angle */,
-                                        <number>parms['viewDistance>'],
-                                        lookAt,
-                                        Graphics._scene);
-                cam.position            = pos;
-                if (rot) cam.rotationQuaternion  = rot;
-                Graphics._camera = cam;
-                Graphics._cameraArcRotate = cam;
-                break;
-
-            }
-            default: {
-                Logger.error(`Graphics.activateCamera: unknown camera type ${camType}`);
-                break;
-            }
-
+    // activateUniversalCamera(pName: string, pPos: number[], pRot: number[], pTarget: number[], pAttachControl: boolean) {
+    activateUniversalCamera(pPassedParms: BKeyedCollection): Camera {
+        interface activateUniversalCameraParms {
+            name: string;
+            position: number[];
+            rotationQ?: number[];
+            target?: number[];
+            attachControl?: boolean;
         }
-        Graphics._camera.attachControl();
+        const parms = CombineParameters(undefined, pPassedParms, {
+            name: 'cameraX',
+            position: [200, 50, 200],
+            rotationQ: undefined,
+            target: undefined,
+            attachControl: true,
+        }) as unknown as activateUniversalCameraParms;
+        const pos = BJSVector3.FromArray(parms.position);
+        const pRot = parms.rotationQ;
+        const rot = pRot ? new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]) : undefined;
+        const lookAt = parms.target ? BJSVector3.FromArray(parms.target) : undefined;
+
+        const cam = Graphics._cameraUniversal ?? new UniversalCamera(parms.name, pos, Graphics._scene);
+        cam.position = pos;
+        if (rot) cam.rotationQuaternion  = rot;
+        if (lookAt) cam.target = lookAt;
+
+        Graphics._cameraUniversal = cam;
+        return Graphics.setActiveCamera(cam, parms.attachControl);
+    },
+    activateArcRotateCamera(pPassedParms: BKeyedCollection): Camera {
+        interface activateArcRotateCameraParms {
+            name: string;
+            position: number[];
+            rotationQ?: number[];
+            alpha: number;
+            beta: number;
+            viewDistance: number;
+            target: number[];
+            attachControl?: boolean;
+        }
+        const parms = CombineParameters(undefined, pPassedParms, {
+            name: 'cameraX',
+            position: [200, 50, 200],
+            rotationQ: undefined,
+            alpha: 0,
+            beta: 0,
+            viewDistance: Config.world.viewDistance,
+            target: [0, 0, 0],
+            attachControl: true
+        }) as unknown as activateArcRotateCameraParms;
+
+        const pos = BJSVector3.FromArray(parms.position);
+        const pRot = parms.rotationQ;
+        const rot = pRot ? new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]) : undefined;
+        const lookAt = BJSVector3.FromArray(parms.target);
+
+        const cam = Graphics._cameraArcRotate
+                            ?? new ArcRotateCamera(parms.name,
+                                parms.alpha,    /* alpha angle */
+                                parms.beta,     /* beta angle */
+                                parms.viewDistance,
+                                lookAt,
+                                Graphics._scene);
+        cam.position            = pos;
+        if (rot) cam.rotationQuaternion  = rot;
+
+        Graphics._cameraArcRotate = cam;
+        return Graphics.setActiveCamera(cam, parms.attachControl);
+
+    },
+    setActiveCamera(pCam: TargetCamera, pAttach: boolean): Camera {
+        Graphics._camera = pCam;
+        if (pAttach) Graphics._camera.attachControl();
         Graphics._scene.activeCamera = Graphics._camera;
         return Graphics._camera;
+
     },
     releaseCamera(): void {
         if (!Graphics._camera) {

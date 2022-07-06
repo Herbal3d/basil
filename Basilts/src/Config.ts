@@ -63,6 +63,12 @@ export let Config = {
         'useDRACO': true,           // unpack DRACO compression if used
         'combineInstances': true    // whether to combine instances
     },
+    'world': {
+        'lerpIntervalMS': 1000,     // ms to go from pos to target
+        'cameraMoveIntervalMS': 300, // ms to move camera to position
+        'cameraTargetIntervalMS': 100, // ms to align camera to the target center
+        'viewDistance': 1000
+    },
     // Parameters for the webgl environment
     'webgl': {
         'graphicsId': 'graphics.UNIQUEIDBASE',
