@@ -67,7 +67,8 @@ export let Config = {
         'lerpIntervalMS': 1000,     // ms to go from pos to target
         'cameraMoveIntervalMS': 300, // ms to move camera to position
         'cameraTargetIntervalMS': 100, // ms to align camera to the target center
-        'viewDistance': 1000
+        'viewDistance': 1000,
+        'thirdPersonDisplacement': [0, 1.5, -1.5]
     },
     // Parameters for the webgl environment
     'webgl': {

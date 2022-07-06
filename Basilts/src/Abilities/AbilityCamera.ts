@@ -182,7 +182,7 @@ export class AbCamera extends Ability {
         });
     };
 
-    _cameraDisplacement: number[] = [0,1.0,-2.0];
+    _cameraDisplacement: number[] = Config.world.thirdPersonDisplacement;
     _cameraDisplacementMod: boolean = false;
     public get cameraDisplacement(): number[] { return this._cameraDisplacement; }
     public set cameraDisplacement(pVal: string | number[]) {
