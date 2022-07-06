@@ -433,11 +433,15 @@ async function WaitUntilReady(pConn: BasilConnection, pId: string): Promise<void
         if (resp.Exception) {
             throw "Error getting properties";
         }
-        if (Number(resp.IProps['state']) === Number(BItemState.READY)) {
+        const state = Number(resp.IProps['state']);
+        if (state === Number(BItemState.FAILED) || state === Number(BItemState.SHUTDOWN)) {
+            throw "Loadind Failed"
+        }
+        if (state === Number(BItemState.READY)) {
             notReady = 0;
         }
         else {
-            Logger.debug(`WaitUntilReady: not ready ${notReady}`);
+            Logger.debug(`WaitUntilReady: state=${state}. Not ready ${notReady}`);
             notReady++;
             await WaitABit(100);
         }
