@@ -33,11 +33,31 @@ import { Logger } from '@Tools/Logging';
 
 export const AbPlacementName = 'Placement';
 
+export type PlacementVal = string | number[] | undefined;
+
 export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
-    const position = pProps[AbPlacement.PosProp] as string | number[] | undefined;
-    const rotation = pProps[AbPlacement.RotProp] as string | number[] | undefined;
+
+    // Use 'pos' if passed or, if 'posTo' is given, use that.
+    let position: PlacementVal = undefined;
+    if (AbPlacement.PosProp in pProps) {
+        position = pProps[AbPlacement.PosProp] as PlacementVal;
+    }
+    else {
+        if (AbPlacement.PosToProp in pProps) {
+            position = pProps[AbPlacement.PosToProp] as PlacementVal;
+        }
+    }
+    let rotation: PlacementVal = undefined;
+    if (AbPlacement.RotProp in pProps) {
+        rotation = pProps[AbPlacement.RotProp] as PlacementVal;
+    }
+    else {
+        if (AbPlacement.RotToProp in pProps) {
+            rotation = pProps[AbPlacement.RotToProp] as PlacementVal;
+        }
+    }
     let frameOfReference: number = undefined;
-    if (pProps.hasOwnProperty(AbPlacement.ForProp)) {
+    if (AbPlacement.ForProp in pProps) {
         if (pProps[AbPlacement.ForProp] instanceof Number) {
             frameOfReference = pProps[AbPlacement.ForProp] as number;
         }
@@ -121,7 +141,7 @@ export class AbPlacement extends Ability {
         this._posSpeed = Number(pVal);
     };
 
-    constructor(pPos: string | number[] | undefined, pRot: string | number[] | undefined, pFor?: number) {
+    constructor(pPos: PlacementVal, pRot: PlacementVal, pFor?: number) {
         super(AbPlacementName);
         this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
         this._posTo = this._pos;

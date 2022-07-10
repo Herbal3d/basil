@@ -15,17 +15,18 @@ import { Config } from '@Base/Config';
 
 import { Ability } from '@Abilities/Ability';
 import { AbBItem, BItemState } from '@Abilities/AbilityBItem';
+
 import { BItems } from '@BItem/BItems';
-import { Eventing } from '@Eventing/Eventing';
 import { Object3D } from '@Base/Graphics/Object3d';
 import { BasilConnection } from '@Comm/BasilConnection';
+import { Eventing } from '@Eventing/Eventing';
+import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
 import { AuthToken } from '@Tools/Auth';
 
-import { CreateUniqueId, ExtractStringError } from '@Tools/Utilities';
+import { CreateUniqueId, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
-import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
 
 // BItem class is the base of all the items in the system.
 // A BItem get ALL it's functionality fron the Abilities that are added to it.
@@ -70,6 +71,14 @@ export class BItem {
     private _bItemAbility: AbBItem;
     public get bItemAbility(): AbBItem {
         return this._bItemAbility;
+    }
+    // Return the connection that was use to create this BItem
+    // Useful for sending update messages the the SpaceServer
+    public get conn(): BasilConnection {
+        if (this._bItemAbility) {
+            return this._bItemAbility.creatingConnection;
+        }
+        return undefined;
     }
 
     constructor(pId: string, pAuth: AuthToken, pLayer?: string, pCreatingConnection?: BasilConnection) {
@@ -120,7 +129,7 @@ export class BItem {
     };
     // Common interface for setting the value of any property an Ability has added to the BItem
     setProp(pPropName: string, pVal: PropValue): void {
-        // Logger.debug(`Setting property ${pPropName} = ${pVal}`);
+        Logger.cdebug('SetProp', `id=${this.id}, Setting property ${pPropName} = ${pVal}`);
         if (this._props.has(pPropName)) {
             const abil = this._props.get(pPropName);
             // @ts-ignore
@@ -156,8 +165,11 @@ export class BItem {
         return pPropName + '.' + this.id;
     };
     // helper function that subscribes to a specific property on this BItem
+    // Note that this fires an initial "changed" event so the caller gets current value
     watchProperty(pPropName: string, pWatcher: EventProcessor): SubscriptionEntry {
-        return Eventing.Subscribe(this.getPropEventTopicName(pPropName), pWatcher);
+        const sub = Eventing.Subscribe(this.getPropEventTopicName(pPropName), pWatcher);
+        this.propChanged(pPropName, this.getProp(pPropName));
+        return sub;
     };
     // helper function for above to hide that it's an Eventing subscription
     unWatchProperty(pSub: SubscriptionEntry): void {
@@ -305,45 +317,15 @@ export class BItem {
                 Logger.error(`BItem.WhenReady: Reject timeout. id=${this.id}`);
                 throw this;
             }
-            await this.WaitABit(checkInterval, this);
+            await this.WaitABit(checkInterval);
             timeout -= checkInterval;
         }
         return this;
-        /* Old convoluted version. Delete someday
-        if (this.getState() === BItemState.READY) {
-            // Logger.debug(`BItem.WhenReady: READY.id=${this.id}`);
-            return this;
-        }
-        else {
-            if (this.NeverGonnaBeReady()) {
-                throw this;
-            }
-            else {
-                const checkInterval = Config.assets?.assetFetchCheckIntervalMS ?? 200;
-                const timeout = pTimeoutMS ?? Config.assets?.assetFetchTimeoutMS ?? 5000;
-                if (timeout <= 0) {
-                    Logger.error(`BItem.WhenReady: Reject timeout. id=${this.id}`);
-                    throw this;
-                }
-                else {
-                    // Wait for 'checkInterval' and test again for 'READY'.
-                    // Logger.debug(`BItem.WhenReady: not ready. Waiting ${checkInterval} with timeout ${timeout}. id=${this.id}`);
-                    const xitem = await this.WaitABit(checkInterval, this);
-                    // After waiting, recursively call WhenReady to either keep waiting or return success
-                    const yitem = await xitem.WhenReady(timeout - checkInterval)
-                        .catch( err => {
-                            throw err;
-                        });
-                    return yitem;
-                };
-            };
-        };
-        */
     };
     // A small routine that returns a Promise that is resolved in 'ms' milliseconds.
     // Only used locally for WhenReady()
-    async WaitABit(ms: number, pParam: BItem): Promise<BItem> {
-        return new Promise( (resolve) => { setTimeout(resolve, ms, pParam); } );
+    async WaitABit(ms: number): Promise<BItem> {
+        return new Promise( (resolve) => { setTimeout(resolve, ms); } );
     };
     // Return 'true' if something is wrong with this BItem and it will never go READY.
     // Only used locally for WhenReady()

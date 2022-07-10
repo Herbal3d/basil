@@ -142,10 +142,14 @@ export const Graphics = {
     },
     SetGraphicsState(pState: GraphicStates) {
         Graphics._graphicsState = pState;
+        Logger.debug(`Graphics.SetGraphicsState: new state ${GraphicStates[pState]}`);
         void Eventing.Fire(GraphicsStateChangeTopic, { state: pState });
     },
+    // Watch graphics state changes. Note that this does an initial state change event
     WatchGraphicsStateChange(pProcessor: EventProcessor): SubscriptionEntry {
-        return Eventing.Subscribe(GraphicsStateChangeTopic, pProcessor);
+        const sub = Eventing.Subscribe(GraphicsStateChangeTopic, pProcessor);
+        void sub.fire({ state: Graphics._graphicsState });
+        return sub;
     },
     // Call EventProcessor before each frame. Wrap BabylonJS Observer with Eventing
     //      so all callbacks look the same.

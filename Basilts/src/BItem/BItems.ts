@@ -13,16 +13,17 @@
 
 import { Config } from '@Base/Config';
 
-import { BItem } from '@BItem/BItem';
-import { AbilityFactory } from '@Abilities/Ability';
+import { BItem, PropValue } from '@BItem/BItem';
+
 import { AbBItem } from '@Abilities/AbilityBItem';
+import { AbilityFactory } from '@Abilities/Ability';
 import { AbRegistrationName } from '@Abilities/AbilityReg';
-import { AuthToken } from '@Base/Tools/Auth';
-import { BasilConnection } from '@Base/Comm/BasilConnection';
+
+import { BasilConnection } from '@Comm/BasilConnection';
 
 import { BKeyedCollection } from '@Base/Tools/bTypes';
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
-
+import { AuthToken } from '@Base/Tools/Auth';
 import { Logger } from '@Tools/Logging';
 
 // Management routines for BItems.
@@ -120,6 +121,47 @@ export const BItems = {
             Logger.error(`BItems.registerWellKnownBItem: could not find registration BItem`);
         };
     },
+    getWellKnownBItemId: (pWellKnownName: string): string => {
+        const regBItem = BItems.get(Config.infrastructureBItemNames.registration);
+        if (regBItem) {
+            const id = regBItem.getProp(pWellKnownName);
+            if (id && typeof(id) === 'string') {
+                return id;
+            }
+        }
+        return undefined;
+    },
+    // Utility routine to get the property value of a BItem
+    getProp(pId: string, pProp: string): PropValue {
+        const bItem = BItems.get(pProp);
+        if (bItem) {
+            return bItem.getProp(pProp);
+        }
+        return undefined;
+    },
+    // Utility routine  to set the property of one 
+    setProp(pId: string, pProp: string, pVal: PropValue): void {
+        const bItem = BItems.get(pProp);
+        if (bItem) {
+            return bItem.setProp(pProp, pVal);
+        }
+    },
+    // Set several properties on the specified BItem
+    // Returns 'undefined' if the BItem could not be found
+    setPropertiesById: (pBItemId: string, pPropsToSet: BKeyedCollection): BItem | undefined => {
+        const bItem = BItems.get(pBItemId);
+        if (bItem) {
+            return BItems.setProperties(bItem, pPropsToSet);
+        }
+        Logger.error(`BItems.setPropertiesById: request for non-existant id of ${pBItemId}`);
+        return undefined;
+    },
+    setProperties(pBItem: BItem, pPropsToSet: BKeyedCollection): BItem {
+        Object.keys(pPropsToSet).forEach( prop => {
+            pBItem.setProp(prop, <PropValue>pPropsToSet[prop]);
+        })
+        return pBItem;
+    }
 };
 
 

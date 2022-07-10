@@ -41,9 +41,7 @@ export const Comm = {
             'transportURL': undefined,  // link to service to connect to
             'protocol': 'Basil-JSON',   // format of the messages on the transport
         });
-        if (Config.Debug.MakeConnectionDetail) {
-            Logger.debug(`MakeConnection: ${JSONstringify(params)}`);
-        }
+        Logger.cdebug('MakeConnectionDetail', `MakeConnection: ${JSONstringify(params)}`);
         try {
             const xport = await Comm.TransportFactory(params);
             const proto = await Comm.ProtocolFactory(params, xport);

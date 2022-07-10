@@ -97,7 +97,7 @@ export async function GetCameraId(pConn: BasilConnection): Promise<string|undefi
 export async function CreateTopMenuDialog(pBasil: BasilConnection): Promise<void> {
     const resp = await pBasil.CreateItem({
         abilities: [ 'Dialog' ],
-        url: './Dialogs/topMenu.html',
+        dialogUrl: './Dialogs/topMenu.html',
         dialogName: 'topMenu',
         dialogPlacement: 'menu'
     });
@@ -111,7 +111,7 @@ export async function CreateStatusDialog(pBasil: BasilConnection): Promise<void>
     Logger.debug(`Adding statistics and status dialog`);
     const resp = await pBasil.CreateItem({
         abilities: [ 'Dialog' ],
-        url: './Dialogs/status.html',
+        dialogUrl: './Dialogs/status.html',
         dialogName: 'Status',
         dialogPlacement: 'bottom right'
     });

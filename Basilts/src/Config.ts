@@ -68,7 +68,7 @@ export let Config = {
         'cameraMoveIntervalMS': 300, // ms to move camera to position
         'cameraTargetIntervalMS': 100, // ms to align camera to the target center
         'viewDistance': 1000,
-        'thirdPersonDisplacement': [0, 1.5, -1.5]
+        'thirdPersonDisplacement': [0, 30, -10.0]
     },
     // Parameters for the webgl environment
     'webgl': {
@@ -208,13 +208,13 @@ export let Config = {
         'DebugLogToConsole': true,      // output debug message to console rather than debug window
         'LogLevel': 'debug',            // output log level (error, warn, info, debug)
         'DebugLogInstanceName': 'bitem.debug.b.basil.org', // Name of debug logging instance
+        'SetProp': false,                // output whenever BItem.setProp is called
         'MakeConnectionDetail': false,  // output detailed info when processing MakeConnection
         'SendMsg': true,                // output detailed message when message sent
         'RcvdMsg': true,                // output detailed message when message received
         'RPCSent': true,                // print sent RPC message
         'RPCResponse': true,            // print RPC response message
-        'PlacementDetail': false,       // print detailed info from AbPlacement
-
+        'PlacementDetail': true,       // print detailed info from AbPlacement
         'ShowBoundingBox': false         // show bounding box items loaded into scene
     }
 };

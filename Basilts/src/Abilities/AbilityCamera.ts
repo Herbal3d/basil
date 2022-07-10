@@ -254,6 +254,7 @@ export class AbCamera extends Ability {
     };
 
     // Add all the properties from this assembly to the holding BItem
+    _beforeFrameWatcher: SubscriptionEntry;
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
@@ -272,8 +273,7 @@ export class AbCamera extends Ability {
         // Get and Set the placement frame of reference.
         pBItem.addProperty(AbCamera.ForProp, this);
 
-
-        Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
+        this._beforeFrameWatcher = Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
 
         pBItem.setReady();
     };
@@ -285,6 +285,10 @@ export class AbCamera extends Ability {
         };
         if (pPropertyName === AbCamera.CameraTargetAvatarIdProp) {
             this._clearWatchers();
+            if (this._beforeFrameWatcher) {
+                Eventing.Unsubscribe(this._beforeFrameWatcher);
+                this._beforeFrameWatcher = undefined;
+            }
         };
         return;
     };
@@ -353,6 +357,7 @@ export class AbCamera extends Ability {
                         newCamPos.z += this._cameraDisplacement[2];
                         // 'avaPos' is where we wish the camera to be
 
+                        // LERP the camera to the target position
                         const moveDuration = Date.now() - this._avatarPositionChangeTime;
                         const moveScale = Clamp(moveDuration / Config.world.cameraMoveIntervalMS, 0, 1);
                         if (moveScale <= 0.98) {

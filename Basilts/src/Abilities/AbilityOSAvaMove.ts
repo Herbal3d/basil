@@ -24,7 +24,7 @@ import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
 
-export const AbOSAvaMoveName = 'OSAvatarMovement'
+export const AbOSAvaMoveName = 'OSAvatarMove'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbOSAvaMoveFromProps(pProps: BKeyedCollection): AbOSAvaMove {
@@ -105,7 +105,7 @@ export class AbOSAvaMove extends Ability {
             [AbOSAvaMove.StartStopProp]: pStartStop
         };
         // Logger.debug(`AbOSAvaMove.sendMovementUpdate: sending ${JSON.stringify(updateProps)}`);
-        void this.containingBItem.bItemAbility.creatingConnection.UpdateProperties(this.containingBItem.id, updateProps);
+        void this.containingBItem.conn?.UpdateProperties(this.containingBItem.id, updateProps);
         return;
     }
 

@@ -23,7 +23,7 @@ export const AbDialogName = 'Dialog'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbDialogFromProps(pProps: BKeyedCollection): AbDialog {
-    const urlProp = pProps.hasOwnProperty(AbDialog.UrlProp) ? pProps[AbDialog.UrlProp] as string : null;
+    const urlProp = pProps.hasOwnProperty(AbDialog.DialogUrlProp) ? pProps[AbDialog.DialogUrlProp] as string : null;
     const nameProp = pProps.hasOwnProperty(AbDialog.DialogNameProp) ? pProps[AbDialog.DialogNameProp] as string : null;
     const placementProp = pProps.hasOwnProperty(AbDialog.DialogPlacementProp) ? pProps[AbDialog.DialogPlacementProp] as string : null;
     return new AbDialog(urlProp, nameProp, placementProp);
@@ -37,7 +37,7 @@ export class AbDialog extends Ability {
     // When an ability is referenced in BMessage.IProps, these are the types of values passed in the request
     // These string names are the parameter names passed in the BMessage.IProps structure and they
     //     coorespond to the class property names.
-    public static UrlProp = 'url';
+    public static DialogUrlProp = 'dialogUrl';
     public static DialogNameProp = 'dialogName';
     public static DialogPlacementProp = 'dialogPlacement';
 
@@ -66,7 +66,7 @@ export class AbDialog extends Ability {
         // Always do this!!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbDialog.UrlProp, this);
+        pBItem.addProperty(AbDialog.DialogUrlProp, this);
 
         pBItem.setReady();
     };

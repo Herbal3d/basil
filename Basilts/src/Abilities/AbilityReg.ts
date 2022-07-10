@@ -29,7 +29,7 @@ RegisterAbility(AbRegistrationName, AbRegistrationFromProps);
 
 // Ability Registration is added to base BItem and the names of BItems are
 //   later added so they can be looked up. For instance, BItem that is the main
-//   camera registers itself as "MainCamera".
+//   camera registers itself as "Camera".
 // This allows looking up the current BItem IDs of well known BItems.
 export class AbRegistration extends Ability {
 
