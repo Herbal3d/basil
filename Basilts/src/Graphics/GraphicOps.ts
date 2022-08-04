@@ -13,7 +13,7 @@
 
 import { Config, AmbientLightingParameters } from '@Base/Config';
 
-import { Mesh, ISceneLoaderProgressEvent } from '@babylonjs/core';
+import { Mesh, ISceneLoaderProgressEvent, AssetContainer } from '@babylonjs/core';
 import { KeyboardEventTypes, KeyboardInfo, IKeyboardEvent } from '@babylonjs/core';
 import { VertexBuffer, BoundingInfo } from '@babylonjs/core';
 import { SceneLoader } from '@babylonjs/core';
@@ -73,7 +73,7 @@ export interface IProgressInfo {
     percent: number | undefined;    // percent completed or undefined if not known
 }
 // Routine called from LoadSimpleAsset to package and report loading progress
-export function MakeProgress(pState: AssetLoadingState, 
+export function AnnounceProgress(pState: AssetLoadingState, 
                             pAsset: string,
                             pProgress: ISceneLoaderProgressEvent,
                             pProgressCallback: ProgressCallback) {
@@ -100,49 +100,15 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
     let asset: Object3D = undefined;
     try {
         // Load the asset
-        MakeProgress(AssetLoadingState.Started, parms.AssetURL, null, pProgressCallback);
+        AnnounceProgress(AssetLoadingState.Started, parms.AssetURL, null, pProgressCallback);
         const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene,
             (event: ISceneLoaderProgressEvent) => {
-                MakeProgress(AssetLoadingState.Working, parms.AssetURL, event, pProgressCallback);
+                AnnounceProgress(AssetLoadingState.Working, parms.AssetURL, event, pProgressCallback);
         });
-        MakeProgress(AssetLoadingState.Loaded, parms.AssetURL, null, pProgressCallback);
+        AnnounceProgress(AssetLoadingState.Loaded, parms.AssetURL, null, pProgressCallback);
         if (assetContainer) {
             if (assetContainer.meshes.length > 0) {
-                if (Config.Debug.ShowBoundingBox) {
-                    Logger.debug(`GraphicsOps: showing bounding boxes`);
-                    assetContainer.meshes.forEach( mesh => {
-                        mesh.showBoundingBox = true;
-                    });
-                };
-                if (Config.webgl.renderer.BabylonJS.rebuildBoundingBoxes) {
-                    Logger.debug(`GraphicsOps: refreshing bounding boxes`);
-                    for (const mesh of assetContainer.meshes) {
-                        const verts = mesh.getVerticesData(VertexBuffer.PositionKind);
-                        if (verts) {
-                            const inds = mesh.getIndices();
-                            if (inds) {
-                                let minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
-                                for (let i = 0; i < inds.length; i++) {
-                                    const ind = inds[i];
-                                    const x = verts[ind * 3];
-                                    const y = verts[ind * 3 + 1];
-                                    const z = verts[ind * 3 + 2];
-                                    if (x < minX) { minX = x; }
-                                    if (y < minY) { minY = y; }
-                                    if (z < minZ) { minZ = z; }
-                                    if (x > maxX) { maxX = x; }
-                                    if (y > maxY) { maxY = y; }
-                                    if (z > maxZ) { maxZ = z; }
-                                };
-                                // Logger.debug(`GraphicsOps: min=[${minX}, ${minY}, ${minZ}], max=[${maxX}, ${maxY}, ${maxZ}]`);
-                                mesh.setBoundingInfo(new BoundingInfo(
-                                    BJSVector3.FromArray([minX, minY, minZ]),
-                                    BJSVector3.FromArray([maxX, maxY, maxZ])));
-                                // mesh.refreshBoundingInfo();
-                            }
-                        }
-                    };
-                };
+                PrepareMeshesInContainer(assetContainer);
                 const rootNode = assetContainer.createRootMesh();
                 asset = new Object3D(assetContainer, rootNode);
                 Graphics.addNodeToWorldView(rootNode);
@@ -151,12 +117,54 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
         };
     }
     catch (e) {
-        MakeProgress(AssetLoadingState.Failed, parms.AssetURL, null, pProgressCallback);
+        AnnounceProgress(AssetLoadingState.Failed, parms.AssetURL, null, pProgressCallback);
         Logger.error(`Graphics: LoadSimpleAsset: Exception: ${e}`);
         asset = undefined;
     }
     return asset; 
 };
+
+// We've loaded a container and need to set flags on the meshes therein.
+// This adds diagnostic things (bounding boxes), recomputes bounding boxes
+//     (since the GLTF loader creates odd things), and add shadows.
+// All these operation and optional and controlled by Config parameters.
+function PrepareMeshesInContainer(pContainer: AssetContainer): void {
+    if (Config.Debug.ShowBoundingBox) {
+        Logger.debug(`GraphicsOps: showing bounding boxes`);
+        pContainer.meshes.forEach( mesh => {
+            mesh.showBoundingBox = true;
+        });
+    };
+    if (Config.webgl.renderer.BabylonJS.rebuildBoundingBoxes) {
+        Logger.debug(`GraphicsOps: refreshing bounding boxes`);
+        for (const mesh of pContainer.meshes) {
+            const verts = mesh.getVerticesData(VertexBuffer.PositionKind);
+            if (verts) {
+                const inds = mesh.getIndices();
+                if (inds) {
+                    let minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
+                    for (let i = 0; i < inds.length; i++) {
+                        const ind = inds[i];
+                        const x = verts[ind * 3];
+                        const y = verts[ind * 3 + 1];
+                        const z = verts[ind * 3 + 2];
+                        if (x < minX) { minX = x; }
+                        if (y < minY) { minY = y; }
+                        if (z < minZ) { minZ = z; }
+                        if (x > maxX) { maxX = x; }
+                        if (y > maxY) { maxY = y; }
+                        if (z > maxZ) { maxZ = z; }
+                    };
+                    // Logger.debug(`GraphicsOps: min=[${minX}, ${minY}, ${minZ}], max=[${maxX}, ${maxY}, ${maxZ}]`);
+                    mesh.setBoundingInfo(new BoundingInfo(
+                        BJSVector3.FromArray([minX, minY, minZ]),
+                        BJSVector3.FromArray([maxX, maxY, maxZ])));
+                    // mesh.refreshBoundingInfo();
+                }
+            }
+        };
+    };
+}
 
 export function DeleteAsset(pAsset: Object3D): boolean {
     Logger.debug(`GraphicsOps.DeleteAsset: removing`);

@@ -39,7 +39,10 @@ export enum OSCameraModes {
 export function AbOSCameraFromProps(pProps: BKeyedCollection): AbOSCamera {
     if (pProps.hasOwnProperty(AbOSCamera.OSCameraModeProp)) {
         const cameraMode = pProps[AbOSCamera.OSCameraModeProp] as number;
-        return new AbOSCamera(cameraMode);
+        const disp = pProps.hasOwnProperty(AbOSCamera.OSCameraDisplacementProp)
+                    ? pProps[AbOSCamera.OSCameraDisplacementProp] as number[]
+                    : Config.world.thirdPersonDisplacement;
+        return new AbOSCamera(cameraMode, disp);
     };
     Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbOSCameraName}. pProps: ${JSON.stringify(pProps)}`);
 };
@@ -64,10 +67,16 @@ export class AbOSCamera extends Ability {
 
     _cameraId: string;
 
-    constructor(pCameraMode: number) {
+    constructor(pCameraMode: number, pCameraDisp: number[]) {
         super(AbOSCameraName);
-        this._cameraMode = pCameraMode;
-        this._cameraModeMod = true;
+
+        // Find name of camera before we initialize its properties
+        this._cameraId = BItems.getWellKnownBItemId(WellKnownCameraName);
+
+        this.OSCameraMode = pCameraMode;
+        this.OSCameraDisplacement = pCameraDisp;
+
+        // Logger.debug(`AbOSCamera.const: mode=${pCameraMode}, disp=${pCameraDisp}, camId=${this._cameraId}`);
     };
 
     // Make the properties available
@@ -89,13 +98,11 @@ export class AbOSCamera extends Ability {
         this._cameraModeMod = true;
     }
 
-    _cameraDisplacement: number[] = Config.world.thirdPersonDisplacement;
     public get OSCameraDisplacement(): number[] {
-        return this._cameraDisplacement;
+        return BItems.getProp(this._cameraId, AbCamera.CameraDisplacementProp) as number[];
     }
     public set OSCameraDisplacement(pVal: PropValue) {
         const val = ParseThreeTuple(pVal as string | number[]);
-        this._cameraDisplacement = val;
         BItems.setProp(this._cameraId, AbCamera.CameraDisplacementProp, val);
     }
 
@@ -107,9 +114,6 @@ export class AbOSCamera extends Ability {
 
         pBItem.addProperty(AbOSCamera.OSCameraModeProp, this);
         pBItem.addProperty(AbOSCamera.OSCameraDisplacementProp, this);
-
-        // Find name of camera
-        this._cameraId = BItems.getWellKnownBItemId(WellKnownCameraName);
 
         Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
     };
@@ -139,9 +143,9 @@ export class AbOSCamera extends Ability {
                 BItems.setPropertiesById(this._cameraId, {
                     cameraMode: CameraModes.ThirdPerson,
                     cameraTargetAvatarId: this.containingBItem.id,
-                    cameraDisplacement: Config.world.thirdPersonDisplacement
+                    cameraDisplacement: this.OSCameraDisplacement
                 });
-                Logger.debug(`AbOSCamera.setCameraMode: ThirdPerson: disp=${JSONstringify(Config.world.thirdPersonDisplacement)}`);
+                // Logger.debug(`AbOSCamera.setCameraMode: ThirdPerson: disp=${JSONstringify(this.OSCameraDisplacement)}`);
                 break;
             }
             case OSCameraModes.Orbit: {

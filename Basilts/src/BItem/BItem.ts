@@ -57,8 +57,8 @@ export interface SetPropEventParams {
 export class BItem {
 
     // The properties that are added by the Abilities
-    private _props: Map<string, Ability>;
-    private _propOptions: Map<string, PropOptions>;
+    _props: Map<string, Ability>;
+    _propOptions: Map<string, PropOptions>;
     // Flag 'true' when the BItem is being deleted
     private _deleteInProgress: boolean;
 
@@ -168,7 +168,10 @@ export class BItem {
     // Note that this fires an initial "changed" event so the caller gets current value
     watchProperty(pPropName: string, pWatcher: EventProcessor): SubscriptionEntry {
         const sub = Eventing.Subscribe(this.getPropEventTopicName(pPropName), pWatcher);
-        this.propChanged(pPropName, this.getProp(pPropName));
+        // If the property is already defined, fire an initial watch event
+        if (this._props.has(pPropName)) {
+            this.propChanged(pPropName, this.getProp(pPropName));
+        };
         return sub;
     };
     // helper function for above to hide that it's an Eventing subscription

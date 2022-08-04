@@ -204,6 +204,11 @@ export class BasilConnection extends BItem {
 
 // Process the incoming message
 async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: BProtocol): Promise<void> {
+    // If not a known op or is the unknown op, just ignore the message
+    if ((!(pReq.Op in BMessageOps)) || pReq.Op === BMessageOps.UnknownReq) {
+        Logger.error(`BasilConnection.Processor: unknown op received: ${pReq.Op}`);
+        return;
+    }
     if (Config.security.ShouldCheckBasilServerRequestAuth && ((pReq.Auth ?? 'UNKNOWN') !== pConnection.IncomingAuth.token) ) {
         // The sender is not authorized!
         Logger.error(`BasilConnection; unauthorized. rcvd=${pReq.Auth}, shouldBe=${pConnection.IncomingAuth.token}`);
@@ -535,7 +540,7 @@ function SendAndPromiseResponse(pReq: BMessage, pContext: BasilConnection): Prom
         } );
         pContext._proto.WhenReady()
         .then( () => {
-            pContext._proto.Send(pReq);
+            pContext.Send(pReq);
         })
         .catch( (e) => {
             pContext._rpcSessions.delete(responseSession);

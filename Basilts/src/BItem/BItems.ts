@@ -37,7 +37,7 @@ export const BItems = {
     // This looks for properties 'BItem*Prop' but any abilities created will look for their own.
     // Throws a string error if there are any problems.
     createFromProps: (pProps: BKeyedCollection, pCreatingConnection: BasilConnection): BItem => {
-        Logger.debug(`BItems.createFromProps: ${JSONstringify(pProps)}`);
+        Logger.cdebug('BItemCreateDetail', `BItems.createFromProps: ${JSONstringify(pProps)}`);
         const authTokenString = pProps[AbBItem.AuthTokenProp] as string;
         const authToken = authTokenString ? new AuthToken(authTokenString) : null;
         const layer = (pProps[AbBItem.LayerProp] as string) ?? Config.layers.default;
@@ -121,8 +121,8 @@ export const BItems = {
             Logger.error(`BItems.registerWellKnownBItem: could not find registration BItem`);
         };
     },
-    getWellKnownBItemId: (pWellKnownName: string): string => {
-        const regBItem = BItems.get(Config.infrastructureBItemNames.registration);
+    getWellKnownBItemId: (pWellKnownName: string, pRegBItem?: BItem): string => {
+        const regBItem = pRegBItem ?? BItems.get(Config.infrastructureBItemNames.registration);
         if (regBItem) {
             const id = regBItem.getProp(pWellKnownName);
             if (id && typeof(id) === 'string') {
@@ -133,17 +133,23 @@ export const BItems = {
     },
     // Utility routine to get the property value of a BItem
     getProp(pId: string, pProp: string): PropValue {
-        const bItem = BItems.get(pProp);
+        const bItem = BItems.get(pId);
         if (bItem) {
             return bItem.getProp(pProp);
         }
+        Logger.error(`BItems.getProp: BItem not found: id=${pId}, prop=${pProp}`);
+        // BItems.dumpBItemCollection();
         return undefined;
     },
     // Utility routine  to set the property of one 
     setProp(pId: string, pProp: string, pVal: PropValue): void {
-        const bItem = BItems.get(pProp);
+        const bItem = BItems.get(pId);
         if (bItem) {
-            return bItem.setProp(pProp, pVal);
+            bItem.setProp(pProp, pVal);
+        }
+        else {
+            Logger.error(`BItems.setProp: BItem not found: id=${pId}, prop=${pProp}`);
+            // BItems.dumpBItemCollection();
         }
     },
     // Set several properties on the specified BItem
@@ -161,6 +167,12 @@ export const BItems = {
             pBItem.setProp(prop, <PropValue>pPropsToSet[prop]);
         })
         return pBItem;
+    },
+    dumpBItemCollection: (): void => {
+        Logger.debug(`BItemCollection:`);
+        BItemCollection.forEach( (bitem, id) => {
+            Logger.debug(`    ${id}: props=${Array.from(bitem._props.keys()).join()}`);
+        });
     }
 };
 

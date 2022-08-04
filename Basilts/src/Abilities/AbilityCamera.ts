@@ -24,7 +24,7 @@ import { AbPlacement } from './AbilityPlacement';
 import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
 import { Object3D } from '@Graphics/Object3d';
 
-import { Vector3 as BJSVector3, Color3 as BJSColor3, Quaternion as BJSQuaternion} from '@babylonjs/core/Maths';
+import { Vector3 as BJSVector3, Color3 as BJSColor3, Quaternion as BJSQuaternion, Matrix} from '@babylonjs/core/Maths';
 
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
@@ -90,6 +90,7 @@ export class AbCamera extends Ability {
     public static CameraIndexProp = 'cameraIndex';
     public static CameraModeProp = 'cameraMode';
     public static CameraLookAtProp = 'cameraTarget';
+    public static CameraFarProp = 'cameraFar';
     public static CameraTargetAvatarIdProp = 'cameraTargetAvatarId';
     public static CameraDisplacementProp = 'cameraDisplacement';
 
@@ -99,6 +100,7 @@ export class AbCamera extends Ability {
         this._posTo = [0,0,0];
         this._rot = [0,0,0,1];
         this._for = 0;
+        this.cameraFar = Config.webgl.camera.initialViewDistance;
         this.cameraIndex = pIndex;
         this._posMod = this._posToMod = this._rotMod = this._rotToMod = false;
         this._cameraTargetMod = false;
@@ -146,6 +148,12 @@ export class AbCamera extends Ability {
         }
     };
 
+    cameraRotationOffset: number = 0;
+    cameraHeightOffset: number = 4;
+    cameraAcceleration: number = 0.05;
+    cameraMaxSpeed: number = 20;
+    cameraRadius: number = 12;
+
     // Watched avatar representation has changed
     _avatarRepresentationWatcher(pParams: SetPropEventParams): void {
         this._cameraTargetAvatarObject = pParams.NewValue as Object3D;
@@ -191,6 +199,8 @@ export class AbCamera extends Ability {
         }
         this._cameraDisplacementMod = true;
     };
+
+    cameraFar: number;
 
     _pos: number[] = [0,0,0];
     _posMod = false;
@@ -264,6 +274,7 @@ export class AbCamera extends Ability {
         pBItem.addProperty(AbCamera.CameraLookAtProp, this);
         pBItem.addProperty(AbCamera.CameraTargetAvatarIdProp, this);
         pBItem.addProperty(AbCamera.CameraDisplacementProp, this);
+        pBItem.addProperty(AbCamera.CameraFarProp, this);
         // position
         pBItem.addProperty(AbCamera.PosProp, this);
         pBItem.addProperty(AbCamera.RotProp, this);
@@ -294,6 +305,11 @@ export class AbCamera extends Ability {
     };
 
     _lastCameraType: CameraModes = CameraModes.Unknown;
+    _lastCamPos: BJSVector3 = new BJSVector3();
+    _lastRads: number = 0;
+    _lastD: BJSVector3 = new BJSVector3();
+    _lastV: BJSVector3 = new BJSVector3();
+    _lastTarget: BJSVector3 = new BJSVector3();
     _processBeforeFrame(pParms: GraphicsBeforeFrameProps): void {
         // Move the camera
         if (Graphics._camera) {
@@ -350,12 +366,59 @@ export class AbCamera extends Ability {
                 case CameraModes.ThirdPerson: {
                     // The camera tracks the specified avatar
                     if (this._cameraTargetAvatarObject) {
+                        const camPos = Graphics._camera.position;
+
+                        // eslint-disable-next-line prefer-const
+                        let rotMatrix = new Matrix();
+                        this._cameraTargetAvatarObject.mesh.absoluteRotationQuaternion.toRotationMatrix(rotMatrix);
+                        const yRotation = Math.atan2(rotMatrix.m[8], rotMatrix.m[10]);
+
+                        const radians = this.cameraRotationOffset * 180 / Math.PI + yRotation;
+                        const targetPosition = this._cameraTargetAvatarObject.mesh.getAbsolutePosition();
+                        const targetX: number = targetPosition.x + Math.sin(radians) * this.cameraRadius;
+
+                        const targetZ: number = targetPosition.z + Math.cos(radians) * this.cameraRadius;
+                        const dx: number = targetX - camPos.x;
+                        const dy: number = targetPosition.y + this.cameraHeightOffset - camPos.y;
+                        const dz: number = targetZ - camPos.z;
+                        const vx: number = Clamp(dx * this.cameraAcceleration * 2, -this.cameraMaxSpeed, this.cameraMaxSpeed);
+                        const vy: number = Clamp(dy * this.cameraAcceleration, -this.cameraMaxSpeed, this.cameraMaxSpeed);
+                        const vz: number = Clamp(dz * this.cameraAcceleration * 2, -this.cameraMaxSpeed, this.cameraMaxSpeed);
+
+                        const newCamPos = new BJSVector3(camPos.x + vx, camPos.y + vy, camPos.z + vz);
+                        Graphics._camera.position = newCamPos;
+                        Graphics._camera.setTarget(targetPosition);
+                        // DEBUG DEBUG
+                        const newD = new BJSVector3(dx, dy, dz);
+                        const newV = new BJSVector3(vx, vy, vz);
+                        if (BJSVector3.Distance(this._lastCamPos, newCamPos) > 0.01
+                                || Math.abs(this._lastRads - radians) > 0.01
+                                || BJSVector3.Distance(this._lastTarget, targetPosition) > 0.01
+                                || BJSVector3.Distance(this._lastD, newD) > 0.01
+                                || BJSVector3.Distance(this._lastV, newV) > 0.01
+                            ) {
+
+                            Logger.debug(
+                                `AbilityCamera.processBeforeFrame: cp=${newCamPos}, t=${targetPosition}, r=${radians}, d=${newD}, v=${newV}`);
+                        }
+                        this._lastD = newD;
+                        this._lastV = newV;
+                        this._lastRads = radians;
+                        this._lastCamPos = newCamPos;
+                        this._lastTarget = targetPosition;
+                        // END DEBUG DEBUG
+
+                        /*
                         const avaPos = this._cameraTargetAvatarObject.mesh.position.clone();
+                        const avaRot = this._cameraTargetAvatarObject.mesh.rotationQuaternion;
+
+                        const disp = new BJSVector3(this._cameraDisplacement[0], this._cameraDisplacement[1], this._cameraDisplacement[2]);
+                        const rotDisp = new BJSVector3();
                         const newCamPos = this._cameraTargetAvatarObject.mesh.position.clone();
                         newCamPos.x += this._cameraDisplacement[0];
                         newCamPos.y += this._cameraDisplacement[1];
                         newCamPos.z += this._cameraDisplacement[2];
-                        // 'avaPos' is where we wish the camera to be
+                        // 'netCamPos' is where we wish the camera to be
 
                         // LERP the camera to the target position
                         const moveDuration = Date.now() - this._avatarPositionChangeTime;
@@ -372,6 +435,7 @@ export class AbCamera extends Ability {
                             Graphics._camera.position = newCamPos;
                             Graphics._camera.target = avaPos;
                         };
+                        */
                     }
                     break;
                 }

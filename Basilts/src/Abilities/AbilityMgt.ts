@@ -15,7 +15,7 @@ import { DialogMgt } from "@Base/DialogMgt/DialogMgt";
 
 import { AbAssembly } from "@Abilities/AbilityAssembly";
 import { AbDialog } from "@Abilities/AbilityDialog";
-import { AbOSAvaMove } from "@Abilities/AbilityOSAvaMove";
+import { AbOSAvaUpdate } from "@Abilities/AbilityOSAvaUpdate";
 import { AbOSCamera } from "@Abilities/AbilityOSCamera";
 
 // This function exists to reference Ability classes so they will
@@ -28,8 +28,8 @@ export const initAbilities = (pShouldInit: boolean): void => {
         // NOTE: the parameter is only 'false' so this code is never executed
         const abilityAssembly = new AbAssembly(undefined, undefined);
         const abilityDialog = new AbDialog(undefined);
-        const abilityOSAvaMove = new AbOSAvaMove();
-        const abilityOSCamera = new AbOSCamera(undefined);
+        const abilityOSAvaMove = new AbOSAvaUpdate();
+        const abilityOSCamera = new AbOSCamera(undefined, undefined);
 
         const knownDialogs = DialogMgt.dialogs.keys();
     };
