@@ -28,6 +28,7 @@ import { Vector3 as BJSVector3, Color3 as BJSColor3, Quaternion as BJSQuaternion
 
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
+import { degreesToRads } from '@Tools/Coords';
 import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Tools/Utilities';
 import { Clamp } from '@Tools/Misc';
 import { BKeyedCollection } from '@Tools/bTypes';
@@ -148,12 +149,6 @@ export class AbCamera extends Ability {
         }
     };
 
-    cameraRotationOffset: number = 0;
-    cameraHeightOffset: number = 4;
-    cameraAcceleration: number = 0.05;
-    cameraMaxSpeed: number = 20;
-    cameraRadius: number = 12;
-
     // Watched avatar representation has changed
     _avatarRepresentationWatcher(pParams: SetPropEventParams): void {
         this._cameraTargetAvatarObject = pParams.NewValue as Object3D;
@@ -263,6 +258,13 @@ export class AbCamera extends Ability {
         this._for = pVal;
     };
 
+    // Parameters used for the camera movement. Should be camaera parameters
+    cameraRotationOffset: number = -90;
+    cameraHeightOffset: number = 2;
+    cameraRadius: number = 8;
+    cameraAcceleration: number = 0.05;
+    cameraMaxSpeed: number = 20;
+
     // Add all the properties from this assembly to the holding BItem
     _beforeFrameWatcher: SubscriptionEntry;
     addProperties(pBItem: BItem): void {
@@ -368,12 +370,12 @@ export class AbCamera extends Ability {
                     if (this._cameraTargetAvatarObject) {
                         const camPos = Graphics._camera.position;
 
-                        // eslint-disable-next-line prefer-const
-                        let rotMatrix = new Matrix();
+                        // Code borrowed from BabylonJS FollowCamera
+                        const rotMatrix = new Matrix();
                         this._cameraTargetAvatarObject.mesh.absoluteRotationQuaternion.toRotationMatrix(rotMatrix);
                         const yRotation = Math.atan2(rotMatrix.m[8], rotMatrix.m[10]);
 
-                        const radians = this.cameraRotationOffset * 180 / Math.PI + yRotation;
+                        const radians = this.cameraRotationOffset * degreesToRads + yRotation;
                         const targetPosition = this._cameraTargetAvatarObject.mesh.getAbsolutePosition();
                         const targetX: number = targetPosition.x + Math.sin(radians) * this.cameraRadius;
 
@@ -388,6 +390,8 @@ export class AbCamera extends Ability {
                         const newCamPos = new BJSVector3(camPos.x + vx, camPos.y + vy, camPos.z + vz);
                         Graphics._camera.position = newCamPos;
                         Graphics._camera.setTarget(targetPosition);
+
+                        /*
                         // DEBUG DEBUG
                         const newD = new BJSVector3(dx, dy, dz);
                         const newV = new BJSVector3(vx, vy, vz);
@@ -407,6 +411,7 @@ export class AbCamera extends Ability {
                         this._lastCamPos = newCamPos;
                         this._lastTarget = targetPosition;
                         // END DEBUG DEBUG
+                        */
 
                         /*
                         const avaPos = this._cameraTargetAvatarObject.mesh.position.clone();

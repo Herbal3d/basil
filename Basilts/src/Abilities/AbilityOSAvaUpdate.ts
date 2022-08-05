@@ -97,7 +97,7 @@ export class AbOSAvaUpdate extends Ability {
 
         // OpenSim avatar movement takes keyboard controls
         const keyboardBItem = BItems.get(this._keyboardId);
-        // Logger.debug(`AbOSAvaMove.addProperties: subscribing to ${keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp)}`);
+        // Logger.debug(`AbOSAvaUpdate.addProperties: subscribing to ${keyboardBItem.getPropEventTopicName(AbKeyboard.KeyDownProp)}`);
         keyboardBItem.watchProperty(AbKeyboard.KeyDownProp, this.processKeyboard.bind(this) as EventProcessor);
 
         pBItem.setReady();
@@ -105,7 +105,7 @@ export class AbOSAvaUpdate extends Ability {
 
     processKeyboard(pEvent: SetPropEventParams): void {
         const abil = pEvent.Ability as AbKeyboard;
-        Logger.debug(`AbOSAvaMove.processKeyboard: keyboard event: ${abil.keyName}`);
+        // Logger.debug(`AbOSAvaUpdate.processKeyboard: keyboard event: ${abil.keyName}`);
         switch (abil.keyName) {
             case 'ArrowRight':  this.turnRight(abil.keyDown); break;
             case 'd':           this.turnRight(abil.keyDown); break;

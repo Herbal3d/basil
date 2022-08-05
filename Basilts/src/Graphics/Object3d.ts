@@ -12,11 +12,13 @@
 'use static';
 
 // import { Config } from '@Base/Config';
+import { ToPlanetCoord, ToPlanetRot, BFrameOfRef, FromPlanetCoord, FromPlanetRot } from '@Tools/Coords';
 
 import { AbstractMesh, AssetContainer, ISceneLoaderProgressEvent } from '@babylonjs/core';
 import { Vector3 as BJSVector3, Quaternion as BJSQuaternion } from '@babylonjs/core/Maths';
 
 import { CoordSystem } from '@Comm/BMessage';
+import { platform } from 'os';
 
 // import { Logger } from '@Tools/Logging';
 
@@ -27,44 +29,45 @@ export class Object3D {
     public mesh: AbstractMesh = undefined;
     public container: AssetContainer = undefined;
 
-    public get pos(): BJSVector3 {
+    public get pos(): number[] {
         if (this.mesh) {
-            return this.mesh.position;
+            return ToPlanetCoord(this._bFrameOfRef, this.mesh.position);
         }
-        return new BJSVector3(0, 0, 0);
+        return [ 0, 0, 0 ];
     }
-    public set pos(pVal: BJSVector3 | number[]) {
+    // NOTE: the position passed here is always PlanetCoord. Need to localize
+    public set pos(pVal: number[]) {
         if (this.mesh) {
-            if (Array.isArray(pVal)) {
-                this.mesh.position.set(pVal[0], pVal[1], pVal[2]);
-            }
-            else {
-                this.mesh.position = pVal.clone();
-            }
+            const localPos = FromPlanetCoord(this._bFrameOfRef, pVal);
+            this.mesh.position = localPos;
         }
     }
-    public get rot(): BJSQuaternion {
+    public get rot(): number[] {
         if (this.mesh) {
-            return this.mesh.rotationQuaternion;
+            return ToPlanetRot(this._bFrameOfRef, this.mesh.rotationQuaternion);
         }
-        return new BJSQuaternion(0, 0, 0, 1);
+        return [ 0, 0, 0, 1 ];
     }
-    public set rot(pVal: BJSQuaternion | number[]) {
+    public set rot(pVal: number[]) {
         if (this.mesh) {
-            if (Array.isArray(pVal)) {
-                this.mesh.rotationQuaternion = new BJSQuaternion(pVal[0], pVal[1], pVal[2], pVal[3]);
-            }
-            else {
-                this.mesh.rotationQuaternion = pVal.clone();
-            }
+            this.mesh.rotationQuaternion = FromPlanetRot(this._bFrameOfRef, pVal);
         }
     }
-    public for: number;
+    private _frameOfRef: number;
+    private _bFrameOfRef: BFrameOfRef;
+    public get frameOfRef() : number {
+        return this._frameOfRef;
+    };
+    public set frameOfRef(pVal: number) {
+        this._frameOfRef = pVal;
+        this._bFrameOfRef = new BFrameOfRef(this._frameOfRef as CoordSystem);
+
+    }
 
     constructor(pContainer?: AssetContainer, pMesh?: AbstractMesh) {
         this.container = pContainer;
         this.mesh = pMesh;
-        this.for = CoordSystem.WGS86;
+        this.frameOfRef = CoordSystem.WGS86;
     }
     isMesh(): boolean {
         return this.mesh !== undefined;

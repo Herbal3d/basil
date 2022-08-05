@@ -18,7 +18,7 @@ import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
 
 import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
-import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
+import { Vector3 as BJSVector3, Quaternion as BJSQuaternion, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
 
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
@@ -75,6 +75,8 @@ RegisterAbility(AbPlacementName, AbPlacementFromProps);
 // Base properties are 'pos' and 'rot' which are the current position/rotation of the BItem
 // There are 'posTo' and 'rotTo' which act as "move to" locations and this does LERP
 //     type actions to move pos/rot to those targets.
+// NOTE: the values in the ability are always in Planet coordinates. They have to be
+//     localized before giving to Graphics.
 export class AbPlacement extends Ability {
     static PosProp = 'pos';
     static RotProp = 'rot';
@@ -174,21 +176,27 @@ export class AbPlacement extends Ability {
             const moveDuration = Date.now() - this._posToStart;
             const moveScale = Clamp(moveDuration / Config.world.lerpIntervalMS, 0, 1);
 
-            if (moveScale > 0.98) {
+            if (moveScale > 0.9) {
                 // Moved enough. Assume we're done
                 // Logger.debug(`AbPlacement.beforeFrame: moveScale done d=${moveDuration}, ms=${moveScale}`);
                 this._pos = this._posTo;
+                this._rot = this._rotTo;
             }
             else {
                 const pos = new BJSVector3(this._pos[0], this._pos[1], this._pos[2]);
                 const posTo = new BJSVector3(this._posTo[0], this._posTo[1], this._posTo[2]);
+                const rot = new BJSQuaternion(this._rot[0], this._rot[1], this._rot[2], this._rot[3]);
+                const rotTo = new BJSQuaternion(this._rotTo[0], this._rotTo[1], this._rotTo[2], this._rotTo[3]);
                 const np = BJSVector3.Lerp(pos, posTo, moveScale);
+                const nr = BJSQuaternion.Slerp(rot, rotTo, moveScale);
 
                 this._pos = [ np.x, np.y, np.z ];
+                this._rot = [ nr.x, nr.y, nr.z, nr.w ];
                 // Logger.debug(`AbPlacement.beforeFrame: pos=${pos}, pTo=${posTo}, d=${moveDuration}, ms=${moveScale}`);
             }
             // Anyone watching the position should know about the position update
             this.containingBItem.propChanged(AbPlacement.PosProp, this._pos);
+            this.containingBItem.propChanged(AbPlacement.RotProp, this._rot);
         }
     };
 
