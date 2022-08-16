@@ -1,7 +1,8 @@
 # Basil
 Modular 3D viewer for virtual worlds and augmented reality.
 
-[Basil project site.](http://misterblue.github.io/basil)
+**UPDATE**: As of August 18, 2022, there is no more work being done
+on this project. The developer has moved onto other projects.
 
 Basil is a 3D object viewer. That sounds like a thousand other projects
 doesn't it?
