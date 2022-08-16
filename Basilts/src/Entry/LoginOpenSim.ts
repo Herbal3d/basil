@@ -15,13 +15,15 @@ import { ParseOSDXML } from '@Tools/llsd.js';
 import { MD5 } from '@Tools/MD5.js';
 import { Buffer } from 'buffer';
 
-import { JSONstringify, RandomIdentifier } from '@Tools/Utilities';
+import { VERSION } from '@Base/VERSION';
+import { JSONstringify } from '@Tools/Utilities';
+import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
-import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 
 export let SentLoginMessage = false;
 export let SuccessfulLogin = false;
 export let FailedLogin = false;
+let isSecure = false;   // set to 'true' of talking to a TLS host
 export const ClickOpLoginOpenSim = function() {
     Logger.info('Login button pressed');
     SentLoginMessage = false;
@@ -115,7 +117,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         const regionConfigParams = {
             'Init': {
                 'transport': 'WS',
-                'transportURL': 'ws://' + (resp.sim_ip as string) + ':11440/',
+                'transportURL': (isSecure ? 'wss://' : 'ws://') + (resp.sim_ip as string) + ':11440/',
                 'protocol': 'Basil-JSON',
                 'service': 'SpaceServer',
                 'clientAuth': resp.secure_session_id,
@@ -131,7 +133,6 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
                 'rX': resp.region_x,
                 'rY': resp.region_y,
                 'MSU': resp.mapServerUrl
-
             }
         };
         // Logger.info('gridLoginParams=' + JSONstringify(regionConfigParams));
@@ -161,6 +162,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
                         loginURL: string,
                         successCallback: LoginResponseSuccessCallback,
                         failureCallback: LoginResponseFailureCallback) {
+    isSecure = loginURL.startsWith('https:');
     const hashedPW = '$1$' + MD5(password);
     // StartLocation is defined to have "&" but XML needs that fixed up
     const fixedStartLocation = startLocation.replace(/&/g, '&amp;');
@@ -176,7 +178,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
           '<member><name>passwd</name><value><string>' + hashedPW + '</string></value></member>',
           '<member><name>start</name><value><string>' + fixedStartLocation + '</string></value></member>',
           '<member><name>channel</name><value><string>Herbal3d</string></value></member>',
-          '<member><name>version</name><value><string>Herbal3d 1.0.0.1</string></value></member>',
+          '<member><name>version</name><value><string>' + VERSION['version-tag'] + '</string></value></member>',
           '<member><name>platform</name><value><string>Linux</string></value></member>',
           '<member><name>mac</name><value><string>11:22:33:44:55:66</string></value></member>',
           '<member><name>id0</name><value><string>11:22:33:44:55:66</string></value></member>',
@@ -194,7 +196,6 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
         '</methodCall>'
     ].join('');
     Logger.debug('LoginXML2: doing fetch from ' + loginURL);
-    Logger.debug(`Sending: ${xmlreq}`);
     fetch(loginURL, {
         method: 'POST',
         cache: 'no-cache',
@@ -209,7 +210,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
         return responseObject.ok ? responseObject.text() : undefined;
     })
     .then( data => {
-        Logger.debug(`LoginXML2: data =${data}`);
+        // Logger.debug(`LoginXML2: data =${data}`);
         if (data) {
             let resp: BKeyedCollection = undefined;
             try {

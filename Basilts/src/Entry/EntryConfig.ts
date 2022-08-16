@@ -64,6 +64,7 @@ export const Config = {
             'Name': 'OSGrid.org',
             'GridInfo': 'http://login.osgrid.org/get_grid_info',
             'LoginURL': 'http://login.osgrid.org/'
+            // 'LoginURL': 'https://herbal3d.bluestuff.org/osgrid/' // proxy to get https
         },
         {
             'Name': 'OurGrid.life',
@@ -74,11 +75,6 @@ export const Config = {
             'Name': 'localTestGrid',
             'GridInfo': 'http://192.168.86.56:9000/get_grid_info',
             'LoginURL': 'http://192.168.86.56:9000/'
-        },
-        {
-            'Name': 'Herbal3dTestRegion',
-            'GridInfo': 'http://region.herbal3d.org:9000/get_grid_info',
-            'LoginURL': 'http://region.herbal3d.org:9000/'
         }
     ],
     // Used by Entry.js/Entry.html to select test files to load.
