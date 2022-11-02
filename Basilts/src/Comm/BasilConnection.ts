@@ -423,7 +423,9 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                     'transport':    props.transport ?? 'WS',
                     'transportURL': props.transportURL ?? undefined,
                     'protocol':     props.protocol ?? 'Basil-JSON',
-                    'service':      props.service ?? 'SpaceServer'
+                    'service':      props.service ?? 'SpaceServer',
+                    'serviceAuth':  props.serviceAuth ?? undefined,
+                    'serviceAddr':  props.serviceAddr ?? undefined
                 };
 
                 // Just in case someone is watching and wants to record or change parameters

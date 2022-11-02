@@ -211,10 +211,10 @@ export let Config = {
         'SetProp': false,               // output whenever BItem.setProp is called
         'MakeConnectionDetail': false,  // output detailed info when processing MakeConnection
         'BItemCreateDetail': false,     // output properties when BItems.CreateFromProps()
-        'SendMsg': false,                // output detailed message when message sent
-        'RcvdMsg': false,                // output detailed message when message received
-        'RPCSent': false,                // print sent RPC message
-        'RPCResponse': false,            // print RPC response message
+        'SendMsg': true,                // output detailed message when message sent
+        'RcvdMsg': true,                // output detailed message when message received
+        'RPCSent': true,                // print sent RPC message
+        'RPCResponse': true,            // print RPC response message
         'ShowBoundingBox': false         // show bounding box items loaded into scene
     }
 };
