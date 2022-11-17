@@ -15,7 +15,9 @@ import { ParseOSDXML } from '@Tools/llsd.js';
 import { MD5 } from '@Tools/MD5.js';
 import { Buffer } from 'buffer';
 
+import { Config } from '@Entry/EntryConfig';
 import { VERSION } from '@Base/VERSION';
+
 import { JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
@@ -23,7 +25,12 @@ import { Logger } from '@Tools/Logging';
 export let SentLoginMessage = false;
 export let SuccessfulLogin = false;
 export let FailedLogin = false;
-let isSecure = false;   // set to 'true' of talking to a TLS host
+
+let loginURL = '';
+let spaceServerURL = '';
+
+// Request to log into OpenSimulator
+// Parameters come from the web page and are packaged into the XMLRCP login request
 export const ClickOpLoginOpenSim = function() {
     Logger.info('Login button pressed');
     SentLoginMessage = false;
@@ -53,8 +60,10 @@ export const ClickOpLoginOpenSim = function() {
         const startLocation = NormalizeStartLocation(
             (document.getElementById('gridLogin-region') as HTMLTextAreaElement).value.trim().toLowerCase());
 
-        const loginURL = (document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement).value.trim();
+        loginURL = (document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement).value.trim();
         Logger.info('Start location = ' + startLocation + ', loginURL=' + loginURL);
+        spaceServerURL = (document.getElementById('gridLogin-WSURL') as HTMLTextAreaElement).value.trim();
+        Logger.info('SpaceServer URL=' + spaceServerURL);
 
         LoginXML2(firstname, lastname, password, startLocation, loginURL,
                                 LoginResponseSuccess, LoginResponseFailure);
@@ -102,6 +111,13 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         Logger.info('regionResponse=' + JSONstringify(OSregion));
         */
 
+        // The URL for the region connection should really come from either the login
+        //    response or a query to the grid service. For the moment, we construct
+        //    it from a parameter and the returned IP address of the target region.
+        let transportURL = spaceServerURL.replace('IP-ADDRESS', resp.sim_ip as string);
+        transportURL = transportURL.replace('PORT-ADDRESS', resp.http_port as string);
+        Logger.info('transport URL=' + transportURL);
+
         // Build the encoded auth string that is sent through Basil to the service.
         // Someday this will be a JWT token that comes from the login server.
         const userAuthInfo = {
@@ -117,7 +133,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         const regionConfigParams = {
             'Init': {
                 'transport': 'WS',
-                'transportURL': (isSecure ? 'wss://' : 'ws://') + (resp.sim_ip as string) + ':11440/',
+                'transportURL': transportURL,
                 'protocol': 'Basil-JSON',
                 'service': 'SpaceServer',
                 'clientAuth': resp.secure_session_id,
@@ -162,7 +178,6 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
                         loginURL: string,
                         successCallback: LoginResponseSuccessCallback,
                         failureCallback: LoginResponseFailureCallback) {
-    isSecure = loginURL.startsWith('https:');
     const hashedPW = '$1$' + MD5(password);
     // StartLocation is defined to have "&" but XML needs that fixed up
     const fixedStartLocation = startLocation.replace(/&/g, '&amp;');

@@ -133,6 +133,8 @@ function LoadGridSelection() {
             for (const grid of Config.Grids) {
                 const opt = document.createElement('option');
                 opt.setAttribute('value', grid.LoginURL);
+                const ssTemplate = grid.SpaceServerUrlTemplate ?? Config.transportURLTemplate;
+                opt.setAttribute('wsurl', ssTemplate);
                 opt.appendChild(document.createTextNode(grid.Name));
                 if (grid.Selected) {
                     opt.setAttribute('selected', '');
@@ -153,8 +155,12 @@ function LoadGridSelection() {
 // The grid name field was changed. Update the login URL.
 function GridSelectionChanged(evt: Event): void {
     const selectedGridURL = GetSelectedValue('gridLogin-gridName');
+    const selectedWSURL = GetSelectedAttribute('gridLogin-gridName', 'wsurl');
     const gridURLNode = document.getElementById('gridLogin-gridURL') as HTMLTextAreaElement;
     gridURLNode.value = selectedGridURL;
+    const gridWSNode = document.getElementById('gridLogin-WSURL') as HTMLTextAreaElement;
+    gridWSNode.value = selectedWSURL;
+    Logger.info(`GridSelectionChanged: ${selectedGridURL}, ${selectedWSURL}`);
 };
 
 // Load the test URLs from Config.TestGLTFFiles
@@ -203,10 +209,14 @@ function LoadBasilTestURLs(): void {
 // ======================================================
 // Given the ID name of an index HTML element, return the currently selected value
 function GetSelectedValue(optionID: string): string {
+    return GetSelectedAttribute(optionID, 'value');
+}
+function GetSelectedAttribute(optionID: string, alt: string): string {
     let selectionValue = 'UNKNOWN';
     const selection = document.getElementById(optionID) as HTMLSelectElement;
     if (selection) {
-        selectionValue = selection.options[selection.selectedIndex].value;
+        const selectionElement = selection.options[selection.selectedIndex];
+        selectionValue = selectionElement.getAttribute(alt);
     }
     else {
         Logger.error(`GetSelectedValue: could not find element id ${optionID}`);

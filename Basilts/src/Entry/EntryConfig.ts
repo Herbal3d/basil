@@ -22,6 +22,9 @@ export const Config = {
             'loaderType': 'GLTF'
         }
     },
+    // Until the region returns its connection URL, we construct it from
+    //    the returned IP address and this template
+    'transportURLTemplate': 'ws://IP-ADDRESS:11440/',
     // Names for predefined/service BItem layers
     'layers': {
         'default': 'd.layer.entry',
@@ -58,23 +61,24 @@ export const Config = {
             'Name': 'localhost',
             'GridInfo': 'http://127.0.0.1:9000/get_grid_info',
             'LoginURL': 'http://127.0.0.1:9000/',
+            'SpaceServerUrlTemplate': 'ws://IP-ADDRESS:11440/',
             'Selected': true
         },
         {
             'Name': 'OSGrid.org',
-            'GridInfo': 'http://login.osgrid.org/get_grid_info',
-            'LoginURL': 'http://login.osgrid.org/'
-            // 'LoginURL': 'https://herbal3d.bluestuff.org/osgrid/' // proxy to get https
-        },
-        {
-            'Name': 'OurGrid.life',
-            'GridInfo': 'http://ourgrid.life/get_grid_info',
-            'LoginURL': 'http://ourgrid.life:80/'
+            // 'GridInfo': 'http://login.osgrid.org/get_grid_info',
+            // 'LoginURL': 'http://login.osgrid.org/'
+            'GridInfo': 'https://basil.bluestuff.org/osgrid/get_grid_info',
+            'LoginURL': 'https://basil.bluestuff.org/osgrid/',
+            // 'SpaceServerUrlTemplate': 'wss://IP-ADDRESS/wss/'
+            // DEBUG DEBUG: test that name is required for wss (to check certificates)
+            'SpaceServerUrlTemplate': 'wss://basil.bluestuff.org/wss/'
         },
         {
             'Name': 'localTestGrid',
             'GridInfo': 'http://192.168.86.56:9000/get_grid_info',
-            'LoginURL': 'http://192.168.86.56:9000/'
+            'LoginURL': 'http://192.168.86.56:9000/',
+            'SpaceServerUrlTemplate': 'ws://IP-ADDRESS:11440/'
         }
     ],
     // Used by Entry.js/Entry.html to select test files to load.
