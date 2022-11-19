@@ -15,7 +15,6 @@ import { ParseOSDXML } from '@Tools/llsd.js';
 import { MD5 } from '@Tools/MD5.js';
 import { Buffer } from 'buffer';
 
-import { Config } from '@Entry/EntryConfig';
 import { VERSION } from '@Base/VERSION';
 
 import { JSONstringify } from '@Tools/Utilities';

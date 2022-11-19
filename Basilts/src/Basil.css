@@ -21,8 +21,9 @@
     --b-color-base-headline: #11455f;
     --b-color-base-color: #058e3f;
     --b-color-base-bg: #88d498;
-    --b-color-base-accent2: #c6dabf;
     --b-color-base-accent: #364706;
+    --b-color-base-accent2: #c6dabf;
+    --b-color-base-accent3: #b6caaf;
 
     --b-color-global-color: var(--b-color-base-color);
     --b-color-global-bg: var(--b-color-base-headline);
@@ -52,8 +53,6 @@
     font-size: var(--font-global-size);
     color: var(--b-color-global-color);
     background: var(--b-color-global-bg);
-    padding: 0px;
-    margin: 0px;
     /* 'vh' is viewport height, 'vw' is viewport width */
     /*
     height: 100vh;
@@ -210,6 +209,12 @@
 
 /* ================================================================ */
 
+.b-entry-pageLayout {
+    height: 100%;
+    margin: 2%;
+    padding: 0% 2% 2%;
+}
+
 /* Definition for the larger dialog box used in Entry.html */
 .b-entry-dialog {
     padding-top: 20px;
@@ -220,6 +225,15 @@
 /* table on Entry.html */
 #b-entry-gridLogin-table {
     padding: 10px;
+}
+
+/* Informational text in header of index.html */
+.b-index-text {
+    color: var(--b-color-base-accent2);
+}
+
+.b-index-text a {
+    color: var(--b-color-base-accent3);
 }
 
 /* ================================================================ */

@@ -1,6 +1,6 @@
 {
     "name": "basilviewer",
-    "version": "2.4.7",
+    "version": "2.4.10",
     "description": "Browser based virtual world viewer. Part of Herbal3D.",
     "keywords": [],
     "author": {
@@ -27,10 +27,11 @@
         "@Tools": "dist/Tools"
     },
     "scripts": {
-        "build": "npm-run-all -s \"buildSetup\" \"buildBasil\" \"buildEntry\" \"buildTesters\"",
+        "build": "npm-run-all -s \"buildSetup\" \"buildBasil\" \"buildEntry\" \"buildIndex\" \"buildTesters\"",
         "buildSetup": "npm-run-all -s \"clean-dist\" \"create-version\"",
         "buildBasil": "npm-run-all -s \"build:basil\" \"build-dialogs\"",
         "buildEntry": "npm-run-all -s \"build:entry\" \"build:justview\"",
+        "buildIndex": "npm-run-all -s \"build:index\"",
         "buildTesters": "npm-run-all -s \"build:wwtester\" \"build:wwtesterdev\"",
         "clean-dist": "node build_scripts/cleanDist.js",
         "prestart": "npm run build",
@@ -44,6 +45,8 @@
         "production:basil": "webpack --mode production --config webpack.basil.config.js",
         "build:entry": "webpack --config webpack.entry.config.js",
         "production:entry": "webpack --mode production --config webpack.entry.config.js",
+        "build:index": "webpack --config webpack.index.config.js",
+        "production:index": "webpack --mode production --config webpack.index.config.js",
         "build:justview": "webpack --config webpack.justview.config.js",
         "production:justview": "webpack --mode production --config webpack.justview.config.js",
         "build:wwtester": "webpack --config webpack.wwtester.config.js",

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-US">
+<head>
+    <meta name="author" content="Herbal3d Project">
+    <meta name="description" content="Login and Configuration for running Basil viewer">
+    <meta property="og:image" content="">
+    <meta property="og:description" content="Login and Configuration for running Basil viewer">
+    <meta property="od:title" contents="Basil Entry">
+    <title>Basil Startup and Entry</title>
+    <script type="text/javascript">
+        // A global variable that ties things together for debugging
+        var GGP = GGP || {};
+    </script>
+    <link href="./Basil.css" rel="stylesheet" type="text/css">
+</head>
+<body id="b-body" class="b-entry-pageLayout">
+    <div id="b-page">
+        <div class="b-index-text">
+            <h1>Basil Viewer test on OSGrid</h1>
+            <p>
+                This page has you log into an
+                <a href="https://osgrid.org/">OSGrid</a>
+                account and then view the OSGrid region <b>BasilAlpha</b>
+                using the
+                Basil
+                browser-based viewer.
+            </p>
+            <p>
+                This is a VERY, VERY early, alpha quality version of the Basil viewer code.
+                Your and everyone else's avatar is a duck.
+                Movement is via arrow keys.
+                That's about all there is at the moment.
+            </p>
+            <p>
+                BasilAlpha is a regular OSGrid region so avatars can teleport and
+                hypergrid to it.
+                All avatars, no matter where they are from, will appear as ducks.
+            </p>
+        </div>
+        <div class="b-entry-dialog">
+            <div class="b-dialog-group">
+                <fieldset>
+                    <legend>Log Into Grid</legend>
+                    <div class="b-textDisplay b-textAccent">Login to <a href="https://osgrid.org">OSGrid</a> and view the <b>BasilAlpha</b> region using the Basil viewer.</div>
+                    <div></div>
+                    <table id="b-entry-gridLogin-table">
+                        <tr>
+                            <td class="b-textDisplay b-textRight"> User name: </td>
+                            <td> <input id="gridLogin-userName" type="text" size="40" maxlength="40"/> </td>
+                        </tr>
+                        <tr>
+                            <td class="b-textDisplay b-textRight"> Password: </td>
+                            <td> <input id="gridLogin-userPassword" type="password" size="40" maxlength="40"/> </td>
+                        </tr>
+                        <tr>
+                            <td class="b-textDisplay b-textRight"> Grid login URL: </td>
+                            <td>
+                                <input id="gridLogin-gridURL" value="https://basil.bluestuff.org/osgrid/"
+                                            type="text" readonly size="50" maxlength="120"/>
+                                <input id="gridLogin-WSURL" value="wss://basil.bluestuff.org/wss/" type="hidden"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="b-textDisplay b-textRight"> Region: </td>
+                            <td> <input id="gridLogin-region" type="text" size="40" maxlength="40"
+                                value="BasilAlpha" readonly/> </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="b-button b-clickable" op="gridLogin">Login</button>
+                    <div id="gridLogin-progress"> </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="b-index-text">
+            <p>
+                The odd "Grid login URL" is because the browser requires the login XMLRPC call to be
+                done over a HTTPS connection. OSGrid does not use connection certificates so
+                a reverse proxy has been setup at <code>https://basil.bluestuff.org</code> that proxies 
+                a request from <code>https://basil.bluestuff.org/osgrid</code> => <code>http://osgrid.org/</code>.
+            </p>
+            <p>
+                Privacy Policy: no personally identifying data is collected.
+                The entered password is salted and hashed and sent through the above mentioned reverse proxy
+                for login to OSGrid and is not stored or saved.
+                Any information collected is the usual OpenSimulator session and connection information.
+            </p>
+        </div>
+        <div class="b-entry-dialog">
+            <div id="b-DEBUGG"></div>
+        </div>
+    </div>
+    <div id="b-version"></div>
+</body>
+</html>
