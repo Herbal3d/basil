@@ -34,6 +34,14 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { initLogging, Logger } from '@Tools/Logging';
 import { BasilConnection } from './Comm/BasilConnection';
 
+// Function to place the software version numbers at the bottom of the screen
+function advertizeVersion(pExtra?: string): void {
+    const versionTextNode = document.getElementById(Config.page.versionElementId);
+    if (versionTextNode) {
+        versionTextNode.innerText = 'Basil version ' + VERSION['version-tag'] + '     ' + (pExtra ?? '');
+    }
+}
+
 initConfig();
 initLogging();      // Setup logging so progress and errors will be seen
 Eventing.init();
@@ -49,10 +57,7 @@ Graphics.connectGraphics(container, canvas);
 Graphics.Start();
 
 // Put current Basil version info on the bottom of the window
-const versionTextNode = document.getElementById(Config.page.versionElementId);
-if (versionTextNode) {
-    versionTextNode.innerText = 'Basil version ' + VERSION['version-tag'];
-}
+advertizeVersion();
 
 // Create BItems that coorespond to the input and output devices, etc
 CreateInfrastructureBItems();
@@ -171,6 +176,7 @@ let firstConnection: BasilConnection
             // The OpenSession response includes the authorization for us talking to the service
             conn.OutgoingAuth = new AuthToken(resp2.IProps['serverAuth'] as string);
 
+            advertizeVersion(`Server version: ${resp2.IProps['serverVersion']}`);
             Logger.debug(`Basilts: session is opened. Server version: ${resp2.IProps['serverVersion']}`);
             // Logger.debug(`     in=${conn.IncomingAuth.token}, out=${conn.OutgoingAuth.token}`);
         }

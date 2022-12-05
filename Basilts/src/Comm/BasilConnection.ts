@@ -56,6 +56,11 @@ export const OpenBasilConnections: Map<string, BasilConnection> = new Map<string
 
 export type AfterRequestOperation = ( pProps: BKeyedCollection ) => Promise<void>;
 
+// Sometimes we are sent a request that is usually RPC but the sender doesn't want a
+//     response. This is set at the RCode in the response being built so it is not sent.
+//     See MakeResponse() and Send().
+export const NORESPONSECODE = "NoResponseCode";
+
 export class BasilConnection extends BItem {
     _params: BKeyedCollection;
     _proto: BProtocol;
@@ -110,9 +115,16 @@ export class BasilConnection extends BItem {
     // Send a message over this connection
     Send(pMsg: BMessage) {
         if (this._proto) {
-            pMsg.Auth = this.OutgoingAuth.token;
-            Logger.cdebug('SendMsg', 'BasilConnection.Send: sending: ' + JSONstringify(pMsg));
-            this._proto.Send(pMsg);
+            if (pMsg.RCode && pMsg.RCode === NORESPONSECODE) {
+                // Kludge to not send response of request didn't have a RCode
+                // This is done so all the code can default to making the response but it is not sent
+                Logger.cdebug('SendMsg', 'BasilConnection.Send: not sending response');
+            }
+            else {
+                pMsg.Auth = this.OutgoingAuth.token;
+                Logger.cdebug('SendMsg', 'BasilConnection.Send: sending: ' + JSONstringify(pMsg));
+                this._proto.Send(pMsg);
+            }
         };
     };
 
@@ -505,9 +517,8 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
 // Add the proper thing to a response to make it a response
 function MakeResponse(pReq: BMessage, pOp: number): BMessage {
     const resp: BMessage = { 'Op': pOp, IProps: {} };
-    if (pReq.SCode) {
-        resp.RCode = pReq.SCode;
-    }
+    // Making a response for something without a response code causes this to return a dummy
+    resp.RCode = pReq.SCode ?? NORESPONSECODE;
     return resp;
 };
 

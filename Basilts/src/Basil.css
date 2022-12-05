@@ -77,13 +77,13 @@
     margin: 1em auto; 
 }
 
-/* The canvas that is passed to ThreeJS */
+/* The canvas that is passed to the renderer libaray */
 #b-webGLcanvas {
     position: absolute;
-    top: 2vh;
+    top: 3em;
     left: 1vw;
     width: 98vw;
-    height: 97vh;
+    height: 96vh;
     border: 0px;
     outline: none;
 }

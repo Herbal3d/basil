@@ -27,14 +27,12 @@ import { Logger } from '@Tools/Logging';
 
 // The camera generates periodic events. This is the parameter block
 //    returned with the event.
-export const CameraInfoEventTopic = 'Graphics.CameraInfo';
 export interface CameraInfoEventProps {
     position: number[];
     rotation: number[];
 };
 // The renderer generates periodic events. This is the parameter block
 //    returned with the event.
-export const RenderInfoEventTopic = 'Graphics.RenderInfo';
 export interface RenderInfoEventProps {
     fps: number;
     render: {
@@ -54,11 +52,11 @@ export interface RenderInfoEventProps {
 export const GraphicsInfo = {
     // Receive events for camera position info (about once a second)
     WatchCameraInfoEvents(pProcessor: EventProcessor): SubscriptionEntry {
-        return Eventing.Subscribe(CameraInfoEventTopic, pProcessor);
+        return Eventing.Subscribe(Config.webgl.info.cameraInfoEventTopic, pProcessor);
     },
     // Receive events for render statistics (about once a second)
     WatchRendererStateEvents(pProcessor: EventProcessor): SubscriptionEntry {
-        return Eventing.Subscribe(RenderInfoEventTopic, pProcessor);
+        return Eventing.Subscribe(Config.webgl.info.rendererInfoEventTopic, pProcessor);
     },
     UnwatchEvents(pSub: SubscriptionEntry): void {
         Eventing.Unsubscribe(pSub);
@@ -73,7 +71,7 @@ export const GraphicsInfo = {
 
     // Generate subscribable periodic when camera info (position) changes
     SetupCameraInfoEvents(): void {
-        GraphicsInfo._eventCameraInfo = Eventing.Register(CameraInfoEventTopic, 'Graphics');
+        GraphicsInfo._eventCameraInfo = Eventing.Register(Config.webgl.info.cameraInfoEventTopic, 'Graphics');
         GraphicsInfo._eventCameraInfoTimer = setInterval( () => {
             if (GraphicsInfo._eventCameraInfo.hasSubscriptions) {
                 if (GraphicsInfo._prevCamPosition == undefined) {
@@ -114,7 +112,7 @@ export const GraphicsInfo = {
         GraphicsInfo._throttleFPS = 0; // if zero, no throttling
 
         // Generate subscribable periodic events when display info changes
-        GraphicsInfo._eventDisplayInfo = Eventing.Register(RenderInfoEventTopic, 'Graphics');
+        GraphicsInfo._eventDisplayInfo = Eventing.Register(Config.webgl.info.rendererInfoEventTopic, 'Graphics');
         GraphicsInfo._eventCameraInfoTimer = setInterval( () => {
             if (GraphicsInfo._eventDisplayInfo.hasSubscriptions) {
                 // not general, but, for the moment, just return the WebGL info

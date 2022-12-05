@@ -1,6 +1,6 @@
 {
     "name": "basilviewer",
-    "version": "2.4.10",
+    "version": "2.4.13",
     "description": "Browser based virtual world viewer. Part of Herbal3D.",
     "keywords": [],
     "author": {
@@ -51,9 +51,10 @@
         "production:justview": "webpack --mode production --config webpack.justview.config.js",
         "build:wwtester": "webpack --config webpack.wwtester.config.js",
         "production:wwtester": "webpack --mode production --config webpack.wwtester.config.js",
-        "build-dialogs": "npm-run-all -s \"dialog-status\" \"dialog-topMenu\"",
+        "build-dialogs": "npm-run-all -s \"dialog-status\" \"dialog-topMenu\" \"dialog-chat\"",
         "dialog-status": "tsc -p tsconfig-status.json",
         "dialog-topMenu": "tsc -p tsconfig-topMenu.json",
+        "dialog-chat": "tsc -p tsconfig-chatDialog.json",
         "build:wwtesterdev": "webpack --config webpack.wwtesterdev.config.js"
     },
     "dependencies": {

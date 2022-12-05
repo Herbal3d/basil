@@ -1,0 +1,23 @@
+.b-chatDialog-area {
+    width: 100%;
+    height: 90%;
+    padding: 5px;
+    margin: 5px;
+}
+.b-chatOutputArea {
+    padding: 0px;
+    width: 100%;
+}
+.b-chatInputArea {
+    padding: 0px;
+    width: 100%;
+}
+.b-chatOutput-name {
+    padding: 0px;
+}
+.b-chatOutput-date {
+    padding: 0px;
+}
+.b-chatOutput-text {
+    padding: 0px;
+}

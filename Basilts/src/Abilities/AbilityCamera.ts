@@ -193,6 +193,9 @@ export class AbCamera extends Ability {
             this._cameraDisplacement = ParseThreeTuple(pVal);
         }
         this._cameraDisplacementMod = true;
+        // Convert into parameters used by the third person camera
+        this.cameraRadius = this._cameraDisplacement[1];
+        this.cameraHeightOffset = -this._cameraDisplacement[2];
     };
 
     cameraFar: number;
@@ -258,7 +261,7 @@ export class AbCamera extends Ability {
         this._for = pVal;
     };
 
-    // Parameters used for the camera movement. Should be camaera parameters
+    // Parameters used for the camera movement. Should be camera parameters
     cameraRotationOffset: number = -90;
     cameraHeightOffset: number = 2;
     cameraRadius: number = 8;

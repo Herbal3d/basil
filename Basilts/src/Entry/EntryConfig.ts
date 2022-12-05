@@ -78,7 +78,7 @@ export const Config = {
             'Name': 'localTestGrid',
             'GridInfo': 'http://192.168.86.56:9000/get_grid_info',
             'LoginURL': 'http://192.168.86.56:9000/',
-            'SpaceServerUrlTemplate': 'ws://IP-ADDRESS:11440/'
+            'SpaceServerUrlTemplate': 'ws://192.168.86.56:11440/'
         }
     ],
     // Used by Entry.js/Entry.html to select test files to load.
