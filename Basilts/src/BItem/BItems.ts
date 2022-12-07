@@ -121,6 +121,7 @@ export const BItems = {
             Logger.error(`BItems.registerWellKnownBItem: could not find registration BItem`);
         };
     },
+    // There are "well known" BItems that have a name. Get the Id of the registered BItem
     getWellKnownBItemId: (pWellKnownName: string, pRegBItem?: BItem): string => {
         const regBItem = pRegBItem ?? BItems.get(Config.infrastructureBItemNames.registration);
         if (regBItem) {
@@ -128,6 +129,13 @@ export const BItems = {
             if (id && typeof(id) === 'string') {
                 return id;
             }
+        }
+        return undefined;
+    },
+    getWellKnownBItem: (pWellKnownName: string, pRegBItem?: BItem): BItem => {
+        const bItemId = BItems.getWellKnownBItemId(pWellKnownName, pRegBItem);
+        if (bItemId) {
+            return BItems.get(bItemId);
         }
         return undefined;
     },

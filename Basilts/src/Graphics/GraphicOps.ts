@@ -135,6 +135,10 @@ function PrepareMeshesInContainer(pContainer: AssetContainer): void {
             mesh.showBoundingBox = true;
         });
     };
+    Logger.debug(`GraphicsOps: making all meshes pickable`);
+    pContainer.meshes.forEach( mesh => {
+        mesh.isPickable = true;
+    });
     if (Config.webgl.renderer.BabylonJS.rebuildBoundingBoxes) {
         Logger.debug(`GraphicsOps: refreshing bounding boxes`);
         for (const mesh of pContainer.meshes) {

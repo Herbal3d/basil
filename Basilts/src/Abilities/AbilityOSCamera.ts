@@ -13,15 +13,20 @@
 
 import { Config } from '@Base/Config';
 
+import { BItems } from '@BItem/BItems';
+import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
+import { WellKnownCameraName, WellKnownMouseName, WellKnownKeyboardName } from '@BItem/WellKnownBItems';
+
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { AbCamera, CameraModes } from '@Abilities/AbilityCamera';
+import { AbKeyboard } from '@Abilities/AbilityKeyboard';
+import { AbMouse } from '@Abilities/AbilityMouse';
 
-import { BItems } from '@BItem/BItems';
-import { BItem, PropValue } from '@BItem/BItem';
-import { WellKnownCameraName } from '@BItem/WellKnownBItems';
 import { Eventing } from '@Base/Eventing/Eventing';
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
+
 import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
+import { EventState, IPointerEvent, KeyboardInfo, PickingInfo, PointerEventTypes, PointerInfo, Scene } from "@babylonjs/core";
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
@@ -65,13 +70,19 @@ export class AbOSCamera extends Ability {
     public static OSCameraModeProp = 'OSCameraMode';
     public static OSCameraDisplacementProp = 'OSCameraDisplacement';
 
-    _cameraId: string;
+    _cameraBItem: BItem;
+    _mouseBItem: BItem;       // ID of mouse BItem
+    _keyboardBItem: BItem;    // ID of keyboard BItem
+
+    _pickedScreenPoint: number[] = [ 10, 10 ];
+    _pickedPoint: number[] = [ 10, 10, 10 ];
+    _pickedDistance: number = 10;
 
     constructor(pCameraMode: number, pCameraDisp: number[]) {
         super(AbOSCameraName);
 
         // Find name of camera before we initialize its properties
-        this._cameraId = BItems.getWellKnownBItemId(WellKnownCameraName);
+        this._cameraBItem = BItems.getWellKnownBItem(WellKnownCameraName);
 
         this.OSCameraMode = pCameraMode;
         this.OSCameraDisplacement = pCameraDisp;
@@ -85,25 +96,31 @@ export class AbOSCamera extends Ability {
     public get OSCameraMode(): OSCameraModes {
         return this._cameraMode;
     }
+    // Setting CameraMode param can be either mode number or the mode name string (First, Orbit, Third)
     public set OSCameraMode(pVal: PropValue) {
+        let newCameraMode = this._cameraMode;
         if (typeof(pVal) === 'number') {
             if (pVal in OSCameraModes) {
-                this._cameraMode = <OSCameraModes>pVal;
+                newCameraMode = <OSCameraModes>pVal;
             }
         }
         else if (typeof(pVal) === 'string') {
             const entry = Object.entries(OSCameraModes).find(([key,val]) => key === pVal);
-            this._cameraMode = entry ? <OSCameraModes>entry[1] : OSCameraModes.Third;
+            newCameraMode = entry ? <OSCameraModes>entry[1] : newCameraMode;
         }
-        this._cameraModeMod = true;
+        if (newCameraMode != this._cameraMode) {
+            this._cameraMode = newCameraMode;
+            this._cameraModeMod = true;
+        }
     }
 
+    _cameraDisplacement: number[] = Config.world.thirdPersonDisplacement;
     public get OSCameraDisplacement(): number[] {
-        return BItems.getProp(this._cameraId, AbCamera.CameraDisplacementProp) as number[];
+        return this._cameraDisplacement;
     }
     public set OSCameraDisplacement(pVal: PropValue) {
         const val = ParseThreeTuple(pVal as string | number[]);
-        BItems.setProp(this._cameraId, AbCamera.CameraDisplacementProp, val);
+        this._cameraDisplacement = val;
     }
 
     // Add all the properties from this assembly to the holding BItem
@@ -115,7 +132,21 @@ export class AbOSCamera extends Ability {
         pBItem.addProperty(AbOSCamera.OSCameraModeProp, this);
         pBItem.addProperty(AbOSCamera.OSCameraDisplacementProp, this);
 
+        // This uses the BeforeFrame event to actually set the camera mode
         Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
+
+        /* Code left over from processing mouse and keyboard with AbMouse and AbKeyboard
+        this._mouseBItem = BItems.getWellKnownBItem(WellKnownMouseName);
+        this._keyboardBItem = BItems.getWellKnownBItem(WellKnownKeyboardName);
+
+        this._keyboardBItem.watchProperty(AbKeyboard.KeyDownProp, this._processKeyboard.bind(this) as EventProcessor);
+        this._mouseBItem.watchProperty(AbMouse.DownProp, this._processMouse.bind(this) as EventProcessor);
+        */
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        Graphics._scene.onPointerObservable.add(this._processScenePointerObservable.bind(this));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        Graphics._scene.onKeyboardObservable.add(this._processSceneKeyboardObservable.bind(this));
     };
 
     // When a property is removed from the BItem, this is called
@@ -127,35 +158,113 @@ export class AbOSCamera extends Ability {
         return;
     };
 
+    _processScenePointerObservable(pPtrInfo: PointerInfo): void {
+        const altkey = pPtrInfo.event.altKey;
+        const button = pPtrInfo.event.button;
+        // Logger.debug(`AbOSAvaUpdate.processPointer: mouse: alt=${altkey}, button=${button}`);
+        if (altkey && button == 0) {
+            // Save the pick location and set the mode to Orbit
+            // Note that this only causes processing if the CameraMode changes
+            //     and the actual processing is done at BeforeFrame time
+            this._pickedScreenPoint = [ pPtrInfo.event.clientX, pPtrInfo.event.clientY ];
+            const point = pPtrInfo.pickInfo.pickedPoint;
+            this._pickedPoint = [ point.x, point.y, point.z ];
+            this._pickedDistance = pPtrInfo.pickInfo.distance;
+            this.OSCameraMode = OSCameraModes.Orbit;
+            // Logger.debug(`AbOSAvaUpdate.processPointer:      pickloc=${JSONstringify(this._pickedPoint)}, dist=${this._pickedDistance}`);
+        }
+    };
+
+    _processSceneKeyboardObservable(pEvt: KeyboardInfo, pEventState: EventState): void {
+        // this
+        const keyName = pEvt.event.key;
+        const down = true;
+        // Logger.debug(`AbOSAvaUpdate.processKeyboard: keyboard event: ${keyName}`);
+        switch (keyName) {
+            case 'Escape':      this.doESC(down); break;
+            default:
+                break;
+        }
+    };
+
+    // Just before the frame is rendered, update the camera state
     _processBeforeFrame(pParms: GraphicsBeforeFrameProps): void {
         if (this._cameraModeMod) {
             this._cameraModeMod = false;
-            this.setCameraMode();
+            this.setCameraMode(pParms.scene);
         }
-    }
+    };
 
-    setCameraMode(): void {
+    /* Code left over from processing mouse and keyboard using AbMouse and AbKeyboard
+    _processMouse(pEvent: SetPropEventParams): void {
+        const abil = pEvent.Ability as AbMouse;
+
+        const altkey = abil.ptrAlt;
+        const down = abil.ptrDown;  // reports the button that is down. -1 if buttons up
+        const button = abil.ptrButton;  // reports button that is down: 0, 1, 2. -1 if none
+        Logger.debug(`AbOSAvaUpdate.processMouse: mouse: alt=${abil.ptrAlt}, down=${abil.ptrDown}, button=${abil.ptrButton}`);
+        if (altkey && down && button == 0) {
+            // Save the pick location and set the mode to Orbit
+            // Note that this only causes processing if the CameraMode changes
+            //     and the processing is done at BeforeFrame time
+            this._pickedScreenPoint = abil.ptrClientXY;
+            this.OSCameraMode = OSCameraModes.Orbit;
+        }
+    };
+
+    _processKeyboard(pEvent: SetPropEventParams): void {
+        const abil = pEvent.Ability as AbKeyboard;
+        Logger.debug(`AbOSAvaUpdate.processKeyboard: keyboard event: ${abil.keyName}`);
+        switch (abil.keyName) {
+            case 'Escape':      this.doESC(abil.keyDown); break;
+            case 'Alt':         this.doALT(abil.keyDown); break;
+            default:
+                break;
+        }
+    };
+    */
+
+    // ESC key cancels any orbiting and sets Third person
+    doESC(pKeyUpDown: boolean) {
+        this.OSCameraMode = OSCameraModes.Third;
+    };
+
+    doALT(pKeyUpDown: boolean) {
+        // ALT should change the cursor so the user knows they are picking
+    };
+
+    // Set the graphics camera based on the property settings.
+    setCameraMode(pScene: Scene): void {
         switch (this._cameraMode) {
             case OSCameraModes.First: {
                 break;
             }
             case OSCameraModes.Third: {
-                BItems.setPropertiesById(this._cameraId, {
+                BItems.setProperties(this._cameraBItem, {
                     cameraMode: CameraModes.ThirdPerson,
                     cameraTargetAvatarId: this.containingBItem.id,
-                    cameraDisplacement: this.OSCameraDisplacement
+                    cameraDisplacement: this._cameraDisplacement
                 });
-                // Logger.debug(`AbOSCamera.setCameraMode: ThirdPerson: disp=${JSONstringify(this.OSCameraDisplacement)}`);
+                Logger.debug(`AbOSCamera.setCameraMode: ThirdPerson: disp=${JSONstringify(this.OSCameraDisplacement)}`);
                 break;
             }
             case OSCameraModes.Orbit: {
+                // const pickInfo = pScene.pick(this._pickLocation[0], this._pickLocation[1], null, true, null);
+                // const pickedPoint = [ pickInfo.pickedPoint.x, pickInfo.pickedPoint.y, pickInfo.pickedPoint.z ];
+                Logger.debug(`AbOSCamera.setCameraMode: Orbit: pick=${JSONstringify(this._pickedScreenPoint)}, point=${JSONstringify(this._pickedPoint)}`);
+                BItems.setProperties(this._cameraBItem, {
+                    cameraMode: CameraModes.Orbit,
+                    cameraTarget: this._pickedPoint,
+                    cameraDisplacement: [ 0, this._pickedDistance, 0 ]
+                });
+                Logger.debug(`AbOSCamera.setCameraMode: Orbit: disp=${JSONstringify(this.OSCameraDisplacement)}`);
                 break;
             }
             default: {
                 break;
             }
         }
-    }
+    };
 
 };
 

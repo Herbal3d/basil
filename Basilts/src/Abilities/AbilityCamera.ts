@@ -91,6 +91,7 @@ export class AbCamera extends Ability {
     public static CameraIndexProp = 'cameraIndex';
     public static CameraModeProp = 'cameraMode';
     public static CameraLookAtProp = 'cameraTarget';
+    public static CameraTargetProp = 'cameraTarget';
     public static CameraFarProp = 'cameraFar';
     public static CameraTargetAvatarIdProp = 'cameraTargetAvatarId';
     public static CameraDisplacementProp = 'cameraDisplacement';
@@ -229,7 +230,12 @@ export class AbCamera extends Ability {
     _rotMod = false;
     public get rot(): number[] {
         const rr = [0,0,0,1];
-        const rott = Graphics._camera.rotationQuaternion;
+        let rott = Graphics._camera.rotationQuaternion;
+        if (! rott) {
+            // BabylonJS doesn't keep the rotation quaternion until it is set
+            const erot = Graphics._camera.rotation;
+            rott = BJSQuaternion.FromEulerAngles(erot.x, erot.y, erot.z);
+        }
         rr[0] = rott.x;
         rr[1] = rott.y;
         rr[2] = rott.z;
@@ -328,12 +334,14 @@ export class AbCamera extends Ability {
                 }
                 // See if the underlying camera implementation has to change
                 Logger.debug(`AbilityCamera.processBeforeFrame: setup camera ${CameraModes[this._cameraMode]}`);
+                const cameraPos = this.pos; // gets current position from camera and sets _pos
+                const cameraRot = this.rot; // gets current rotation from camera
                 switch (this._cameraMode) {
                     case CameraModes.FreeLook: {
                         Graphics.activateUniversalCamera({
                             name: 'camera0',
                             position: this._pos,
-                            rotationQuaternian: this._rot,
+                            rotationQ: this._rot,
                             cameraTarget: this._cameraTarget
                         });
                         break;
@@ -342,12 +350,20 @@ export class AbCamera extends Ability {
                         Graphics.activateUniversalCamera({
                             name: 'camera1',
                             position: this._pos,
-                            rotationQuaternian: this._rot,
+                            rotationQ: this._rot,
                             attachControl: false
                         });
                         break;
                     }
                     case CameraModes.Orbit: {
+                        Graphics.activateArcRotateCamera( {
+                            name: 'camera2',
+                            position: this._pos,
+                            rotationQ: this._rot,
+                            target: this._cameraTarget,
+                            viewDistance: this._cameraDisplacement[1],
+                            attachControl: true
+                        })
                         break;
                     }
                     default: {
@@ -390,7 +406,8 @@ export class AbCamera extends Ability {
                         const vy: number = Clamp(dy * this.cameraAcceleration, -this.cameraMaxSpeed, this.cameraMaxSpeed);
                         const vz: number = Clamp(dz * this.cameraAcceleration * 2, -this.cameraMaxSpeed, this.cameraMaxSpeed);
 
-                        const newCamPos = new BJSVector3(camPos.x + vx, camPos.y + vy, camPos.z + vz);
+                        this._pos = [camPos.x + vx, camPos.y + vy, camPos.z + vz ];
+                        const newCamPos = new BJSVector3(this._pos[0], this._pos[1], this._pos[2]);
                         Graphics._camera.position = newCamPos;
                         Graphics._camera.setTarget(targetPosition);
 

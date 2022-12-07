@@ -33,7 +33,6 @@ import { TopicEntry } from '@Eventing/TopicEntry';
 import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
-import { timeStamp } from 'console';
 
 export enum GraphicStates {
     Uninitilized = 0,

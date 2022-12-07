@@ -15,7 +15,7 @@ import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-// import { Logger } from '@Base/Tools/Logging';
+import { Logger } from '@Base/Tools/Logging';
 
 export const AbMouseName = 'Mouse'
 
@@ -30,6 +30,7 @@ RegisterAbility(AbMouseName, AbMouseFromProps);
 // Basic pointer as a mouse.
 // Note: only one property generates change events: DownProp. For mouse events,
 //    subscribe to that one and check the other properties to see if they changed.
+// Mouse movement events will be returned by subscribing to ClientXYProp.
 // TODO: generalize for working with headsets
 export class AbMouse extends Ability {
 
@@ -90,36 +91,44 @@ export class AbMouse extends Ability {
         return;
     };
 
+    // The mouse moved
     _mouseMove(e: MouseEvent): void {
-        this._copyMouseEvent(e, true);
+        // Since this happens a lot, only generate events if the caller
+        //    has subscribed to ptrClientXY
+        this._copyMouseEvent(e, false);
+        this.containingBItem.setProp(AbMouse.ClientXYProp, this.ptrClientXY);
     }
 
+    // 
     _mouseUp(e: MouseEvent): void {
+        Logger.debug(`AbilityMouse._mouseUp: UP`);  //DEBUG DEBUG
         this.ptrDown = false;
         this._copyMouseEvent(e, true);
     }
 
+    // Mouse button went down
     _mouseDown(e: MouseEvent): void {
+        Logger.debug(`AbilityMouse._mouseDown: DOWN`);//DEBUG DEBUG
         this.ptrDown = true;
         this.ptrButton = e.button;
         this.ptrClicked = new Date();
         this._copyMouseEvent(e, true);
     }
 
+    // Mouse cursor entered our area
     _mouseEnter(e: MouseEvent): void {
         this.ptrInPage = true;
         this._copyMouseEvent(e, true);
     }
 
+    // Mouse cursor left our area
     _mouseLeave(e: MouseEvent): void {
         this.ptrInPage = false;
         this._copyMouseEvent(e, true);
     }
 
+    // Make local copies of the mouse information and then generate changed event
     _copyMouseEvent(pEvent: MouseEvent, pPushUpdate: boolean): void {
-        this.ptrClientXY = [ pEvent.clientX, pEvent.clientY ];
-        this.ptrPageXY = [ pEvent.pageX, pEvent.pageY ];
-        this.ptrClicked = new Date();
         this.ptrAlt = pEvent.altKey;
         this.ptrShift = pEvent.shiftKey;
         this.ptrCtrl = pEvent.ctrlKey;
