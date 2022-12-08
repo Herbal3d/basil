@@ -186,7 +186,7 @@ function LoginXML2(firstname: string, lastname: string, password: string, startL
     const hashedPW = '$1$' + MD5(password);
     // StartLocation is defined to have "&" but XML needs that fixed up
     const fixedStartLocation = startLocation.replace(/&/g, '&amp;');
-    Logger.debug('LoginXML2: Hashed password=' + hashedPW);
+    // Logger.debug('LoginXML2: Hashed password=' + hashedPW);
     const xmlreq = [
         '<?xml version="1.0"?>',
         '<methodCall><methodName>login_to_simulator</methodName>',
