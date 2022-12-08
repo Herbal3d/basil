@@ -51,6 +51,7 @@ export const ClickOpLoginOpenSim = function() {
         }
         else {
             Logger.info('Login failed: name requires one or two pieces');
+            LoginProgress('Login failed: name requires one or two pieces', 'b-errorMsg');
             return;
         }
 
@@ -66,11 +67,14 @@ export const ClickOpLoginOpenSim = function() {
 
         LoginXML2(firstname, lastname, password, startLocation, loginURL,
                                 LoginResponseSuccess, LoginResponseFailure);
+        LoginProgress(`Sending XMLRPC login for ${firstname} ${lastname}`);
         Logger.info('Waiting for login response');
+        LoginProgress(`Waiting for login response`);
     }
     catch (e) {
         const err = <Error>e;
         Logger.error(`Login fail: exception: ${err.message}`);
+        LoginProgress(`Login fail: exception: ${err.message}`, 'b-errorMsg');
         FailedLogin = true;
     }
 };
@@ -79,6 +83,7 @@ type LoginResponseSuccessCallback = (pResp: BKeyedCollection) => void;
 type LoginResponseFailureCallback = (pResp: BKeyedCollection) => void;
 function LoginResponseSuccess(resp: BKeyedCollection): void {
     Logger.info('Login success');
+    LoginProgress(`Login success`);
     // console.log('Login response = ' + JSONstringify(resp));
     try {
         /*
@@ -168,6 +173,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
 
 function LoginResponseFailure(resp: BKeyedCollection): void {
     Logger.error('Login failure: ' + JSONstringify(resp));
+    LoginProgress(`Login failure: ${resp.message}`);
     FailedLogin = true;
 }
 
@@ -364,4 +370,19 @@ function NormalizeStartLocation(pStart: string): string {
         }
     }
     return "last";
+}
+
+function LoginProgress(pMsg: string, pClass?: string): void {
+    const progress = document.getElementById('gridLogin-progress');
+    if (progress) {
+        const newLine = document.createElement('div');
+        newLine.appendChild(document.createTextNode(pMsg));
+        if (pClass) {
+            newLine.setAttribute('class', pClass);
+        };
+        progress.appendChild(newLine);
+        if (progress.childElementCount > 10) {
+            progress.removeChild(progress.firstChild);
+        };
+    };
 }
