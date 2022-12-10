@@ -99,6 +99,7 @@
 /* Overlay area for debug and error messages */
 #b-DEBUGG {
     position: absolute;
+    pointer-events: none;
     left: 0%;
     bottom: 0%;
     width: 50%;
