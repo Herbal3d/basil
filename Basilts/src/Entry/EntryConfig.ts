@@ -7,7 +7,8 @@ export const Config = {
     'page': {
         'showDebug': false,
         'debugElementId': 'b-DEBUGG',
-        'versionElementId': 'b-version'
+        'versionElementId': 'b-version',
+        'debugLogLines': 9
     },
     // Filled by parameters passed in initial invocation
     'initialMakeConnection': {

@@ -7,7 +7,8 @@ export const Config = {
     'page': {
         'showDebug': false,
         'debugElementId': 'b-DEBUGG',
-        'versionElementId': 'b-version'
+        'versionElementId': 'b-version',
+        'debugLogLines': 9
     },
     // the current 'index.html' just lets us get to one region
     'gridLoginURL': 'https://basil.bluestuff.org/osgrid/',
