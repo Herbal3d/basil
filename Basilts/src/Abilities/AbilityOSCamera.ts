@@ -14,10 +14,11 @@
 import { Config } from '@Base/Config';
 
 import { BItems } from '@BItem/BItems';
-import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
+import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 import { WellKnownCameraName, WellKnownMouseName, WellKnownKeyboardName } from '@BItem/WellKnownBItems';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
+import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { AbCamera, CameraModes } from '@Abilities/AbilityCamera';
 // import { AbKeyboard } from '@Abilities/AbilityKeyboard';
 // import { AbMouse } from '@Abilities/AbilityMouse';
@@ -79,58 +80,58 @@ export class AbOSCamera extends Ability {
     _pickedDistance: number = 10;
 
     constructor(pCameraMode: number, pCameraDisp: number[]) {
-        super(AbOSCameraName);
+        super(AbOSCameraName, {
+            [AbOSCamera.OSCameraModeProp]: {
+                    propName: AbOSCamera.OSCameraModeProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: pCameraMode ?? OSCameraModes.Third,
+                    propDesc: 'Mode of camera',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {
+                        let newCameraMode = this.propValues[AbOSCamera.OSCameraModeProp] as number;
+                        if (typeof(pVal) === 'number') {
+                            if (pVal in OSCameraModes) {
+                                newCameraMode = <OSCameraModes>pVal;
+                            }
+                        }
+                        else if (typeof(pVal) === 'string') {
+                            const entry = Object.entries(OSCameraModes).find(([key,val]) => key === pVal);
+                            newCameraMode = entry ? <OSCameraModes>entry[1] : newCameraMode;
+                        }
+                        if (newCameraMode != this.propValues[AbOSCamera.OSCameraModeProp]) {
+                            this.propValues[AbOSCamera.OSCameraModeProp] = newCameraMode;
+                            this._cameraModeMod = true;
+                        }
+                    },
+                    private: false
+            },
+            [AbOSCamera.OSCameraDisplacementProp]: {
+                    propName: AbOSCamera.OSCameraDisplacementProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: pCameraDisp ?? Config.world.thirdPersonDisplacement,
+                    propDesc: 'displacement of camera from avatar',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter,
+                    private: false
+            }
+        });
 
         // Find name of camera before we initialize its properties
         this._cameraBItem = BItems.getWellKnownBItem(WellKnownCameraName);
 
-        this.OSCameraMode = pCameraMode;
-        this.OSCameraDisplacement = pCameraDisp;
-
         // Logger.debug(`AbOSCamera.const: mode=${pCameraMode}, disp=${pCameraDisp}, camId=${this._cameraId}`);
     };
 
-    // Make the properties available
-    _cameraMode: OSCameraModes = OSCameraModes.Third;
     _cameraModeMod = true;
-    public get OSCameraMode(): OSCameraModes {
-        return this._cameraMode;
-    }
     // Setting CameraMode param can be either mode number or the mode name string (First, Orbit, Third)
-    public set OSCameraMode(pVal: PropValue) {
-        let newCameraMode = this._cameraMode;
-        if (typeof(pVal) === 'number') {
-            if (pVal in OSCameraModes) {
-                newCameraMode = <OSCameraModes>pVal;
-            }
-        }
-        else if (typeof(pVal) === 'string') {
-            const entry = Object.entries(OSCameraModes).find(([key,val]) => key === pVal);
-            newCameraMode = entry ? <OSCameraModes>entry[1] : newCameraMode;
-        }
-        if (newCameraMode != this._cameraMode) {
-            this._cameraMode = newCameraMode;
-            this._cameraModeMod = true;
-        }
-    }
-
-    _cameraDisplacement: number[] = Config.world.thirdPersonDisplacement;
-    public get OSCameraDisplacement(): number[] {
-        return this._cameraDisplacement;
-    }
-    public set OSCameraDisplacement(pVal: PropValue) {
-        const val = ParseThreeTuple(pVal as string | number[]);
-        this._cameraDisplacement = val;
-    }
 
     // Add all the properties from this assembly to the holding BItem
     _beforeFrameWatcher: SubscriptionEntry;
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
-
-        pBItem.addProperty(AbOSCamera.OSCameraModeProp, this);
-        pBItem.addProperty(AbOSCamera.OSCameraDisplacementProp, this);
 
         // This uses the BeforeFrame event to actually set the camera mode
         Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
@@ -168,10 +169,12 @@ export class AbOSCamera extends Ability {
             //     and the actual processing is done at BeforeFrame time
             this._pickedScreenPoint = [ pPtrInfo.event.clientX, pPtrInfo.event.clientY ];
             const point = pPtrInfo.pickInfo.pickedPoint;
-            this._pickedPoint = [ point.x, point.y, point.z ];
-            this._pickedDistance = pPtrInfo.pickInfo.distance;
-            this.OSCameraMode = OSCameraModes.Orbit;
-            // Logger.debug(`AbOSAvaUpdate.processPointer:      pickloc=${JSONstringify(this._pickedPoint)}, dist=${this._pickedDistance}`);
+            if (point) {
+                this._pickedPoint = [ point.x, point.y, point.z ];
+                this._pickedDistance = pPtrInfo.pickInfo.distance;
+                this.setProp(AbOSCamera.OSCameraModeProp, OSCameraModes.Orbit);
+                // Logger.debug(`AbOSAvaUpdate.processPointer:      pickloc=${JSONstringify(this._pickedPoint)}, dist=${this._pickedDistance}`);
+            }
         }
     };
 
@@ -226,7 +229,7 @@ export class AbOSCamera extends Ability {
 
     // ESC key cancels any orbiting and sets Third person
     doESC(pKeyUpDown: boolean) {
-        this.OSCameraMode = OSCameraModes.Third;
+        this.setProp(AbOSCamera.OSCameraModeProp, OSCameraModes.Third);
     };
 
     doALT(pKeyUpDown: boolean) {
@@ -235,7 +238,7 @@ export class AbOSCamera extends Ability {
 
     // Set the graphics camera based on the property settings.
     setCameraMode(pScene: Scene): void {
-        switch (this._cameraMode) {
+        switch (this.getProp(AbOSCamera.OSCameraModeProp)) {
             case OSCameraModes.First: {
                 break;
             }
@@ -243,9 +246,9 @@ export class AbOSCamera extends Ability {
                 BItems.setProperties(this._cameraBItem, {
                     cameraMode: CameraModes.ThirdPerson,
                     cameraTargetAvatarId: this.containingBItem.id,
-                    cameraDisplacement: this._cameraDisplacement
+                    cameraDisplacement: this.getProp(AbOSCamera.OSCameraDisplacementProp)
                 });
-                Logger.debug(`AbOSCamera.setCameraMode: ThirdPerson: disp=${JSONstringify(this.OSCameraDisplacement)}`);
+                Logger.debug(`AbOSCamera.setCameraMode: ThirdPerson: disp=${JSONstringify(this.getProp(AbOSCamera.OSCameraDisplacementProp))}`);
                 break;
             }
             case OSCameraModes.Orbit: {
@@ -257,7 +260,7 @@ export class AbOSCamera extends Ability {
                     cameraTarget: this._pickedPoint,
                     cameraDisplacement: [ 0, this._pickedDistance, 0 ]
                 });
-                Logger.debug(`AbOSCamera.setCameraMode: Orbit: disp=${JSONstringify(this.OSCameraDisplacement)}`);
+                Logger.debug(`AbOSCamera.setCameraMode: Orbit: `);
                 break;
             }
             default: {
