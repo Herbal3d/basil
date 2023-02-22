@@ -38,6 +38,17 @@ import { Logger } from '@Tools/Logging';
 //    it has just a 'value' entry. Calling getProp() or setProp() uses what
 //    is defined for that property.
 export type PropValue = number | number[] | string | string[] | boolean | AuthToken | Object3D;
+export enum PropValueTypes {
+    Number = 'number',
+    NumberArray = 'number[]',
+    NumberTriple = 'numberTriple',
+    NumberQuad = 'numberQuad',
+    String = 'string',
+    StringArray = 'string[]',
+    Boolean = 'boolean',
+    AuthToken = 'AuthToken',
+    Object3D = 'Object3D'
+};
 // Properties have optional parameters that are defined by this interface.
 export interface PropOptions {
     toString?: (pAbility: Ability, pPropName: string) => string,  // return property value as string
@@ -117,25 +128,28 @@ export class BItem {
     // Common interface for getting the value of any property an Ability has added to the BItem
     getProp(pPropName: string): PropValue {
         // Logger.debug(`Getting property ${pPropName}`);
-        if (this._props.has(pPropName)) {
-            const abil = this._props.get(pPropName);
-            // @ts-ignore
-            return abil[pPropName] as PropValue;
+        const abil = this._props.get(pPropName);
+        if (abil) {
+            return abil.getProp(pPropName);
         }
         else {
             Logger.error(`BItem.getProp: attempt to fetch unregistered property ${pPropName}`);
         };
         return undefined;
     };
-    // Common interface for setting the value of any property an Ability has added to the BItem
-    setProp(pPropName: string, pVal: PropValue): void {
+    // Common interface for setting the value of any property on an Ability added to the BItem
+    // Note optional parameter 'pActuallySetProp' which can be used to generate event without
+    //      actually setting the property value which might have side effects.
+    setProp(pPropName: string, pVal: PropValue, pActuallySetProp = true): void {
         Logger.cdebug('SetProp', `id=${this.id}, Setting property ${pPropName} = ${pVal}`);
-        if (this._props.has(pPropName)) {
-            const abil = this._props.get(pPropName);
-            // @ts-ignore
-            abil[pPropName] = pVal;
+        const abil = this._props.get(pPropName);
+        if (abil) {
+            if (pActuallySetProp) {
+                abil.setProp(pPropName, pVal);
+            }
             // Tell anyone listening that this property has changed.
             // Logger.debug(`BItem.setProp: firing event ${this.getPropEventTopicName(pPropName)}`);
+            // Event name is "<propname>.<BItem.id>"
             void Eventing.Fire(this.getPropEventTopicName(pPropName), {
                 BItem: this,
                 Ability: abil,
@@ -144,22 +158,6 @@ export class BItem {
             });
         };
     };
-    // Identical to BItem.setProp() but does not actually set the value.
-    // Used by routines that want to announce an updated value without changing
-    //     same which might have side effects.
-    propChanged(pPropName: string, pVal: PropValue): void {
-        if (this._props.has(pPropName)) {
-            const abil = this._props.get(pPropName);
-            // Tell anyone listening that this property has changed.
-            // Logger.debug(`BItem.setProp: firing event ${this.getPropEventTopicName(pPropName)}`);
-            void Eventing.Fire(this.getPropEventTopicName(pPropName), {
-                BItem: this,
-                Ability: abil,
-                PropName: pPropName,
-                NewValue: pVal
-            });
-        };
-    }
     // return the topic name of the event generated when a particular property is set
     getPropEventTopicName(pPropName: string): string {
         return pPropName + '.' + this.id;
@@ -170,7 +168,8 @@ export class BItem {
         const sub = Eventing.Subscribe(this.getPropEventTopicName(pPropName), pWatcher);
         // If the property is already defined, fire an initial watch event
         if (this._props.has(pPropName)) {
-            this.propChanged(pPropName, this.getProp(pPropName));
+            // don't actually set the property, just fire the event
+            this.setProp(pPropName, this.getProp(pPropName), false);
         };
         return sub;
     };
@@ -181,19 +180,14 @@ export class BItem {
     // Increment the value of a named property
     incrementProp(pPropName: string) : number {
         // Logger.debug(`incrementProp ${pPropName}`);
-        if (this._props.has(pPropName)) {
-            const abil = this._props.get(pPropName);
-            // @ts-ignore
-            const val = (abil[pPropName] as number) + 1;
-            // @ts-ignore
-            abil[pPropName] = val;
-            void Eventing.Fire(this.getPropEventTopicName(pPropName), {
-                BItem: this,
-                Ability: abil,
-                PropName: pPropName,
-                NewValue: val
-            });
-            return val;
+        const abil = this._props.get(pPropName);
+        if (abil) {
+            let val = abil.getProp(pPropName);
+            if (typeof val === 'number') {
+                val = val + 1;
+                this.setProp(pPropName, val);
+                return val;
+            };
         };
         return 0;
     };

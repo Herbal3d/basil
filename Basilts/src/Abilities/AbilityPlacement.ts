@@ -14,8 +14,8 @@
 import { Config } from '@Base/Config';
 import { Eventing } from '@Base/Eventing/Eventing';
 
-import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
+import { Ability, ParseValueToType, RegisterAbility } from '@Abilities/Ability';
+import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BItem';
 
 import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
 import { Vector3 as BJSVector3, Quaternion as BJSQuaternion, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
@@ -27,44 +27,35 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { Clamp } from '@Tools/Misc';
 import { Logger } from '@Tools/Logging';
 
-// Some BItems are Assemblys (3d represntations) and other BItems are instances of the
+// Some BItems are Assemblies (3d representations) and other BItems are instances of the
 //     3d representations. This Ability is the Intance.
 // There are fixes so a single BItem can include both the Assembly and Placement Abilities.
 
 export const AbPlacementName = 'Placement';
 
-export type PlacementVal = string | number[] | undefined;
-
 export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
 
     // Use 'pos' if passed or, if 'posTo' is given, use that.
-    let position: PlacementVal = undefined;
-    if (AbPlacement.PosProp in pProps) {
-        position = pProps[AbPlacement.PosProp] as PlacementVal;
+    let position: PropValue = undefined;
+    if (pProps.hasOwnProperty(AbPlacement.PosToProp)) {
+        position = pProps[AbPlacement.PosToProp] as PropValue;
     }
-    else {
-        if (AbPlacement.PosToProp in pProps) {
-            position = pProps[AbPlacement.PosToProp] as PlacementVal;
-        }
+    if (pProps.hasOwnProperty(AbPlacement.PosProp)) {
+        position = pProps[AbPlacement.PosProp] as PropValue;
     }
-    let rotation: PlacementVal = undefined;
-    if (AbPlacement.RotProp in pProps) {
-        rotation = pProps[AbPlacement.RotProp] as PlacementVal;
+
+    let rotation: PropValue = undefined;
+    if (pProps.hasOwnProperty(AbPlacement.RotToProp)) {
+        rotation = pProps[AbPlacement.RotToProp] as PropValue;
     }
-    else {
-        if (AbPlacement.RotToProp in pProps) {
-            rotation = pProps[AbPlacement.RotToProp] as PlacementVal;
-        }
+    if (pProps.hasOwnProperty(AbPlacement.RotProp)) {
+        rotation = pProps[AbPlacement.RotProp] as PropValue;
     }
+
     let frameOfReference: number = undefined;
-    if (AbPlacement.ForProp in pProps) {
-        if (pProps[AbPlacement.ForProp] instanceof Number) {
-            frameOfReference = pProps[AbPlacement.ForProp] as number;
-        }
-        else {
-            frameOfReference = parseInt(pProps[AbPlacement.ForProp] as string);
-        }
-    }   
+    if (pProps.hasOwnProperty(AbPlacement.ForProp)) {
+        frameOfReference = ParseValueToType(PropValueTypes.Number, pProps[AbPlacement.ForProp]) as number;
+    }
     return new AbPlacement(position, rotation, frameOfReference);
 };
 
@@ -143,11 +134,11 @@ export class AbPlacement extends Ability {
         this._posSpeed = Number(pVal);
     };
 
-    constructor(pPos: PlacementVal, pRot: PlacementVal, pFor?: number) {
+    constructor(pPos: PropValue, pRot: PropValue, pFor?: number) {
         super(AbPlacementName);
-        this._pos = pPos ? ParseThreeTuple(pPos) : [0,0,0];
+        this._pos = pPos ? ParseValueToType(PropValueTypes.NumberTriple, pPos) as number[] : [0,0,0];
         this._posTo = this._pos;
-        this._rot = pRot ? ParseFourTuple(pRot) :  [0,0,0,1];
+        this._rot = pRot ? ParseValueToType(PropValueTypes.NumberQuad, pRot) as number[] :  [0,0,0,1];
         this._rotTo = this._rot;
         this._for = pFor ?? 0;
     };
@@ -195,8 +186,10 @@ export class AbPlacement extends Ability {
                 // Logger.debug(`AbPlacement.beforeFrame: pos=${pos}, pTo=${posTo}, d=${moveDuration}, ms=${moveScale}`);
             }
             // Anyone watching the position should know about the position update
-            this.containingBItem.propChanged(AbPlacement.PosProp, this._pos);
-            this.containingBItem.propChanged(AbPlacement.RotProp, this._rot);
+            // NOTE: does not store the new value of the pos property but just generates a change event.
+            //     Since the pos value was updated above this does not want the side effects of setting it.
+            this.containingBItem.setProp(AbPlacement.PosProp, this._pos, false);
+            this.containingBItem.setProp(AbPlacement.RotProp, this._rot, false);
         }
     };
 

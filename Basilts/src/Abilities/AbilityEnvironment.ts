@@ -11,8 +11,8 @@
 
 'use strict';
 
-import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { Ability, RegisterAbility, ParseValueToType } from '@Abilities/Ability';
+import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 
 import { Graphics, GraphicsStateChangeProps, GraphicStates } from '@Base/Graphics/Graphics';
 import { SkyMaterial } from '@babylonjs/materials';
@@ -59,21 +59,21 @@ export class AbEnviron extends Ability {
         return this._solarAzimuth;
     }
     public set solarAzimuth(pVal: PropValue) { 
-        this._solarAzimuth = this.propValueToFloat(pVal);
+        this._solarAzimuth = ParseValueToType(PropValueTypes.Number, pVal) as number;
     }
     _skyTurbidity: number;
     public get skyTurbidity(): number { 
         return this._skyTurbidity;
     }
     public set skyTurbidity(pVal: PropValue) { 
-        this._skyTurbidity = this.propValueToFloat(pVal);
+        this._skyTurbidity = ParseValueToType(PropValueTypes.Number, pVal) as number;
     }
     _skyRayleigh: number;
     public get skyRayleigh(): number { 
         return this._skyRayleigh;
     }
     public set skyRayleigh(pVal: PropValue) { 
-        this._skyRayleigh = this.propValueToFloat(pVal);
+        this._skyRayleigh = ParseValueToType(PropValueTypes.Number, pVal) as number;
     }
 
     // Add all the properties from this assembly to the holding BItem

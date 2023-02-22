@@ -14,10 +14,11 @@
 import { Config } from '@Base/Config';
 
 import { Eventing } from '@Eventing/Eventing';
-import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
+import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BItem';
 import { BItems } from '@BItem/BItems';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
+import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { AbAssembly } from './AbilityAssembly';
 import { AbPlacement } from './AbilityPlacement';
 
@@ -29,7 +30,6 @@ import { Vector3 as BJSVector3, Color3 as BJSColor3, Quaternion as BJSQuaternion
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
 import { degreesToRads } from '@Tools/Coords';
-import { ParseThreeTuple, ParseFourTuple, JSONstringify } from '@Tools/Utilities';
 import { Clamp } from '@Tools/Misc';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
@@ -38,19 +38,11 @@ export const AbCameraName = 'Camera'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbCameraFromProps(pProps: BKeyedCollection): AbCamera {
+    let camIndex = 0;
     if (pProps.hasOwnProperty(AbCamera.CameraIndexProp)) {
-        let camIndex = 0;
-        if (typeof pProps[AbCamera.CameraIndexProp] === 'string') {
-            camIndex = parseInt(pProps[AbCamera.CameraIndexProp] as string);
-        }
-        else {
-            if (typeof pProps[AbCamera.CameraIndexProp] === 'number') {
-                camIndex = pProps[AbCamera.CameraIndexProp] as number;
-            }
-        }
-        return new AbCamera(camIndex);
+        camIndex = Number(pProps[AbCamera.CameraIndexProp]);
     }
-    Logger.error(`AbCameraFromProps: Missing required properties for ${AbCameraName}. pProps: ${JSON.stringify(pProps)}`);
+    return new AbCamera(camIndex);
 };
 
 export enum CameraModes {
@@ -90,80 +82,234 @@ export class AbCamera extends Ability {
     public static RotToProp = 'rotTo';
     public static CameraIndexProp = 'cameraIndex';
     public static CameraModeProp = 'cameraMode';
-    public static CameraLookAtProp = 'cameraTarget';
     public static CameraTargetProp = 'cameraTarget';
     public static CameraFarProp = 'cameraFar';
     public static CameraTargetAvatarIdProp = 'cameraTargetAvatarId';
     public static CameraDisplacementProp = 'cameraDisplacement';
 
     constructor(pIndex: number) {
-        super(AbCameraName);
-        this._pos = [0,0,0];
-        this._posTo = [0,0,0];
-        this._rot = [0,0,0,1];
-        this._for = 0;
-        this.cameraFar = Config.webgl.camera.initialViewDistance;
-        this.cameraIndex = pIndex;
+        super(AbCameraName, {
+                'pos': {
+                    propName: AbCamera.PosProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: [0,0,0],
+                    propDesc: 'Camera position',
+                    propValidator: PropDefaultValidator,
+                    propGetter: (pAbil: Ability, pPropName: string) => {    // Get current camera position
+                        const cpos = [0,0,0];
+                        Graphics._camera.position.toArray(cpos, 0);
+                        pAbil.propValues[AbCamera.PosProp] = cpos;
+                        return cpos;
+                    },
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbCamera;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            abil._posMod = true; // see processBeforeFrame
+                        }
+                    },
+                    private: false
+                },
+                'rot': {
+                    propName: AbCamera.RotProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: [0,0,0],
+                    propDesc: 'Camera position',
+                    propValidator: PropDefaultValidator,
+                    propGetter: (pAbil: Ability, pPropName: string) => {    // Get current camera position
+                        const crot = [0,0,0,1];
+                        let rott = Graphics._camera.rotationQuaternion;
+                        if (! rott) {
+                            // BabylonJS doesn't keep the rotation quaternion until it is set
+                            const erot = Graphics._camera.rotation;
+                            rott = BJSQuaternion.FromEulerAngles(erot.x, erot.y, erot.z);
+                        }
+                        crot[0] = rott.x;
+                        crot[1] = rott.y;
+                        crot[2] = rott.z;
+                        crot[3] = rott.w;
+                        pAbil.propValues[AbCamera.RotProp] = crot;
+                        return crot;
+                    },
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbCamera;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            abil._rotMod = true; // see processBeforeFrame
+                        }
+                    },
+                    private: false
+                },
+                'for': {
+                    propName: AbCamera.ForProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: 0,
+                    propDesc: 'Frame of reference for camera',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter,
+                    private: false
+                },
+                'posTo': {
+                    propName: AbCamera.PosToProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: [0,0,0],
+                    propDesc: 'target position to move camera to',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera target position
+                        const abil = pAbil as AbCamera;
+                        if (pVal && abil) {
+                            PropDefaultSetter(abil, pPropName, pVal);
+                            abil._posToMod = true; // see processBeforeFrame
+                            abil._avatarPositionChangeTime = Date.now();
+                        }
+                    },
+                    private: false
+                },
+                'rotTo': {
+                    propName: AbCamera.RotToProp,
+                    propType: PropValueTypes.NumberQuad,
+                    propDefault: [0,0,0],
+                    propDesc: 'target rotation to move camera to',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera target position
+                        const abil = pAbil as AbCamera;
+                        if (pVal && abil) {
+                            PropDefaultSetter(abil, pPropName, pVal);
+                            abil._rotToMod = true; // see processBeforeFrame
+                        }
+                    },
+                    private: false
+                },
+                'cameraFar': {
+                    propName: AbCamera.CameraFarProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: Config.webgl.camera.initialViewDistance,
+                    propDesc: 'Distance camera is from target',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter,
+                    private: false
+                },
+                'cameraIndex': {
+                    propName: AbCamera.CameraIndexProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: pIndex,    // NOTE: this passed as parameter
+                    propDesc: 'which camera this is',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter,
+                    private: false
+                },
+                'cameraMode': {
+                    propName: AbCamera.CameraModeProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: CameraModes.ThirdPerson,
+                    propDesc: 'mode camera is in',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter,
+                    private: false
+                },
+                'cameraTarget': {
+                    propName: AbCamera.CameraTargetProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: [0,0,0],
+                    propDesc: 'Point camera is looking at',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        PropDefaultSetter(pAbil, pPropName, pVal);
+                        const abil = pAbil as AbCamera;
+                        if (abil) {
+                            abil._cameraTargetMod = true; // see processBeforeFrame
+                        }
+                    },
+                    private: false
+                },
+                'cameraTargetAvatarId': {
+                    propName: AbCamera.CameraTargetAvatarIdProp,
+                    propType: PropValueTypes.String,
+                    propDefault: null,
+                    propDesc: 'ID of object camera is pointing toward',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        PropDefaultSetter(pAbil, pPropName, pVal);
+                        const avaId = pAbil.getProp(AbCamera.CameraTargetAvatarIdProp) as string;
+                        const abil = pAbil as AbCamera;
+                        const avaBItem = BItems.get(avaId);
+                        if (avaBItem && abil) {
+                            // This AvatarId might be for another avatar so we need to redo the watchers
+                            abil._clearWatchers();
+                            // Watch the avatar's representation so we have the object to point camera at
+                            abil._addAvatarWatchers(avaBItem);
+                            // Do an initial to call the watcher to do whatever is needed to remember the representation
+                            // That is, fake a representation change event to set initial value
+                            abil._avatarRepresentationWatcher({
+                                BItem: avaBItem,
+                                Ability: abil,
+                                PropName: AbAssembly.AssetRepresentationProp,
+                                NewValue: avaBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D
+                            });
+                            abil._cameraTargetMod = true; // see processBeforeFrame
+                        }
+                        else {
+                            Logger.error(`AbCamera.cameraTargetAvatarId set: unknown avatar ${pVal}`);
+                        }
+                    },
+                    private: false
+                },
+                'cameraDisplacement': {
+                    propName: AbCamera.CameraDisplacementProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: [0,0,0],
+                    propDesc: 'Displace the camera from the target for thrid person view',
+                    propValidator: PropDefaultValidator,
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        PropDefaultSetter(pAbil, pPropName, pVal);
+                        const camDisp = pAbil.getProp(AbCamera.CameraDisplacementProp) as number[];
+                        const abil = pAbil as AbCamera;
+                        if (camDisp && abil) {
+                            abil._cameraDisplacementMod = true;
+                            // Convert into parameters used by the third person camera
+                            abil.cameraRadius = camDisp[1];
+                            abil.cameraHeightOffset = -camDisp[2];
+                        }
+                    },
+                    private: false
+                }
+        });
         this._posMod = this._posToMod = this._rotMod = this._rotToMod = false;
         this._cameraTargetMod = false;
         this._cameraDisplacementMod = false;
     };
 
-    // Someday, multiple cameras
-    public cameraIndex: number = 0;
-
-    _cameraMode: CameraModes = CameraModes.ThirdPerson;
-    public get cameraMode(): CameraModes { return this._cameraMode; }
-    public set cameraMode(pVal: CameraModes) {
-        this._cameraMode = pVal;
-        Logger.debug(`AbCamera.cameraMode set: id=${this.containingBItem.id}, new mode=${CameraModes[pVal]}`);
-    };
-
-    _cameraTarget: number[];
+    // Variables set to 'true' when the corresponding property is changed
+    _posMod: boolean = false;
+    _rotMod: boolean = false;
+    _posToMod: boolean = false;
+    _rotToMod: boolean = false;
     _cameraTargetMod = false;
-    public get cameraTarget(): number[] { return this._cameraTarget; }
-    public set cameraTarget(pVal: string | number[]) {
-        this._cameraTarget = ParseThreeTuple(pVal);
-        this._cameraTargetMod = true;
-    };
+    _cameraDisplacementMod: boolean = false;
 
-    _cameraTargetAvatarId: string;    // used for FirstPerson and ThirdPerson
     _cameraTargetAvatarObject: Object3D;
-    public get cameraTargetAvatarId(): string { return this._cameraTargetAvatarId; }
-    public set cameraTargetAvatarId(pVal: string) {
-        this._cameraTargetAvatarId = pVal;
-        const avaBItem = BItems.get(pVal);
-        if (avaBItem) {
-            // This AvatarId might be for another avatar so we need to redo the watchers
-            this._clearWatchers();
-            this._addAvatarWatchers(avaBItem);
-            // call the watcher to do whatever is needed to remember the representation
-            this._avatarRepresentationWatcher({
-                BItem: avaBItem,
-                Ability: undefined,
-                PropName: AbAssembly.AssetRepresentationProp,
-                NewValue: avaBItem.getProp(AbAssembly.AssetRepresentationProp) as Object3D
-            });
-        }
-        else {
-            Logger.error(`AbCamera.cameraTargetAvatarId set: unknown avatar ${pVal}`);
-        }
-    };
 
-    // Watched avatar representation has changed
+    // Called by watcher when avatar representation changes
     _avatarRepresentationWatcher(pParams: SetPropEventParams): void {
         this._cameraTargetAvatarObject = pParams.NewValue as Object3D;
     };
+    // Called by watcher when avatar position changes
     _avatarPositionChangeTime: number = Date.now();
     _avatarPosWatcher(pParams: SetPropEventParams): void {
-        const newPos = ParseThreeTuple(pParams.NewValue as number[]);
-        this._posTo = newPos;
-        this._posToMod = true;
-        this._avatarPositionChangeTime = Date.now();
+        this.setProp(AbCamera.PosToProp, pParams.NewValue);
     };
+    // Called by watcher when avatar rotation changes
     _avatarRotWatcher(pParams: SetPropEventParams): void {
-        this._rotTo = ParseFourTuple(pParams.NewValue as number[]);
-        this._rotToMod = true;
+        pParams.Ability.setProp(AbCamera.RotToProp, pParams.NewValue);
     };
     // While tracking an avatar, we need to know when its properties change
     _cameraTargetAvatarWatchers: SubscriptionEntry[] = [];
@@ -186,86 +332,6 @@ export class AbCamera extends Ability {
         });
     };
 
-    _cameraDisplacement: number[] = Config.world.thirdPersonDisplacement;
-    _cameraDisplacementMod: boolean = false;
-    public get cameraDisplacement(): number[] { return this._cameraDisplacement; }
-    public set cameraDisplacement(pVal: string | number[]) {
-        if (pVal) {
-            this._cameraDisplacement = ParseThreeTuple(pVal);
-        }
-        this._cameraDisplacementMod = true;
-        // Convert into parameters used by the third person camera
-        this.cameraRadius = this._cameraDisplacement[1];
-        this.cameraHeightOffset = -this._cameraDisplacement[2];
-    };
-
-    cameraFar: number;
-
-    _pos: number[] = [0,0,0];
-    _posMod = false;
-    public get pos(): number[] {
-        this._pos = [0,0,0];
-        Graphics._camera.position.toArray(this._pos, 0);
-        return this._pos;
-    };
-    public set pos(pVal: string | number[]) {
-        if (pVal) {
-            this._pos = ParseThreeTuple(pVal);
-            this._posTo = this._pos;
-            this._posMod = true; // see processBeforeFrame
-        }
-    };
-    // The *To properties will be used to known when to set absolute or to LERP
-    _posTo: number[] = [0,0,0];
-    _posToMod = false;
-    public get posTo(): number[] { return this._posTo; }
-    public set posTo(pVal: string | number[]) {
-        if (pVal) {
-            this._posTo = ParseThreeTuple(pVal);
-            this._posToMod = true; // see processBeforeFrame
-        }
-    };
-
-    _rot: number[] = [0,0,0,1];
-    _rotMod = false;
-    public get rot(): number[] {
-        const rr = [0,0,0,1];
-        let rott = Graphics._camera.rotationQuaternion;
-        if (! rott) {
-            // BabylonJS doesn't keep the rotation quaternion until it is set
-            const erot = Graphics._camera.rotation;
-            rott = BJSQuaternion.FromEulerAngles(erot.x, erot.y, erot.z);
-        }
-        rr[0] = rott.x;
-        rr[1] = rott.y;
-        rr[2] = rott.z;
-        rr[3] = rott.w;
-        this._rot = rr;
-        return this._rot;
-    }
-    public set rot(pVal: string | number[]) {
-        if (pVal) {
-            this._rot = ParseFourTuple(pVal);
-            this._rotTo = this._rot;
-            this._rotMod = true; // see processBeforeFrame
-        }
-    };
-
-    _rotTo: number[] = [0,0,0,1];
-    _rotToMod = false;
-    public get rotTo(): number[] { return this._rotTo; }
-    public set rotTo(pVal: string | number[]) {
-        if (pVal) {
-            this._rotTo = ParseFourTuple(pVal);
-            this._rotToMod = true; // see processBeforeFrame
-        }
-    };
-
-    _for: number = 0;
-    public get for(): number { return this._for; }
-    public set for(pVal: number) {
-        this._for = pVal;
-    };
 
     // Parameters used for the camera movement. Should be camera parameters
     cameraRotationOffset: number = -90;
@@ -280,21 +346,6 @@ export class AbCamera extends Ability {
         // Always do this!!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbCamera.CameraIndexProp, this);
-        pBItem.addProperty(AbCamera.CameraModeProp, this);
-        pBItem.addProperty(AbCamera.CameraLookAtProp, this);
-        pBItem.addProperty(AbCamera.CameraTargetAvatarIdProp, this);
-        pBItem.addProperty(AbCamera.CameraDisplacementProp, this);
-        pBItem.addProperty(AbCamera.CameraFarProp, this);
-        // position
-        pBItem.addProperty(AbCamera.PosProp, this);
-        pBItem.addProperty(AbCamera.RotProp, this);
-        // MoveTo targets
-        pBItem.addProperty(AbCamera.PosToProp, this);
-        pBItem.addProperty(AbCamera.RotToProp, this);
-        // Get and Set the placement frame of reference.
-        pBItem.addProperty(AbCamera.ForProp, this);
-
         this._beforeFrameWatcher = Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
 
         pBItem.setReady();
@@ -303,7 +354,7 @@ export class AbCamera extends Ability {
     // When a property is removed from the BItem, this is called
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
         if (pPropertyName === AbCamera.CameraIndexProp) {
-            this._cameraMode = CameraModes.Unknown;
+            this.setProp(AbCamera.CameraModeProp, CameraModes.Unknown);
         };
         if (pPropertyName === AbCamera.CameraTargetAvatarIdProp) {
             this._clearWatchers();
@@ -324,8 +375,11 @@ export class AbCamera extends Ability {
     _processBeforeFrame(pParms: GraphicsBeforeFrameProps): void {
         // Move the camera
         if (Graphics._camera) {
+            const cameraPos = this.getProp(AbCamera.PosProp) as number[]; // gets current position from camera
+            const cameraRot = this.getProp(AbCamera.RotProp) as number[]; // gets current rotation from camera
+            const cameraMode = this.getProp(AbCamera.CameraModeProp) as CameraModes;
             // Setup camera depending on mode
-            if (this._lastCameraType != this._cameraMode) {
+            if (this._lastCameraType != this.propValues[AbCamera.CameraModeProp]) {
                 // Camera type is changing. If changing camera implementation, state must be saved
                 // TODO: smarter mode changing. Like FirstPerson to ThirdPerson can just reuse camera.
                 if (this._lastCameraType != CameraModes.Unknown) {
@@ -333,24 +387,22 @@ export class AbCamera extends Ability {
                     Graphics.releaseCamera();
                 }
                 // See if the underlying camera implementation has to change
-                Logger.debug(`AbilityCamera.processBeforeFrame: setup camera ${CameraModes[this._cameraMode]}`);
-                const cameraPos = this.pos; // gets current position from camera and sets _pos
-                const cameraRot = this.rot; // gets current rotation from camera
-                switch (this._cameraMode) {
+                Logger.debug(`AbilityCamera.processBeforeFrame: setup camera ${CameraModes[this.propValues[AbCamera.CameraModeProp] as number]}`);
+                switch (cameraMode) {
                     case CameraModes.FreeLook: {
                         Graphics.activateUniversalCamera({
                             name: 'camera0',
-                            position: this._pos,
-                            rotationQ: this._rot,
-                            cameraTarget: this._cameraTarget
+                            position: cameraPos,
+                            rotationQ: cameraRot,
+                            cameraTarget: this.getProp(AbCamera.CameraTargetProp)
                         });
                         break;
                     }
                     case CameraModes.ThirdPerson: {
                         Graphics.activateUniversalCamera({
                             name: 'camera1',
-                            position: this._pos,
-                            rotationQ: this._rot,
+                            position: cameraPos,
+                            rotationQ: cameraRot,
                             attachControl: false
                         });
                         break;
@@ -358,28 +410,28 @@ export class AbCamera extends Ability {
                     case CameraModes.Orbit: {
                         Graphics.activateArcRotateCamera( {
                             name: 'camera2',
-                            position: this._pos,
-                            rotationQ: this._rot,
-                            target: this._cameraTarget,
-                            viewDistance: this._cameraDisplacement[1],
+                            position: cameraPos,
+                            rotationQ: cameraRot,
+                            target: this.getProp(AbCamera.CameraTargetProp),
+                            viewDistance: (this.getProp(AbCamera.CameraDisplacementProp) as number[])[1],
                             attachControl: true
                         })
                         break;
                     }
                     default: {
-                        Logger.error(`AbilityCamera.processBeforeFrame: unknown camera type ${this._cameraMode}`);
+                        Logger.error(`AbilityCamera.processBeforeFrame: unknown camera type ${cameraMode}`);
                         break;
                     }
                 }
-                this._lastCameraType = this._cameraMode;
+                this._lastCameraType = cameraMode;
             }
 
             // Camera is set up, so handle movement
-            switch (this._cameraMode) {
+            switch (cameraMode) {
                 case CameraModes.FreeLook: {
                     // Free look is run by the keyboard so this doesn't update anything
                     if (this._cameraTargetMod) {
-                        Graphics._camera.target = BJSVector3.FromArray(this._cameraTarget);
+                        Graphics._camera.target = BJSVector3.FromArray(this.getProp(AbCamera.CameraTargetProp) as number[]);
                         this._cameraTargetMod = false;
                     }
                     break;
@@ -387,7 +439,6 @@ export class AbCamera extends Ability {
                 case CameraModes.ThirdPerson: {
                     // The camera tracks the specified avatar
                     if (this._cameraTargetAvatarObject) {
-                        const camPos = Graphics._camera.position;
 
                         // Code borrowed from BabylonJS FollowCamera
                         const rotMatrix = new Matrix();
@@ -397,17 +448,18 @@ export class AbCamera extends Ability {
                         const radians = this.cameraRotationOffset * degreesToRads + yRotation;
                         const targetPosition = this._cameraTargetAvatarObject.mesh.getAbsolutePosition();
                         const targetX: number = targetPosition.x + Math.sin(radians) * this.cameraRadius;
-
                         const targetZ: number = targetPosition.z + Math.cos(radians) * this.cameraRadius;
-                        const dx: number = targetX - camPos.x;
-                        const dy: number = targetPosition.y + this.cameraHeightOffset - camPos.y;
-                        const dz: number = targetZ - camPos.z;
+
+                        const dx: number = targetX - cameraPos[0];
+                        const dy: number = targetPosition.y + this.cameraHeightOffset - cameraPos[1];
+                        const dz: number = targetZ - cameraPos[2];
                         const vx: number = Clamp(dx * this.cameraAcceleration * 2, -this.cameraMaxSpeed, this.cameraMaxSpeed);
                         const vy: number = Clamp(dy * this.cameraAcceleration, -this.cameraMaxSpeed, this.cameraMaxSpeed);
                         const vz: number = Clamp(dz * this.cameraAcceleration * 2, -this.cameraMaxSpeed, this.cameraMaxSpeed);
 
-                        this._pos = [camPos.x + vx, camPos.y + vy, camPos.z + vz ];
-                        const newCamPos = new BJSVector3(this._pos[0], this._pos[1], this._pos[2]);
+                        const newPos = [cameraPos[0] + vx, cameraPos[1] + vy, cameraPos[2] + vz ];
+                        this.propValues[AbCamera.PosProp] = newPos;
+                        const newCamPos = new BJSVector3(newPos[0], newPos[1], newPos[2]);
                         Graphics._camera.position = newCamPos;
                         Graphics._camera.setTarget(targetPosition);
 

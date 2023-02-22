@@ -11,15 +11,95 @@
 
 'use strict';
 
-import { BItem, PropValue } from "@BItem/BItem";
+import { BItem, PropValue, PropValueTypes } from "@BItem/BItem";
+
 import { BKeyedCollection } from '@Tools/bTypes';
-import { Logger } from '@Base/Tools/Logging';
+import { ParseNumArray, ParseStringArray, ParseThreeTuple, ParseFourTuple } from "@Tools/Utilities";
+import { Logger } from '@Tools/Logging';
 
-export interface AbilityPropertyValues { [ key: string]: PropValue };
+export type AbilityPropValidator = (pAbil: Ability, pPropName: string, pVal: PropValue) => boolean;
+export type AbilityPropGetter = (pAbil: Ability, pPropName: string) => PropValue;
+export type AbilityPropSetter = (pAbil: Ability, pPropName: string, pVal: PropValue) => void
+export interface AbilityPropDefn {
+    propName: string;
+    propType: PropValueTypes;
+    propDefault: PropValue;
+    propDesc: string;
+    propValidator: AbilityPropValidator;
+    propGetter: AbilityPropGetter;
+    propSetter: AbilityPropSetter;
+    private: boolean;
+};
+// Map of property names to the property definition
+// This is defined by each ability and is used to decorate the class instance
+export type AbilityPropDefns = { [key: string]: AbilityPropDefn };
 
+export function PropDefaultValidator(pAbil: Ability, pPropName: string, pVal: PropValue): boolean { return true; }
+
+// Get the value.
+// Presume that the value has been cooerced to the correct type.
+// Return null if the property is not defined.
+export function PropDefaultGetter(pAbil: Ability, pPropName: string): PropValue {
+    const propDefn = pAbil.propDefns[pPropName];
+    if (propDefn) {
+        const rawVal = pAbil.propValues[pPropName];
+        if (rawVal !== undefined) {
+            return rawVal;
+        }
+    }
+    return null;
+}
+// Set the value.
+// Convert the passed PropValue into the correct type.
+export function PropDefaultSetter(pAbil: Ability, pPropName: string, pVal: PropValue): void {
+    const propDefn = pAbil.propDefns[pPropName];
+    if (propDefn) {
+        pAbil.propValues[pPropName] = ParseValueToType(propDefn.propType, pVal);
+    }
+    return;
+}
+
+// Convert the passed PropValue into the correct type.
+// Return 'null' if the conversion fails.
+export function ParseValueToType(pTargetValType: PropValueTypes, pVal: unknown): PropValue {
+    try {
+        switch (pTargetValType) {
+            case PropValueTypes.String:
+                return pVal.toString();
+            case PropValueTypes.Number:
+                return Number(pVal);
+            case PropValueTypes.Boolean:
+                if (typeof pVal === 'string') {
+                    return (pVal.toLowerCase() === 'true');
+                }
+                else {
+                    return Boolean(pVal);
+                }
+            case PropValueTypes.NumberArray:
+                return ParseNumArray(pVal as string | number[]);
+            case PropValueTypes.NumberTriple:
+                return ParseThreeTuple(pVal as string | number[]);
+            case PropValueTypes.NumberQuad:
+                return ParseFourTuple(pVal as string | number[]);
+            case PropValueTypes.StringArray:
+                return ParseStringArray(pVal as string | string[]);
+            default:
+                Logger.error(`ParseValueToType: unknown type ${pTargetValType} for value ${pVal}`);
+                return null;
+        }
+    }
+    catch (e) {
+        Logger.error(`ParseValueToType: could not parse ${pVal} to type ${pTargetValType}`);
+        return null;
+    }
+}
+
+
+// =========== Global functions for registering and creating abilities ===========
 // Function defined by each ability to create the Ability from a property set
 export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
 
+// Map of ability names to the function to create the ability from property values
 export const RegisteredAbilities: Map<string, AbilityFromProps> = new Map<string, AbilityFromProps>()
 
 // The abilities are registered so they can be created dynamically by name
@@ -45,43 +125,79 @@ export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability
     Logger.error(`   Known abilities: ${Array.from(RegisteredAbilities.keys()).join(', ')}`);
     return null;
 };
+// =========== END OF Global functions for registering and creating abilities ===========
 
 // Parent class for Abilities.
 // Mostly helper and common functions.
 export abstract class Ability  {
 
+    // The name of the ability
     abilityName: string;
+    // The BItem that this ability is attached to
     containingBItem: BItem;
+    // The properties that this ability defines
+    propDefns: AbilityPropDefns = {};
+    // The values of the properties
+    propValues: { [ key: string]: PropValue } = {};
 
     // Creating an ability automatically adds it to it's BItem
-    constructor(pName: string) {
+    constructor(pName: string, pPropDefns?: AbilityPropDefns) {
         this.abilityName = pName;
-        // Logger.debug(`Ability: ${this.name} created`);
+        this.propDefns = pPropDefns ?? {};
+        // Set all the default values for the properties
+        Object.keys(this.propDefns).forEach((pName: string) => {
+            const propDefn = this.propDefns[pName];
+            this.propValues[propDefn.propName] = propDefn.propDefault;
+        });
+        // Logger.debug(`Ability: ${this.abilityName} created`);
     }
 
     // Add this ability's properties to the BItem
     // This happens when the ability is added to the BItem
     addProperties(pBItem: BItem): void {
         this.containingBItem = pBItem;
+        // If a definition block exists, add the properties to the BItem
+        if (this.propDefns) {
+            Object.keys(this.propDefns).forEach((pName: string) => {
+                const pDefn = this.propDefns[pName];
+                this.containingBItem.addProperty(pDefn.propName, this);
+
+                // Add a getter and setter for each property to the ability instance
+                /* NOTE: This doesn't work well because TypeScript doesn't know about the added properties
+                const me = this;
+                Object.defineProperty(me, pDefn.propName, {
+                    get() { return pDefn.propGetter(me, pDefn.propName); },
+                    set(pVal: PropValue) { pDefn.propSetter(me, pDefn.propName, pVal); }
+                });
+                */
+            });
+        }
     }
 
     // called when a property is about to be removed from its containing BItem
     abstract propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void;
 
-    // UTILITY FUNCTIONS
-    propValueToFloat(pVal: PropValue): number {
-        let ret = 0;
-        if (pVal instanceof Number) {
-            ret = pVal as number;
+    // Return the value of the property.
+    // NOTE: compatible with Abilities that doe not use the PropDefn system
+    getProp(pName: string): PropValue {
+        if (this.propDefns.hasOwnProperty(pName)) {
+            return this.propDefns[pName].propGetter(this, pName);
         }
         else {
-            try {
-                ret = parseFloat(pVal as string);
-            }
-            catch (e) {
-                Logger.error(`AbEnviron.solarAzimuth: Error parsing ${pVal} as a number`);
-            }
+            // @ts-ignore
+            return this[pName] as PropValue;
         }
-        return ret;
+    }
+
+    // Set the value of the property.
+    // NOTE: compatible with Abilities that doe not use the PropDefn system
+    setProp(pName: string, pVal: PropValue): void {
+        if (this.propDefns.hasOwnProperty(pName)) {
+            this.propDefns[pName].propSetter(this, pName, pVal);
+        }
+        else {
+            // @ts-ignore
+            this[pName] = pVal;
+        }
     }
 }

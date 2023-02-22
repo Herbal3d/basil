@@ -191,3 +191,27 @@ export function ParseFourTuple(tuple: string | number[] | BVector4): number[] {
     // consider doing some validity checking (length, type, ...)
     return val;
 };
+// Parse and return a number array
+// Accepts a JSON string array: "[ num, num, num, ...  ]"
+//         a JavaScript array: [ num, num, num, ...  ]
+// Returns a number array.
+export function ParseNumArray(tuple: string | number[] ): number[] {
+    let val = tuple;
+    if (typeof(tuple) === 'string') {
+        val = JSON.parse(tuple);
+    };
+    // consider doing some validity checking (length, type, ...)
+    return val as number[];
+};
+// Parse and return a string array
+// Accepts a JSON string array: "[ "string", "string", "string", ...  ]"
+//         a JavaScript array: [ "string", "string", "string", ...  ]
+// Returns a number array.
+export function ParseStringArray(tuple: string | string[] ): string[] {
+    let val = tuple;
+    if (typeof(tuple) === 'string') {
+        val = JSON.parse(tuple);
+    };
+    // consider doing some validity checking (length, type, ...)
+    return val as string[];
+};
