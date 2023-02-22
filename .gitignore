@@ -17,3 +17,7 @@ package-lock.json
 convoar/
 Basiljs-nodejs/
 
+# files that are here temporarily or generated but won't be checked in
+Basilts/OpenSimLoginReplyExample.xml
+Basilts/declarations
+Basilts/copyToHerbal3d.sh
