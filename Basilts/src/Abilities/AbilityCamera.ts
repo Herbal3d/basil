@@ -89,7 +89,7 @@ export class AbCamera extends Ability {
 
     constructor(pIndex: number) {
         super(AbCameraName, {
-                'pos': {
+                [AbCamera.PosProp]: {
                     propName: AbCamera.PosProp,
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
@@ -110,7 +110,7 @@ export class AbCamera extends Ability {
                     },
                     private: false
                 },
-                'rot': {
+                [AbCamera.RotProp]: {
                     propName: AbCamera.RotProp,
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
@@ -140,7 +140,7 @@ export class AbCamera extends Ability {
                     },
                     private: false
                 },
-                'for': {
+                [AbCamera.ForProp]: {
                     propName: AbCamera.ForProp,
                     propType: PropValueTypes.Number,
                     propDefault: 0,
@@ -150,7 +150,7 @@ export class AbCamera extends Ability {
                     propSetter: PropDefaultSetter,
                     private: false
                 },
-                'posTo': {
+                [AbCamera.PosToProp]: {
                     propName: AbCamera.PosToProp,
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
@@ -167,7 +167,7 @@ export class AbCamera extends Ability {
                     },
                     private: false
                 },
-                'rotTo': {
+                [AbCamera.RotToProp]: {
                     propName: AbCamera.RotToProp,
                     propType: PropValueTypes.NumberQuad,
                     propDefault: [0,0,0],
@@ -183,7 +183,7 @@ export class AbCamera extends Ability {
                     },
                     private: false
                 },
-                'cameraFar': {
+                [AbCamera.CameraFarProp]: {
                     propName: AbCamera.CameraFarProp,
                     propType: PropValueTypes.Number,
                     propDefault: Config.webgl.camera.initialViewDistance,
@@ -193,7 +193,7 @@ export class AbCamera extends Ability {
                     propSetter: PropDefaultSetter,
                     private: false
                 },
-                'cameraIndex': {
+                [AbCamera.CameraIndexProp]: {
                     propName: AbCamera.CameraIndexProp,
                     propType: PropValueTypes.Number,
                     propDefault: pIndex,    // NOTE: this passed as parameter
@@ -203,7 +203,7 @@ export class AbCamera extends Ability {
                     propSetter: PropDefaultSetter,
                     private: false
                 },
-                'cameraMode': {
+                [AbCamera.CameraModeProp]: {
                     propName: AbCamera.CameraModeProp,
                     propType: PropValueTypes.Number,
                     propDefault: CameraModes.ThirdPerson,
@@ -213,7 +213,7 @@ export class AbCamera extends Ability {
                     propSetter: PropDefaultSetter,
                     private: false
                 },
-                'cameraTarget': {
+                [AbCamera.CameraTargetProp]: {
                     propName: AbCamera.CameraTargetProp,
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
@@ -229,7 +229,7 @@ export class AbCamera extends Ability {
                     },
                     private: false
                 },
-                'cameraTargetAvatarId': {
+                [AbCamera.CameraTargetAvatarIdProp]: {
                     propName: AbCamera.CameraTargetAvatarIdProp,
                     propType: PropValueTypes.String,
                     propDefault: null,
@@ -262,7 +262,7 @@ export class AbCamera extends Ability {
                     },
                     private: false
                 },
-                'cameraDisplacement': {
+                [AbCamera.CameraDisplacementProp]: {
                     propName: AbCamera.CameraDisplacementProp,
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
