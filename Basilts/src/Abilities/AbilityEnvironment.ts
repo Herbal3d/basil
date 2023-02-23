@@ -12,6 +12,7 @@
 'use strict';
 
 import { Ability, RegisterAbility, ParseValueToType } from '@Abilities/Ability';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 
 import { Graphics, GraphicsStateChangeProps, GraphicStates } from '@Base/Graphics/Graphics';
@@ -31,12 +32,12 @@ export function AbEnvironFromProps(pProps: BKeyedCollection): AbEnviron {
     return new AbEnviron(pProps[AbEnviron.SolarAzimuthProp] as PropValue,
                 pProps[AbEnviron.SkyTurbidityProp] as PropValue,
                 pProps[AbEnviron.SkyRayleighProp] as PropValue);
-    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbEnvironName}. pProps: ${JSON.stringify(pProps)}`);
 };
 
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
 RegisterAbility(AbEnvironName, AbEnvironFromProps);
 
+// NOTE: this is not complete and has no function. See Graphics.ts for temporary Skybox setup
 export class AbEnviron extends Ability {
 
     // When an ability is referenced in BMessage.IProps, these are the types of values passed in the request
@@ -47,48 +48,44 @@ export class AbEnviron extends Ability {
     public static SkyRayleighProp = 'skyRayleigh';
 
     constructor(pAzimuth?: PropValue, pTurbidity?: PropValue, pRayleigh?: PropValue) {
-        super(AbEnvironName);
-        this.solarAzimuth = pAzimuth ?? Config.webgl.renderer.BabylonJS.environment.skyMaterial.azimuth;
-        this.skyTurbidity = pTurbidity ?? Config.webgl.renderer.BabylonJS.environment.skyMaterial.turbidity;
-        this.skyRayleigh = pRayleigh ?? Config.webgl.renderer.BabylonJS.environment.skyMaterial.rayleigh;
-    };
+        super(AbEnvironName, {
+                [AbEnviron.SolarAzimuthProp]: {
+                    propName: AbEnviron.SolarAzimuthProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: pAzimuth ?? Config.webgl.renderer.BabylonJS.environment.skyMaterial.azimuth,
+                    propDesc: 'sun azimuth',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbEnviron.SkyRayleighProp]: {
+                    propName: AbEnviron.SkyRayleighProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: pRayleigh ?? Config.webgl.renderer.BabylonJS.environment.skyMaterial.rayleigh,
+                    propDesc: 'sun rayleith parameter',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbEnviron.SkyTurbidityProp]: {
+                    propName: AbEnviron.SkyTurbidityProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: pTurbidity ?? Config.webgl.renderer.BabylonJS.environment.skyMaterial.turbidity,
+                    propDesc: 'sun turbitdy parameter',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
 
-    // Use getters and setters for properties that cause things to happen
-    _solarAzimuth: number;
-    public get solarAzimuth(): number { 
-        return this._solarAzimuth;
-    }
-    public set solarAzimuth(pVal: PropValue) { 
-        this._solarAzimuth = ParseValueToType(PropValueTypes.Number, pVal) as number;
-    }
-    _skyTurbidity: number;
-    public get skyTurbidity(): number { 
-        return this._skyTurbidity;
-    }
-    public set skyTurbidity(pVal: PropValue) { 
-        this._skyTurbidity = ParseValueToType(PropValueTypes.Number, pVal) as number;
-    }
-    _skyRayleigh: number;
-    public get skyRayleigh(): number { 
-        return this._skyRayleigh;
-    }
-    public set skyRayleigh(pVal: PropValue) { 
-        this._skyRayleigh = ParseValueToType(PropValueTypes.Number, pVal) as number;
-    }
+        });
+    };
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbEnviron.SolarAzimuthProp, this);
-        pBItem.addProperty(AbEnviron.SkyTurbidityProp, this);
-        pBItem.addProperty(AbEnviron.SkyRayleighProp, this);
+        pBItem.setReady();
 
         // Have to wait until the graphics system is initialized before there is a scene to set
         Graphics.WatchGraphicsStateChange(this._onGraphicsReady.bind(this) as EventProcessor);
-
-        pBItem.setReady();
     };
     _onGraphicsReady(pEvent: GraphicsStateChangeProps): void {
         if (pEvent.state === GraphicStates.Initialized || pEvent.state === GraphicStates.Rendering) {   
@@ -96,10 +93,7 @@ export class AbEnviron extends Ability {
         };
     };
     _initializeEnvironment(): void {
-        if (Config.webgl.renderer.BabylonJS.environment.skyMaterial) {
-            Config.webgl.renderer.BabylonJS.environment.skyMaterial.azimuth = this.solarAzimuth;
-            Config.webgl.renderer.BabylonJS.environment.skyMaterial.turbidity = this.skyTurbidity;
-            Config.webgl.renderer.BabylonJS.environment.skyMaterial.rayleigh = this.skyRayleigh; }
+        return;
     };
     _updateEnvironment(): void {
         if (Graphics.IsActive()) {
@@ -107,9 +101,9 @@ export class AbEnviron extends Ability {
             if (skybox) {
                 const skyMaterial = skybox.material;
                 if (skyMaterial instanceof SkyMaterial) {
-                    skyMaterial.azimuth = this.solarAzimuth;
-                    skyMaterial.turbidity = this.skyTurbidity;
-                    skyMaterial.rayleigh = this.skyRayleigh;
+                    skyMaterial.azimuth = <number>this.getProp(AbEnviron.SolarAzimuthProp);
+                    skyMaterial.turbidity = <number>this.getProp(AbEnviron.SkyTurbidityProp);
+                    skyMaterial.rayleigh = <number>this.getProp(AbEnviron.SkyRayleighProp);
                 };
             };
         };
