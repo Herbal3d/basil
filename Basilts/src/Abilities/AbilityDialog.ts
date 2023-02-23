@@ -11,22 +11,24 @@
 
 'use strict';
 
-import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { Ability, RegisterAbility, ParseValueToType } from '@Abilities/Ability';
+import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 import { DialogMgt } from '@Base/DialogMgt/DialogMgt';
 
 import { BKeyedCollection } from '@Tools/bTypes';
-import { Logger } from '@Tools/Logging';
 import { RandomIdentifier } from '@Tools/Utilities';
+import { Logger } from '@Tools/Logging';
 
 export const AbDialogName = 'Dialog'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbDialogFromProps(pProps: BKeyedCollection): AbDialog {
-    const urlProp = pProps.hasOwnProperty(AbDialog.DialogUrlProp) ? pProps[AbDialog.DialogUrlProp] as string : null;
-    const nameProp = pProps.hasOwnProperty(AbDialog.DialogNameProp) ? pProps[AbDialog.DialogNameProp] as string : null;
-    const placementProp = pProps.hasOwnProperty(AbDialog.DialogPlacementProp) ? pProps[AbDialog.DialogPlacementProp] as string : null;
-    return new AbDialog(urlProp, nameProp, placementProp);
+    return new AbDialog(
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbDialog.DialogUrlProp]),
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbDialog.DialogNameProp]),
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbDialog.DialogPlacementProp])
+    );
 };
 
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
@@ -42,33 +44,53 @@ export class AbDialog extends Ability {
     public static DialogPlacementProp = 'dialogPlacement';
 
     constructor(pUrl: string, pDialogName?: string, pPlacement?: string) {
-        super(AbDialogName);
-        this.dialogName = pDialogName ?? 'Dialog' + RandomIdentifier();
-        this.dialogPlacement = pPlacement ?? 'center';
-        this.url = pUrl;
+        super(AbDialogName, {
+                [AbDialog.DialogUrlProp]: {
+                    propName: AbDialog.DialogUrlProp,
+                    propType: PropValueTypes.String,
+                    propDefault: pUrl,
+                    propDesc: 'URL of the dialog to display',
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {
+                        PropDefaultSetter(pAbil, pPropName, pVal);
+                        // Setting the URL causes the dialog to be created
+                        if (pAbil.propValues[AbDialog.DialogUrlProp]) {
+                            DialogMgt.createDialog(
+                                this.propValues[AbDialog.DialogNameProp] as string,
+                                this.propValues[AbDialog.DialogUrlProp] as string,
+                                this.propValues[AbDialog.DialogPlacementProp] as string
+                            );
+                        }
+                    }
+                },
+                [AbDialog.DialogNameProp]: {
+                    propName: AbDialog.DialogNameProp,
+                    propType: PropValueTypes.String,
+                    propDefault: pDialogName ?? 'Dialog' + RandomIdentifier(),
+                    propDesc: 'Name to use to reference the dialog',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbDialog.DialogPlacementProp]: {
+                    propName: AbDialog.DialogPlacementProp,
+                    propType: PropValueTypes.String,
+                    propDefault: pPlacement ?? 'center',
+                    propDesc: 'Page placement of the dialog',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                }
+        });
     };
-
-    public dialogName: string;
-
-    public dialogPlacement: string;
-
-    public _url: string;
-    public get url(): string {
-        return this._url;
-    }
-    public set url(pVal: string) {
-        this._url = pVal;
-        DialogMgt.createDialog(this.dialogName, this.url, this.dialogPlacement);
-    }
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbDialog.DialogUrlProp, this);
-
         pBItem.setReady();
+
+        // If an URL was specified when this ability was created, see that the dialog is created
+        this.setProp(AbDialog.DialogUrlProp, this.propValues[AbDialog.DialogUrlProp]);
     };
 
     // When a property is removed from the BItem, this is called
