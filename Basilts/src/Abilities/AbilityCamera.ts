@@ -107,8 +107,7 @@ export class AbCamera extends Ability {
                             PropDefaultSetter(pAbil, pPropName, pVal);
                             abil._posMod = true; // see processBeforeFrame
                         }
-                    },
-                    private: false
+                    }
                 },
                 [AbCamera.RotProp]: {
                     propName: AbCamera.RotProp,
@@ -137,8 +136,7 @@ export class AbCamera extends Ability {
                             PropDefaultSetter(pAbil, pPropName, pVal);
                             abil._rotMod = true; // see processBeforeFrame
                         }
-                    },
-                    private: false
+                    }
                 },
                 [AbCamera.ForProp]: {
                     propName: AbCamera.ForProp,
@@ -147,8 +145,7 @@ export class AbCamera extends Ability {
                     propDesc: 'Frame of reference for camera',
                     propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
-                    propSetter: PropDefaultSetter,
-                    private: false
+                    propSetter: PropDefaultSetter
                 },
                 [AbCamera.PosToProp]: {
                     propName: AbCamera.PosToProp,
@@ -164,8 +161,7 @@ export class AbCamera extends Ability {
                             abil._posToMod = true; // see processBeforeFrame
                             abil._avatarPositionChangeTime = Date.now();
                         }
-                    },
-                    private: false
+                    }
                 },
                 [AbCamera.RotToProp]: {
                     propName: AbCamera.RotToProp,
@@ -180,8 +176,7 @@ export class AbCamera extends Ability {
                             PropDefaultSetter(abil, pPropName, pVal);
                             abil._rotToMod = true; // see processBeforeFrame
                         }
-                    },
-                    private: false
+                    }
                 },
                 [AbCamera.CameraFarProp]: {
                     propName: AbCamera.CameraFarProp,
@@ -190,8 +185,7 @@ export class AbCamera extends Ability {
                     propDesc: 'Distance camera is from target',
                     propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
-                    propSetter: PropDefaultSetter,
-                    private: false
+                    propSetter: PropDefaultSetter
                 },
                 [AbCamera.CameraIndexProp]: {
                     propName: AbCamera.CameraIndexProp,
@@ -200,8 +194,7 @@ export class AbCamera extends Ability {
                     propDesc: 'which camera this is',
                     propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
-                    propSetter: PropDefaultSetter,
-                    private: false
+                    propSetter: PropDefaultSetter
                 },
                 [AbCamera.CameraModeProp]: {
                     propName: AbCamera.CameraModeProp,
@@ -210,8 +203,7 @@ export class AbCamera extends Ability {
                     propDesc: 'mode camera is in',
                     propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
-                    propSetter: PropDefaultSetter,
-                    private: false
+                    propSetter: PropDefaultSetter
                 },
                 [AbCamera.CameraTargetProp]: {
                     propName: AbCamera.CameraTargetProp,
@@ -226,8 +218,7 @@ export class AbCamera extends Ability {
                         if (abil) {
                             abil._cameraTargetMod = true; // see processBeforeFrame
                         }
-                    },
-                    private: false
+                    }
                 },
                 [AbCamera.CameraTargetAvatarIdProp]: {
                     propName: AbCamera.CameraTargetAvatarIdProp,
@@ -259,8 +250,7 @@ export class AbCamera extends Ability {
                         else {
                             Logger.error(`AbCamera.cameraTargetAvatarId set: unknown avatar ${pVal}`);
                         }
-                    },
-                    private: false
+                    }
                 },
                 [AbCamera.CameraDisplacementProp]: {
                     propName: AbCamera.CameraDisplacementProp,
@@ -279,8 +269,7 @@ export class AbCamera extends Ability {
                             abil.cameraRadius = camDisp[1];
                             abil.cameraHeightOffset = -camDisp[2];
                         }
-                    },
-                    private: false
+                    }
                 }
         });
         this._posMod = this._posToMod = this._rotMod = this._rotToMod = false;
@@ -337,7 +326,7 @@ export class AbCamera extends Ability {
     cameraRotationOffset: number = -90;
     cameraHeightOffset: number = 2;
     cameraRadius: number = 8;
-    cameraAcceleration: number = 0.05;
+    cameraAcceleration: number = 0.10; // 0.05;
     cameraMaxSpeed: number = 20;
 
     // Add all the properties from this assembly to the holding BItem

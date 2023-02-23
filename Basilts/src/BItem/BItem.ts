@@ -47,6 +47,7 @@ export enum PropValueTypes {
     StringArray = 'string[]',
     Boolean = 'boolean',
     AuthToken = 'AuthToken',
+    Object = 'Object',              // generic object used for internal values
     Object3D = 'Object3D'
 };
 // Properties have optional parameters that are defined by this interface.
@@ -87,7 +88,7 @@ export class BItem {
     // Useful for sending update messages the the SpaceServer
     public get conn(): BasilConnection {
         if (this._bItemAbility) {
-            return this._bItemAbility.creatingConnection;
+            return this._bItemAbility.getProp(AbBItem.CreatingConnection) as unknown as BasilConnection;
         }
         return undefined;
     }
@@ -103,9 +104,6 @@ export class BItem {
         this.addAbility(this._bItemAbility);
 
         this._deleteInProgress = false;
-
-        this.setProp(AbBItem.IdProp, id);
-        this.setProp(AbBItem.StateProp, BItemState.UNINITIALIZED);
 
         // As a side effect, add this BItem to the collection of BItems
         BItems.add(id, this);
@@ -231,7 +229,7 @@ export class BItem {
             if (notFiltering || filter.test(propName)) {
                 if (this._propOptions.has(propName)) {
                     const propOptions = this._propOptions.get(propName);
-                    priv = propOptions.private;
+                    priv = propOptions.private ?? false;
                 };
                 if (!priv) {
                     ret[propName] = this.getProp(propName);

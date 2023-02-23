@@ -12,6 +12,7 @@
 'use strict';
 
 import { BItem, PropValue, PropValueTypes } from "@BItem/BItem";
+import { AuthToken } from "@Tools/Auth";
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { ParseNumArray, ParseStringArray, ParseThreeTuple, ParseFourTuple } from "@Tools/Utilities";
@@ -25,10 +26,10 @@ export interface AbilityPropDefn {
     propType: PropValueTypes;
     propDefault: PropValue;
     propDesc: string;
-    propValidator: AbilityPropValidator;
+    propValidator?: AbilityPropValidator;
     propGetter: AbilityPropGetter;
     propSetter: AbilityPropSetter;
-    private: boolean;
+    private?: boolean;
 };
 // Map of property names to the property definition
 // This is defined by each ability and is used to decorate the class instance
@@ -59,9 +60,15 @@ export function PropDefaultSetter(pAbil: Ability, pPropName: string, pVal: PropV
     return;
 }
 
+// Setter for values that cannot be set.
+export function PropCannotSet(pAbil: Ability, pPropName: string, pVal: PropValue): void {
+    Logger.error(`Ability: attempt to set read-only property ${pPropName} in ${pAbil.abilityName}`);
+}
+
 // Convert the passed PropValue into the correct type.
-// Return 'null' if the conversion fails.
+// Return 'undefined' if the conversion fails.
 export function ParseValueToType(pTargetValType: PropValueTypes, pVal: unknown): PropValue {
+    if (pVal === undefined || pVal === null) return undefined;
     try {
         switch (pTargetValType) {
             case PropValueTypes.String:
@@ -83,14 +90,19 @@ export function ParseValueToType(pTargetValType: PropValueTypes, pVal: unknown):
                 return ParseFourTuple(pVal as string | number[]);
             case PropValueTypes.StringArray:
                 return ParseStringArray(pVal as string | string[]);
+            case PropValueTypes.AuthToken:
+                if (pVal instanceof AuthToken) {
+                    return pVal;
+                }
+                return new AuthToken(pVal as string);
             default:
                 Logger.error(`ParseValueToType: unknown type ${pTargetValType} for value ${pVal}`);
-                return null;
+                return undefined;
         }
     }
     catch (e) {
         Logger.error(`ParseValueToType: could not parse ${pVal} to type ${pTargetValType}`);
-        return null;
+        return undefined;
     }
 }
 
@@ -161,6 +173,12 @@ export abstract class Ability  {
             Object.keys(this.propDefns).forEach((pName: string) => {
                 const pDefn = this.propDefns[pName];
                 this.containingBItem.addProperty(pDefn.propName, this);
+                if (pDefn.hasOwnProperty('private') && pDefn.private) {
+                    this.containingBItem.addProperty(pDefn.propName, this, { private: true });
+                }
+                else {
+                    this.containingBItem.addProperty(pDefn.propName, this);
+                }
 
                 // Add a getter and setter for each property to the ability instance
                 /* NOTE: This doesn't work well because TypeScript doesn't know about the added properties
