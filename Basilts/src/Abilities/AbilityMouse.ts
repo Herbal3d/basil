@@ -12,7 +12,8 @@
 'use strict';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem } from '@BItem/BItem';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
@@ -47,7 +48,99 @@ export class AbMouse extends Ability {
     public static ModeProp = 'ptrMode';
 
     constructor() {
-        super(AbMouseName);
+        super(AbMouseName, {
+                [AbMouse.PageXYProp]: {
+                    propName: AbMouse.PageXYProp,
+                    propType: PropValueTypes.NumberArray,
+                    propDefault: [0, 0],
+                    propDesc: 'Page XY position of pointer',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.ClientXYProp]: {
+                    propName: AbMouse.ClientXYProp,
+                    propType: PropValueTypes.NumberArray,
+                    propDefault: [0, 0],
+                    propDesc: 'client XY position of pointer',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.ClickedProp]: {
+                    propName: AbMouse.ClickedProp,
+                    propType: PropValueTypes.Object,
+                    propDefault: 0,
+                    propDesc: 'Date of last click',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.DownProp]: {
+                    propName: AbMouse.DownProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'whether mouse button is down',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.ButtonProp]: {
+                    propName: AbMouse.ButtonProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: 0,
+                    propDesc: 'Button number of last mouse event',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.InPageProp]: {
+                    propName: AbMouse.InPageProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'Whether mouse is in the page or not',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.AltKeyProp]: {
+                    propName: AbMouse.AltKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'true when alt key is down on last mouse event',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.CntlKeyProp]: {
+                    propName: AbMouse.CntlKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'true when cntl key is down on last mouse event',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.ShiftKeyProp]: {
+                    propName: AbMouse.ShiftKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'true when shift key is down on last mouse event',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.MetaKeyProp]: {
+                    propName: AbMouse.MetaKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'true when meta key is down on last mouse event',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMouse.ModeProp]: {
+                    propName: AbMouse.ModeProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: 0,
+                    propDesc: 'used by apps to differentiate pointing and movement global settings',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+
+        });
+        this.propValues[AbMouse.ClickedProp] = <PropValue><unknown>new Date();
+
         document.onmousemove = this._mouseMove.bind(this);
         document.onmouseup = this._mouseUp.bind(this);
         document.onmousedown = this._mouseDown.bind(this);
@@ -55,33 +148,9 @@ export class AbMouse extends Ability {
         document.onmouseleave = this._mouseLeave.bind(this);
     };
 
-    public ptrPageXY: number[] = [0, 0];   // reported page XY position
-    public ptrClientXY: number[] = [0, 0]; // reported client (sub-region) position
-    public ptrClicked: Date = new Date();  // updated on click. Use to sense mouse clicks
-    public ptrDown: boolean = false;       // true if mouse is down
-    public ptrButton: number = 0;          // button number on last mouse click
-    public ptrInPage: boolean = false;
-    public ptrAlt: boolean = false;        // 'true' when alt key is pressed on last mouse event
-    public ptrCtrl: boolean = false;       // 'true' when cntl key is pressed on last mouse event
-    public ptrShift: boolean = false;      // 'true' when shift key is pressed on last mouse event
-    public ptrMeta: boolean = false;       // 'true' when meta key is pressed on last mouse event
-    public ptrMode: number = 0;            // mode used by apps to differentiate pointing and movement global setting
-
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
-
-        pBItem.addProperty(AbMouse.PageXYProp, this);
-        pBItem.addProperty(AbMouse.ClientXYProp, this);
-        pBItem.addProperty(AbMouse.ClickedProp, this);
-        pBItem.addProperty(AbMouse.DownProp, this);
-        pBItem.addProperty(AbMouse.ButtonProp, this);
-        pBItem.addProperty(AbMouse.InPageProp, this);
-        pBItem.addProperty(AbMouse.AltKeyProp, this);
-        pBItem.addProperty(AbMouse.CntlKeyProp, this);
-        pBItem.addProperty(AbMouse.ShiftKeyProp, this);
-        pBItem.addProperty(AbMouse.MetaKeyProp, this);
-        pBItem.addProperty(AbMouse.ModeProp, this);
 
         pBItem.setReady();
     };
@@ -96,48 +165,48 @@ export class AbMouse extends Ability {
         // Since this happens a lot, only generate events if the caller
         //    has subscribed to ptrClientXY
         this._copyMouseEvent(e, false);
-        this.containingBItem.setProp(AbMouse.ClientXYProp, this.ptrClientXY);
+        this.containingBItem.setProp(AbMouse.ClientXYProp, this.propValues[AbMouse.ClientXYProp]);
     }
 
     // 
     _mouseUp(e: MouseEvent): void {
         Logger.debug(`AbilityMouse._mouseUp: UP`);  //DEBUG DEBUG
-        this.ptrDown = false;
-        this._copyMouseEvent(e, true);
+        this.propValues[AbMouse.DownProp] = false;
+        this._copyMouseEvent(e);
     }
 
     // Mouse button went down
     _mouseDown(e: MouseEvent): void {
         Logger.debug(`AbilityMouse._mouseDown: DOWN`);//DEBUG DEBUG
-        this.ptrDown = true;
-        this.ptrButton = e.button;
-        this.ptrClicked = new Date();
-        this._copyMouseEvent(e, true);
+        this.propValues[AbMouse.DownProp] = true;
+        this.propValues[AbMouse.ButtonProp] = e.button;
+        this.propValues[AbMouse.ClickedProp] = <PropValue><unknown>Date.now;
+        this._copyMouseEvent(e);
     }
 
     // Mouse cursor entered our area
     _mouseEnter(e: MouseEvent): void {
-        this.ptrInPage = true;
-        this._copyMouseEvent(e, true);
+        this.propValues[AbMouse.InPageProp] = true;
+        this._copyMouseEvent(e);
     }
 
     // Mouse cursor left our area
     _mouseLeave(e: MouseEvent): void {
-        this.ptrInPage = false;
+        this.propValues[AbMouse.InPageProp] = false;
         this._copyMouseEvent(e, true);
     }
 
     // Make local copies of the mouse information and then generate changed event
-    _copyMouseEvent(pEvent: MouseEvent, pPushUpdate: boolean): void {
-        this.ptrAlt = pEvent.altKey;
-        this.ptrShift = pEvent.shiftKey;
-        this.ptrCtrl = pEvent.ctrlKey;
-        this.ptrMeta = pEvent.metaKey
-        this.ptrClientXY = [ pEvent.clientX, pEvent.clientY ];
-        this.ptrPageXY = [ pEvent.pageX, pEvent.pageY ];
+    _copyMouseEvent(pEvent: MouseEvent, pPushUpdate: boolean = true): void {
+        this.propValues[AbMouse.AltKeyProp] = pEvent.altKey;
+        this.propValues[AbMouse.ShiftKeyProp] = pEvent.shiftKey;
+        this.propValues[AbMouse.CntlKeyProp] = pEvent.ctrlKey;
+        this.propValues[AbMouse.MetaKeyProp] = pEvent.metaKey;
+        this.propValues[AbMouse.ClientXYProp] = [ pEvent.clientX, pEvent.clientY ];
+        this.propValues[AbMouse.PageXYProp] = [ pEvent.pageX, pEvent.pageY ];
         // If update events are to be sent...
         if (pPushUpdate) {
-            this.containingBItem.setProp(AbMouse.DownProp, this.ptrDown);
+            this.containingBItem.setProp(AbMouse.DownProp, this.propValues[AbMouse.DownProp]);
         }
     }
 };
