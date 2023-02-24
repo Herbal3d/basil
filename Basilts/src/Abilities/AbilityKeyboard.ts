@@ -11,11 +11,13 @@
 
 'use strict';
 
+import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BItem';
+
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { Eventing } from '@Base/Eventing/Eventing';
+import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+
 import { GraphicsStateChangeProps, GraphicStates, Graphics } from '@Base/Graphics/Graphics';
 import { KeyboardEventHandler, SetKeyboardEventHandler } from '@Base/Graphics/GraphicOps';
-import { BItem } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
@@ -49,35 +51,83 @@ export class AbKeyboard extends Ability {
     public static MetaKeyProp = 'keyMetaKey';
 
     constructor() {
-        super(AbKeyboardName);
-    };
+        super(AbKeyboardName, {
+                [AbKeyboard.KeyDownProp]: {
+                    propName: AbKeyboard.KeyDownProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'Key is down',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.KeyNameProp]: {
+                    propName: AbKeyboard.KeyNameProp,
+                    propType: PropValueTypes.String,
+                    propDefault: 'unknown',
+                    propDesc: 'Name of the key that event is for',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.KeyCodeProp]: {
+                    propName: AbKeyboard.KeyCodeProp,
+                    propType: PropValueTypes.String,
+                    propDefault: 'unknown',
+                    propDesc: 'Code of the key that event is for',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.KeyRepeatingProp]: {
+                    propName: AbKeyboard.KeyRepeatingProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'If true, this is a repeating key event',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.AltKeyProp]: {
+                    propName: AbKeyboard.AltKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'Alt key is pressed',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.CntlKeyProp]: {
+                    propName: AbKeyboard.CntlKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'Cntl key is pressed',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.ShiftKeyProp]: {
+                    propName: AbKeyboard.ShiftKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'Shift key is pressed',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbKeyboard.MetaKeyProp]: {
+                    propName: AbKeyboard.MetaKeyProp,
+                    propType: PropValueTypes.Boolean,
+                    propDefault: false,
+                    propDesc: 'Meta key is pressed',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
 
-    public keyDown: boolean = false;
-    public keyName: string = 'unknown';
-    public keyCode: string = 'unknown';
-    public keyRepeating: boolean = false;
-    public keyAlt: boolean = false;        // 'true' when alt key is pressed on last keyboard event
-    public keyCtrl: boolean = false;       // 'true' when cntl key is pressed on last keyboard event
-    public keyShift: boolean = false;      // 'true' when shift key is pressed on last keyboard event
-    public keyMeta: boolean = false;       // 'true' when meta key is pressed on last keyboard event
+        });
+    };
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbKeyboard.KeyDownProp, this);
-        pBItem.addProperty(AbKeyboard.KeyNameProp, this);
-        pBItem.addProperty(AbKeyboard.KeyCodeProp, this);
-        pBItem.addProperty(AbKeyboard.KeyRepeatingProp, this);
-        pBItem.addProperty(AbKeyboard.AltKeyProp, this);
-        pBItem.addProperty(AbKeyboard.CntlKeyProp, this);
-        pBItem.addProperty(AbKeyboard.ShiftKeyProp, this);
-        pBItem.addProperty(AbKeyboard.MetaKeyProp, this);
+        pBItem.setReady();
 
         // Have to wait until the graphics system is initialized before there is a scene to watch
         Graphics.WatchGraphicsStateChange(this._onGraphicsReady.bind(this) as EventProcessor);
-
-        pBItem.setReady();
     };
     _onGraphicsReady(pEvent: GraphicsStateChangeProps): void {
         if (pEvent.state === GraphicStates.Initialized || pEvent.state === GraphicStates.Rendering) {   
@@ -94,13 +144,14 @@ export class AbKeyboard extends Ability {
     };
 
     _onKeyEvent(pEvent: KeyboardEvent, pDown: boolean): void {
-        this.keyDown = pDown;
-        this.keyName = pEvent.key;
-        this.keyCode = pEvent.code;
-        this.keyAlt = pEvent.altKey;
-        this.keyShift = pEvent.shiftKey;
-        this.keyCtrl = pEvent.ctrlKey;
-        this.keyMeta = pEvent.metaKey;
-        this.containingBItem.setProp(AbKeyboard.KeyDownProp, this.keyDown);
+        this.propValues[AbKeyboard.KeyDownProp] = pDown;
+        this.propValues[AbKeyboard.KeyNameProp] = pEvent.key;
+        this.propValues[AbKeyboard.KeyCodeProp] = pEvent.code;
+        this.propValues[AbKeyboard.AltKeyProp] = pEvent.altKey;
+        this.propValues[AbKeyboard.ShiftKeyProp] = pEvent.shiftKey;
+        this.propValues[AbKeyboard.CntlKeyProp] = pEvent.ctrlKey;
+        this.propValues[AbKeyboard.MetaKeyProp] = pEvent.metaKey;
+        // This causes the property changed event to be generated
+        this.containingBItem.setProp(AbKeyboard.KeyDownProp, this.propValues[AbKeyboard.KeyDownProp]);
     }
 };

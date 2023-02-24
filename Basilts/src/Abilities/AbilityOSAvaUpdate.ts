@@ -105,19 +105,20 @@ export class AbOSAvaUpdate extends Ability {
     processKeyboard(pEvent: SetPropEventParams): void {
         const abil = pEvent.Ability as AbKeyboard;
         // Logger.debug(`AbOSAvaUpdate.processKeyboard: keyboard event: ${abil.keyName}`);
-        switch (abil.keyName) {
-            case 'ArrowRight':  this.turnRight(abil.keyDown); break;
-            case 'd':           this.turnRight(abil.keyDown); break;
-            case 'ArrowLeft':   this.turnLeft(abil.keyDown); break;
-            case 'a':           this.turnLeft(abil.keyDown); break;
-            case 'ArrowUp':     this.walkForward(abil.keyDown); break;
-            case 'w':           this.walkForward(abil.keyDown); break;
-            case 'ArrowDown':   this.walkBackward(abil.keyDown); break;
-            case 's':           this.walkBackward(abil.keyDown); break;
+        const keyDown = <boolean>abil.getProp(AbKeyboard.KeyDownProp);
+        switch (abil.getProp(AbKeyboard.KeyNameProp)) {
+            case 'ArrowRight':  this.turnRight(keyDown); break;
+            case 'd':           this.turnRight(keyDown); break;
+            case 'ArrowLeft':   this.turnLeft(keyDown); break;
+            case 'a':           this.turnLeft(keyDown); break;
+            case 'ArrowUp':     this.walkForward(keyDown); break;
+            case 'w':           this.walkForward(keyDown); break;
+            case 'ArrowDown':   this.walkBackward(keyDown); break;
+            case 's':           this.walkBackward(keyDown); break;
 
-            case 'Home':        this.doFly(abil.keyDown); break;
-            case 'PageUp':      this.moveUp(abil.keyDown); break;
-            case 'PageDown':    this.moveDown(abil.keyDown); break;
+            case 'Home':        this.doFly(keyDown); break;
+            case 'PageUp':      this.moveUp(keyDown); break;
+            case 'PageDown':    this.moveDown(keyDown); break;
             default:
                 break;
         }
@@ -177,8 +178,8 @@ export class AbOSAvaUpdate extends Ability {
     // Avatar is being asked to move.
     // Send it to the SpaceServer to figure out what to do in world
     sendAvatarUpdate(): void {
-        const far = BItems.getProp(this._cameraId, AbCamera.CameraFarProp) as number;
-        const rot = this.containingBItem.getProp(AbPlacement.RotProp) as number[];
+        const far = <number>BItems.getProp(this._cameraId, AbCamera.CameraFarProp);
+        const rot = <number[]>this.containingBItem.getProp(AbPlacement.RotProp);
         const updateProps = {
             [AbOSAvaUpdate.ControlFlagsProp]: this.osau_control,
             [AbOSAvaUpdate.FarProp]: far,
