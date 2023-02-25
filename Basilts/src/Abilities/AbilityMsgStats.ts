@@ -11,17 +11,10 @@
 
 'use strict';
 
+import { BItem, PropValueTypes } from '@BItem/BItem';
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { BKeyedCollection } from '@Base/Tools/bTypes';
-
-export enum BItemState {
-    UNINITIALIZED = 0,
-    LOADING,
-    FAILED,
-    READY,
-    SHUTDOWN
-};
 
 export const AbMsgStatsName = "MsgStats";
 
@@ -38,19 +31,29 @@ export class AbMsgStats extends Ability {
     static MessagesReceivedProp: string = 'messagesReceived';
     static MessagesSentProp: string = 'messagesSent';
 
-    public messagesSent: number = 0;
-    public messagesReceived: number = 0;
-
     constructor() {
-        super(AbMsgStatsName);
+        super(AbMsgStatsName, {
+                [AbMsgStats.MessagesReceivedProp]: {
+                    propName: AbMsgStats.MessagesReceivedProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: 0,
+                    propDesc: 'total number of messages received',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbMsgStats.MessagesSentProp]: {
+                    propName: AbMsgStats.MessagesSentProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: 0,
+                    propDesc: 'total number of messages sent',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                }
+        });
     };
 
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
-
-        // Get and Set the number of received messages
-        pBItem.addProperty(AbMsgStats.MessagesReceivedProp, this);
-        pBItem.addProperty(AbMsgStats.MessagesSentProp, this);
 
         pBItem.setReady();
     };
