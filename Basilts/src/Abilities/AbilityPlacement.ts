@@ -14,8 +14,9 @@
 import { Config } from '@Base/Config';
 import { Eventing } from '@Base/Eventing/Eventing';
 
+import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 import { Ability, ParseValueToType, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BItem';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 
 import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
 import { Vector3 as BJSVector3, Quaternion as BJSQuaternion, Color3 as BJSColor3 } from '@babylonjs/core/Maths';
@@ -74,88 +75,100 @@ export class AbPlacement extends Ability {
     static ForProp = 'for';
     static PosToProp = 'posTo';
     static RotToProp = 'rotTo';
-    static PosSpeed = 'posSpeed';
-
-    _pos: number[] = [0,0,0];
-    _posMod = false;
-    public get pos(): number[] { return this._pos; }
-    public set pos(pVal: string | number[]) {
-        if (pVal) {
-            this._pos = ParseThreeTuple(pVal);
-            // Explicitly setting position means we're not moving to a target
-            this._posTo = this._pos;
-            this._posMod = true; // see processBeforeFrame
-        }
-    };
-    // The *To properties will be used to known when to set absolute or to LERP
-    _posTo: number[] = [0,0,0];
-    _posToMod = false;
-    _posToStart: number = Date.now();
-    public get posTo(): number[] { return this._pos; }
-    public set posTo(pVal: string | number[]) {
-        if (pVal) {
-            this._posTo = ParseThreeTuple(pVal);
-            this._posToMod = true; // see processBeforeFrame
-            this._posToStart = Date.now();
-        }
-    };
-
-    _rot: number[] = [0,0,0,1];
-    _rotMod = false;
-    public get rot(): number[] { return this._rot; }
-    public set rot(pVal: string | number[]) {
-        if (pVal) {
-            this._rot = ParseFourTuple(pVal);
-            this._rotMod = true; // see processBeforeFrame
-        }
-    };
-
-    _rotTo: number[] = [0,0,0,1];
-    _rotToMod = false;
-    _rotToStart: number = Date.now();
-    public get rotTo(): number[] { return this._rot; }
-    public set rotTo(pVal: string | number[]) {
-        if (pVal) {
-            this._rotTo = ParseFourTuple(pVal);
-            this._rotToMod = true; // see processBeforeFrame
-            this._rotToStart = Date.now();
-        }
-    };
-
-    _for: number = 0;
-    public get for(): number { return this._for; }
-    public set for(pVal: number) {
-        this._for = pVal;
-    };
-
-    _posSpeed: number = 1;
-    public get posSpeed(): number { return this._posSpeed; }
-    public set posSpeed(pVal: number) {
-        this._posSpeed = Number(pVal);
-    };
+    static PosSpeedProp = 'posSpeed';
 
     constructor(pPos: PropValue, pRot: PropValue, pFor?: number) {
-        super(AbPlacementName);
-        this._pos = pPos ? ParseValueToType(PropValueTypes.NumberTriple, pPos) as number[] : [0,0,0];
-        this._posTo = this._pos;
-        this._rot = pRot ? ParseValueToType(PropValueTypes.NumberQuad, pRot) as number[] :  [0,0,0,1];
-        this._rotTo = this._rot;
-        this._for = pFor ?? 0;
+        super(AbPlacementName, {
+                [AbPlacement.PosProp]: {
+                    propName: AbPlacement.PosProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: pPos ? ParseValueToType(PropValueTypes.NumberTriple, pPos) as number[] : [0,0,0],
+                    propDesc: 'Position',
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbPlacement;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            abil._posMod = true; // see processBeforeFrame
+                        }
+                    }
+                },
+                [AbPlacement.RotProp]: {
+                    propName: AbPlacement.RotProp,
+                    propType: PropValueTypes.NumberQuad,
+                    propDefault: pRot ? ParseValueToType(PropValueTypes.NumberQuad, pRot) as number[] : [0,0,0,1],
+                    propDesc: 'Rotation',
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbPlacement;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            abil._rotMod = true; // see processBeforeFrame
+                        }
+                    }
+                },
+                [AbPlacement.ForProp]: {
+                    propName: AbPlacement.ForProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: pFor ?? 0,
+                    propDesc: 'Frame of Reference for position and rotation',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbPlacement.PosToProp]: {
+                    propName: AbPlacement.PosToProp,
+                    propType: PropValueTypes.NumberTriple,
+                    propDefault: pPos ? ParseValueToType(PropValueTypes.NumberTriple, pPos) as number[] : [0,0,0],
+                    propDesc: 'Position target',
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbPlacement;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            abil._posToMod = true; // see processBeforeFrame
+                            this._posToStart = Date.now();
+                        }
+                    }
+                },
+                [AbPlacement.RotToProp]: {
+                    propName: AbPlacement.RotToProp,
+                    propType: PropValueTypes.NumberQuad,
+                    propDefault: pRot ? ParseValueToType(PropValueTypes.NumberQuad, pRot) as number[] : [0,0,0,1],
+                    propDesc: 'Rotation target',
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbPlacement;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            abil._rotToMod = true; // see processBeforeFrame
+                            this._rotToStart = Date.now();
+                        }
+                    }
+                },
+                [AbPlacement.PosSpeedProp]: {
+                    propName: AbPlacement.PosSpeedProp,
+                    propType: PropValueTypes.Number,
+                    propDefault: 0,
+                    propDesc: 'Rotation target',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+        });
+        this._posMod = this._rotMod = false;
+        this._posToMod = this._rotToMod = false;
     };
+
+
+    _posMod = false;
+    _posToMod = false;
+    _posToStart: number = Date.now();
+
+    _rotMod = false;
+    _rotToMod = false;
+    _rotToStart: number = Date.now();
 
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
-        // Get and Set the instance's position in the 3d world.
-        // Passed position is normalized into a number array.
-        pBItem.addProperty(AbPlacement.PosProp, this);
-        // Get and Set the instances' rotation in the 3d world.
-        // Passed rotation is normalized into a number array.
-        pBItem.addProperty(AbPlacement.RotProp, this);
-        // MoveTo targets
-        pBItem.addProperty(AbPlacement.PosToProp, this);
-        pBItem.addProperty(AbPlacement.RotToProp, this);
-        // Get and Set the placement frame of reference.
-        pBItem.addProperty(AbPlacement.ForProp, this);
 
         // Update things just before rendering
         this._beforeFrameWatcher = Graphics.WatchBeforeFrame(this.processBeforeFrame.bind(this) as EventProcessor);
@@ -163,33 +176,38 @@ export class AbPlacement extends Ability {
 
     _beforeFrameWatcher: SubscriptionEntry = undefined;
     processBeforeFrame(pParms: GraphicsBeforeFrameProps): void {
-        if (this._pos[0] != this._posTo[0] || this._pos[2] != this._posTo[2] || this._pos[1] != this._posTo[1]) {
+        const cPos = this.getProp(AbPlacement.PosProp) as number[];
+        const cRot = this.getProp(AbPlacement.RotProp) as number[];
+        const cPosTo = this.getProp(AbPlacement.PosToProp) as number[];
+        const cRotTo = this.getProp(AbPlacement.RotToProp) as number[];
+        if (cPos[0] != cPosTo[0] || cPos[2] != cPosTo[2] || cPos[1] != cPosTo[1]) {
             const moveDuration = Date.now() - this._posToStart;
             const moveScale = Clamp(moveDuration / Config.world.lerpIntervalMS, 0, 1);
 
             if (moveScale > 0.9) {
-                // Moved enough. Assume we're done
                 // Logger.debug(`AbPlacement.beforeFrame: moveScale done d=${moveDuration}, ms=${moveScale}`);
-                this._pos = this._posTo;
-                this._rot = this._rotTo;
+                // Moved enough. Assume we're done
+                // Set the values directly to avoid the setter side effects
+                this.propValues[AbPlacement.PosProp] = cPosTo;
+                this.propValues[AbPlacement.RotProp] = cRotTo;
             }
             else {
-                const pos = new BJSVector3(this._pos[0], this._pos[1], this._pos[2]);
-                const posTo = new BJSVector3(this._posTo[0], this._posTo[1], this._posTo[2]);
-                const rot = new BJSQuaternion(this._rot[0], this._rot[1], this._rot[2], this._rot[3]);
-                const rotTo = new BJSQuaternion(this._rotTo[0], this._rotTo[1], this._rotTo[2], this._rotTo[3]);
+                const pos = new BJSVector3(cPos[0], cPos[1], cPos[2]);
+                const posTo = new BJSVector3(cPosTo[0], cPosTo[1], cPosTo[2]);
+                const rot = new BJSQuaternion(cRot[0], cRot[1], cRot[2], cRot[3]);
+                const rotTo = new BJSQuaternion(cRotTo[0], cRotTo[1], cRotTo[2], cRotTo[3]);
                 const np = BJSVector3.Lerp(pos, posTo, moveScale);
                 const nr = BJSQuaternion.Slerp(rot, rotTo, moveScale);
 
-                this._pos = [ np.x, np.y, np.z ];
-                this._rot = [ nr.x, nr.y, nr.z, nr.w ];
+                this.propValues[AbPlacement.PosProp] = [ np.x, np.y, np.z ];
+                this.propValues[AbPlacement.RotProp] = [ nr.x, nr.y, nr.z, nr.w ];
                 // Logger.debug(`AbPlacement.beforeFrame: pos=${pos}, pTo=${posTo}, d=${moveDuration}, ms=${moveScale}`);
             }
             // Anyone watching the position should know about the position update
             // NOTE: does not store the new value of the pos property but just generates a change event.
-            //     Since the pos value was updated above this does not want the side effects of setting it.
-            this.containingBItem.setProp(AbPlacement.PosProp, this._pos, false);
-            this.containingBItem.setProp(AbPlacement.RotProp, this._rot, false);
+            //     Since the pos value was updated above this does not want the side effects of mod flag.
+            this.containingBItem.setProp(AbPlacement.PosProp, this.propValues[AbPlacement.PosProp], false);
+            this.containingBItem.setProp(AbPlacement.RotProp, this.propValues[AbPlacement.RotProp], false);
         }
     };
 

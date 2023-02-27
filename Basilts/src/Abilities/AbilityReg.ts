@@ -11,8 +11,9 @@
 
 'use strict';
 
+import { BItem, PropValueTypes } from '@BItem/BItem';
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 // import { Logger } from '@Base/Tools/Logging';
@@ -36,28 +37,32 @@ export class AbRegistration extends Ability {
     public static FocusAvatarProp = 'FocusAvatar';
     public static AvatarsProp = 'Avatars';
 
-    // BItem name of the main/logged in avatar
-    public get FocusAvatar(): string {
-        // TODO: add code to return BItem name
-        return "unknown";
-    }
-    // BItem names of the avatars in the scene
-    public get Avatars(): string[] {
-        // TODO: add code to return BItem names
-        return ["unknown"];
-    }
-
     constructor() {
-        super(AbRegistrationName);
+        super(AbRegistrationName, {
+                [AbRegistration.FocusAvatarProp]: {
+                    propName: AbRegistration.FocusAvatarProp,
+                    propType: PropValueTypes.String,
+                    propDefault: "unknown",    // NOTE: this passed as parameter
+                    propDesc: 'The logged in avatar',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                [AbRegistration.AvatarsProp]: {
+                    propName: AbRegistration.AvatarsProp,
+                    propType: PropValueTypes.StringArray,
+                    propDefault: ["unknown"],    // NOTE: this passed as parameter
+                    propDesc: 'IDs of the avatars in the scene',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+
+        });
     };
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
-
-        pBItem.addProperty(AbRegistration.FocusAvatarProp, this);
-        pBItem.addProperty(AbRegistration.AvatarsProp, this);
 
         pBItem.setReady();
     };
