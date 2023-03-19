@@ -18,7 +18,7 @@ import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BIt
 import { BItems } from '@BItem/BItems';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { AbAssembly } from './AbilityAssembly';
 import { AbPlacement } from './AbilityPlacement';
 
@@ -94,7 +94,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
                     propDesc: 'Camera position',
-                    propValidator: PropDefaultValidator,
                     propGetter: (pAbil: Ability, pPropName: string) => {    // Get current camera position
                         const cpos = [0,0,0];
                         Graphics._camera.position.toArray(cpos, 0);
@@ -114,7 +113,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
                     propDesc: 'Camera position',
-                    propValidator: PropDefaultValidator,
                     propGetter: (pAbil: Ability, pPropName: string) => {    // Get current camera position
                         const crot = [0,0,0,1];
                         let rott = Graphics._camera.rotationQuaternion;
@@ -143,7 +141,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.Number,
                     propDefault: 0,
                     propDesc: 'Frame of reference for camera',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: PropDefaultSetter
                 },
@@ -152,7 +149,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
                     propDesc: 'target position to move camera to',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera target position
                         const abil = pAbil as AbCamera;
@@ -168,7 +164,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.NumberQuad,
                     propDefault: [0,0,0],
                     propDesc: 'target rotation to move camera to',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera target position
                         const abil = pAbil as AbCamera;
@@ -183,7 +178,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.Number,
                     propDefault: Config.webgl.camera.initialViewDistance,
                     propDesc: 'Distance camera is from target',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: PropDefaultSetter
                 },
@@ -192,7 +186,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.Number,
                     propDefault: pIndex,    // NOTE: this passed as parameter
                     propDesc: 'which camera this is',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: PropDefaultSetter
                 },
@@ -201,7 +194,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.Number,
                     propDefault: CameraModes.ThirdPerson,
                     propDesc: 'mode camera is in',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: PropDefaultSetter
                 },
@@ -210,7 +202,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
                     propDesc: 'Point camera is looking at',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
                         PropDefaultSetter(pAbil, pPropName, pVal);
@@ -225,7 +216,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.String,
                     propDefault: null,
                     propDesc: 'ID of object camera is pointing toward',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
                         PropDefaultSetter(pAbil, pPropName, pVal);
@@ -257,7 +247,6 @@ export class AbCamera extends Ability {
                     propType: PropValueTypes.NumberTriple,
                     propDefault: [0,0,0],
                     propDesc: 'Displace the camera from the target for thrid person view',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
                         PropDefaultSetter(pAbil, pPropName, pVal);

@@ -12,7 +12,7 @@
 'use strict';
 
 import { Ability, RegisterAbility, ParseValueToType } from '@Abilities/Ability';
-import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 import { DialogMgt } from '@Base/DialogMgt/DialogMgt';
 

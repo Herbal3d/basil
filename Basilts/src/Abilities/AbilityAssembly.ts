@@ -11,18 +11,21 @@
 
 'use strict';
 
-import { Ability, RegisterAbility } from '@Abilities/Ability';
+import { Ability, RegisterAbility, ParseValueToType  } from '@Abilities/Ability';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { AbPlacement } from '@Abilities/AbilityPlacement';
-import { BItem, PropValue, SetPropEventParams } from '@BItem/BItem';
+import { AuthToken } from '@Base/Tools/Auth';
 
-import { AuthToken } from '@Tools/Auth';
+import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BItem';
 
-import { BKeyedCollection } from '@Tools/bTypes';
+import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
+
 import { LoadSimpleAsset, LoadAssetParams, DeleteAsset } from '@Graphics/GraphicOps';
 import { Object3D } from '@Graphics/Object3d';
-import { Logger } from '@Base/Tools/Logging';
-import { EventProcessor, SubscriptionEntry } from '@Base/Eventing/SubscriptionEntry';
-import { JSONstringify } from '@Base/Tools/Utilities';
+
+import { BKeyedCollection } from '@Tools/bTypes';
+import { Logger } from '@Tools/Logging';
+import { JSONstringify } from '@Tools/Utilities';
 
 export const AbAssemblyName = 'Assembly';
 
@@ -32,14 +35,10 @@ interface AssemblyAfterRequestProps {
 };
 
 export function AbAssemblyFromProps(pProps: BKeyedCollection): AbAssembly {
-    if (pProps.hasOwnProperty(AbAssembly.AssetUrlProp) && pProps.hasOwnProperty(AbAssembly.AssetLoaderProp)) {
-        const assetUrl = pProps[AbAssembly.AssetUrlProp] as string;
-        const assetLoader = pProps[AbAssembly.AssetLoaderProp] as string;
-        if (assetUrl && assetLoader) {
-            return new AbAssembly(assetUrl, assetLoader);
-        };
-    };
-    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbAssemblyName}. pProps: ${JSON.stringify(pProps)}`);
+    return new AbAssembly(
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbAssembly.AssetUrlProp]),
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbAssembly.AssetLoaderProp]),
+    );
 };
 
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
@@ -48,60 +47,69 @@ RegisterAbility( AbAssemblyName, AbAssemblyFromProps );
 // An "Assembly" is a thing that can be represented or displayed in the world.
 // It can be a mesh, a shader, texture, or anything else that is loaded and used in the world.
 export class AbAssembly extends Ability {
-    static AssetUrlProp = 'assetUrl';
-    static AssetLoaderProp = 'assetLoader';
-    static AssetAuthProp = 'assetAuth';
-    static AssetRepresentationProp = 'assetRepresentation';
 
-    _assetUrl: PropValue;
-    public get assetUrl(): PropValue { return this._assetUrl; }
-    public set assetUrl(pVal: PropValue) {
-        this._assetUrl = pVal;
-        Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
-        this.containingBItem.setLoading();
-        void LoadAssembly(this, this.containingBItem);
-    } 
-
-    public assetLoader: PropValue;
-
-    _assetAuth: AuthToken;
-    public get assetAuth(): PropValue { return this._assetAuth; }
-    public set assetAuth(pVal: PropValue) {
-        if (typeof(pVal) === 'string') {
-            this._assetAuth = new AuthToken(pVal);
-        }
-        else {
-            if (pVal instanceof AuthToken) {
-                this._assetAuth = pVal;
-            };
-        };
-    }
-
-    public assetRepresenation: Object3D;
+    public static AssetUrlProp = 'assetUrl';
+    public static AssetLoaderProp = 'assetLoader';
+    public static AssetAuthProp = 'assetAuth';
+    public static AssetRepresentationProp = 'assetRepresentation';
 
     constructor(pAssetUrl: string, pAssetLoader: string) {
-        super(AbAssemblyName);
-        this._assetUrl = pAssetUrl;
-        this.assetLoader = pAssetLoader;
+        super(AbAssemblyName, {
+                [AbAssembly.AssetUrlProp]: {
+                    propName: AbAssembly.AssetUrlProp,
+                    propType: PropValueTypes.String,
+                    propDefault: pAssetUrl,
+                    propDesc: 'URL to fetch assembly',
+                    propGetter: PropDefaultGetter,
+                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
+                        const abil = pAbil as AbAssembly;
+                        if (pVal && abil) {
+                            PropDefaultSetter(pAbil, pPropName, pVal);
+                            Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
+                            this.containingBItem.setLoading();
+                            void LoadAssembly(this, this.containingBItem);
+                        }
+                    }
+                },
+                [AbAssembly.AssetLoaderProp]: {
+                    propName: AbAssembly.AssetLoaderProp,
+                    propType: PropValueTypes.String,
+                    propDefault: pAssetLoader,
+                    propDesc: 'loader to use for asset',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                // Get and Set the Asset's access token
+                // Set value can be either an AuthToken or a string (which is wrapped in an AuthToken)
+                [AbAssembly.AssetAuthProp]: {
+                    propName: AbAssembly.AssetAuthProp,
+                    propType: PropValueTypes.String,
+                    propDefault: "",
+                    private: true,
+                    propDesc: 'loader to use for asset',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                },
+                // Get the Assembly's graphical representation.
+                // Very dependent on the underlying implementation. This is a Babylon Object3D
+                // All abilities that create in-world representations present this property
+                [AbAssembly.AssetRepresentationProp]: {
+                    propName: AbAssembly.AssetRepresentationProp,
+                    propType: PropValueTypes.Object3D,
+                    propDefault: undefined,
+                    private: true,
+                    propDesc: 'internal representation of the assembly',
+                    propGetter: PropDefaultGetter,
+                    propSetter: PropDefaultSetter
+                }
+        });
     };
 
     addProperties(pBItem: BItem): void {
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbAssembly.AssetUrlProp, this);
-
-        // Get and Set the AssetLoader needed for the asset
-        pBItem.addProperty(AbAssembly.AssetLoaderProp, this);
-        // Get and Set the Asset's access token
-        // Set value can be either an AuthToken or a string (which is wrapped in an AuthToken)
-        pBItem.addProperty(AbAssembly.AssetAuthProp, this);
-        // Get the Assembly's graphical representation.
-        // Very dependent on the underlying implementation. This is a ThreeJS Object3D
-        // All abilities that create in-world representations present this property
-        pBItem.addProperty(AbAssembly.AssetRepresentationProp, this, { private: true });
-
         // Has the side effect of causing the URL to be loaded (Graphics LoadAssembly)
-        pBItem.setProp(AbAssembly.AssetUrlProp, this._assetUrl);
+        pBItem.setProp(AbAssembly.AssetUrlProp, this.propValues[AbAssembly.AssetUrlProp]);
 
         // We watch for position changes and set them in the representation
         this._posChangeWatcher = pBItem.watchProperty(AbPlacement.PosProp,
@@ -113,9 +121,10 @@ export class AbAssembly extends Ability {
     // When my properties are being removed, the asset is no longer in world.
     propertyBeingRemoved(pBItem: BItem, pPropertyName: string): void {
         if (pPropertyName === AbAssembly.AssetRepresentationProp) {
-            if (this.assetRepresenation) {
-                DeleteAsset(this.assetRepresenation);
-                this.assetRepresenation = undefined;
+            const represent = this.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
+            if (represent) {
+                DeleteAsset(represent);
+                this.setProp(AbAssembly.AssetRepresentationProp, undefined);
                 pBItem.unWatchProperty(this._posChangeWatcher);
                 pBItem.unWatchProperty(this._rotChangeWatcher);
             }
@@ -129,15 +138,17 @@ export class AbAssembly extends Ability {
     // We're told the position changed
     _posChangeWatcher: SubscriptionEntry;
     _processPosChange(pParms: SetPropEventParams): void {
-        if (this.assetRepresenation) {
-            this.assetRepresenation.pos = pParms.NewValue as number[];
+        const represent = this.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
+        if (represent) {
+            represent.pos = pParms.NewValue as number[];
         }
     };
     // We're told the rotation changed
     _rotChangeWatcher: SubscriptionEntry;
     _processRotChange(pParms: BKeyedCollection): void {
-        if (this.assetRepresenation) {
-            this.assetRepresenation.rot = pParms.NewValue as number[];
+        const represent = this.getProp(AbAssembly.AssetRepresentationProp) as Object3D;
+        if (represent) {
+            represent.rot = pParms.NewValue as number[];
         }
     };
 };
@@ -146,12 +157,12 @@ export class AbAssembly extends Ability {
 // Will load the asset and set the BItem's state to READY.
 // Promise fails of the asset can't be loaded and the BItem's state is set to FAILED
 export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<void> {
-    Logger.debug(`AbAssembly: LoadAssembly(${pAbil._assetUrl})`);
+    Logger.debug(`AbAssembly: LoadAssembly(${pAbil.getProp(AbAssembly.AssetUrlProp)})`);
 
     const loaderProps: LoadAssetParams = {
-        AssetURL: <string>pAbil._assetUrl,
-        AssetLoader: <string>pAbil.assetLoader,
-        Auth: pAbil._assetAuth?.token
+        AssetURL: <string>pAbil.getProp(AbAssembly.AssetUrlProp),
+        AssetLoader: <string>pAbil.getProp(AbAssembly.AssetLoaderProp),
+        Auth: (pAbil.getProp(AbAssembly.AssetAuthProp) as AuthToken)?.token
     };
 
     LoadSimpleAsset(loaderProps)
@@ -162,7 +173,7 @@ export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<vo
             pBItem.setFailed();
         }
         else {
-            pAbil.assetRepresenation = loaded;
+            pAbil.setProp(AbAssembly.AssetRepresentationProp, loaded);
             loaded.pos = pBItem.getProp(AbPlacement.PosProp) as number[] ?? [ 0,0,0 ];
             loaded.rot = pBItem.getProp(AbPlacement.RotProp) as number[] ?? [ 0,0,0,1 ];
             pBItem.setReady();
