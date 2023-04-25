@@ -14,7 +14,8 @@
 import { Config } from '@Base/Config';
 
 import { BItems } from '@BItem/BItems';
-import { BItem, SetPropEventParams } from '@BItem/BItem';
+import { BItem, SetPropEventParams, PropValueTypes } from '@BItem/BItem';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 
 import { Ability, RegisterAbility } from '@Abilities/Ability';
 import { AbCamera } from '@Abilities/AbilityCamera';
@@ -64,16 +65,49 @@ export class AbOSAvaUpdate extends Ability {
     public static MoveToProp = 'osau_moveTo';
 
     constructor() {
-        super(AbOSAvaMoveName);
+        super(AbOSAvaMoveName, {
+            [AbOSAvaUpdate.ControlFlagsProp]: {
+                propName: AbOSAvaUpdate.ControlFlagsProp,
+                propType: PropValueTypes.Number,
+                propDefault: 0,
+                propDesc: 'Flags controlling type of avatar movement',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+            [AbOSAvaUpdate.BodyRotProp]: {
+                propName: AbOSAvaUpdate.BodyRotProp,
+                propType: PropValueTypes.NumberArray,
+                propDefault: [ 0, 0, 0, 1],
+                propDesc: 'Rotation of the avatar body',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+            [AbOSAvaUpdate.HeadRotProp]: {
+                propName: AbOSAvaUpdate.HeadRotProp,
+                propType: PropValueTypes.NumberArray,
+                propDefault: [ 0, 0, 0, 1],
+                propDesc: 'Rotation of the avatar head',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+            [AbOSAvaUpdate.MoveToProp]: {
+                propName: AbOSAvaUpdate.MoveToProp,
+                propType: PropValueTypes.NumberArray,
+                propDefault: [100, 100, 100],
+                propDesc: 'Target for avatar to move to',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+            [AbOSAvaUpdate.FarProp]: {
+                propName: AbOSAvaUpdate.FarProp,
+                propType: PropValueTypes.Number,
+                propDefault: 20,
+                propDesc: '',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+        });
     };
-
-    // Make the properties available
-    public osau_control: number;
-    public osau_bodyrot: number[];
-    public osau_headrot: number[];
-    public osau_far: number;
-
-    public osau_moveTo: number[];
 
     _cameraId: string;      // ID of camera BItem
     _mouseId: string;       // ID of mouse BItem
@@ -84,12 +118,7 @@ export class AbOSAvaUpdate extends Ability {
         // Always do this!k!
         super.addProperties(pBItem);
 
-        pBItem.addProperty(AbOSAvaUpdate.ControlFlagsProp, this);
-        pBItem.addProperty(AbOSAvaUpdate.BodyRotProp, this);
-        pBItem.addProperty(AbOSAvaUpdate.HeadRotProp, this);
-
-        pBItem.addProperty(AbOSAvaUpdate.MoveToProp, this);
-
+        // Collect some global identifiers for use later
         this._cameraId = BItems.getWellKnownBItemId(WellKnownCameraName);
         this._mouseId = BItems.getWellKnownBItemId(WellKnownMouseName);
         this._keyboardId = BItems.getWellKnownBItemId(WellKnownKeyboardName);
@@ -141,7 +170,7 @@ export class AbOSAvaUpdate extends Ability {
     }
 
     doFly(pKeyUpDown: boolean) {
-        const isFlying = this.osau_control & OSAvaUpdateMoveAction.flying;
+        const isFlying = <number>this.getProp(AbOSAvaUpdate.ControlFlagsProp) & OSAvaUpdateMoveAction.flying;
         if (!isFlying && pKeyUpDown) {
             this.setControlFlag(OSAvaUpdateMoveAction.flying, true);
         }
@@ -168,10 +197,10 @@ export class AbOSAvaUpdate extends Ability {
     // Set control flag. If passed boolean of 'false', will clear the flag.
     setControlFlag(pFlag: OSAvaUpdateMoveAction, pSet: boolean = true): void {
         if (pSet) {
-            this.osau_control |= pFlag;
+            (this.propValues[AbOSAvaUpdate.ControlFlagsProp] as number) |= pFlag;
         }
         else {
-            this.osau_control &= ~pFlag;
+            (this.propValues[AbOSAvaUpdate.ControlFlagsProp] as number) &= ~pFlag;
         }
     };
 
@@ -181,13 +210,13 @@ export class AbOSAvaUpdate extends Ability {
         const far = <number>BItems.getProp(this._cameraId, AbCamera.CameraFarProp);
         const rot = <number[]>this.containingBItem.getProp(AbPlacement.RotProp);
         const updateProps = {
-            [AbOSAvaUpdate.ControlFlagsProp]: this.osau_control,
+            [AbOSAvaUpdate.ControlFlagsProp]: this.getProp(AbOSAvaUpdate.ControlFlagsProp),
             [AbOSAvaUpdate.FarProp]: far,
             [AbOSAvaUpdate.BodyRotProp]: rot,
             [AbOSAvaUpdate.HeadRotProp]: rot
         };
-        this.osau_bodyrot = rot;
-        this.osau_headrot = rot;
+        this.setProp(AbOSAvaUpdate.BodyRotProp, rot);
+        this.setProp(AbOSAvaUpdate.HeadRotProp, rot);
 
         // Logger.debug(`AbOSAvaMove.sendMovementUpdate: sending ${JSON.stringify(updateProps)}`);
         void this.containingBItem.conn?.UpdateProperties(this.containingBItem.id, updateProps);
