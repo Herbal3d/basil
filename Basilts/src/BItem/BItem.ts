@@ -27,6 +27,7 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
+import { ThinSprite } from '@babylonjs/core/Sprites/thinSprite';
 
 // BItem class is the base of all the items in the system.
 // A BItem get ALL it's functionality fron the Abilities that are added to it.
@@ -239,6 +240,14 @@ export class BItem {
         return ret;
     };
 
+    // When the BItem is created or multiple properties are updated, this is called
+    //    so any delayed operation can be done
+    updateComplete(): void {
+        this.getAbilities().forEach( abil => {
+            abil.updateComplete(this);
+        });
+    }
+
     // =========================================================================
     // Add an Ability to this BItem
     // This adds the Ability to the Ability collection and calls the Abilitie's
@@ -264,6 +273,18 @@ export class BItem {
         });
         return ret;
     };
+    // Return all the abilities on this BItem
+    // TODO: figure out if keeping a list rather than recomputing the list is better
+    getAbilities(): Ability[] {
+        const abils: Ability[] = [];
+        this._props.forEach( (abil: Ability, propName: string) => {
+            if (! abils.includes(abil)) {
+                abils.push(abil);
+            }
+        });
+
+        return abils;
+    }
 
     // =========================================================================
     // Return the current state of the BItem

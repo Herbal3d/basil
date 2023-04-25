@@ -45,40 +45,42 @@ export class AbDialog extends Ability {
 
     constructor(pUrl: string, pDialogName?: string, pPlacement?: string) {
         super(AbDialogName, {
-                [AbDialog.DialogUrlProp]: {
-                    propName: AbDialog.DialogUrlProp,
-                    propType: PropValueTypes.String,
-                    propDefault: pUrl,
-                    propDesc: 'URL of the dialog to display',
-                    propGetter: PropDefaultGetter,
-                    propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {
-                        PropDefaultSetter(pAbil, pPropName, pVal);
-                        // Setting the URL causes the dialog to be created
-                        if (pAbil.propValues[AbDialog.DialogUrlProp]) {
+            [AbDialog.DialogUrlProp]: {
+                propName: AbDialog.DialogUrlProp,
+                propType: PropValueTypes.String,
+                propDefault: pUrl,
+                propDesc: 'URL of the dialog to display',
+                propGetter: PropDefaultGetter,
+                propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {
+                    PropDefaultSetter(pAbil, pPropName, pVal);
+                    // Setting the URL causes the dialog to be created
+                    if (pAbil.propValues[AbDialog.DialogUrlProp]) {
+                        this.addWhenUpdateComplete( (pBItem: BItem, pAbil: AbDialog) => {
                             DialogMgt.createDialog(
                                 this.propValues[AbDialog.DialogNameProp] as string,
                                 this.propValues[AbDialog.DialogUrlProp] as string,
                                 this.propValues[AbDialog.DialogPlacementProp] as string
                             );
-                        }
+                        });
                     }
-                },
-                [AbDialog.DialogNameProp]: {
-                    propName: AbDialog.DialogNameProp,
-                    propType: PropValueTypes.String,
-                    propDefault: pDialogName ?? 'Dialog' + RandomIdentifier(),
-                    propDesc: 'Name to use to reference the dialog',
-                    propGetter: PropDefaultGetter,
-                    propSetter: PropDefaultSetter
-                },
-                [AbDialog.DialogPlacementProp]: {
-                    propName: AbDialog.DialogPlacementProp,
-                    propType: PropValueTypes.String,
-                    propDefault: pPlacement ?? 'center',
-                    propDesc: 'Page placement of the dialog',
-                    propGetter: PropDefaultGetter,
-                    propSetter: PropDefaultSetter
                 }
+            },
+            [AbDialog.DialogNameProp]: {
+                propName: AbDialog.DialogNameProp,
+                propType: PropValueTypes.String,
+                propDefault: pDialogName ?? 'Dialog' + RandomIdentifier(),
+                propDesc: 'Name to use to reference the dialog',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+            [AbDialog.DialogPlacementProp]: {
+                propName: AbDialog.DialogPlacementProp,
+                propType: PropValueTypes.String,
+                propDefault: pPlacement ?? 'center',
+                propDesc: 'Page placement of the dialog',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            }
         });
     };
 

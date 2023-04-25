@@ -139,6 +139,12 @@ export function AbilityFactory(pName: string, pProps: BKeyedCollection): Ability
 };
 // =========== END OF Global functions for registering and creating abilities ===========
 
+// When updating properties, some things can't be immediate but need to happen when
+//    all the properties have been set.
+// An ability can register instances if this function to be called when the update
+//    is complete.
+type DoOnUpdateComplete = (pBItem: BItem, pAbil: Ability) => void;
+
 // Parent class for Abilities.
 // Mostly helper and common functions.
 export abstract class Ability  {
@@ -151,6 +157,8 @@ export abstract class Ability  {
     propDefns: AbilityPropDefns = {};
     // The values of the properties
     propValues: { [ key: string]: PropValue } = {};
+    // When an ability is created, some functions can be delayed until the update is complete
+    whenCompleted: DoOnUpdateComplete[];
 
     // Creating an ability automatically adds it to it's BItem
     constructor(pName: string, pPropDefns?: AbilityPropDefns) {
@@ -202,6 +210,7 @@ export abstract class Ability  {
             return this.propDefns[pName].propGetter(this, pName);
         }
         else {
+            // Ability is not using new propDefns form so expect the variable to be defined on the Ability
             // @ts-ignore
             return this[pName] as PropValue;
         }
@@ -217,5 +226,22 @@ export abstract class Ability  {
             // @ts-ignore
             this[pName] = pVal;
         }
+    }
+
+    // Even though multiple properties can be set, sometimes the setting needs to be
+    //   "atomic" in that there are operation that need all the set parameters.
+    // This function is called after all the properties have been set.
+    updateComplete(pBItem: BItem): void {
+        const completes = this.whenCompleted;
+        this.whenCompleted = [];
+        completes.forEach( (comp) => {
+            comp(pBItem, this);
+        });
+        return;
+    }
+    
+    addWhenUpdateComplete(pCompleted: DoOnUpdateComplete): void {
+        this.whenCompleted.push(pCompleted);
+
     }
 }

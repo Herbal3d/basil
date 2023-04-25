@@ -298,17 +298,20 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                 // TODO: check auth and prevent adding abilities to system BItems
                 const bitem = BItems.get(pReq.IId);
                 const abils = pReq.IProps['abilities'] as string[];
-                if (bitem && abils) {
-                    for (const abil of abils) {
-                        const newAbility = AbilityFactory(abil, pReq.IProps);
-                        if (newAbility) {
-                            bitem.addAbility(newAbility);
-                        }
-                        else {
-                            resp.Exception = `Could not create Ability ${abil}`;
-                            break;
+                if (bitem) {
+                    if (abils) {
+                        for (const abil of abils) {
+                            const newAbility = AbilityFactory(abil, pReq.IProps);
+                            if (newAbility) {
+                                bitem.addAbility(newAbility);
+                            }
+                            else {
+                                resp.Exception = `Could not create Ability ${abil}`;
+                                break;
+                            };
                         };
                     };
+                    bitem.updateComplete();
                 }
                 else {
                     resp.Exception = 'BItem not found';
@@ -375,6 +378,7 @@ async function Processor(pReq: BMessage, pConnection: BasilConnection, pProto: B
                     for (const prop of Object.keys(pReq.IProps)) {
                         bitem.setProp(prop, pReq.IProps[prop]);
                     };
+                    bitem.updateComplete();
                 }
                 else {
                     resp.Exception = 'BItem not found';

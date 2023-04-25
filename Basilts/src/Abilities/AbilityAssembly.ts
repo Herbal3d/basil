@@ -17,6 +17,7 @@ import { AbPlacement } from '@Abilities/AbilityPlacement';
 import { AuthToken } from '@Base/Tools/Auth';
 
 import { BItem, PropValue, PropValueTypes, SetPropEventParams } from '@BItem/BItem';
+import { BItemState } from '@Abilities/AbilityBItem';
 
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
@@ -25,7 +26,6 @@ import { Object3D } from '@Graphics/Object3d';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
-import { JSONstringify } from '@Tools/Utilities';
 
 export const AbAssemblyName = 'Assembly';
 
@@ -65,10 +65,15 @@ export class AbAssembly extends Ability {
                         const abil = pAbil as AbAssembly;
                         if (pVal && abil) {
                             PropDefaultSetter(pAbil, pPropName, pVal);
-                            Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
-                            this.containingBItem.setLoading();
-                            void LoadAssembly(this, this.containingBItem);
-                        }
+                            if (this.containingBItem.getState() != BItemState.LOADING) {
+                                Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
+                                this.containingBItem.setLoading();
+                                // When all parameters are set, start the loading
+                                this.addWhenUpdateComplete( (pBItem: BItem, pAbil: AbAssembly) => {
+                                    void LoadAssembly(pAbil, pBItem);
+                                });
+                            };
+                        };
                     }
                 },
                 [AbAssembly.AssetLoaderProp]: {

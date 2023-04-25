@@ -75,6 +75,8 @@ export const BItems = {
         if (err) {
             throw err;
         };
+        // Some of the abilities can complete after the BItem has been set up and has all its abilities
+        newBItem.updateComplete();
         return newBItem;
     },
     // Add BItem to the collection of BItems
