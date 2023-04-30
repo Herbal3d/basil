@@ -95,6 +95,10 @@ export function ParseValueToType(pTargetValType: PropValueTypes, pVal: unknown):
                     return pVal;
                 }
                 return new AuthToken(pVal as string);
+            case PropValueTypes.Object:
+                return pVal as PropValue;
+            case PropValueTypes.Object3D:
+                return pVal as PropValue;
             default:
                 Logger.error(`ParseValueToType: unknown type ${pTargetValType} for value ${pVal}`);
                 return undefined;
@@ -158,7 +162,7 @@ export abstract class Ability  {
     // The values of the properties
     propValues: { [ key: string]: PropValue } = {};
     // When an ability is created, some functions can be delayed until the update is complete
-    whenCompleted: DoOnUpdateComplete[];
+    whenCompleted: DoOnUpdateComplete[] = [];
 
     // Creating an ability automatically adds it to it's BItem
     constructor(pName: string, pPropDefns?: AbilityPropDefns) {

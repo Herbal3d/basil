@@ -27,7 +27,6 @@ import { AuthToken } from '@Tools/Auth';
 import { CreateUniqueId, JSONstringify } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
-import { ThinSprite } from '@babylonjs/core/Sprites/thinSprite';
 
 // BItem class is the base of all the items in the system.
 // A BItem get ALL it's functionality fron the Abilities that are added to it.
