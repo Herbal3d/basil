@@ -84,7 +84,9 @@ export const Eventing = {
             topicEnt = Eventing.Register(pTopic, 'subscribe');
         };
         topicEnt.addSubscription(sub);
-        // Logger.debug("Eventing.subscribe: adding subscription to event " + pTopic);
+        if (Config.Debug.EventingSubscribe) {
+            Logger.debug("Eventing.subscribe: adding subscription to event " + pTopic);
+        }
         void onSubscribe.fire({ 'topic': pTopic, 'topicEntry': topicEnt });
         return sub;
     },
@@ -101,7 +103,9 @@ export const Eventing = {
                     Eventing.Unregister(topicEnt);
                 };
             };
-            Logger.debug("Eventing.unsubscribe: removing subscription for event " + pSubEntry.topic);
+            if (Config.Debug.EventingUnSubscribe) {
+                Logger.debug("Eventing.unsubscribe: removing subscription for event " + pSubEntry.topic);
+            }
         };
     },
     // Register a topic that can be generated.

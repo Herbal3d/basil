@@ -11,49 +11,64 @@
 
 'use strict';
 
+import { Config } from '@Base/Config';
+
 import { TopicName, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 import { BKeyedCollection } from '@Tools/bTypes';
+
+import { JSONstringify } from '@Base/Tools/Utilities';
+import { Logger } from '@Base/Tools/Logging';
 
 // One topic that can be subscribed to.
 // This is the datastructure for a topic, its subscriptions, and actions.
 // This data structure is passed around to the subscribers so 'fire' can be called.
 export class TopicEntry {
-  public topic: TopicName;
-  public subs: SubscriptionEntry[];
-  public numTopicEventsFired: number;
-  public registar: string;
-  public registered: boolean;
+    public topic: TopicName;
+    public subs: SubscriptionEntry[];
+    public numTopicEventsFired: number;
+    public registar: string;
+    public registered: boolean;
 
-  constructor(pTopicName: TopicName) {
-    this.topic = pTopicName;
-    this.subs = [];
-    this.numTopicEventsFired = 0;
-    this.registered = false;
-  }
-  hasSubscriptions(): boolean {
-    return this.subs.length > 0;
-  };
-  addSubscription(sub: SubscriptionEntry): void {
-    this.subs.push(sub);
-  };
-  removeSubscription(sub: SubscriptionEntry): void {
-    for (let ii=this.subs.length-1; ii>=0; ii--) {
-      if (this.subs[ii].id === sub.id) {
-        this.subs.splice(ii, 1);
-      }
+    constructor(pTopicName: TopicName) {
+        this.topic = pTopicName;
+        this.subs = [];
+        this.numTopicEventsFired = 0;
+        this.registered = false;
     }
-  };
-  wasRegistered(): boolean {
-    return this.registered;
-  };
-  async fire(params: BKeyedCollection): Promise<SubscriptionEntry[]> {
-    this.numTopicEventsFired++;
-    if (this.subs.length > 0) {
-      // this.subs.map( sub => { sub.fire(params); } );
-      // Could wait for the resolution of the Promises
-      return Promise.all(this.subs.map( sub => { return sub.fire(params); } ));
+
+    hasSubscriptions(): boolean {
+        return this.subs.length > 0;
     };
-    return null;
-  };
+
+    addSubscription(sub: SubscriptionEntry): void {
+        this.subs.push(sub);
+    };
+
+    removeSubscription(sub: SubscriptionEntry): void {
+        for (let ii=this.subs.length-1; ii>=0; ii--) {
+            if (this.subs[ii].id === sub.id) {
+                this.subs.splice(ii, 1);
+            }
+        }
+    };
+
+    wasRegistered(): boolean {
+        return this.registered;
+    };
+
+    async fire(params: BKeyedCollection): Promise<SubscriptionEntry[]> {
+        this.numTopicEventsFired++;
+        if (this.subs.length > 0) {
+            // this.subs.map( sub => { sub.fire(params); } );
+            // Could wait for the resolution of the Promises
+            if (Config.Debug.EventingFire) {
+                if (! Config.Debug.EventsToIgnore.includes(this.topic)) {
+                    Logger.debug(`TopicEntry.fire: ${this.topic}`);
+                }
+            }
+            return Promise.all(this.subs.map( sub => { return sub.fire(params); } ));
+        };
+        return null;
+    };
 };
 
