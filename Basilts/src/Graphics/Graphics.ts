@@ -14,7 +14,7 @@
 import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters, ConfigGetQueryVariable } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
-import { ActionManager, Camera, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
+import { ActionManager, AssetContainer, Camera, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
 import { Light, DirectionalLight, HemisphericLight, ShadowGenerator } from "@babylonjs/core";
 import { TargetCamera, TransformNode, MeshBuilder, AbstractMesh, Mesh  } from "@babylonjs/core";
 import { StandardMaterial, Texture, CubeTexture } from '@babylonjs/core';
@@ -33,6 +33,7 @@ import { TopicEntry } from '@Eventing/TopicEntry';
 import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilities';
 import { BKeyedCollection } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
+import { Object3D } from './Object3d';
 
 export enum GraphicStates {
     Uninitilized = 0,
@@ -432,6 +433,13 @@ export const Graphics = {
     },
     addNodeToCameraView(pNode: AbstractMesh): void {
         pNode.parent = Graphics._groupCameraRel;
+    },
+
+    // Object3d can be made up of a container with a root node
+    // The containerness is important since the root node can't be parented
+    //    so removing this collection has to de-parent the root node.
+    addObject3dToWorldView(pObject: Object3D): void {
+        pObject.mesh.parent = Graphics._groupWorldRel;
     }
 
 };

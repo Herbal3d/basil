@@ -18,7 +18,6 @@ import { AbstractMesh, AssetContainer, ISceneLoaderProgressEvent } from '@babylo
 import { Vector3 as BJSVector3, Quaternion as BJSQuaternion } from '@babylonjs/core/Maths';
 
 import { CoordSystem } from '@Comm/BMessage';
-import { platform } from 'os';
 
 // import { Logger } from '@Tools/Logging';
 

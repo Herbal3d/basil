@@ -24,7 +24,6 @@ import { Vector3 as BJSVector3, Color3 as BJSColor3 } from '@babylonjs/core/Math
 
 import { Graphics } from '@Graphics/Graphics';
 import { Object3D } from '@Graphics/Object3d';
-import { CoordSystem } from '@Comm/BMessage';
 
 import { BKeyedCollection, BKeyValue } from '@Tools/bTypes';
 import { JSONstringify, CombineParameters, ExtractStringError, ParseThreeTuple } from '@Tools/Utilities';
@@ -101,18 +100,27 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
     try {
         // Load the asset
         AnnounceProgress(AssetLoadingState.Started, parms.AssetURL, null, pProgressCallback);
-        const assetContainer = await SceneLoader.LoadAssetContainerAsync(parms.AssetURL, '', Graphics._scene,
+        const assetContainer = await SceneLoader.LoadAssetContainerAsync(
+            parms.AssetURL,
+            '',
+            Graphics._scene,
             (event: ISceneLoaderProgressEvent) => {
                 AnnounceProgress(AssetLoadingState.Working, parms.AssetURL, event, pProgressCallback);
-        });
+            }
+        );
         AnnounceProgress(AssetLoadingState.Loaded, parms.AssetURL, null, pProgressCallback);
         if (assetContainer) {
             if (assetContainer.meshes.length > 0) {
                 PrepareMeshesInContainer(assetContainer);
+                // Create one node that holds everything that was loaded
                 const rootNode = assetContainer.createRootMesh();
-                asset = new Object3D(assetContainer, rootNode);
-                Graphics.addNodeToWorldView(rootNode);
+                // Add the loaded things to the scene
                 assetContainer.addAllToScene();
+                // Create handle for all the assets in this load
+                asset = new Object3D(assetContainer, rootNode);
+                // Add the contents to the world coordinate system
+                Graphics.addObject3dToWorldView(asset);
+                // Remember to remove it from the WorldView before unloading the container
             }
         };
     }
