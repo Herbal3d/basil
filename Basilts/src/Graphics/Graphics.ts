@@ -11,7 +11,7 @@
 
 'use static';
 
-import { Config, AmbientLightingParameters, DirectionalLightingParameters, CameraParameters, ConfigGetQueryVariable } from '@Base/Config';
+import { Config, AmbientLightingParameters, DirectionalLightingParameters, ConfigGetQueryVariable } from '@Base/Config';
 
 // import * as BABYLON from "@babylonjs/core/Legacy/legacy";
 import { ActionManager, AssetContainer, Camera, Engine, Scene, SceneInstrumentation, SceneOptimizer, SceneOptimizerOptions } from "@babylonjs/core";
@@ -216,25 +216,40 @@ export const Graphics = {
             name: string;
             position: number[];
             rotationQ?: number[];
-            target?: number[];
+            cameraSpeed: number;
+            cameraMinZ: number;
+            cameraMaxZ: number;
+            target?: number[];      // target is a point
             attachControl?: boolean;
         }
         const parms = CombineParameters(undefined, pPassedParms, {
             name: 'cameraX',
-            position: [200, 50, 200],
+            position: Config.webgl.camera.position,
             rotationQ: undefined,
+            cameraSpeed: Config.webgl.camera.maxCameraSpeed,
+            cameraAcceleration: Config.webgl.camera.cameraAcceleration,
+            cameraMinZ: Config.webgl.camera.cameraMinZ,
+            cameraMaxZ: Config.webgl.camera.cameraMaxZ,
             target: undefined,
-            attachControl: true,
+            attachControl: false
         }) as unknown as activateUniversalCameraParms;
+
         const pos = BJSVector3.FromArray(parms.position);
-        const pRot = parms.rotationQ;
-        const rot = pRot ? new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]) : undefined;
-        const lookAt = parms.target ? BJSVector3.FromArray(parms.target) : undefined;
 
         const cam = Graphics._cameraUniversal ?? new UniversalCamera(parms.name, pos, Graphics._scene);
-        cam.position = pos;
-        if (rot) cam.rotationQuaternion  = rot;
-        if (lookAt) cam.target = lookAt;
+
+        cam.speed = parms.cameraSpeed;
+        cam.minZ = parms.cameraMinZ;
+        cam.maxZ = parms.cameraMaxZ;
+        if (parms.rotationQ) {
+            const rot = new BJSQuaternion(parms.rotationQ[0],
+                    parms.rotationQ[1], parms.rotationQ[2], parms.rotationQ[3]);
+            cam.rotationQuaternion = rot;
+        }
+        if (parms.target) {
+            const lookAt = BJSVector3.FromArray(parms.target);
+            cam.lockedTarget = lookAt;
+        }
 
         Graphics._cameraUniversal = cam;
         return Graphics.setActiveCamera(cam, parms.attachControl);
@@ -247,12 +262,12 @@ export const Graphics = {
             alpha: number;
             beta: number;
             viewDistance: number;
-            target: number[];
+            target: number[];   // target is a point
             attachControl?: boolean;
         }
         const parms = CombineParameters(undefined, pPassedParms, {
             name: 'cameraX',
-            position: [200, 50, 200],
+            position: Config.webgl.camera.position,
             rotationQ: undefined,
             alpha: 0,
             beta: 0,
@@ -273,10 +288,67 @@ export const Graphics = {
                                 parms.viewDistance,
                                 lookAt,
                                 Graphics._scene);
-        cam.position            = pos;
-        if (rot) cam.rotationQuaternion  = rot;
+
+        cam.position = pos;
+
+        if (parms.rotationQ) {
+            const pRot = parms.rotationQ;
+            const rot = new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]);
+            cam.rotationQuaternion  = rot;
+        }
 
         Graphics._cameraArcRotate = cam;
+        return Graphics.setActiveCamera(cam, parms.attachControl);
+
+    },
+    activateFollowCamera(pPassedParms: BKeyedCollection): Camera {
+        interface activateFollowCameraParms {
+            name: string;
+            position: number[];
+            radius: number;
+            heightOffset: number;
+            rotationalOffset: number;
+            cameraAcceleration: number;
+            maxCameraSpeed: number;
+            target: Object3D;   // target is a mesh
+            attachControl: boolean;
+        }
+        const parms = CombineParameters(undefined, pPassedParms, {
+            name: 'cameraX',
+            position: undefined,
+            radius: Config.world.thirdPersonDisplacement[1],
+            heightOffset: -Config.world.thirdPersonDisplacement[2],
+            rotationalOffset: 0,
+            cameraAcceleration: Config.webgl.camera.cameraAcceleration,
+            maxCameraSpeed: Config.webgl.camera.maxCameraSpeed,
+            cameraMinZ: Config.webgl.camera.cameraMinZ,
+            cameraMaxZ: Config.webgl.camera.cameraMaxZ,
+            target: undefined,
+            attachControl: true
+        }) as unknown as activateFollowCameraParms;
+
+        const pos = BJSVector3.FromArray(parms.position);
+
+        const cam = Graphics._cameraFollow
+                            ?? new FollowCamera(
+                                parms.name,
+                                pos,
+                                Graphics._scene);
+
+        cam.radius = parms.radius;
+        cam.heightOffset = parms.heightOffset;
+        cam.rotationOffset = parms.rotationalOffset;
+        cam.cameraAcceleration = parms.cameraAcceleration;
+        cam.maxCameraSpeed = parms.maxCameraSpeed;
+
+        if (parms.target && parms.target.mesh) {
+            cam.lockedTarget = parms.target.mesh;
+        }
+        else {
+            cam.target = BJSVector3.FromArray(Config.webgl.camera.target);
+        }
+
+        Graphics._cameraFollow = cam;
         return Graphics.setActiveCamera(cam, parms.attachControl);
 
     },
@@ -302,22 +374,11 @@ export const Graphics = {
         }
 
         // Set the parameter default values if not specified in the config file
-        const parms = <CameraParameters><unknown>CombineParameters(Config.webgl.camera, passedParms, {
-            name: 'cameraX',
-            initialCameraPosition: [200, 50, 200],
-            initialCameraLookAt: [0, 0, 0]
+        const parms = CombineParameters(Config.webgl.camera, passedParms, {
+            attachControl: false
         });
 
-        const initialCameraPosition = BJSVector3.FromArray(parms.initialCameraPosition);
-        const lookAt = BJSVector3.FromArray(parms.initialCameraLookAt);
-
-        // The scene needs a camera while waiting for any client
-        const cam = new UniversalCamera(parms.name, initialCameraPosition, Graphics._scene);
-        cam.minZ = 0.1;
-        cam.speed = 0.02;
-        cam.setTarget(lookAt);
-        cam.attachControl(null, false);
-        Graphics._camera = cam;
+        Graphics.activateUniversalCamera(parms);
 
         // Logger.debug(`Graphics._initializeCamera: camera at ${JSONstringify(parms.initialCameraPosition)} pointing at ${JSONstringify(parms.initialCameraLookAt)}`);
         // Logger.debug(`Graphics._initializeCamera: camera at ${Graphics._camera.position.toString()} pointing at ${Graphics._camera.target.toString()}`);

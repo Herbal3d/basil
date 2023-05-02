@@ -83,11 +83,15 @@ export let Config = {
             'rendererInfoEventTopic': 'Graphics.RenderInfo',
         },
         'camera': {
-            // Change interface CameraParameters if any thing is changed here
             'name': 'camera.UNIQUEIDBASE',
-            'initialCameraPosition': [ 200, 50, 200 ],
-            'initialViewDistance': 200,
-            'initialCameraLookAt': [ 0, 0, 0 ]
+            'position': [ 200, 50, 200 ],
+            'target': [ 0, 0, 0 ],
+            // 'rotationQ': [0, 0, 0, 1],
+            'maxCameraSpeed': 4.0,
+            'cameraAcceleration': 0.5,
+            'cameraMinZ': -10,
+            'cameraMaxZ': 8000,
+            'initialViewDistance': 200
         },
         'lights': {
             // Change interface LightingParameters if any thing is changed here
@@ -233,13 +237,6 @@ export let Config = {
 };
 
 // Definitions of some of the above Config structures so TypeScript is happy
-export interface CameraParameters {
-    cameraId: string,
-    name: string,
-    initialCameraPosition: number[],
-    initialViewDistance: number,
-    initialCameraLookAt: number[],
-};
 export interface AmbientLightingParameters {
     name?: string;
     color?: string | number[];

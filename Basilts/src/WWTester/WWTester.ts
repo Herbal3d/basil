@@ -222,8 +222,8 @@ async function CreateFreeCamera(pConn: BasilConnection): Promise<string> {
     const cameraId = await GetCameraId(pConn);
     const resp = await pConn.UpdateProperties(cameraId, {
         cameraMode: CameraModes.FreeLook,
-        pos: Config.webgl.camera.initialCameraPosition,
-        cameraTarget: Config.webgl.camera.initialCameraLookAt
+        pos: Config.webgl.camera.position,
+        cameraTarget: Config.webgl.camera.target
     });
     return cameraId;
 }

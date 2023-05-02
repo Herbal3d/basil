@@ -201,7 +201,7 @@ export class AbPlacement extends Ability {
 
                 this.propValues[AbPlacement.PosProp] = [ np.x, np.y, np.z ];
                 this.propValues[AbPlacement.RotProp] = [ nr.x, nr.y, nr.z, nr.w ];
-                // Logger.debug(`AbPlacement.beforeFrame: pos=${pos}, pTo=${posTo}, d=${moveDuration}, ms=${moveScale}`);
+                Logger.debug(`AbPlacement.beforeFrame: pos=${pos}, pTo=${posTo}, d=${moveDuration}, ms=${moveScale}`);
             }
             // Anyone watching the position should know about the position update
             // NOTE: does not store the new value of the pos property but just generates a change event.

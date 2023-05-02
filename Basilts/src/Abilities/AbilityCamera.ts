@@ -245,7 +245,7 @@ export class AbCamera extends Ability {
                 [AbCamera.CameraDisplacementProp]: {
                     propName: AbCamera.CameraDisplacementProp,
                     propType: PropValueTypes.NumberTriple,
-                    propDefault: [0,0,0],
+                    propDefault: [0,7,-3],
                     propDesc: 'Displace the camera from the target for thrid person view',
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
@@ -357,7 +357,7 @@ export class AbCamera extends Ability {
             const cameraRot = this.getProp(AbCamera.RotProp) as number[]; // gets current rotation from camera
             const cameraMode = this.getProp(AbCamera.CameraModeProp) as CameraModes;
             // Setup camera depending on mode
-            if (this._lastCameraType != this.propValues[AbCamera.CameraModeProp]) {
+            if (this._lastCameraType != cameraMode) {
                 // Camera type is changing. If changing camera implementation, state must be saved
                 // TODO: smarter mode changing. Like FirstPerson to ThirdPerson can just reuse camera.
                 if (this._lastCameraType != CameraModes.Unknown) {
@@ -377,11 +377,16 @@ export class AbCamera extends Ability {
                         break;
                     }
                     case CameraModes.ThirdPerson: {
-                        Graphics.activateUniversalCamera({
+                        const disp = <number[]>this.getProp(AbCamera.CameraDisplacementProp);
+                        Graphics.activateFollowCamera({
                             name: 'camera1',
                             position: cameraPos,
                             rotationQ: cameraRot,
-                            attachControl: false
+                            heightOffset: -disp[2],
+                            rotationalOffset: -90,
+                            radius: disp[1],
+                            target: this._cameraTargetAvatarObject,
+                            attachControl: false,
                         });
                         break;
                     }
@@ -418,6 +423,7 @@ export class AbCamera extends Ability {
                     // The camera tracks the specified avatar
                     if (this._cameraTargetAvatarObject) {
 
+                        /*
                         // Code borrowed from BabylonJS FollowCamera
                         const rotMatrix = new Matrix();
                         this._cameraTargetAvatarObject.mesh.absoluteRotationQuaternion.toRotationMatrix(rotMatrix);
@@ -440,6 +446,7 @@ export class AbCamera extends Ability {
                         const newCamPos = new BJSVector3(newPos[0], newPos[1], newPos[2]);
                         Graphics._camera.position = newCamPos;
                         Graphics._camera.setTarget(targetPosition);
+                        */
 
                         /*
                         // DEBUG DEBUG

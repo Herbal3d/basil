@@ -188,8 +188,8 @@ export function DeleteAsset(pAsset: Object3D): boolean {
 // Add a test object to the scene
 export function AddTestObject() {
     const cube = Mesh.CreateBox('box1', 1, Graphics._scene);
-    cube.position = BJSVector3.FromArray(Config.webgl.camera.initialCameraLookAt);
-    Logger.debug(`Graphics: added test cube at ${Config.webgl.camera.initialCameraLookAt}`);
+    cube.position = BJSVector3.FromArray(Config.webgl.camera.target);
+    Logger.debug(`Graphics: added test cube at ${Config.webgl.camera.target}`);
 };
 
 // Set up a function to receive keyboard events
