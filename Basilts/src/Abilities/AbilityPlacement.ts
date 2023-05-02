@@ -39,18 +39,18 @@ export function AbPlacementFromProps(pProps: BKeyedCollection): AbPlacement {
     // Use 'pos' if passed or, if 'posTo' is given, use that.
     let position: PropValue = undefined;
     if (pProps.hasOwnProperty(AbPlacement.PosToProp)) {
-        position = pProps[AbPlacement.PosToProp] as PropValue;
+        position = ParseValueToType(PropValueTypes.NumberArray, pProps[AbPlacement.PosToProp]);
     }
     if (pProps.hasOwnProperty(AbPlacement.PosProp)) {
-        position = pProps[AbPlacement.PosProp] as PropValue;
+        position = ParseValueToType(PropValueTypes.NumberArray, pProps[AbPlacement.PosProp]);
     }
 
     let rotation: PropValue = undefined;
     if (pProps.hasOwnProperty(AbPlacement.RotToProp)) {
-        rotation = pProps[AbPlacement.RotToProp] as PropValue;
+        rotation = ParseValueToType(PropValueTypes.NumberArray, pProps[AbPlacement.RotToProp]);
     }
     if (pProps.hasOwnProperty(AbPlacement.RotProp)) {
-        rotation = pProps[AbPlacement.RotProp] as PropValue;
+        rotation = ParseValueToType(PropValueTypes.NumberArray, pProps[AbPlacement.RotProp]);
     }
 
     let frameOfReference: number = undefined;

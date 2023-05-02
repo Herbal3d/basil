@@ -17,7 +17,7 @@ import { BItems } from '@BItem/BItems';
 import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 import { WellKnownCameraName, WellKnownMouseName, WellKnownKeyboardName } from '@BItem/WellKnownBItems';
 
-import { Ability, RegisterAbility } from '@Abilities/Ability';
+import { Ability, ParseValueToType, RegisterAbility } from '@Abilities/Ability';
 import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { AbCamera, CameraModes } from '@Abilities/AbilityCamera';
 // import { AbKeyboard } from '@Abilities/AbilityKeyboard';
@@ -43,14 +43,13 @@ export enum OSCameraModes {
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbOSCameraFromProps(pProps: BKeyedCollection): AbOSCamera {
-    if (pProps.hasOwnProperty(AbOSCamera.OSCameraModeProp)) {
-        const cameraMode = pProps[AbOSCamera.OSCameraModeProp] as number;
-        const disp = pProps.hasOwnProperty(AbOSCamera.OSCameraDisplacementProp)
-                    ? pProps[AbOSCamera.OSCameraDisplacementProp] as number[]
-                    : Config.world.thirdPersonDisplacement;
-        return new AbOSCamera(cameraMode, disp);
-    };
-    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbOSCameraName}. pProps: ${JSON.stringify(pProps)}`);
+    const cameraMode = pProps.hasOwnProperty(AbOSCamera.OSCameraModeProp)
+                ?  ParseValueToType(PropValueTypes.Number, pProps[AbOSCamera.OSCameraModeProp])
+                : OSCameraModes.Third;
+    const disp = pProps.hasOwnProperty(AbOSCamera.OSCameraDisplacementProp)
+                ? ParseValueToType(PropValueTypes.Number,  pProps[AbOSCamera.OSCameraDisplacementProp])
+                : Config.world.thirdPersonDisplacement;
+    return new AbOSCamera(cameraMode as number, disp as number[]);
 };
 
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
@@ -78,6 +77,7 @@ export class AbOSCamera extends Ability {
     _pickedScreenPoint: number[] = [ 10, 10 ];
     _pickedPoint: number[] = [ 10, 10, 10 ];
     _pickedDistance: number = 10;
+    _pickedPointMod: boolean = false;
 
     constructor(pCameraMode: number, pCameraDisp: number[]) {
         super(AbOSCameraName, {
@@ -86,7 +86,6 @@ export class AbOSCamera extends Ability {
                     propType: PropValueTypes.Number,
                     propDefault: pCameraMode ?? OSCameraModes.Third,
                     propDesc: 'Mode of camera',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {
                         let newCameraMode = this.propValues[AbOSCamera.OSCameraModeProp] as number;
@@ -111,7 +110,6 @@ export class AbOSCamera extends Ability {
                     propType: PropValueTypes.NumberTriple,
                     propDefault: pCameraDisp ?? Config.world.thirdPersonDisplacement,
                     propDesc: 'displacement of camera from avatar',
-                    propValidator: PropDefaultValidator,
                     propGetter: PropDefaultGetter,
                     propSetter: PropDefaultSetter,
                     private: false
@@ -135,6 +133,8 @@ export class AbOSCamera extends Ability {
 
         // This uses the BeforeFrame event to actually set the camera mode
         Graphics.WatchBeforeFrame(this._processBeforeFrame.bind(this) as EventProcessor);
+        // Force the update on the first frame
+        this._cameraModeMod = true;
 
         /* Code left over from processing mouse and keyboard with AbMouse and AbKeyboard
         this._mouseBItem = BItems.getWellKnownBItem(WellKnownMouseName);
@@ -172,6 +172,8 @@ export class AbOSCamera extends Ability {
             if (point) {
                 this._pickedPoint = [ point.x, point.y, point.z ];
                 this._pickedDistance = pPtrInfo.pickInfo.distance;
+                this._pickedPointMod = true;
+
                 this.setProp(AbOSCamera.OSCameraModeProp, OSCameraModes.Orbit);
                 // Logger.debug(`AbOSAvaUpdate.processPointer:      pickloc=${JSONstringify(this._pickedPoint)}, dist=${this._pickedDistance}`);
             }
@@ -195,6 +197,15 @@ export class AbOSCamera extends Ability {
         if (this._cameraModeMod) {
             this._cameraModeMod = false;
             this.setCameraMode(pParms.scene);
+        }
+        if (this._pickedPointMod) {
+            this._pickedPointMod = false;
+            if (this.getProp(AbOSCamera.OSCameraModeProp) == OSCameraModes.Orbit) {
+                BItems.setProperties(this._cameraBItem, {
+                    cameraTarget: this._pickedPoint,
+                    cameraDisplacement: [ 0, this._pickedDistance, 0 ]
+                });
+            }
         }
     };
 
@@ -260,6 +271,7 @@ export class AbOSCamera extends Ability {
                     cameraTarget: this._pickedPoint,
                     cameraDisplacement: [ 0, this._pickedDistance, 0 ]
                 });
+                this._pickedPointMod = false;   // since we did the set properties
                 Logger.debug(`AbOSCamera.setCameraMode: Orbit: `);
                 break;
             }

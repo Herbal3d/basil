@@ -279,6 +279,7 @@ export class AbCamera extends Ability {
     // Called by watcher when avatar representation changes
     _avatarRepresentationWatcher(pParams: SetPropEventParams): void {
         this._cameraTargetAvatarObject = pParams.NewValue as Object3D;
+        this._cameraTargetMod = true;
     };
     // Called by watcher when avatar position changes
     _avatarPositionChangeTime: number = Date.now();
@@ -303,6 +304,7 @@ export class AbCamera extends Ability {
                 this._avatarRotWatcher.bind(this) as EventProcessor));
     };
     _clearWatchers(): void {
+        this._cameraTargetMod = false;
         const watchers = this._cameraTargetAvatarWatchers;
         this._cameraTargetAvatarWatchers = [];
         watchers.forEach( watcher => {
@@ -345,11 +347,11 @@ export class AbCamera extends Ability {
     };
 
     _lastCameraType: CameraModes = CameraModes.Unknown;
-    _lastCamPos: BJSVector3 = new BJSVector3();
-    _lastRads: number = 0;
-    _lastD: BJSVector3 = new BJSVector3();
-    _lastV: BJSVector3 = new BJSVector3();
-    _lastTarget: BJSVector3 = new BJSVector3();
+    // _lastCamPos: BJSVector3 = new BJSVector3();
+    // _lastRads: number = 0;
+    // _lastD: BJSVector3 = new BJSVector3();
+    // _lastV: BJSVector3 = new BJSVector3();
+    // _lastTarget: BJSVector3 = new BJSVector3();
     _processBeforeFrame(pParms: GraphicsBeforeFrameProps): void {
         // Move the camera
         if (Graphics._camera) {
@@ -419,9 +421,24 @@ export class AbCamera extends Ability {
                     }
                     break;
                 }
+                case CameraModes.Orbit: {
+                    // Camera orbits around a location
+                    if (this._cameraTargetMod) {
+                        Graphics._camera.target = BJSVector3.FromArray(this.getProp(AbCamera.CameraTargetProp) as number[]);
+                        this._cameraTargetMod = false;
+
+                    }
+                    break;
+                }
                 case CameraModes.ThirdPerson: {
                     // The camera tracks the specified avatar
                     if (this._cameraTargetAvatarObject) {
+                        if (this._cameraTargetMod) {
+                            if (this._cameraTargetAvatarObject && this._cameraTargetAvatarObject.mesh) {
+                                Graphics._camera.lockedTarget = this._cameraTargetAvatarObject.mesh;
+                                this._cameraTargetMod = false;
+                            }
+                        }
 
                         /*
                         // Code borrowed from BabylonJS FollowCamera
