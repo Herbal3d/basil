@@ -66,7 +66,7 @@ export class AbAssembly extends Ability {
                         if (pVal && abil) {
                             PropDefaultSetter(pAbil, pPropName, pVal);
                             if (this.containingBItem.getState() != BItemState.LOADING) {
-                                Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
+                                // Logger.debug(`AbAssembly.AssetUrl.set: setting BItem to LOADING and scheduling load`);
                                 this.containingBItem.setLoading();
                                 // When all parameters are set, start the loading
                                 this.addWhenUpdateComplete( (pBItem: BItem, pAbil: AbAssembly) => {
@@ -162,7 +162,7 @@ export class AbAssembly extends Ability {
 // Will load the asset and set the BItem's state to READY.
 // Promise fails of the asset can't be loaded and the BItem's state is set to FAILED
 export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<void> {
-    Logger.debug(`AbAssembly: LoadAssembly(${pAbil.getProp(AbAssembly.AssetUrlProp)})`);
+    // Logger.debug(`AbAssembly: LoadAssembly(${pAbil.getProp(AbAssembly.AssetUrlProp)})`);
 
     const loaderProps: LoadAssetParams = {
         AssetURL: <string>pAbil.getProp(AbAssembly.AssetUrlProp),
@@ -172,7 +172,7 @@ export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<vo
 
     LoadSimpleAsset(loaderProps)
     .then ( loaded => {
-        Logger.debug(`AbAssembly: LoadAssembly: successful load`);
+        // Logger.debug(`AbAssembly: LoadAssembly: successful load`);
         if (typeof(loaded) === 'undefined') {
             Logger.error(`AbAssembly: LoadAssembly: loaded object is null`);
             pBItem.setFailed();
@@ -187,7 +187,7 @@ export async function LoadAssembly(pAbil: AbAssembly, pBItem: BItem): Promise<vo
         }
     })
     .catch ( err => {
-        Logger.debug(`AbAssembly: LoadAssembly: failed load`);
+        Logger.error(`AbAssembly: LoadAssembly: failed load`);
         pBItem.setFailed();
         throw err;
     });

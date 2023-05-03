@@ -138,17 +138,17 @@ export async function LoadSimpleAsset(pProps: LoadAssetParams, pProgressCallback
 // All these operation and optional and controlled by Config parameters.
 function PrepareMeshesInContainer(pContainer: AssetContainer): void {
     if (Config.Debug.ShowBoundingBox) {
-        Logger.debug(`GraphicsOps: showing bounding boxes`);
+        // Logger.debug(`GraphicsOps: showing bounding boxes`);
         pContainer.meshes.forEach( mesh => {
             mesh.showBoundingBox = true;
         });
     };
-    Logger.debug(`GraphicsOps: making all meshes pickable`);
+    // Logger.debug(`GraphicsOps: making all meshes pickable`);
     pContainer.meshes.forEach( mesh => {
         mesh.isPickable = true;
     });
     if (Config.webgl.renderer.BabylonJS.rebuildBoundingBoxes) {
-        Logger.debug(`GraphicsOps: refreshing bounding boxes`);
+        // Logger.debug(`GraphicsOps: refreshing bounding boxes`);
         for (const mesh of pContainer.meshes) {
             const verts = mesh.getVerticesData(VertexBuffer.PositionKind);
             if (verts) {
@@ -179,7 +179,7 @@ function PrepareMeshesInContainer(pContainer: AssetContainer): void {
 }
 
 export function DeleteAsset(pAsset: Object3D): boolean {
-    Logger.debug(`GraphicsOps.DeleteAsset: removing`);
+    // Logger.debug(`GraphicsOps.DeleteAsset: removing`);
     pAsset.container.removeAllFromScene();
     pAsset.container.dispose();
     return true;

@@ -101,11 +101,13 @@ Logger.debug(`Starting WWTesterDev`);
         // Get the ID of the camera BItem
         const cameraId = await GetCameraId(conn);
         const height = 25;
-        const center = [ 100, height, -100 ];
-        const cameraLoc = [ 110, 60, -30 ];
+        // const center = [ 100, height, -100 ];
+        // const cameraLoc = [ 110, 60, -30 ];
+        const center = [ 100, 100, height ];
+        const cameraLoc = [ 110, 120, 50 ];
 
         void conn.UpdateProperties(cameraId, {
-            cameraMode: CameraModes.FreeLook,
+            cameraMode: CameraModes.Orbit,
             pos: cameraLoc,
             cameraTarget: center
         });
@@ -120,7 +122,7 @@ Logger.debug(`Starting WWTesterDev`);
         await CreateMovingItemWithCamera(conn, cameraId, center);
 
         void conn.UpdateProperties(cameraId, {
-            cameraMode: CameraModes.FreeLook,
+            cameraMode: CameraModes.Orbit,
             pos: cameraLoc,
             cameraTarget: center
         });
@@ -337,7 +339,7 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
     const step = 20;
     const lastStep = step * 3;
     const center = pCenter;
-    const radius = 5;
+    const radius = 10;
 
     const landCreateResp = await pConn.CreateItem({
         abilities: [ 'Assembly' ,'Placement' ],
@@ -363,11 +365,11 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
     const camResp = await pConn.UpdateProperties(pCameraId, {
         cameraMode: CameraModes.ThirdPerson,
         cameraTargetAvatarId: createdId,
-        cameraDisplacement: [ 0, 3.0, -20.0 ]
+        cameraDisplacement: [ 0, 7.0, -3.0 ]
     });
     /*
     const camResp = await pConn.UpdateProperties(pCameraId, {
-        cameraMode: CameraModes.FreeLook,
+        cameraMode: CameraModes.Orbit,
         cameraTarget: center,
         pos: [ 50, 70, -20 ]
     });
@@ -386,8 +388,8 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
         const _intervalHandle = setInterval(() => {
             const rads = (moveCount % step) / step * Math.PI * 2;
             const xx = center[0] + Math.cos(rads) * radius
-            const yy = center[1];
-            const zz = center[2] + Math.sin(rads) * radius
+            const yy = center[1] + Math.sin(rads) * radius
+            const zz = center[2]
             moveCount++;
             void pConn.UpdateProperties(createdId, {
                 posTo: [ xx, yy, zz ]
@@ -399,7 +401,7 @@ async function CreateMovingItemWithCamera(pConn: BasilConnection, pCameraId: str
                 // reset camera to viewing the scene
                 /*
                 void pConn.UpdateProperties(pCameraId, {
-                    cameraMode: CameraModes.FreeLook,
+                    cameraMode: CameraModes.Orbit,
                     pos: [ 50, 70, -50],
                     cameraTarget: center
                 });

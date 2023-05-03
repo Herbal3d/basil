@@ -29,8 +29,7 @@ import { Vector3 as BJSVector3, Color3 as BJSColor3, Quaternion as BJSQuaternion
 
 import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
-import { degreesToRads } from '@Tools/Coords';
-import { Clamp } from '@Tools/Misc';
+import { ToPlanetCoord, ToPlanetRot, BFrameOfRef, FromPlanetCoord, FromPlanetRot } from '@Tools/Coords';
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
 
@@ -95,10 +94,10 @@ export class AbCamera extends Ability {
                     propDefault: [0,0,0],
                     propDesc: 'Camera position',
                     propGetter: (pAbil: Ability, pPropName: string) => {    // Get current camera position
-                        const cpos = [0,0,0];
-                        Graphics._camera.position.toArray(cpos, 0);
-                        pAbil.propValues[AbCamera.PosProp] = cpos;
-                        return cpos;
+                        const foref = this.propValues[AbCamera.ForProp];
+                        const ppos = ToPlanetCoord(foref, Graphics._camera.position);
+                        pAbil.propValues[AbCamera.PosProp] = ppos;
+                        return ppos;
                     },
                     propSetter: (pAbil: Ability, pPropName: string, pVal: PropValue) => {   // Set camera position
                         const abil = pAbil as AbCamera;
@@ -114,17 +113,14 @@ export class AbCamera extends Ability {
                     propDefault: [0,0,0],
                     propDesc: 'Camera position',
                     propGetter: (pAbil: Ability, pPropName: string) => {    // Get current camera position
-                        const crot = [0,0,0,1];
                         let rott = Graphics._camera.rotationQuaternion;
                         if (! rott) {
                             // BabylonJS doesn't keep the rotation quaternion until it is set
                             const erot = Graphics._camera.rotation;
                             rott = BJSQuaternion.FromEulerAngles(erot.x, erot.y, erot.z);
                         }
-                        crot[0] = rott.x;
-                        crot[1] = rott.y;
-                        crot[2] = rott.z;
-                        crot[3] = rott.w;
+                        const foref = this.propValues[AbCamera.ForProp];
+                        const crot = ToPlanetRot(foref, rott);
                         pAbil.propValues[AbCamera.RotProp] = crot;
                         return crot;
                     },
@@ -383,7 +379,6 @@ export class AbCamera extends Ability {
                         Graphics.activateFollowCamera({
                             name: 'camera1',
                             position: cameraPos,
-                            rotationQ: cameraRot,
                             heightOffset: -disp[2],
                             rotationalOffset: -90,
                             radius: disp[1],
@@ -396,11 +391,11 @@ export class AbCamera extends Ability {
                         Graphics.activateArcRotateCamera( {
                             name: 'camera2',
                             position: cameraPos,
-                            rotationQ: cameraRot,
                             target: this.getProp(AbCamera.CameraTargetProp),
                             viewDistance: (this.getProp(AbCamera.CameraDisplacementProp) as number[])[1],
                             attachControl: true
                         })
+                        this._cameraTargetMod = false; // since it was just set
                         break;
                     }
                     default: {
@@ -416,7 +411,9 @@ export class AbCamera extends Ability {
                 case CameraModes.FreeLook: {
                     // Free look is run by the keyboard so this doesn't update anything
                     if (this._cameraTargetMod) {
-                        Graphics._camera.target = BJSVector3.FromArray(this.getProp(AbCamera.CameraTargetProp) as number[]);
+                        const foref = this.propValues[AbCamera.ForProp];
+                        const tpos = FromPlanetCoord(foref, this.getProp(AbCamera.CameraTargetProp) as number[]);
+                        Graphics._camera.target = tpos;
                         this._cameraTargetMod = false;
                     }
                     break;
@@ -424,7 +421,9 @@ export class AbCamera extends Ability {
                 case CameraModes.Orbit: {
                     // Camera orbits around a location
                     if (this._cameraTargetMod) {
-                        Graphics._camera.target = BJSVector3.FromArray(this.getProp(AbCamera.CameraTargetProp) as number[]);
+                        const foref = this.propValues[AbCamera.ForProp];
+                        const tpos = FromPlanetCoord(foref, this.getProp(AbCamera.CameraTargetProp) as number[]);
+                        Graphics._camera.target = tpos;
                         this._cameraTargetMod = false;
 
                     }
@@ -435,6 +434,7 @@ export class AbCamera extends Ability {
                     if (this._cameraTargetAvatarObject) {
                         if (this._cameraTargetMod) {
                             if (this._cameraTargetAvatarObject && this._cameraTargetAvatarObject.mesh) {
+                                // Note: moving renderer coords so To/FromPlanet not needed
                                 Graphics._camera.lockedTarget = this._cameraTargetAvatarObject.mesh;
                                 this._cameraTargetMod = false;
                             }

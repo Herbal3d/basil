@@ -24,10 +24,10 @@ export class BFrameOfRef {
 }
 
 // The planet is [lat,long,elev] and the local coords are 
-// NOTE: in devel, planet is [x,y,z] in map-ish, right-hand, Zup (Z is altitude)
-// NOTE: in devel, local is [x,y,z] in BabylonJS left-hand, Yup
+// NOTE: planet coords are [x,y,z] in map-ish, right-hand, Zup (Z is altitude)
+// NOTE: renderer coords are [x,y,z] in BabylonJS left-hand, Yup
 export function ToPlanetCoord(pFor: BFrameOfRef, pPos: BJSVector3): number[] {
-    return [ pPos.x, pPos.z, -pPos.y ];
+    return [ pPos.x, -pPos.z, pPos.y ];
 }
 export function ToPlanetRot(pFor: BFrameOfRef, pRot: BJSQuaternion): number[] {
     // This is absolutely the most inefficient way to do this.

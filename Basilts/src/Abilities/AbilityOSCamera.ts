@@ -18,7 +18,7 @@ import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 import { WellKnownCameraName, WellKnownMouseName, WellKnownKeyboardName } from '@BItem/WellKnownBItems';
 
 import { Ability, ParseValueToType, RegisterAbility } from '@Abilities/Ability';
-import { PropDefaultValidator, PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
 import { AbCamera, CameraModes } from '@Abilities/AbilityCamera';
 // import { AbKeyboard } from '@Abilities/AbilityKeyboard';
 // import { AbMouse } from '@Abilities/AbilityMouse';
@@ -28,6 +28,8 @@ import { EventProcessor, SubscriptionEntry } from '@Eventing/SubscriptionEntry';
 
 import { Graphics, GraphicsBeforeFrameProps } from '@Graphics/Graphics';
 import { EventState, KeyboardInfo, PointerInfo, Scene } from "@babylonjs/core";
+
+import { ToPlanetCoord, ToPlanetRot, BFrameOfRef, FromPlanetCoord, FromPlanetRot } from '@Tools/Coords';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Tools/Logging';
@@ -170,12 +172,13 @@ export class AbOSCamera extends Ability {
             this._pickedScreenPoint = [ pPtrInfo.event.clientX, pPtrInfo.event.clientY ];
             const point = pPtrInfo.pickInfo.pickedPoint;
             if (point) {
-                this._pickedPoint = [ point.x, point.y, point.z ];
+                // this._pickedPoint = [ point.x, point.y, point.z ];
+                this._pickedPoint = ToPlanetCoord(undefined, point);
                 this._pickedDistance = pPtrInfo.pickInfo.distance;
                 this._pickedPointMod = true;
 
                 this.setProp(AbOSCamera.OSCameraModeProp, OSCameraModes.Orbit);
-                // Logger.debug(`AbOSAvaUpdate.processPointer:      pickloc=${JSONstringify(this._pickedPoint)}, dist=${this._pickedDistance}`);
+                // Logger.debug(`AbOSAvaUpdate.processPointer: point=${JSONstringify(point)}, pickloc=${JSONstringify(this._pickedPoint)}, dist=${this._pickedDistance}`);
             }
         }
     };
@@ -263,8 +266,6 @@ export class AbOSCamera extends Ability {
                 break;
             }
             case OSCameraModes.Orbit: {
-                // const pickInfo = pScene.pick(this._pickLocation[0], this._pickLocation[1], null, true, null);
-                // const pickedPoint = [ pickInfo.pickedPoint.x, pickInfo.pickedPoint.y, pickInfo.pickedPoint.z ];
                 Logger.debug(`AbOSCamera.setCameraMode: Orbit: pick=${JSONstringify(this._pickedScreenPoint)}, point=${JSONstringify(this._pickedPoint)}`);
                 BItems.setProperties(this._cameraBItem, {
                     cameraMode: CameraModes.Orbit,

@@ -17,7 +17,6 @@ import { Config } from '@Base/Config';
 import { WWConfig, initConfig } from '@Base/WWTester/WWTester.Config';
 import { Comm, MakeConnectionParams } from '@Comm/Comm';
 import { BasilConnection,  BasilConnectionEventParams, ServiceBasilServer } from '@Comm/BasilConnection';
-import { BMessage, BMessageIProps } from '@Comm/BMessage';
 import { AuthToken } from '@Tools/Auth';
 
 import { Eventing } from '@Eventing/Eventing';
@@ -25,9 +24,6 @@ import { Eventing } from '@Eventing/Eventing';
 import { WaitABit, WaitUntilReady, CreateTopMenuDialog, CreateStatusDialog } from './WWTesterCommon';
 import { GetCameraId } from './WWTesterCommon';
 import { RequestProperties, PrintProperties } from './WWTesterCommon';
-
-import { BItemState } from '@Abilities/AbilityBItem';
-import { WellKnownCameraName } from '@Base/BItem/WellKnownBItems';
 
 import { ExtractStringError, JSONstringify } from '@Tools/Utilities';
 import { Logger, AddLogOutputter } from '@Tools/Logging';
@@ -107,6 +103,7 @@ Eventing.init();
                 await CreateStatusDialog(conn);
             }
             const assetId = await LoadTestAsset(conn, assetURL, assetLoader)
+
             // As a test, request the properties of the created asset
             await WaitUntilReady(conn, assetId);
             const props = await RequestProperties(conn, assetId);
@@ -221,7 +218,7 @@ async function LoadTestAsset(pBasil: BasilConnection, pTestAssetURL: string, pTe
 async function CreateFreeCamera(pConn: BasilConnection): Promise<string> {
     const cameraId = await GetCameraId(pConn);
     const resp = await pConn.UpdateProperties(cameraId, {
-        cameraMode: CameraModes.FreeLook,
+        cameraMode: CameraModes.Orbit,
         pos: Config.webgl.camera.position,
         cameraTarget: Config.webgl.camera.target
     });

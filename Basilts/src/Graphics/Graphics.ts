@@ -34,6 +34,7 @@ import { CombineParameters, JSONstringify, ParseThreeTuple } from '@Tools/Utilit
 import { BKeyedCollection } from '@Tools/bTypes.js';
 import { Logger } from '@Tools/Logging';
 import { Object3D } from './Object3d';
+import { FromPlanetCoord, FromPlanetRot } from '@Base/Tools/Coords';
 
 export enum GraphicStates {
     Uninitilized = 0,
@@ -234,7 +235,7 @@ export const Graphics = {
             attachControl: false
         }) as unknown as activateUniversalCameraParms;
 
-        const pos = BJSVector3.FromArray(parms.position);
+        const pos = FromPlanetCoord(undefined, parms.position);
 
         const cam = Graphics._cameraUniversal ?? new UniversalCamera(parms.name, pos, Graphics._scene);
 
@@ -242,13 +243,11 @@ export const Graphics = {
         cam.minZ = parms.cameraMinZ;
         cam.maxZ = parms.cameraMaxZ;
         if (parms.rotationQ) {
-            const rot = new BJSQuaternion(parms.rotationQ[0],
-                    parms.rotationQ[1], parms.rotationQ[2], parms.rotationQ[3]);
+            const rot = FromPlanetRot(undefined, parms.rotationQ);
             cam.rotationQuaternion = rot;
         }
         if (parms.target) {
-            const lookAt = BJSVector3.FromArray(parms.target);
-            cam.lockedTarget = lookAt;
+            cam.lockedTarget = FromPlanetCoord(undefined, parms.target);
         }
 
         Graphics._cameraUniversal = cam;
@@ -276,10 +275,8 @@ export const Graphics = {
             attachControl: true
         }) as unknown as activateArcRotateCameraParms;
 
-        const pos = BJSVector3.FromArray(parms.position);
-        const pRot = parms.rotationQ;
-        const rot = pRot ? new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]) : undefined;
-        const lookAt = BJSVector3.FromArray(parms.target);
+        const pos = FromPlanetCoord(undefined, parms.position);
+        const lookAt = FromPlanetCoord(undefined, parms.target);
 
         const cam = Graphics._cameraArcRotate
                             ?? new ArcRotateCamera(parms.name,
@@ -292,9 +289,7 @@ export const Graphics = {
         cam.position = pos;
 
         if (parms.rotationQ) {
-            const pRot = parms.rotationQ;
-            const rot = new BJSQuaternion(pRot[0], pRot[1], pRot[2], pRot[3]);
-            cam.rotationQuaternion  = rot;
+            cam.rotationQuaternion  = FromPlanetRot(undefined, parms.rotationQ);
         }
 
         Graphics._cameraArcRotate = cam;
@@ -327,7 +322,7 @@ export const Graphics = {
             attachControl: true
         }) as unknown as activateFollowCameraParms;
 
-        const pos = BJSVector3.FromArray(parms.position);
+        const pos = FromPlanetCoord(undefined, parms.position);
 
         const cam = Graphics._cameraFollow
                             ?? new FollowCamera(
@@ -345,7 +340,7 @@ export const Graphics = {
             cam.lockedTarget = parms.target.mesh;
         }
         else {
-            cam.target = BJSVector3.FromArray(Config.webgl.camera.target);
+            cam.target = FromPlanetCoord(undefined, Config.webgl.camera.target);
         }
 
         Graphics._cameraFollow = cam;
