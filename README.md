@@ -1,8 +1,12 @@
 # Basil
 Modular 3D viewer for virtual worlds and augmented reality.
 
-**UPDATE**: As of August 18, 2022, there is no more work being done
-on this project. The developer has moved onto other projects.
+**UPDATE**: As of May 2023, the developer is again playing with
+this project. It was presented at the
+[2022 OpenSimulator Community Conference]
+and has a
+[presentation](https://docs.google.com/presentation/d/1mJ00jMsBJ83IkMr0-MROenMzbTCi78d4K-yFDIfbVL0/edit?usp=sharing)
+on the development.
 
 Basil is a 3D object viewer. That sounds like a thousand other projects
 doesn't it?
@@ -69,3 +73,4 @@ Related projects are:
 [Pesto]:  http://misterblue.github.io/pesto/
 [Loc-Loc]: http://misterblue.github.io/loc-loc/
 [Ragu]: http://misterblue.github.io/ragu/
+[2022 OpenSimulator Community Conference]: https://conference.opensimulator.org/
