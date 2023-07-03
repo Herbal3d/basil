@@ -18,6 +18,7 @@ import { BKeyedCollection } from '@Tools/bTypes';
 import { ParseNumArray, ParseStringArray, ParseThreeTuple, ParseFourTuple } from "@Tools/Utilities";
 import { Logger } from '@Tools/Logging';
 
+// Abilities present "property"s. Each is defined with the following structure
 export type AbilityPropValidator = (pAbil: Ability, pPropName: string, pVal: PropValue) => boolean;
 export type AbilityPropGetter = (pAbil: Ability, pPropName: string) => PropValue;
 export type AbilityPropSetter = (pAbil: Ability, pPropName: string, pVal: PropValue) => void
@@ -35,6 +36,7 @@ export interface AbilityPropDefn {
 // This is defined by each ability and is used to decorate the class instance
 export type AbilityPropDefns = { [key: string]: AbilityPropDefn };
 
+// A default function for "propValidator". Default to everything being valid.
 export function PropDefaultValidator(pAbil: Ability, pPropName: string, pVal: PropValue): boolean { return true; }
 
 // Get the value.
@@ -113,6 +115,7 @@ export function ParseValueToType(pTargetValType: PropValueTypes, pVal: unknown):
 
 // =========== Global functions for registering and creating abilities ===========
 // Function defined by each ability to create the Ability from a property set
+// Used by the factory function to create abilities.
 export type AbilityFromProps = (pProps: BKeyedCollection) => Ability;
 
 // Map of ability names to the function to create the ability from property values
@@ -184,13 +187,12 @@ export abstract class Ability  {
         if (this.propDefns) {
             Object.keys(this.propDefns).forEach((pName: string) => {
                 const pDefn = this.propDefns[pName];
-                this.containingBItem.addProperty(pDefn.propName, this);
+                let propOptions = null;
                 if (pDefn.hasOwnProperty('private') && pDefn.private) {
-                    this.containingBItem.addProperty(pDefn.propName, this, { private: true });
+                    propOptions = { private: true };
                 }
-                else {
-                    this.containingBItem.addProperty(pDefn.propName, this);
-                }
+                // TODO: add any additional property options here
+                this.containingBItem.addProperty(pDefn.propName, this, propOptions);
 
                 // Add a getter and setter for each property to the ability instance
                 /* NOTE: This doesn't work well because TypeScript doesn't know about the added properties
@@ -210,7 +212,8 @@ export abstract class Ability  {
     // Return the value of the property.
     // NOTE: compatible with Abilities that doe not use the PropDefn system
     getProp(pName: string): PropValue {
-        if (this.propDefns.hasOwnProperty(pName)) {
+        // if (this.propDefns.hasOwnProperty(pName)) {
+        if (pName in this.propDefns) {
             return this.propDefns[pName].propGetter(this, pName);
         }
         else {
@@ -221,7 +224,7 @@ export abstract class Ability  {
     }
 
     // Set the value of the property.
-    // NOTE: compatible with Abilities that doe not use the PropDefn system
+    // NOTE: compatible with Abilities that does not use the PropDefn system
     setProp(pName: string, pVal: PropValue): void {
         if (this.propDefns.hasOwnProperty(pName)) {
             this.propDefns[pName].propSetter(this, pName, pVal);
@@ -244,6 +247,7 @@ export abstract class Ability  {
         return;
     }
     
+    // Add a function to be called when all updates are complete
     addWhenUpdateComplete(pCompleted: DoOnUpdateComplete): void {
         this.whenCompleted.push(pCompleted);
 

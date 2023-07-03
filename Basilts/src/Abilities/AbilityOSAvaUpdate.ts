@@ -210,21 +210,20 @@ export class AbOSAvaUpdate extends Ability {
     // Set control flag. If passed boolean of 'false', will clear the flag.
     setControlFlag(pFlag: OSAvaUpdateMoveAction, pSet: boolean = true): void {
         if (pSet) {
-            (this.propValues[AbOSAvaUpdate.ControlFlagsProp] as number) |= pFlag;
+            (<number>this.propValues[AbOSAvaUpdate.ControlFlagsProp]) |= pFlag;
         }
         else {
-            (this.propValues[AbOSAvaUpdate.ControlFlagsProp] as number) &= ~pFlag;
+            (<number>this.propValues[AbOSAvaUpdate.ControlFlagsProp]) &= ~pFlag;
         }
     };
 
     // Avatar is being asked to move.
     // Send it to the SpaceServer to figure out what to do in world
     sendAvatarUpdate(): void {
-        const far = <number>BItems.getProp(this._cameraId, AbCamera.CameraFarProp);
         const rot = <number[]>this.containingBItem.getProp(AbPlacement.RotProp);
         const updateProps = {
             [AbOSAvaUpdate.ControlFlagsProp]: this.getProp(AbOSAvaUpdate.ControlFlagsProp),
-            [AbOSAvaUpdate.FarProp]: far,
+            [AbOSAvaUpdate.FarProp]: <number>BItems.getProp(this._cameraId, AbCamera.CameraFarProp),
             [AbOSAvaUpdate.BodyRotProp]: rot,
             [AbOSAvaUpdate.HeadRotProp]: rot
         };

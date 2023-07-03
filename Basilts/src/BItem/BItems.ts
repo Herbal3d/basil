@@ -181,7 +181,7 @@ export const BItems = {
     dumpBItemCollection: (): void => {
         Logger.debug(`BItemCollection:`);
         BItemCollection.forEach( (bitem, id) => {
-            Logger.debug(`    ${id}: props=${Array.from(bitem._props.keys()).join()}`);
+            Logger.debug(`    ${id}: props=${Array.from(bitem._propToAbility.keys()).join()}`);
         });
     }
 };

@@ -113,7 +113,7 @@ export class AbBItem extends Ability {
                     // Returns the list of abilities that have been added to the BItem
                     propGetter: (pAbil: Ability, pPropName: string): PropValue => {
                         const abils: string[] = [];
-                        this._creatingConnection._props.forEach( (abil: Ability, propName: string) => {
+                        this._creatingConnection._propToAbility.forEach( (abil: Ability, propName: string) => {
                             if (!(abil.abilityName in abils)) {
                                 abils.push(abil.abilityName);
                             }

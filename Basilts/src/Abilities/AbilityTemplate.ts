@@ -11,8 +11,9 @@
 
 'use strict';
 
-import { Ability, RegisterAbility } from '@Abilities/Ability';
-import { BItem, PropValue } from '@BItem/BItem';
+import { Ability, RegisterAbility, ParseValueToType } from '@Abilities/Ability';
+import { PropDefaultGetter, PropDefaultSetter } from '@Abilities/Ability';
+import { BItem, PropValue, PropValueTypes } from '@BItem/BItem';
 
 import { BKeyedCollection } from '@Tools/bTypes';
 import { Logger } from '@Base/Tools/Logging';
@@ -21,12 +22,10 @@ export const AbTEMPLATEName = 'TEMPLATE'
 
 // Function that returns an instance of this Ability given a collection of properties (usually from BMessage.IProps)
 export function AbTEMPLATEFromProps(pProps: BKeyedCollection): AbTEMPLATE {
-    if (pProps.hasOwnProperty(AbTEMPLATE.OneProp) && pProps.hasOwnProperty(AbTEMPLATE.TwoProp)) {
-        const oneProp = pProps[AbTEMPLATE.OneProp] as string;
-        const twoProp = pProps[AbTEMPLATE.TwoProp] as string;
-        return new AbTEMPLATE(oneProp, twoProp);
-    };
-    Logger.error(`AbAssemblyFromProps: Missing required properties for ${AbTEMPLATEName}. pProps: ${JSON.stringify(pProps)}`);
+    return new AbTEMPLATE(
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbTEMPLATE.OneProp]),
+        <string>ParseValueToType(PropValueTypes.String, pProps[AbTEMPLATE.TwoProp]),
+    )
 };
 
 // Register the ability with the AbilityFactory. Note this is run when this file is imported.
@@ -41,29 +40,30 @@ export class AbTEMPLATE extends Ability {
     public static TwoProp = 'two';
 
     constructor(pPropertyOne: string, pPropertyTwo: string) {
-        super(AbTEMPLATEName);
-        this.one = pPropertyOne;
-        this._two = pPropertyTwo;
+        super(AbTEMPLATEName, {
+            [AbTEMPLATE.OneProp]: {
+                propName: AbTEMPLATE.OneProp,
+                propType: PropValueTypes.String,
+                propDefault: '1',
+                propDesc: 'The first property',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+            [AbTEMPLATE.TwoProp]: {
+                propName: AbTEMPLATE.TwoProp,
+                propType: PropValueTypes.String,
+                propDefault: '2',
+                propDesc: 'The second property',
+                propGetter: PropDefaultGetter,
+                propSetter: PropDefaultSetter
+            },
+        });
     };
-
-    // Make the properties available
-    public one: PropValue;
-    // Use getters and setters for properties that cause things to happen
-    _two: PropValue;
-    public get propertyTwo(): PropValue { 
-        return this._two;
-    }
-    public set propertyTwo(pVal: PropValue) { 
-        this._two = pVal;
-    }
 
     // Add all the properties from this assembly to the holding BItem
     addProperties(pBItem: BItem): void {
         // Always do this!!
         super.addProperties(pBItem);
-
-        pBItem.addProperty(AbTEMPLATE.OneProp, this);
-        pBItem.addProperty(AbTEMPLATE.TwoProp, this);
 
         // For 'simple' abilities, it is ready when it is loaded
         // pBItem.setReady();

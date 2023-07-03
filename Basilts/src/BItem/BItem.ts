@@ -69,7 +69,7 @@ export interface SetPropEventParams {
 export class BItem {
 
     // The properties that are added by the Abilities
-    _props: Map<string, Ability>;
+    _propToAbility: Map<string, Ability>;
     _propOptions: Map<string, PropOptions>;
     // Flag 'true' when the BItem is being deleted
     private _deleteInProgress: boolean;
@@ -96,7 +96,7 @@ export class BItem {
     constructor(pId: string, pAuth: AuthToken, pLayer?: string, pCreatingConnection?: BasilConnection) {
         const id = pId ?? CreateUniqueId('BItem');
 
-        this._props = new Map<string,Ability>();
+        this._propToAbility = new Map<string,Ability>();
         this._propOptions = new Map<string,PropOptions>();
 
         // Add the base properties to this BItem
@@ -115,7 +115,7 @@ export class BItem {
     releaseBItem(): void {
         this._deleteInProgress = true;
         // Remove all the properties. This alerts any abilities that they are being removed.
-        const props = this._props.keys();
+        const props = this._propToAbility.keys();
         Logger.debug(`BItem.releaseBItem: releasing properties for ${this.id}`);
         for (const prop of props) {
             this.removeProperty(prop);
@@ -126,7 +126,7 @@ export class BItem {
     // Common interface for getting the value of any property an Ability has added to the BItem
     getProp(pPropName: string): PropValue {
         // Logger.debug(`Getting property ${pPropName}`);
-        const abil = this._props.get(pPropName);
+        const abil = this._propToAbility.get(pPropName);
         if (abil) {
             return abil.getProp(pPropName);
         }
@@ -140,7 +140,7 @@ export class BItem {
     //      actually setting the property value which might have side effects.
     setProp(pPropName: string, pVal: PropValue, pActuallySetProp = true): void {
         Logger.cdebug('SetProp', `id=${this.id}, Setting property ${pPropName} = ${pVal}`);
-        const abil = this._props.get(pPropName);
+        const abil = this._propToAbility.get(pPropName);
         if (abil) {
             if (pActuallySetProp) {
                 abil.setProp(pPropName, pVal);
@@ -165,7 +165,7 @@ export class BItem {
     watchProperty(pPropName: string, pWatcher: EventProcessor): SubscriptionEntry {
         const sub = Eventing.Subscribe(this.getPropEventTopicName(pPropName), pWatcher);
         // If the property is already defined, fire an initial watch event
-        if (this._props.has(pPropName)) {
+        if (this._propToAbility.has(pPropName)) {
             // don't actually set the property, just fire the event
             this.setProp(pPropName, this.getProp(pPropName), false);
         };
@@ -178,7 +178,7 @@ export class BItem {
     // Increment the value of a named property
     incrementProp(pPropName: string) : number {
         // Logger.debug(`incrementProp ${pPropName}`);
-        const abil = this._props.get(pPropName);
+        const abil = this._propToAbility.get(pPropName);
         if (abil) {
             let val = abil.getProp(pPropName);
             if (typeof val === 'number') {
@@ -192,16 +192,16 @@ export class BItem {
     // Add a named property to the BItem.
     // Used by Abilities added to the BItem to make their properties visible
     addProperty(pPropName: string, pAbility: Ability, pPropOptions?: PropOptions): void {
-        this._props.set(pPropName, pAbility);
+        this._propToAbility.set(pPropName, pAbility);
         if (pPropOptions) {
             this._propOptions.set(pPropName, pPropOptions);
         };
     };
     // Remove a property that was added to the BItem
     removeProperty(pPropName: string): void {
-        if (this._props.has(pPropName)) {
-            this._props.get(pPropName).propertyBeingRemoved(this, pPropName);
-            this._props.delete(pPropName);
+        if (this._propToAbility.has(pPropName)) {
+            this._propToAbility.get(pPropName).propertyBeingRemoved(this, pPropName);
+            this._propToAbility.delete(pPropName);
             this._propOptions.delete(pPropName);
         }
         else {
@@ -224,7 +224,7 @@ export class BItem {
                 notFiltering = true;
             }
         }
-        this._props.forEach( (abil: Ability, propName: string) => {
+        this._propToAbility.forEach( (abil: Ability, propName: string) => {
             let priv = false;
             if (notFiltering || filter.test(propName)) {
                 if (this._propOptions.has(propName)) {
@@ -256,7 +256,7 @@ export class BItem {
     };
     // Remove the named ability
     removeAbility(pAbilityName: string): void {
-        this._props.forEach( (abil: Ability, propName: string) => {
+        this._propToAbility.forEach( (abil: Ability, propName: string) => {
             if (pAbilityName === abil.abilityName) {
                 this.removeProperty(propName);
             };
@@ -265,7 +265,7 @@ export class BItem {
     // Return the ability instance on this BITem with the passed name
     getAbility(pAbilityName: string): Ability {
         let ret: Ability = null;
-        this._props.forEach( (abil: Ability, propName: string) => {
+        this._propToAbility.forEach( (abil: Ability, propName: string) => {
             if (pAbilityName === abil.abilityName) {
                 ret = abil;
             }
@@ -276,7 +276,7 @@ export class BItem {
     // TODO: figure out if keeping a list rather than recomputing the list is better
     getAbilities(): Ability[] {
         const abils: Ability[] = [];
-        this._props.forEach( (abil: Ability, propName: string) => {
+        this._propToAbility.forEach( (abil: Ability, propName: string) => {
             if (! abils.includes(abil)) {
                 abils.push(abil);
             }
@@ -353,7 +353,7 @@ export class BItem {
     // Debug function to list all of the BItem's properties in the log output
     DumpProps(): void {
         Logger.debug('=== Dumping Props');
-        this._props.forEach( (abil, key) => {
+        this._propToAbility.forEach( (abil, key) => {
             Logger.debug(`     ${key}: ${this.getProp(key)}`);
         });
     };
