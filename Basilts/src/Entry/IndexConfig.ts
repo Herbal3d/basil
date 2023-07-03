@@ -16,7 +16,7 @@ export const Config = {
 
     // Until the region returns its connection URL, we construct it from
     //    the returned IP address and this template
-    'transportURLTemplate': 'ws://IP-ADDRESS:11440/',
+    'transportURLTemplate': 'ws://IP-ADDRESS:PORT-ADDRESS/',
     // Various flags that turn on/off debug logging, etc
     'Debug': {
         'EnableLogging': true,           // whether to output any logging

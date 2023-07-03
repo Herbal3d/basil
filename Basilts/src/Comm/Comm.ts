@@ -64,6 +64,9 @@ export const Comm = {
             case 'WW':
                 xport = new BTransportWW(params);
                 break;
+            case 'OSWS':    // OpenSim native WebSockets
+                xport = new BTransportWS(params);
+                break;
             case 'WS':
                 xport = new BTransportWS(params);
                 break;

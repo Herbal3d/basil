@@ -118,8 +118,16 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
         // The URL for the region connection should really come from either the login
         //    response or a query to the grid service. For the moment, we construct
         //    it from a parameter and the returned IP address of the target region.
-        let transportURL = spaceServerURL.replace('IP-ADDRESS', resp.sim_ip as string);
-        transportURL = transportURL.replace('PORT-ADDRESS', resp.http_port as string);
+        // The port for the WS service should be returned in the login response but
+        //    it is not. The convention is to have it the port just above the UDP port.
+        //    TODO: someday have the transport address in the login response.
+        let transportURL = spaceServerURL.replace('IP-ADDRESS', String(resp.sim_ip));
+        // const transportPort = String(Number(resp.sim_port) + 1);
+        // const transportPort = String(Number(resp.http_port));
+        // 20230627: OpenSim has been found to return http_port=0. Find the http port by extracting it
+        //      from the seed capability URL.
+        const portParts = String(resp.seed_capability).match('https?:\/\/.*:(?<port>[0-9]*)\/.*$')
+        transportURL = transportURL.replace('PORT-ADDRESS', portParts.groups.port);
         Logger.info('transport URL=' + transportURL);
 
         // Build the encoded auth string that is sent through Basil to the service.
@@ -129,7 +137,7 @@ function LoginResponseSuccess(resp: BKeyedCollection): void {
             'sId': resp.session_id,
             // Extra stuff added to accomodate OpenSim login
             'SSID': resp.secure_session_id,
-            'CC': resp.circuit_code,
+            'CC': String(resp.circuit_code),
             'FN': resp.first_name,
             'LN': resp.last_name
         };

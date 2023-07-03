@@ -25,7 +25,7 @@ export const Config = {
     },
     // Until the region returns its connection URL, we construct it from
     //    the returned IP address and this template
-    'transportURLTemplate': 'ws://IP-ADDRESS:11440/',
+    'transportURLTemplate': 'ws://IP-ADDRESS:PORT-ADDRESS/',
     // Names for predefined/service BItem layers
     'layers': {
         'default': 'd.layer.entry',
@@ -62,7 +62,7 @@ export const Config = {
             'Name': 'localhost',
             'GridInfo': 'http://127.0.0.1:9000/get_grid_info',
             'LoginURL': 'http://127.0.0.1:9000/',
-            'SpaceServerUrlTemplate': 'ws://IP-ADDRESS:11440/',
+            'SpaceServerUrlTemplate': 'ws://IP-ADDRESS:PORT-ADDRESS/Ragu/CC',
             'Selected': true
         },
         {
@@ -73,13 +73,13 @@ export const Config = {
             'LoginURL': 'https://basil.bluestuff.org/osgrid/',
             // 'SpaceServerUrlTemplate': 'wss://IP-ADDRESS/wss/'
             // DEBUG DEBUG: test that name is required for wss (to check certificates)
-            'SpaceServerUrlTemplate': 'wss://basil.bluestuff.org/wss/'
+            'SpaceServerUrlTemplate': 'wss://basil.bluestuff.org/wss/Ragu/CC'
         },
         {
             'Name': 'localTestGrid',
             'GridInfo': 'http://192.168.86.56:9000/get_grid_info',
             'LoginURL': 'http://192.168.86.56:9000/',
-            'SpaceServerUrlTemplate': 'ws://192.168.86.56:11440/'
+            'SpaceServerUrlTemplate': 'ws://192.168.86.56:PORT-ADDRESS/Ragu/CC'
         }
     ],
     // Used by Entry.js/Entry.html to select test files to load.

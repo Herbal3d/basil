@@ -25,6 +25,7 @@ export interface MakeConnectionReqProps {
     serviceAuth: string;     // authorization token to use when connecting
     serviceAddr?: string;    // routing address of service
     openParams?: BKeyedCollection; // optional parameters to send when doing OpenConnection
+        // the JustView version starts Basil and uses this to spec GLTF file to load
 };
 export interface MakeConnectionRespProps {
     none: string;            // place holder REPLACE ME

@@ -28,6 +28,8 @@ import { EventProcessor } from '@Base/Eventing/SubscriptionEntry';
 import { BKeyedCollection } from '@Tools/bTypes';
 
 import { Logger } from '@Base/Tools/Logging';
+import { Quaternion } from '@babylonjs/core';
+import { log } from 'console';
 
 export const AbOSAvaMoveName = 'OSAvaUpdate'
 
@@ -154,10 +156,21 @@ export class AbOSAvaUpdate extends Ability {
     };
 
     turnRight(pKeyUpDown: boolean) {
+        const rott = <number[]>this.containingBItem.getProp(AbPlacement.RotProp);
+        const qRott = Quaternion.FromArray(rott);
+        qRott.multiplyInPlace(Quaternion.FromEulerAngles(0, -10, 0));
+        this.setProp(AbPlacement.RotProp, [qRott.x, qRott.y, qRott.z, qRott.w]);
+
         this.movementAction(OSAvaUpdateMoveAction.turnRight, pKeyUpDown);
     }
 
     turnLeft(pKeyUpDown: boolean) {
+        const rott = <number[]>this.containingBItem.getProp(AbPlacement.RotProp);
+        Logger.debug(`AbilityOSAvaUpdate.turnLeft: rott=${rott}`);
+        const qRott = Quaternion.FromArray(rott);
+        qRott.multiplyInPlace(Quaternion.FromEulerAngles(0, 10, 0));
+        this.setProp(AbPlacement.RotProp, [qRott.x, qRott.y, qRott.z, qRott.w]);
+
         this.movementAction(OSAvaUpdateMoveAction.turnLeft, pKeyUpDown);
     }
 
